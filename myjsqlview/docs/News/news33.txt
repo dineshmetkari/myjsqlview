@@ -1,0 +1,26 @@
+MyJSQLView Development Update
+
+The last release of MyJSQLView is to a great extent silently
+moved to the past. During the present development a few bugs
+have been discovered. The first within a week or so after the
+release of Version 2.81. That bug was never documented,
+but was fixed immediately and deemed non-critical with no 
+remembrance currently in mind. So if you find it perhaps you
+may send the project manager some pale-mail in annoyance. Now
+two other bugs have been documented with one fixed and the other
+still open. The already fixed bug had to do PostgreSQL
+table/database scheme structure dumps and time/timestamp fields
+with precision data. During a structure dump an ending parenthesis
+will be missing on the precision data fields. The still open bug,
+task# 145594, has to do with CSV MySQL bit exports. The bit
+pattern is exported as a integer and therefore will fail to
+be properly imported back into the database via CSV imports.
+
+Now the MyJSQLView project is pleased to announce that support
+for the HSQLDB has been fully implemented in the current development,
+but not fully tested. All tasks associated with the next release
+have been documented at the project's home at Sourceforge. The
+major goals at this time are to complete the ability of MyJSQLView
+to support array data types and CSV replace/update imports. Once
+these major development tasks have been completed along with
+administrative tasks then a MyJSQLView update will be forthcoming.     

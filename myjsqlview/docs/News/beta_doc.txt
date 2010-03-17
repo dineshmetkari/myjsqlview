@@ -1,0 +1,12 @@
+   MyJSQLView Beta Revised to Version 2.4
+
+   The MyJSQLView Beta release has been revised to
+Version 2.4 for the purposes of documentation
+inclusion/update. Hopefully the more accurate
+information and application requirements will help
+users to more easily use MyJSQLView.
+   MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database.
+
+

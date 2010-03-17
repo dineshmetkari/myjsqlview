@@ -1,0 +1,21 @@
+MyJSQLView 2.87++ Development Update
+
+The development of MyJSQLView has been under hiatus
+for the last month. Sorry folks seems summer brings
+lots of other outside activity that keeps drawing a
+developer from the computer screen to the visible
+window portal events. Not to worry, being a seasoned
+planner the task schedule still reflects the expected
+next release date. Should be close. The month of July
+was not totally wasted to non-development. The other
+open source project I maintain, NA_Worksheet, was
+cleaned up and some new features were added to the
+graphing capability. I guess a drifting took place
+after dealing with the legacy Oracle database that
+tended me back to mathematics and the Phase III
+development that I would like to get to with MyJSQLView.
+
+MyJSQLView Project Manager
+Dana M. Proctor
+
+

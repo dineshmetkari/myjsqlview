@@ -1,0 +1,5 @@
+The MyJSQLView project would like to inform
+the public of the addition of a new developer
+to the team. Lookfwd's contribution to the
+project has helped to identify many bugs and
+structural defects in the application.  

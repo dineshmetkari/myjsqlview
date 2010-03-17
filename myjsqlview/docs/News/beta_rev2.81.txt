@@ -1,0 +1,24 @@
+MyJSQLView Version 2.81 Released
+
+The MyJSQLView Beta release has been update to Version 2.81.
+The release has focused on the implementation of a generic
+core for effectuation of additional database support. The
+database chosen for the effort was PostgreSQL. MyJSQLView
+in this release now supports all the basic features that
+it has provided previously with the MySQL database, but
+also with PostgreSQL. A new feature added in this release
+is the ability to import CSV, comma separated values, into
+a table. The ability to manipulate some additional data
+types was also added to the release, boolean & bit types.
+There were many other areas that the project would of liked
+to improved upon, database export & array support for example,
+but those and other aspects were not really identified as the
+major goals for this release.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the MySQL & PostgreSQL databases. A query frame allows the
+building of complex SELECT SQL statements. The application
+allows easy sorting, searching, and import/export of table
+data.
+

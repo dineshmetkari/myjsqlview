@@ -1,0 +1,18 @@
+MyJSQLView Version 2.76++ Approaching a Conclusion
+
+The development for the next release of the MyJSQLView
+application is beginning to come to a conclusion. As
+of the date of this news release the major development
+tasks left have to do with PostgreSQL table key testing
+and table/database structure SQL data export. Of course
+many other general tasks need to take place before a
+release, ex. documentation. The current projected 
+release is somewhere around the 7th of Jan. 2008. Looks
+like that can be met, maybe possibly sooner. At this
+time the major changes to the application are with 
+the support for the PostgreSQL database. A CSV data
+import feature has also been added. The project will
+probably ask for help from those that have PostgreSQL
+databases to try MyJSQLView before release. So if you
+or someone you know might like to test MyJSQLView on
+a PostgreSQL database please contact the project manager. 

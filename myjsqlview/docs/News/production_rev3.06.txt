@@ -1,0 +1,39 @@
+MyJSQLView Version 3.06 Released
+
+The MyJSQLView project is pleased to provide the release of Version 
+3.06 to the public. The release marks the inclusion of the first
+initial plugin module for the application. The plugin is called
+Table Field Charts and derives from an open source GNU project that
+was active at Sourceforge under the name DataProfiler. The DataProfiler,
+by Arrah Technology, does not appear to have any files to download
+now, but was a sort of data analysis tool that connected to various
+databases. The Table Field Charts module encompasses aspects of the
+DataProfiler that gave general information for a database's table
+fields. The information is presented in the form of graphic charts,
+pie & bar, for the field's record count, distribution, and patterns.
+Though the basic outline of the code, four classes, used from the
+DataProfiler is intact I'm afraid major refactoring, code cleanup,
+and feature additions as all but annihilated most of the source.
+New to the charts is the ability to scale and colorize all parameters.
+
+The MyJSQLView project has just about arrived at the point with the
+plugin architecture that various projects such as the DataProfiler
+will begin to become targets for what I call SUCK UP. Over the past
+several years the project has been identifying and evaluating open
+source tools that are in alignment with MyJSQLView's goals. Gradually
+with the plugin architecture the plan will be to provide the ability
+for this project and others to SUCK UP other tools various features
+and incorporate them into MyJSQLView. The key focus for this group
+will be tools that provide data analysis, and business intelligence
+abilities. The Table Field Charts is not a true plugin yet, but did
+provide the basis for testing the process of implementing a separate
+plugin thread to be run within the program.
+
+Dana M. Proctor
+MyJSQLView Project Manager 
+
+MyJSQLView provides an easy to use Java based interface for viewing,
+adding, editing, or deleting entries in the HSQL, MySQL, Oracle, and
+PostgreSQL databases. A query frame allows the building of complex
+SELECT SQL statements. The application allows easy sorting, searching,
+and import/export of table data.

@@ -1,0 +1,6 @@
+The MyJSQLView project would like to inform
+the public of the addition of a new developer
+to the team. Nil_lin has been helping in the
+new login access site manager translation class
+that will be used to save and load the XML
+configuration file.

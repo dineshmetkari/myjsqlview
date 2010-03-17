@@ -1,0 +1,376 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+		<meta name="Author" content="Dana Proctor">		
+		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
+		<meta name="Description" content="MyJSQLView Manual">
+		<meta name="keywords" content="MyJSQLView, Manual, Documentation, Dana Proctor, Java, Database, HSQL, MySQL, Oracle, PostgreSQL, GUI">
+		<meta name="Copyright" content="2005-2009">
+		
+  		<title>MyJSQLView Manual</title>
+		<style type="text/css">div#border{border:1px solid black;}</style>
+
+	</head>
+
+	<body>
+
+	<p style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);" alink="#ff0000" link="#0000ff" vlink="#551a8b">
+	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
+	<p align="center">Copyright &copy; 2005-2009 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
+	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
+	<p align="center"><font size="+1">November 2009</font></p>
+
+	<hr size="2" width="100%">
+	<strong><font size="+3">Table of Contents</font></strong>
+	
+	<ol type="I">
+  		<li><strong><a href="#Introduction">Introduction</a></strong><br>
+    			<ol type="1">
+      				<li><a href="#Features">Features</a></li>
+      				<li><a href="#HowtoUseThisManual">How to Use This Manual</a></li>
+      				<li><a href="#Notation">Notation</a></li>
+    			</ol>
+  		</li>
+  		<li><strong><a href="#GettingStarted">Getting Started</a></strong><br>
+    			<ol type="1">
+      				<li><a href="#SystemRequirements">System Requirements</a></li>
+      				<li><a href="#Installation">Installation</a>
+        				<ol type="a">
+          					<li><a href="#InstallationFromaDownloadedFile">Installation From a Downloaded File</a></li>
+          					<li><a href="#GeneralInstallationInstructions">General Installation Instructions</a>
+            						<ol type="i">
+              							<li><a href="#AddingaShortcut">Adding a Shortcut</a></li>
+            						</ol>
+          					</li>
+        				</ol>
+      				</li>
+    			</ol>
+  		</li>
+  		<li><strong><a href="#Using_MyJSQLView">Using MyJSQLView</a></strong><br>
+    			<ol type="1">
+      				<li><a href="#Login_Access">Login Access</a></li>
+				<li><a href="#ConnectionManager">Connection Manager</a></li>
+      				<li><a href="#InterfaceOverview">Interface Overview</a></li>
+      				<li><a href="#General_Summary_Table_Overview">General Summary Table Overview</a>
+        				<ol type="a">
+          					<li><a href="#Summary_Table">Summary Table</a></li>
+          					<li><a href="#Item_View_Form">Item View Form</a></li>
+          					<li><a href="#Item_AddEdit_Form">Item Add/Edit Form</a></li>
+        				</ol>
+      				</li>
+				<li><a href="#QueryFrame">Query Frame</a></li>
+				<li><a href="#SearchFrame">Search Frame</a></li>
+    			</ol>
+  		</li>
+	</ol>
+	<ol type="A">
+		<li><strong><a href="#Preferences_Menu">Preferences Menu</a></strong></li>
+	</ol>
+
+	<hr size="2" width="100%">
+	
+	<a name="Introduction"></a>
+	<p><font size="+3"><strong>1 Introduction</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MySQL, Oracle, or PostgreSQL database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, for Oracle just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.05</b>, the capability to connect to other databases has been fully build into the core architecture. The application has been purposely built to provide data access and is not a database management tool. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, and searching MyJSQLView provides an alternative that is simple and easy to use. </p>
+
+	<hr>
+	
+	<font size="+1"><strong><a name="Features"></a>Features</strong></font>
+	<ul>
+		<li>User Connection Preferences Saving/Managing.</li>
+		<li>User Preferences Summary Table Column Selection &#038; Sizing.</li>
+		<li>User Preferences Summary Table Row Sizing.</li>
+		<li>Summary Table State Saving/Loading.</li>
+		<li>Access to All User Tables in Database During Session.</li>
+		<li>Viewing, Adding, Editing, and Deleting All Table Fields.</li>
+		<li>Update Multiple Rows of Selected Table Field.</li>
+		<li>Support for Table Field Function Operations.</li>
+		<li>Supports All Basic Data Types, Including Blob/Bytea/Binary.</li>
+    		<li>Data Type Checking During Adding or Updates.</li>
+    		<li>Support for All Table Types, Including Transaction Locking.</li>
+		<li>Support for Flushing Privileges for User root on mysql database.</li>
+    		<li>Printing of Summary Table Data, Screen View.</li>
+    		<li>Export of CSV Summary or Complete Table Data.</li>
+    		<li>Export of SQL Summary or Complete Table Structure/Data.</li>
+		<li>Export of SQL Current Open Database/Scheme.</li>
+    		<li>Import of SQL Statement File.</li>
+    		<li>Import of CSV data File Into Selected Database Table via Insert/Update.</li>
+    		<li>Query Frame for Building Complex Select SQL Statements.</li>
+		<li>Search Frame for Running Generic LIKE Queries on All Tables in Database.</li>
+		<li>Simple Easy to Use Interface.</li>
+		<li>Simple and Advanced Table Sorting and Searching.</li>
+	</ul>
+	
+	<hr>
+	
+	<font size="+1"><strong><a name="HowtoUseThisManual"></a>How to Use This Manual</strong></font><br>
+	<a name="Notation"></a>
+	<font size="+2"><strong>Notation</strong></font><br>
+
+	<p>
+		<strong>Bold</strong> text and a vertical bar are used to denote menu commands. <strong>File&nbsp;|&nbsp;New</strong>, for example, means to select the <strong>New</strong> command from the <strong>File</strong> menu. This notation is used to refer to other sections within this manual as well. In the above example, you can find information by looking for <strong>New</strong> under the <strong>File Menu Commands</strong> section. If the first word is <strong>Start</strong>, select the command from the Windows task bar menu structure. </p>
+	
+	<p>	
+		<font style="border: 2px solid yellow;" size="+1">*</font> A asterisks emphasizes helpful information and techniques.
+	</p>
+	<p>
+		<font style="border: 2px solid red;" size="+1">!</font> An exclamation mark emphasizes warnings and other important information.
+	</p>
+
+	<hr size="2" width="100%">
+	<a name="GettingStarted"></a>
+	<p><font size="+3"><strong>2 Getting Started</strong></font></p>
+
+	<hr>
+	<a name="SystemRequirements"></a>
+	<font size="+1"><strong>System Requirements</strong></font>
+	<br>
+
+	<p>The minimum system requirements for MyJSQLView are:</p>
+
+	<ul>
+  		<li> Pentium\AMD 350Mhz based PC or compatible.</li>
+  		<li> Microsoft<sup>&reg;</sup> Windows 7?, Vista :(, 98, NT 4.0, XP, Vista, Mac, UNIX, or Linux OS. </li>
+  		<li>Minimum 64 Megabytes of RAM</li>
+  		<li>Less Than 20 Megabytes of hard disk space</li>
+  		<li>Mouse</li>
+	</ul>
+
+	<p> If a UNIX or Linux OS is used then a X-Windows environment will need to be configured and used. MyJSQLView is a windowed GUI, graphical user interface. </p>
+
+	<hr>
+	<a name="Installation"></a>
+	<font size="+1"><strong>Installation</strong></font>
+	<br>
+
+	<a name="InstallationFromaDownloadedFile"></a>
+	<p><font size="+1"><strong>Installation From a Downloaded File</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;Using a program such as WinZip, 7-Zip, Tar, or similar compression/decompression program for your OS extract the MyJSQLView package file to the desired location on the hard disk. On a Windows system this may be any location, but on a Unix or Linux system it will be in the home directory of the user. If multiple users are to access the application then consult with the system administrator of your workstation. The likely location will be in the /usr/local or a shareddocs directory, which all users have access to for application execution. </p>
+
+	<a name="GeneralInstallationInstructions"></a>
+	<p><font size="+1"><strong>General Installation Instructions</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does require the JRE to be installed. The minimum runtime environment needs to be <b>JRE-1.4</b>. In addition to the JRE an extension needs to be installed that allows Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database. The programs are available on the Internet free of charge and for MySQL is called <b>MySQL Connector/J</b>. The PostgreSQL program is called <b>JDBC3</b> and Oracle just <b>JDBC</b>. The HSQL database uses an integrated <b>JDBC</b> built into the application. The jar file for these extensions needs to be installed to the JRE /lib/ext directory. Please consult with installation instructions for these pieces of code from the vendor, or see the MyJSQView readme file for additional information.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;The login interface and Connection Manager uses a XML configuration file for saving user preferences. Upon first running MyJSQLView a reference XML file, myjsqlview.xml, located in the installation directory is read then copied to the users home directory under a newly created directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On Windows &reg; XP the new directory will be in the user's 'Documents' folder. On a Linux system the new directory will be '/home/user/.myjsqview'. All saved changes performed in site management will be stored in the XML file located in the above referenced directory. As of v2.72++ of MyJSQLView the XML configuration file once saved with a user's passwords will not be able to be used on another system, encrypted password data is none transferable. The user is encouraged to make a backup of this file on occasional.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with in order to work. It is beyond the scope of this document for installing and setting up this type of application, but insure the correct access <b>grant rights</b> are specified for the user and database tables that are desired to be reached. All databases normally have some form of privilege configuration for selective control to access rights. So just because you have local access rights does not mean the database will let you also login from a remote machine. Remember also that the MyJSQLView application use TCP/IP, Transmission Control Protocol/Internet Protocol, for its connection to the database. <font style="border: 2px solid yellow;" size="+1">*</font> Many of the default installations for these databases limit connections to just from the local host only.</p>
+
+	<a name="AddingaShortcut"></a>
+	<p><strong><font size="+1">Adding a Shortcut</font></strong></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;To add a MyJSQLView icon to your desktop, right click the mouse pointer on an unused area of your desktop to display the pop up menu and select <strong>New&nbsp;|&nbsp;Shortcut</strong>. Choose <strong>Browse</strong>, find and double click on the MyJSQLView.jar file, then click on <strong>Next</strong>. Type in "MyJSQLView" for the name of the shortcut, then click <strong>Finish</strong>. To run MyJSQLView, either double click on the new MyJSQLView icon or use the <strong>Start&nbsp;|&nbsp;Run</strong> command.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;On a Unix or Linux system a shortcut may be created in the KDE Desktop environment by right clicking on the desktop and selecting <strong>Create New | File | Link to Application.</strong> Give the application a name such as "MyJSQLView" in the General tab. Next select the Application tab and fill in the description desired then browse to the location on the disk where the MyJSQLView package was installed and select the MyJSQLView.jar file for the Command entry. The Command entry is still not complete and must contain the Java command. Place before the quoted MyJSQLView.jar entry, "java -jar ". <font style="border: 2px solid red;" size="+1">!</font> Do not place quotes of any kind around this command, the quotes only contain the Jar file location. Example: java -jar '/home/~user/MyJSQLView/MyJSQLView.jar'. Finally select the Work Path as the directory where installation took place. </p>
+
+	<hr size="2" width="100%">
+	<a name="Using_MyJSQLView"></a>
+	<p><font size="+3"><strong>3 Using MyJSQLView</strong></font></p>
+
+
+	<hr size="2" width="100%">
+	<a name="Login_Access"></a>
+	<p><font size="+2"><strong>Login Access</strong></font></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;Upon first running the MyJSQLView application the user will be presented with a login access. The basic login requires four inputs to be provided in order to gain access to a database. <b>Figure 1.</b> below shows the login window with the textfields that require proper input. The Host input is the server that is running the database. Ex. localhost, 127.0.0.1, 216.123.456.001, mysqlserver.net, dandymadeproductions.com. A database must also be specified because a database server can have several databases associated with it. MyJSQLView provides for the access of only one database at a time. Multiple processes of the program may be used to access more than one database at time. The last two entries in the login are the User and Password inputs to gain access to the database server. At the top of the login access is a toolbar that allows saved site selection, Connection Manager site management, and the advanced options for connections. The advanced options portion of the login interface has four additional parameters, Driver, Protocol, SubProtocol, and Port. The default installation of MyJSQLView comes with example entries for the  HSQL, MySQL, Oracle, and PostgreSQL databases for these parameters. It will be obvious for the Driver and SubProtocol entries which selection is correct, because the contents contains the database name. HSQL, MySQL, Oracle, and PostgreSQL all share a common entry for Protocol, jdbc, but the ports are not as such; HSQL's port is 9001, MySQL's 3306, Oracle's 1521, &#038; PostgreSQL's 5432. <font style="border: 2px solid yellow;" size="+1">*</font> Beware these are just the default ports for these databases. An administer of the database may change these default configurations. Also if you are updating the MyJSQLView application your existing saved sites in the .myjsqlview.xml file will not be over written with a new myjsqlview.xml reference file from the installation. The implications is you will not see any new example parameters for additional databases supported.  You may have to manually open the reference myjsqlview.xml file with a text editor in the installation directory to view these examples parameters.</p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="login.png" style="width: 400px; height: 370px;">
+		<center><b>Figure 1.</b></center>
+	</div><br>
+
+	<hr size="2" width="100%">
+	<a name="ConnectionManager"></a>
+	<p><font size="+2"><strong>Connection Manager</strong></font></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Connection Manager for MyJSQLView allows the user to save site parameters that may then be loaded from the login access. When activated from the login access the user will be presented with the interface shown below in <b>Figure 2.</b> At the top of the frame are five toolbar menu items, <b>New Site</b>, <b>Update Site</b>, <b>Rename Site</b>, <b>Delete</b>, and <b>Advanced Settings</b>. The <b>New Site</b> action will create a new site that takes the current entries in the 'Host', 'Database', 'User', 'Password', 'SSH' button and 'Advances Options' fields. A dialog will request the name of the new site. <font style="border: 2px solid yellow;" size="+1">*</font> A new site will not be created if the user has selected an existing Tree site database entry. Either select the top 'Sites' node or just a site, ex. 'LocalHost'. The selection of a site on the tree and the <b>New Site</b> action will create a new database entry for that selected site. A new site sub-tree item always takes the name of the database field.The <b>Update Site</b> command allows an existing site database selection to be updated with the current field entries. A <b>Rename Site</b> action allows an existing site <u>name</u> and <u>host</u> to be changed. The user will be prompted for the new site name. <b>Delete</b> does just that, it will remove not only the site database, but also the whole site selected. <font style="border: 2px solid red;" size="+1">!</font> No confirmation is required for deletion. The <b>Advanced Settings</b> menu item allows the user to have access to the fields 'Driver', 'Protocol', 'SubProtocol', and 'Port'. These entries are mainly associated with what type of database MyJSQLView will attempt connection. <font style="border: 2px solid yellow;" size="+1">*</font> At this time MyJSQLView has only been tested with the HSQL, MySQL, Oracle, &#038; PostgreSQL databases. Once done with manipulating site entries than either <b>Save/Exit</b> or <b>Cancel</b> to close the Connection Manager. </p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="connectionmanager.png" style="width: 425px; height: 380px;">
+		<center><b>Figure 2.</b></center>
+	</div><br>
+
+	<hr size="2" width="100%">
+	<a name="InterfaceOverview"></a>
+	<p><font size="+2"><strong>Interface Overview</strong></font></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The interface for the MyJSQLView application is generalized to display a basic overview of the tables in the selected database. <b>Figure 3.</b> below highlights the specific areas of the application. At the top of MyJSQLView is the menu bar and tool bar that allows specialized command execution that performs various operations in the application or acts on the selected table. The pull down menu just below the tool bar in the interface allows the selection of one of the tables in the database. Each selected table has a summary view of the data in the table along with sort and search panels at the top. Each entry in the summary table may be highlighted then viewed, edited, or deleted. The panel below the summary table provides buttons to perform these operations in addition to adding an entry, paging through the table and refreshes to the application's view of the data in the table. As of <b>v3.00</b> of the MyJSQLView application the user will notice one or more tabs on the right side of the interface. The top tab will normally be a information screen then there will be a tab for the database view as shown and if other tabs are present they will be custom plugins.</p><br>
+
+		<div style="text-align: center;">
+			<img alt="" src="interface.jpg" style="width: 600px; height: 451px;"><br>
+			<b>Figure 3.</b>
+		</div><br>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The menu/tool bar allows access to several commands that may be utilized by the user. The <b>File | Open </b> allows the loading of a table state configuration and likewise the <b>File | Save/Save As</b> affords the selected summary table state saving. <b>File | Print</b>,allows the ability to print the current selected tab summary as seen by the user. Most users would call this a screen print, because what you see in the summary tab is what will be printed. If the desired data is not visible in the summary table then scroll down and perform another print to output this data. The <b>File | Page Format</b>, will access a standard printer page format setup where the size, orientation, and margins may be changed. The <b>File | Exit</b>, command will terminate the application. Of course the application may also be closed by pressing the standard close button in the upper right hand corner. The <b>Edit | Cut, Copy, and Paste</b>, menu commands are for manually editing text in the text areas of the application. Shortcuts for these commands are <b>Ctrl+x</b>, <b>Ctrl+c</b>, and <b>Ctrl+v </b> respectively. These commands may also be accessed by way of a right mouse button click. <font style="border: 2px solid yellow;" size="+1">*</font> Note the right click of the mouse button is given focus in the panel not the text areas. So if you are having trouble with the pop up, move slightly off the text area, but still within the panel and then right click. The <b>Edit | Preferences</b>, command will allow the user to access various options that may be configured for the application. <b>Figure 4.</b> indicates the panel that will be provided to the user and is discussed fully in <a href="#Preferences_Menu">Appendix A</a>. </p><br>
+	
+		<div style="text-align: center;">
+			<img alt="" src="editpreferences.jpg" style="width: 600px; height: 451px;"><br>
+			<b>Figure 4.</b>
+		</div><br>
+	
+	<p> The <b>Data | Import, and Export</b> tool bar commands provide a means to manipulate the database tables' data outside of the normal context of MyJSQLView. The <b>Data | Import | SQL Dump</b> provides the means to import SQL statements into the connected database. The <b>Data | Import | CSV File</b> provides a mechanism to import data into the current selected table that may have been exported via a spreadsheet application. <font style="border: 2px solid red;" size="+1">!</font> Both of these commands may change data or even fields in the table(s) and possibly overwrite all data in the table(s) depending upon the imported file. The <b>Data | Export | CSV Format | Table </b>command provides the ability to export to a file the complete selected table with a predetermined delimiter separating the fields. The user may also export the summary of the existing selected table by executing the <b>Data | Export | CSV Format | Summary Table </b> function. A database table may also be exported in SQL format by the <b>Data | Export | SQL Format | Table/Summary Table</b>. Again either the whole table or only the summary table data will be exported. An exported SQL file may be used as a backup or used to recreate the table. The <b>Data | Export | SQL Format | Database/Database Scheme</b> allows the current selected database to be exported in full or just the scheme. This option can provide a backup of the database or to fully replicated the database via a SQL import to another server. <font style="border: 2px solid red;" size="+1">!</font> The preferred procedure for backup of all critical data should always be the database's own dump tool. The MyJSQLView <b>Tools | Query Frame</b> toolbar command provides a generic query console frame that may be used to execute 'SELECT' SQL statements directly. The query frame tool provides a means to build complex queries like those associated with running the database's console tool. The Query Frame can be very helpful for those wishing to generate complex report data. <b>Figure 5.</b> below shows the MyJSQLView toolbar query frame. </p><br>
+			
+		<div style="text-align: center;">
+			<img alt="" src="query_frame.jpg" style="width: 600px; height: 451px;"><br>
+			<b>Figure 5.</b>
+		</div><br>
+	
+	<p> The Tools toolbar has two other commands, <b>Tools | Reload Database</b> and <b>Tools | Search Database</b>. The first allows the reloading of the database without exiting the application. The application will reconfigure itself to reflect any changes in the database that may have occurred after the initial login. The search database command will open a window frame like that shown in <b>Figure 6.</b> below which allows the general search for a key phrase or character sequence in the database tables. Depending on the user's configuration of the MyJSQLView application and database privileges the application may also have a <b>Schemas</b> toolbar menu item. This menu item allows the control of which database schemas are selectable and acted upon by the application. The final tool bar command <b>Help | Manual, Legal, Release Notes, and About</b> provides access to this manual, legal documentation, a readme file and information about the build of the software. The build information is valuable subject material on your version of MyJSQLView. The build Id is giving in the format of year, month, and day. </p><br>
+
+		<div style="text-align: center;">
+			<img alt="" src="search_frame.jpg" style="width: 499px; height: 400px;"><br>
+			<b>Figure 6.</b>
+		</div><br>
+
+	<hr size="2" width="100%">
+	<a name="General_Summary_Table_Overview"></a>
+	<p><font size="+2"><strong>General Summary Table Overview</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;Each table view in MyJSQLView has essential the same user interface. <b>Figure 7</b> below outlines this summary table view. At the top of the summary table is a panel that provides a generalized sort and search. In the sort panel each table has a specific set of fields/columns that may be used to sort the table summary in the center of the view. All fields that a user has access to will be available from the pull down menu for sorting. Likewise in the search panel all fields that are viewable by the user will be available to be searched according to the entry in the text area to the right of this pull down menu. Percent, %, characters are automatically inserted at the beginning and ending of the text by the MyJSQLView application in the phrase to be searched. Most databases treat this character as a wild card so that a generalized search may be automatically obtained. As an example to search for the word "dog" in a particular column field one could either enter "dog" or "do". Of course many other entries with "do" in the latter case will also appear as a resultant search match. If the column to be searched is left blank and a key word/phrase is entered then all columns will be searched for the entry. An advanced sort/search may also be be applied on the selected table by activating the Advanced Sort/Search Interface. The advanced sort/search form is very similar to the general sort/search input, but does not add any wild cards to the search phrase. <b>LIKE</b> searches use an exact match. For additional information about advanced sort/searches activate the help frame through the button with the question mark at the top right. The final panel in the summary tab that will be of use to the user will be the panel at the bottom. The panel contains several buttons that allow the selected table entry to be viewed, edited, or deleted. A new entry to the table may also be added and the whole table summary view forwarded or reversed through row entries. The summary table normally just shows fifty entries at one time. The row label in the bottom right of the panel indicates the position in the selected table that the summary table is displaying. If the selected table has more than than fifty entries press the down arrow button to advance to the next fifty entries in the table. The up arrow button will index back to the previous fifty entries in the table. A refresh of table data is accomplished through the button to the left of the row indicator. Besides viewing, and editing table entries one can also update rows via the Update Form. The Update Form allows the updating of a single field in multiple rows at one time.</p><br>
+	
+	<div style="text-align: center;">
+		<img alt="" src="tabsummary.png" style="width: 600px; height: 500px;"><br>
+		<b>Figure 7.</b>
+	</div><br>
+	
+	<a name="Summary_Table"></a>
+	<p><strong><font size="+1">Summary Table</font></strong></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The summary table in the center of each tab shows the entries that are stored in the database for the selected table. The table is similar to a spreadsheet where each row represents a record of data and each column holds attributes of that record. Each table will has its own unique columns/fields. Columns in the summary table can be hidden from view by way of the <b>Edit | Preferences</b> tool bar command as describe in <a href="#Preferences_Menu">Appendix A</a>. Columns may also be moved to different positions in the table by hovering over the desired field heading and pressing the left mouse button and then dragging it to a new position. A moved column will only be in effect for the current session started by the user. The summary table allows selections to be made by the user by a left mouse click over an entry. Multiple selections may be made by holding the shift key down and selecting another entry either above or below the current selection. Multiple selections allow more than one entry to be deleted at one time, but only the first selected row in the table will be viewed, or edited. Once a selection has been made the arrow keys or numerical keypad may be used to move to another entry either above or below the current selected row. Horizontal and vertical scrollbars allow the viewing of data that is not within the screen size of the window. The short cut keys, <b>Ctrl+c</b> and <b>Ctrl_v</b>, may be used to copy/paste selected entries/contents in the summary table to or from the clipboard. As with most graphical user interface window frames the user may maximize, resize, or minimize the MyJSQLView program. </p>
+
+	<a name="Item_View_Form"></a>
+	<p><strong><font size="+1">Item View Form</font></strong></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The summary item view form may be obtained by highlighting a row in the summary table and pressing the <b>View</b> button in the bottom panel or by pressing the combination <b>Alt+v</b>. Once this is done the current data for this entry will be read from the database. The item view form shows all fields in the table that the user has access to regardless of the user's <b>Edit | Preferences | Table Summary View</b> options. The item view form shows ARRAY, BLOB, BYTEA, BINARY, CLOB, LONG, LONGVARCHAR, RAW, TEXT, MEDIUMTEXT, and LONGTEXT fields in the table by a button with the byte size or element count as the label. Left clicking on a BLOB field button or one of the other type binary data fields will allow the saving of the data to the user's local hard disk. Activating a text or array field button will allow the view of the contents of the field with the option to save to the the hard disk. Once the view form is open the previous or next entries in the summary table may also be viewed by pressing the buttons to the left or right of the <b>Close</b> button respectively. Viewing rows in this manner may also be achieved with the keyboard left and right arrow keys. Once the user is finished with the view form then the <b>Close</b> button at the bottom of the panel can be used to revert back to the summary table view. <b>Figure 8.</b> below profiles the item view form. </p><br>
+		
+	<div style="text-align: center;">
+		<img alt="" src="summaryview.jpg" style="width: 600px; height: 452px;"><br>
+		<b>Figure 8.</b>
+	</div><br>
+
+	<a name="Item_AddEdit_Form"></a>
+	<p><strong><font size="+1">Item Add/Edit Form</font></strong></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The add/edit form for MyJSQLView provides the user the ability to add or edit individual entries in a database table. Each table will have a slightly different add/edit form, but essentially each field the user has access to will be available for data entry. The add/edit form shown below provides a visual of a typical form for data entry in MyJSQLView. Generally most fields require manual entry of data, into text fields, but some fields like Text, Array, Boolean, Enum, Set and Date may have this option but also have alternative entry methods. The Enum field in the add/edit form is a pull down menu that contains selections that have been defined by the table description. The Set field data may be entered directly with commas separating elements, or elements may be chosen by way of the <b>Set Chooser Form</b> that is activated by the Set button to the right of the field. As the Set field, Date &#038; Datetime fields may be entered directly in the format 'MM-DD-YYYY' or chosen via the <b>Date Selector</b>. Text, Long, LongVarChar, MediumText, LongText, and Array fields are either entered directly in a <b>Text Entry Form</b> or selected from a file. The form's entries for these possibly large content type fields are represented by buttons that activate the editor pane. Blob, Bytea, Binary, CLOB, and RAW type fields will be represented in the add/edit form also by a button. Clicking on one of these fields' button will allow the selection of a file from the user's local hard disk. Once selected the file's byte size should appear as the label indicating data being present. To remove binary, array or text data from a form field select the <b>Delete Button</b> to the right of the entry. Upon committing the data will be set to 'NULL'. <font style="border: 2px solid yellow;" size="+1">*</font> Note if the database table does not except 'NULL' as a default for the field then create an empty file and select it as your data, <b>BLOB/TEXT 0 Bytes</b>. Each field in the add/edit form may also have a function operator applied to the contents of the entered data. The function operation is activated by the button to the left of each field in the form. Select the desired operation then press the <b>Ok</b> button. The functions in the MyJSQLView application are initially read from a reference 'XXX_functions.txt' file in the installation directory. Each database will have its own function text file. A copy of that file is placed in the same home directory as the 'myjsqlview.xml' file. If a function is not available that is desired then the user may edit the copied function file to provide the function desired. The next time the function form is activated then the new function should be available. User created functions can be made accessible via this method.</p>
+
+	<div style="text-align: center;">
+		<img alt="" src="add_editform.png" style="width: 600px; height: 450px;"><br>
+		<b>Figure 9.</b>
+	</div><br>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The tab key on your keyboard provides the ability to advance through each entry field starting from the upper left, down, then to the next set of fields to the right and down again. Once the data has been entered then the <b>Add</b> or <b>Update</b> button at the bottom of the form can be used to commit the entry to the associated table. <font style="border: 2px solid yellow;" size="+1">*</font> Notice the default focus for the form is the <b>Add/Update</b> button. The pressing of the <b>Enter</b> key will activate the committing of the current data. Once entered many of the fields will be checked for valid data prior to a commit so if an alert window appears read the information carefully to determine the invalid entry, close the alert and make the necessary corrections then attempt again to commit the data. At anytime a user may either just close the window frame or press the <b>Cancel</b> button to abort the operation. </p><br>
+
+	<hr size="2" width="100%">
+	<a name="QueryFrame"></a>
+	<p><font size="+2"><strong>Query Frame</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Query Frame in MyJSQLView is accessible via the menu <b>Tools | Query Frame</b>. The Query Frame may be used to create and run complex SELECT queries on the current connected database. <b>Figure 10.</b> shown below outlines the major areas of the the Query Frame. At the top of the window frame is the text entry area for SELECT queries. The Query frame will only process <b>SELECT</b> SQL statements at the time of this manual update. Once a SELECT SQL statement has been entered than either activate the <b>Execute Query</b> or <b>New Query</b> button. If there is no errors in processing the query then a resultant summary table of data will be displayed in the center of the panel. The text area at the bottom of the frame will output any errors that are generated by the database in trying to execute the statement. Review the error output if needed and make any necessary corrections in the <b>Select Query Input</b> and execute</p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="query_frame2.jpg" style="width: 600px; height: 449px;"><br>
+		<b>Figure 10.</b>
+	</div><br>
+	
+	<p>the query again. Once a summary table of the SELECT statement has been generated then the data may be sorted and searched via the <b>Sort/Search Panel</b> just like any of the table views in MyJSQLView. Likewise an advanced sort/search may also be applied to the resultant query. Just below the summary table data is a <b>Summary Table Action Buttons</b> panel that allows the forwarding or reversing through the table data rows. The current record position is shown in the right most portion of this panel. Included in the panel is also a <b>View</b> button that allows a closer look at a table entry. This feature is useful if one or more of the table fields contains array, blob, bytea, binary, clob, long, longvarchar, raw, text, mediumtext, or longtext data types since these fields are only identified or have abbreviated content in the summary table view. A closer look by the way of the <b>View</b> button will allow the saving of binary data fields directly to the user's hard disk for access by an appropriate program for viewing. Text, array, longvarchar, mediumtext and longtext field types can also be saved to the user's hard disk, but are also directly viewable via a non-editable editor pane.<br> &nbsp;&nbsp;&nbsp;&nbsp; The Query Frame may have multiple tabs with each having independent SELECT queries with data. Each time a SELECT query is entered and the <b>New Query</b> button is pressed then a new tab in the Query Frame will be created with the resultant data. The Query Frame is different with regard to connections to the database than the rest of the MyJSQLView application. Normally MyJSQLView opens and closes connections to the database as needed during the processing of events such as record advancement and entry views. In the Query Frame one connection is maintained as long as the window frame is open and the connection has not under gone a timeout condition. Each tab's query is the same active connection to the database. What this achieves is the ability to create complex queries on tables in the database that may evolve multiple joins. Each tab actually creates and maintains a temporary table of its own data. A new query may access that temporary table to build further on refinement of analysis of the database information. The temporary table name for each tab is located in the <b>The Summary Table Action Buttons</b> panel left hand side. The toolbar at the top of the Query Frame may be used to open/save script to/from the query text area, print as in the main application, edit the summary table row size, display built queries, and export the data in the format of comma delimiter values. The MyJSQLView <b>Edit | Preferences</b> options panel allows the control of the delimiter used with the export of data.</p><br>
+
+	<hr size="2" width="100%">
+	<a name="SearchFrame"></a>
+	<p><font size="+2"><strong>Search Frame</strong></font></p>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Search Frame may be used to enter a word or sequence of words that may then be used in a search of all tables' fields contents currently available from the selected schemas of the database. Upon first activating the search frame a window view will be presented that has a panel for search entry, a list all tables that will be searched in the database, and a status bar. The table list is composed of two columns. The first column on the left gives the tables' names and the right column indicates the number of entries that match the search, the value zero on first initialization. A status progress bar is available at the bottom of the window with a <b>Cancel</b> button to abort a search. Once a search is initiated then each table on the list will be queried for the contents of the search entry field. Because of the binary nature of fields in databases, Blob, Bytea, etc. these fields will be excluded from being searched. A completed search will only list the tables that provided a positive match and tables where a problem occurred, <b>Search Result Count</b> equals -1. The user may view the results from the search for each table in the MyJSQLView application's main window frame by selected a table in the Search Frame list and left-clicking on it. A popup menu is provided in this frame like all frames in MyJSQLView that allows the cutting, copying, and pasting of data into text entry fields. In addition a popup is also provided for the table list that allows the selection of entries that may then be copied via the popup menu or the key sequence <b>Ctrl+c</b>. If the database is reloaded or the schemas list changed it is best to close the Search Frame and restart it with any tables that may have changed to properly conduct the search. <b>Figure 11.</b> below provides a view of a Search Frame that provided a positive search results for the term "far". The key word or phrase is an exact match for searches and some database do differentiate by lower or upper case characters.</p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="search_frame2.jpg" style="width: 499px; height: 400px;"><br>
+		<b>Figure 11.</b>
+	</div><br>
+
+	<hr style="width: 100%; height: 2px;">
+
+	<a name="Preferences_Menu"></a>
+	<p><strong><font size="+2">Appendix A. MyJSQLView Preferences Menu</font></strong></p>
+	
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The preferences options menu in MyJSQLView is accessed via the menu command <b>Edit | Preferences</b>. Once activated the user will be presented with a window that has a tree type folder selection menu on the left side of the frame. As the tree items are expanded and selected via the mouse the various options for the particular area will become visible in the right side of the frame. As of the current release of MyJSQLView with this manual the preferences options available have to do with the Table Summary View and Data Import/Export. Under the heading of <b>Table Summary View | Table Fields</b> is a panel that allows the current session of the application to control the fields that are displayed and exported for each summary table view. At the top of the form is a pull down menu for selecting each table and the form beneath allows the inclusion/exclusion of fields. Once selections are made then either press the <b>Apply</b> or <b>OK</b> button. The selected summary table view will be updated immediately. <b>Figure 12.</b> below highlights the frame with the option for selecting fields in each table. </p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="preferences_tablefields.jpg" style="width: 604px; height: 406px;"><br>
+		<b>Figure 12.</b>
+	</div><br>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The other option available for control with the table summary view is the <b>Table Summary View | Table Rows</b> shown in <b>Figure 13.</b> below. The option once selected again presents the user with a table selection pull down menu and panel for determining the number of rows, entries, that will be displayed for the selected table in the summary view. The selected number of rows also controls the amount of data that is exported during either the <b>Data | Export | CSV Format | Summary Table</b> or <b>Data | Export | SQL Format | Summary Table</b>. A warning is given in this panel about care in selecting the number of rows to be used. <font style="border: 2px solid red;" size="+1">!</font> Note, a large row size can have an adverse effect on the performance of the MyJSQLView application and the database server. </p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="preferences_tablerows.jpg" style="width: 605px; height: 407px;"><br>
+		<b>Figure 13.</b>
+	</div><br>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Preferences menu in addition to allowing options to be set for the Summary Views also has various options for the import/export of data. The <b>Data | Import | CSV</b> options panel allows the selection of the delimiter character and date format. Various spreadsheets often allow the control of the delimiter character when exporting worksheets as text so this will help in when importing data from those applications. <b>Figure 14.</b> below shows the selection panel as it is displayed in the Preferences menu.</p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="preferences_CSVImport.jpg" style="width: 605px; height: 405px;"><br>
+		<b>Figure 14.</b>
+	</div><br>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The CSV, comma separated values, data output options accessed in the Preferences window under <b>Data Export | CSV</b> allows the user to control the delimiter for separating fields, date format, and the control of Text fields in the data output to a file. Normally the <b>Data | Export | CSV Format | Table</b> will exclude Clob, Text, MediumText, and LongText fields from being output during an export. The string 'Text' will be substituted in place of the content in these fields. The reasoning being that these fields can hold from 0 to 4GB of characters for some databases. A database with these field types may well have complete documents that would preclude trying to format such entries in for instance a spreadsheet import. The fields may though be included by the user by selecting the <b>Include CLOB, TEXT, MEDIUMTEXT, &#038; LONGTEXT</b> checkbox. The user may then control how many character will be export for these fields into the output file. The CSV control in the Preferences menu has no effect on the <b>Data | Export | CSV Format | Summary Table</b> output. Rather all fields and row entries present in the selected summary view table will be exported. To control fields and the number of entries exported in a summary view use the Preferences menu <b>Table Summary View | Table Fields/Table Rows</b> options. <b>Figure 15.</b> below shows the Preferences menu <b>Data Export | CSV</b> options panel. </p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="preferences_CSVExport.jpg" style="width: 605px; height: 406px;"><br>
+		<b>Figure 15.</b>
+	</div><br>
+
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The final option's control panel in the Preferences menu is the <b>Data Export | SQL</b>. The SQL panel shown below in <b>Figure 16.</b> allows the user to fine tune SQL statements exported during a <b>Data | Export | Table/Summary Table</b> command. The various options in this panel can be used to create all the normal SQL statements for inserts and updates. At the top of the panel allows the selection of exporting the table structure and the bottom portion the type of SQL statement to be generated for the data. Insert, replace, and update SQL statements along with additional variants of the these commands can be generated. Table 1 and the information below gives examples of the various insert/replace variants <b>Singular</b>, <b>Plural</b>, and <b>Explicit</b> along with the support in what databases. Its best to review your requirements in a SQL statement reference and then experiment with these settings to achieve the desired results needed for the exported data. Large data sets in a table that includes Blob/Binary fields are best exported using the <b>Explicit</b> statement because this option creates separate SQL statements that may be parsed for execution. The <b>Locked</b> selection allows the insertion of a lock statement for the effected table. The <b>Identifier Quote String</b> allows the selection of the character that will be used to highlight table names and fields. Often different databases use dissimilar characters for identifying/quoting table and field names. With this option one could perhaps compensate for this dilemma when generating SQL statement tables that will be used on an alternate database then the one being export from.</p><br>
+
+	<div style="text-align: center;">
+		<img alt="" src="preferences_SQLExport.jpg" style="width: 605px; height: 406px;"><br>
+		<b>Figure 16.</b>
+	</div><br>
+
+	<p>
+		<b>Singular Example</b>:<br>
+		INSERT/REPLACE INTO "bigInt_types" ("data_type_id", "bigint_type") VALUES (NULL, '5');<br>
+		INSERT/REPLACE INTO "bigInt_types" ("data_type_id", "bigint_type") VALUES (NULL, '-65');
+	</p>
+	<p>
+		<b>Plural Example</b>:<br>
+		INSERT/REPLACE INTO "bigInt_types" ("data_type_id", "bigint_type") VALUES (NULL, '5'),(NULL, '-65');
+	</p>
+	<p>
+		<b>Explicit Example</b>:<br>
+		INSERT/REPLACE INTO "bigInt_types" SET "data_type_id"=NULL, "bigint_type"='5';<br>
+		INSERT/REPLACE INTO "bigInt_types" SET "data_type_id"=NULL, "bigint_type"='-65';
+	</p><br>
+
+	<div style="text-align: center;">
+		<table  summary="" border="1" cellpadding="1"  cellspacing="1"  width="600" align="center">
+  		<tbody>
+    			<tr align="center">
+      				<td><b>Expression Type</b></td>
+				<td><b>HSQL</b></td>
+      				<td><b>MySQL</b></td>
+				<td><b>Oracle</b></td>
+      				<td><b>PostgreSQL</b></td>
+    			</tr>
+    			<tr>
+      				<td>Singular</td>
+				<td align="center">Yes</td>
+      				<td align="center">Yes</td>
+				<td align="center">Yes</td>
+      				<td align="center">Yes</td>
+    			</tr>
+    			<tr>
+      				<td>Plural</td>
+				<td align="center">No</td>
+      				<td align="center">Yes</td>
+				<td align="center">No</td>
+      				<td align="center">Yes</td>
+    			</tr>
+    			<tr>
+      				<td>Explicit</td>
+				<td align="center">No</td>
+      				<td align="center">Yes</td>
+				<td align="center">No</td>
+      				<td align="center">No</td>
+    			</tr>
+  			</tbody>
+		</table><br>
+		<b>Table 1.</b>
+	</div><br>
+	
+	</body>
+</html>

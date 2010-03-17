@@ -1,0 +1,37 @@
+MyJSQLView Development Status
+
+The MyJSQLView application is again under development
+to push the tool forward. As indicated in prior news
+releases the program is well into Phase II of its 
+evolution. During Phase II the application has been
+solidifying the architecture to support multiple databases
+easily. Presently the team has successfully added the
+Oracle database, with basic operations in place like
+adding, editing, deleting table entries and import/exports
+of data. The next release will try to fully support the
+Oracle 10g Express Edition.
+
+The direction for MyJSQLView will begin to transition into
+Phase III of development at the beginning of the next
+release. An evaluation is taking place on how much of the
+next version will have coding in place to support Phase
+III. During Phase III MyJSQLView will implement a plugin
+type of environment for BI, business intelligence, addons.
+Consideration is taking place on which type of basic BI
+feature should initially be incorporated. Dashboards are
+a solid contender at this point in the front of the lineup
+because of their broad data architectural requirements and
+functionality. As the project leader for MyJSQLView I'm
+pleased to finally see development begin to move into Phase
+III. Phase III of development is where I have striven to
+get the tool for over two years.
+
+MyJSQLView Project Manager
+Dana M. Proctor
+
+A nicely put together review of MyJSQLView CSV imports
+is available at:
+http://danga.blogsome.com/2008/05/01/myjsqlview-voor-het-onderhoud-van-de-gegevens-in-uw-database/
+
+ 
+

@@ -1,0 +1,26 @@
+MyJSQLView Version 2.76 Data Export Bug
+
+During the next phase of development on the
+MyJSQLView application a bug was discovered 
+in the Data | Export | SQL Format | Table
+routine. The preferences' panel allows the
+control of excluding the data from an exported
+table. Seems it is broken. Data is exported,
+the checkbox has no effect.
+
+A second bug has also been discovered in the
+Query Tool. If an item is selected to be viewed
+on a successful query the text/blob fields
+are not properly accessable. Text/blob fields
+are represented as a button which normally allows
+viewing of text or a save of the information.
+The buttons take no action at all.
+
+The MyJSQLView project has reached a junction
+in its development and the data export bug was
+discovered while coding for testing the access
+to a PostgreSQL database. The access was successful,
+but has problems. An exploration is now taking
+place on whether alternate databases will be
+fully support.
+

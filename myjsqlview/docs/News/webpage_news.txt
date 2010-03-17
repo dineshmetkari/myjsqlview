@@ -1,0 +1,8 @@
+MyJSQLView is pleased to present its new home
+web page to the public. The web page brings
+the project one step closer to completing tasks
+that will introduce the Beta release of the 
+application to users at the end of summer.
+
+MyJSQLView is an easy to use Java frontend
+application used to access a MyJSQL database. 

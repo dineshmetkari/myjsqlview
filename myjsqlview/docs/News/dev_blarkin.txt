@@ -1,0 +1,6 @@
+The MyJSQLView project would like to inform
+the public of the addition of a new developer
+to the team. blarkin has been helping in the
+new login access that will provide the ability
+to save and load user sites through a new
+ConnectionManager class.

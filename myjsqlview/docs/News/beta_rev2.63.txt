@@ -1,0 +1,17 @@
+MyJSQLView Updated to Version 2.63
+
+The MyJSQLView Beta release has been updated to
+Version 2.63. The release addresses a bug in the
+manner that the application handled table
+TIMESTAMP field types. Rev. 2.63 also addressed
+issues with tables with no primary keys and
+auto-incrementing of same. A table record indicator
+and refresh options have been added. The new
+login access is present, but not fully functional.
+
+MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database. A basic query frame
+allows the building of complex SQL statements.
+Sorting searching, and export of all table data
+easily.

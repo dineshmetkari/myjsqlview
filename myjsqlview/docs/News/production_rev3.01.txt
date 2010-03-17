@@ -1,0 +1,30 @@
+MyJSQLView Version 3.01 Released
+
+The MyJSQLView project has moved to production with the
+release of Version 3.01. The release marks major modifications
+in the GUI, graphical user interface, and the implementation
+of a framework that will provide a basis for a library of
+plugins in the future. It was decided by the team to release
+Version 3.01 at this time instead of later in April with
+MyJSQLView's first plugin so that the user may have access
+to the new interface. 
+
+With the release of MyJSQLView version 3.01 the project has
+embarked on Phase III of development. The first two phases
+of development involved the creation of a simple and easy to
+use interface that supported several common databases in the
+market. During Phase III the project will endeavor to provide
+tools that will allow users to view and analyze data in a
+mired of ways. In terms of today's techno-talk, BI, business
+intelligence. 
+
+Dana M. Proctor
+MyJSQLView Project Admin.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, and PostgreSQL databases. A query
+frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
+

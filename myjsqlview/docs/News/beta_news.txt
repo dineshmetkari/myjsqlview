@@ -1,0 +1,9 @@
+   The MyJSQLView project is pleased to present the
+initial Beta release for public review and trial.
+
+   MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database. All tables and fields
+are available for access in the selected database.
+
+

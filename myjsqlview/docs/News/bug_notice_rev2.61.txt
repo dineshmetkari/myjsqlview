@@ -1,0 +1,17 @@
+MyJSQLView Bugs in Revision 2.61
+
+The MyJSQLView project would like to notify the
+public of serious problems in the applications
+ability to properly update and add entries to
+a MySQL database. Because of these problems in
+the application, users should only use the
+basic functionality of the code to view, delete,
+sort, and search database tables entries. The
+query frame in the application should be stable.
+The project manager thanks the public for shaking
+out these bugs in the current beta version.
+
+MyJSQLView provides an easy to use Java based user
+interface frontend for viewing,  & deleting entries
+in a MySQL database. A basic query frame allows the
+building of complex SQL statements.

@@ -1,0 +1,32 @@
+MyJSQLView Status Update
+
+      MyJSQLView is now well into its Beta release and will move in the next
+6 months to a production release. As of the last version most of the major
+features of the application have been implemented. The last release did
+though highlight the possible future direction of the application.
+MyJSQLView was never created to be an administrative tool, but seems
+there might be a demand for such. If such features are implemented into
+the application then they will most likely be somewhat hidden or
+incorporated into the UI somewhat discretely or an entirely separate
+UI. The tool is really aimed for use by a desktop user or developer.
+The last release provided the addition of the Connection Manager and
+advanced login UI in the application for the access to connection
+properties. These connection properties such as driver and port
+theoretically should allow the access to databases other than MySQL.
+The application really was though designed for the MySQL database,
+and may not as a project support other databases if major redesign
+is required. The future in the major databases in this project manager's
+mind is going to be with MySQL and IBM's DB2. DB2 mainly because of its
+established business base and security and MySQL's thoroughly trumpeting
+the proprietor high cost solutions in terms of both software requirements
+and software licensing.
+
+      Presently the next release of MyJSQLView will mainly be a clean up of
+code and bug fix, with some minor UI changes possibly. Currently three bugs
+are outstanding with regard to import SQL data file size, export of blob data,
+and the corruption of the configuration XML file in isolated cases. The FAQ
+and forum provide information on how to fix the latter. Before MyJSQLView was
+released to the public a general review of available open source software was
+performed to understand the base toolset, features, and implementation of UI.
+The project is again performing another review of this open software base,
+in a more thorough documentary manner. 

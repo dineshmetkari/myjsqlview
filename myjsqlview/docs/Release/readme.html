@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+	<head>
+		<meta content="texT/html; charseT=ISO-8859-1" Http-equiv="coNtent-type">
+		<meta name="Author" content="Dana Proctor">		
+		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
+		<meta name="Description" content="MyJSQLView ReadMe.">
+		<meta name="keywords" content="MyJSQLView, Readme, Dana Proctor">		
+		<meta name="Copyright" content="2005-2009">
+		
+		<title>MyJSQLView README</title>
+	</head>
+
+	<body>
+		<p align="center">
+			<b><u>MyJSQLView Version 3.06<br></u></b>
+		</p>
+		<p align="center">
+			Copyright 2005-2009<br>
+			by <a href="mailto:danap@dandymadeproductions.com">Dana Proctor</a><br>
+			<a href="http://dandymadeproductions.com">http://dandymadeproductions.com</a>
+		</p>
+
+		<p><u><b>What is MyJSQLView?</b></u></p>
+		<p>
+			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface
+			for viewing, adding, editing, or deleting entries in the HSQL, MySQL, Oracle, and 
+			PostgreSQL databases. All tables and fields are available for access in the
+			selected database.<br><br>
+
+			&nbsp;&nbsp;&nbsp;MyJSQLView is the result of a condensed version of a larger project
+			that was needed to access an inventory database. The project from its
+			inception was to be constructed from code that could be run on most
+			OS, Operating Systems, platform independent. In addition the selected
+			database, MySQL, was also deemed to be chosen because of its open source
+			nature. The final key was network enabled. The application would need to
+			be able to connect to the database either locally, same machine, or a
+			server anywhere that was Internet accessable. Java and MySQL fit these
+			needs.<br>
+			&nbsp;&nbsp;&nbsp; MyJSQLView has expanded beyond the scope of MySQL and now supports
+			alternate databases. The application only needs two other pieces of code,
+			the JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity,
+			driver. The JDBC provides the driver interface between the Java SQL, structured
+			query language, statements, and the database. As of the release of this
+			version of MyJSQLView the application has been tested with the HSQL, MySQL, 
+			Oracle, and PostgreSQL databases. The application once installed can provide
+			a much quicker access/update to a database than a web based interface
+			frontend and MyJSQLView supports transaction locking. If your If your small
+			business, scientific community, government agency, or educational institute
+			want to quickly access either a HSQL, MySQL, Oracle, or PostgreSQL database
+			for viewing, adding, editing, and searching data MyJSQLView provides an
+			alternative that is simple and easy to use.<br><br>
+
+   			Dana M. Proctor<br>
+   			Project Manager
+		</p>
+
+		<p><b><u>Features:</u></b></p>
+		<ul>
+			<li>User Connection Preferences Saving/Managing.</li>
+			<li>User Preferences Summary Table Column Selection &#038; Sizing.</li>
+			<li>User Preferences Summary Table Row Sizing.</li>
+			<li>Access to All User Tables in Database During Session.</li>
+			<li>Summary Table State Saving/Loading.</li>
+			<li>Viewing, Adding, Editing, and Deleting All Table Fields.</li>
+			<li>Update Multiple Rows of Selected Table Field.</li>
+			<li>Support for Table Field Function Operations.</li>
+			<li>Supports All Basic Data Types, Including Blob/Bytea/Binary.</li>
+    			<li>Data Type Checking During Adding or Updates.</li>
+    			<li>Support for All Table Types, Including Transaction Locking.</li>
+			<li>Support for Flushing Privileges for User root on mysql database.</li>
+    			<li>Printing of Summary Table Data, Screen View.</li>
+    			<li>Export of CSV Summary or Complete Table Data.</li>
+    			<li>Export of SQL Summary or Complete Table Structure/Data.</li>
+			<li>Export of SQL Current Open Database/Scheme.</li>
+    			<li>Import of SQL Statement File.</li>
+    			<li>Import of CSV data File Into Selected Database Table via Insert/Update.</li>
+    			<li>Query Frame for Building Complex Select SQL Statements.</li>
+			<li>Search Frame for Running Generic LIKE Queries on All Tables in Database.</li>
+			<li>Simple Easy to Use Interface.</li>
+			<li>Simple and Advanced Table Sorting and Searching.</li>
+		</ul>
+		<p><b><u>Requirements:</u></b></p>
+		
+		<ul>
+  			<li>Windows 7 ?, Vista :(, XP, 2000, 98, NT, ME, MAC?, &amp; Linux, X-Window Environment.</li>
+                    	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.4</font> or Newer.</li>
+			<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.1</font> (JDBC Integrated Into HSQLDB.jar)</li>
+			<li>MySQL <font color="#ff0000">5.0.7 - 5.081</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.6</font>.</li>
+			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
+			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4.701</font>.</li>
+			
+		</ul>
+		
+		<u><b>Installation Notes:<br></b></u>
+		<p>
+			&nbsp;&nbsp;&nbsp;MyJSQLView is a stand alone application. To get started
+			download and unzip the release file to your local hard drive using a program
+			such as WinZip, 7-Zip, Tar or similar compression/decompression program.
+			Extract the MyJSQLView files to the desired location on the hard disk. On a
+			Windows system this may be any location, but on a Unix or Linux system it will
+			be in the home directory of the user. If multiple users are to access
+			the application then consult with the system administrator of your
+			workstation. The likely location will be in the /usr/local or a shareddocs
+			directory, which all users have access to for application execution.<br><br>
+		</p>
+		<u><b>Update Notes:<br></b></u>
+		<p>
+			&nbsp;&nbsp;&nbsp;MyJSQLView updates need no special attention. Just install the latest
+			release into your existing directory. For prior releases to Version 3.01
+			though the project is recommending to perform a clean install. This is not a
+			necessity, but will clean out some unused files, mainly in the images directory.
+			The only other major concern of a new release that might be of interest is
+			obtaining new connection parameters. Each new release that supports an
+			additional database, release 3.06 does not, will have an example configuration
+			for the connection parameters of the advanced login. Likely changes will be
+			included in the reference myjsqlview.xml file located in the installation
+			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
+			will be different for the various database servers. To gain access to any
+			new connection parameters one may just open the reference myjsqlview.xml
+			file and copy and paste any additional entries desired into your own working
+			copy of the myjsqlview.xml file. See the General Setup Instructions below
+			for locating this file.<br><br>
+		</p>
+		<p><font size="+1"><strong>General Setup Instructions</strong></font><br></p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and
+			does require the JRE, to be installed. The minimum runtime environment needs
+			to be JRE-1.4. In addition to the JRE an extension, JDBC, needs to be installed
+			that allows Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database.
+			The programs are available on the Internet free of charge. Check with the sites
+			<a href="http://hsqldb.org" target="_blank">hsqldb.org</a>,
+			<a href="http://mysql.com" target="_blank">mysql.com</a>,
+			<a href="http://oracle.com" target="_blank">oracle.com</a>, and
+			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>. Note,
+			the HSQLDB contains no separate JDBC, it is embedded in the HSQLDB.jar. The
+			jar file for these extensions needs to be installed to the JRE /lib/ext directory.
+			On a Windows system this JRE directory in normally under C:/Windows/java. On a
+			Linux/Unix system the directory is normally under the /usr directory, and is most
+			easily found by typing the command "which java" in a console. Please consult with
+			each vendor for specific installation instructions for these JDBC pieces of code.
+			Similarly if other databases are to be accessed via the application then again
+			installed the recommended  driver(s) to the Java Runtime /lib/ext directory.<br><br>
+			
+			&nbsp;&nbsp;&nbsp;&nbsp;The new login interface and Connection Manager use
+			a XML configuration file for saving user preferences. Upon first running
+			MyJSQLView a reference XML file, myjsqlview.xml, located in the installation
+			directory is read then copied to the users home directory under a newly created
+			directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly
+			created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On
+			Windows &reg; XP the new directory will be in the user's 'Documents' folder.
+			On a Linux system the new directory will be '/home/user/.myjsqview'. All saved
+			changes performed in site management will be stored in the XML file located
+			in the above referenced directory. The user is encouraged to make a backup of this
+			file on occasional.<br><br>
+
+			&nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with
+			in order to work. It is beyond the scope of this document for installing and setting
+			up a database, but remember you must have user rights to the database tables
+			you are trying to access. Please consult with your database system administrator
+			for proper grant rights. If you would like to try the application and do not have
+			access to a database the Dandy Made Productions web site has a MySQL database with
+			some sample data in several tables that may be connected too. Visit the MyJSQLView
+			project area at the site to obtain additional information about connecting via
+			MyJSQLView to these sample database tables.<br>
+		</p>
+		<p> <strong><font size="+1">Adding a Shortcut</font></strong><br></p>
+		<p>
+			&nbsp;&nbsp;&nbsp;&nbsp;To add a MyJSQLView icon to your desktop, right click the mouse pointer on an unused
+			area of your desktop to display the pop up menu and select <strong>New&nbsp;|&nbsp;Shortcut</strong>. Choose
+			<strong>Browse</strong>, find and double click on MyJSQLView.jar, then click on <strong>Next</strong>.
+			Type in "MyJSQLView" for the name of the shortcut, then click <strong>Finish</strong>. To run
+			MyJSQLView, either double click on the new MyJSQLView icon or use the <strong>Start&nbsp;|&nbsp;Run</strong>
+			command.<br><br>
+			&nbsp;&nbsp;&nbsp;&nbsp; On a Unix or Linux system a shortcut may be created in the KDE Desktop environment
+			by right clicking on the desktop and selecting <strong>Create New | File | Link to Application.</strong>
+			Give the application a name such as "MyJSQLView" in the General tab. Next select the Application tab
+			and fill in the description desired then browse to the location on the disk where MyJSQLView was installed
+			and select the MyJSQLView.jar file for the Command entry. The Command entry is still not complete and must
+			contain the Java command. Place before the quoted MyJSQLView.jar entry, "java -jar ". Do not place quotes
+			of any kind around this command, the quotes only contain the Jar file location. Example: java -jar 
+			'/home/~user/MyJSQLView/MyJSQLView.jar'. Finally select the Work Path as the directory where installation
+			took place.<br><br>
+			
+			&nbsp;&nbsp;&nbsp;&nbsp; The MyJSQLView application may also be run directly from a command/console window by typing in the command
+			"java -jar MyJSQLView.jar" while in the installation directory. A Linux/Unix environment will require the
+			file location to be specified by "./MyJSQLView.jar", remember this must be done with a console that is running
+			within a X Window environment like KDE or Gnome.
+		</p>
+		
+		<p><u><b>Copyright Notice:</b></u></p>
+		<p>This program is licensed under the GNU GPL.</p>
+		<p><b><u>Credits</u> </b>(in chronological order):</p>
+		
+
+		<ul>
+			<li><a href="mailto:danap_n_mt@users.sourceforge.net">Dana Proctor</a> - Project Manager<br></li>
+			<li>Clifford Hanson - Consultant</li>
+			<li><a href="mailto:jujubi@users.sourceforge.net">Jujubi</a> - Developer<br></li>
+			<li><a href="mailto:lookfwd@users.sourceforge.net">Lookfwd</a> - Analysis/Design<br></li>
+			<li><a href="mailto:blarkin@users.sourceforge.net">Blarkin</a> - Developer<br></li>
+			<li><a href="mailto:nil_lin@users.sourceforge.net">Nil_lin</a> - Developer<br></li>
+			<li><a href="mailto:gashogtoo@users.sourceforge.net">Gashogtoo</a> - Tester<br></li>
+			<li><a href="mailto:poisonerbg@users.sourceforge.net">Poisonerbg</a> - Developer<br></li>
+			<li><a href="mailto:reydelcompas@users.sourceforge.net">reydelcompas</a> - Tester<br></li>
+		</ul>
+		
+		<u><br>Special thanks to:</u><br>
+		L.S. Proctor who provided support and mental clarity.<br>
+		
+		<p><u><b>Version History:</b></u></p>
+
+		<p><b>Production </b>(2008-12-31):</p>
+
+		<ul>
+			<li>Version 3.06 Initial Plugin Inclusion, Table Field Charts.<br>
+			<li>Version 3.05 Incremental Release with Core Architecture Cleanup, and Minor<br>
+			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Bug Fixes. Update  Multiple Rows Feature.</li>
+			<li>Version 3.03 Incremental Release with Minor Bug Fixes and Network Bandwidth Reduction<br>
+			    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enhancements. CSV Import/Export Date Format Option and Summary Table State<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Saving/Loading.</li>
+			<li>Version 3.01 Minor Bug Fixes and Performance Enhancements, GUI Revisions, and<br>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Plugin Framework.</li>
+		</ul>
+
+		<p><b>Beta </b>(2006-10-01):</p>
+
+		<ul>
+			<li>Version 2.91 Minor Bug Fixes and Performance Enhancements, Oracle Database Access.</li>
+			<li>Version 2.87 Fully Qualified Schema.TableNames Support, Fault Tolerance<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Enhancements.</li>
+			<li>Version 2.86 Minor Bug Fixes, HSQL Database Access, PostgreSQL Array<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Support, &#038; CSV Insert/Update Import.</li>
+			<li>Version 2.81 Minor Bug Fixes, PostgreSQL Database Access, &#038; CSV Import.<br></li>
+			<li>Version 2.76 Code Cleanup, Field Function Operations, Advanced Sort/Search,<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Database SQL Export, &#038; Root User Flush Privileges.</li>
+			<li>Version 2.72 Bug Fix for Multiple Keys, SQL Data Import/Export. TableEntryForm<br>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Enhancements.</li>
+			<li>Version 2.64 New Login Interface &#038; Connection Manager.</li>			
+			<li>Version 2.63 Another Attempt Bug Fix for Timestamp Fields.<br>
+                   		           &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Primary Keys Editing if not AutoIncrement.</li>
+			<li>Version 2.61 Bug Fix for Date Fields.</li>
+			<li>Version 2.5 Bug Fix for Timestamp Fields.</li>
+			<li>Version 2.4 Documentation Revision</li>
+			<li>Pre-production release<br></li>
+		</ul>
+	</body>
+</html>

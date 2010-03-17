@@ -1,0 +1,44 @@
+MyJSQLView Development 2.93++ Update
+
+The MyJSQLView application has been under going a graphical user
+interface change over the last month or so and several development
+releases have been posted for consumption. Much of the process has
+resulted in no revealing visual changes from a user perspective,
+but major modifications have been implemented that have tried to
+make the application more user friendly and efficient for the 
+consumer. In addition to these, GUI, changes several new features
+have also been incorporated and are available with the development
+version for download. One of these additional features is the ability
+to search all database tables with one key phrase. A second new
+feature is the ability to reload the database tables without
+restarting the MyJSQLView application. Both of these new features
+are available under the Tools menu. The process of making all these
+alterations has made the project a little delinquent on the schedule
+for this particular task allocation period, but hopefully things will
+tighten up later. Remember a development release is not a stand
+alone installation, and only has files that adds/replaces components
+to a normal package release.
+
+Other news to report is on the progress of plugins to the application.
+Much of the next release, Phase III development, is focused on the
+implementation of a general framework that will allow the MyJSQLView
+application to add additional features through a plugin environment.
+A review took place prior to work on the GUI, that researched several
+tools that are similar to MyJSQLView. This review has pretty much
+become a standard overt operation for the project and looks at areas
+that may be incorporated into the application. In addition though
+the review was also a preliminary look for the first plugin that may
+be used in the new framework. Several open source tools have become
+candidates for plugins with MyJSQLView and although they may not
+become the first plugin with the project these particular tools are
+in accord with the general endeavor that is envisioned.
+
+One final comment to disseminate is the date of release for the next
+major package. The task schedule has the 2.93++ release in early April
+of next year. The main reason for this is the long duration of the
+tasks associated with the first plugin to be incorporated with the
+application. Consideration is being given for moving the project from
+beta to a production release by the end of the year or January of
+2009. If that occurs then the most likely result will be no initial
+plugin being offered at that time.
+    

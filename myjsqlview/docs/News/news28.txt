@@ -1,0 +1,28 @@
+MyJSQLView Phase II
+
+The MyJSQLView project has now entered phase II
+of development. Phase I was the basic implementation
+of a simple to use interface for users to access
+and manipulate database data. During phase II the
+project will now focus on expanding the existing
+database entry to beyond MySQL. The current work
+has already begun the evaluating and redesigning
+of the base core architecture to accomplish this goal.
+Much of this work was done during the Version 2.64
+creation of the Connection Manager. At this time
+successful access and manipulation of data in a
+PostgreSQL database is taking place. The next release
+of MyJSQLView will have a fully generic core that
+should allow creation of connections to other databases
+to be easily supported within the UI. The release
+will attempt to provide at least basic support for
+PostgreSQL and possibly HSQLDB.
+
+Phase I - Create a simple to use interface for 
+	  manipulating data in a MySQL database.
+
+Phase II - Expand the interface to support additional
+           databases.
+
+Phase III - Where MyJSQLView and the NA_WorkSheet
+            projects begin to merge.

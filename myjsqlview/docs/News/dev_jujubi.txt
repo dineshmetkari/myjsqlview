@@ -1,0 +1,5 @@
+The MyJSQLView project would like to inform
+the public of the addition of a new developer
+to the team. Jujubi's contribution to the
+project has helped in moving the code pass
+its present bugs in the current version 2.61.  

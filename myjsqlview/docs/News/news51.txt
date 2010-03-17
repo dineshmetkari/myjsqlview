@@ -1,0 +1,36 @@
+MyJSQLView 3.06++ Development
+
+The MyJSQLView next release candidate is beginning to gel around
+a new task list that is being compiled. Normally after a release I
+usually take about a month off to decompress from coding and then 
+begin to indirectly form a strategy for implementing the next version
+of MyJSQLView's objectives and needed enhancements. This time that
+period has been a bit longer, almost two months, since some smaller
+projects drew my attention away. One of those projects is still not
+complete, but will be shortly so I have once again begun to focus on
+what's next for the MyJSQLView project. High on the list will be
+translations to other languages, internationalization, i18n, as it
+is so called. There will also be an attempt to complete the plugin
+environment and update the existing Table Field Charts plugin to
+correct some anomalies. The Table Field Charts tab was the result
+of scavenging a project over at Sourceforge called Data Profiler.
+A review will probably take place to see if any other aspects of
+that project can be incorporated into MyJSQLView. Another open
+source project has also sparked my interest so that code may also
+end up as a plugin in MyJSQLView for the next release. A bug has
+been reported with the XML configuration loading with Vista and
+Windows7, but since the project does not have access to those
+operating systems, then it may not be fixed in the next release.
+At this time only about 10% of the downloads appear to come from
+those operating systems. 57% is XP and the rest Linux, well Mac
+about 3% so until greater detail is obtained about the loading error,
+corrections are just not going to occur. There are a few other areas
+that need attention so they are going to be added to the task list,
+but quite frankly I envision the next release of the program to be
+rather ordinary. What will not be ordinary about the next release
+will be a new tool that will be offered that will work in conjunction
+with MyJSQLView to provide some more visual aspects of database
+monitoring. 
+
+Dana M. Proctor
+MyJSQLView Project Manager 

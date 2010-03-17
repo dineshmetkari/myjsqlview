@@ -1,0 +1,16 @@
+MyJSQLView Version 2.76 Released
+
+The MyJSQLView Beta release has been update to Version 2.76.
+The release provides now the ability to perform function
+operations on add/edits of table fields and an advanced
+sort/search interface. Root users of the mysql database
+may also perform a flush of privileges. In addition the
+complete open database may now be export in SQL format.
+The application also undertook a compete code evaluation
+& cleanup.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+a MySQL database. A query frame allows the building of complex
+SELECT SQL statements. The application allows easy sorting, 
+searching, and import/export of table data.

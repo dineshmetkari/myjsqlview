@@ -1,0 +1,12 @@
+MyJSQLView Connection Manager Status Update
+
+   The ConnectionManager for MyJSQLView has been delayed
+for a couple more weeks. The basic functionality is present,
+but needs additional work. The next release this month
+will incorporate the Connection Manager site management
+dialog. Parameters for connection selection will be directly
+accessible to the user for control and saving. Some additional
+features for SQL import/export will also be implemented in
+the next release. The next version of MyJSQLView will
+open the door for those wishing to access database other
+than MySQL.

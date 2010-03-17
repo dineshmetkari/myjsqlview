@@ -1,0 +1,22 @@
+MyJSQLView Next Release 2.64++ Status
+
+   The development of the next release of MyJSQLView is proceeding slowly,
+and steadily. A new Preferences Menu has been completed and many code
+fixes have been implemented. One of fixes that has been instigated had
+to do with database keys/indexes. MyJSQLView was originally designed
+for access to a specific set of controlled datebase tables. Those tables
+all had single primary keys with some index fields. Of course MySQL
+tables can have multiple keys/indexes which Version 2.64 of MyJSQLView
+can fail to detect for edits and deletes. So please be patient with
+us we are addressing the problem. Because of this problem the next
+release may not have the updates to the Query Frame, but will address
+all open bugs, so that a package can be released sooner. An update will
+be coming soon so check back.
+											
+   A lot of the work for the next release has really been focused on making
+the basic user interface for the application more versatile, with some
+new features. The project has an open help wanted listed with SourceForge
+for some creative coding, and some new ideas have surfaced which the
+right programmer might wish to entertain. Please contact the project
+manager if you would like to contribute to the project. 
+
