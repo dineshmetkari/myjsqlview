@@ -1,0 +1,13 @@
+   MyJSQLView Java Review Service Rating
+
+   The MyJSQLView Beta release has been rated by JARS
+with the following score.
+
+Resource Name  : MyJSQLView
+-------------------------------------------
+Presentation : 150
+AppletPerfect: 300
+Function     : 195
+Originality  : 290
+-------------------------------------------
+Total        : 935 (out of a possible 1000.)

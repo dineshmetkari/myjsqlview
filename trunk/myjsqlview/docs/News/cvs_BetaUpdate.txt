@@ -1,0 +1,16 @@
+   MyJSQLView Current Beta State
+
+   MyJSQLView is pleased to announce the availability
+of the current state of the application source via CVS.
+CVS has been update and will now be maintained so users
+and developers may obtain and review the current state
+of the code. MyJSQLView does this to comply with its
+open source nature and to allow users to inspect the
+program to insure quality.
+
+   MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database. A basic query frame allows
+the building of complex SQL statements.
+
+

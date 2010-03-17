@@ -1,0 +1,19 @@
+MyJSQLView Version 2.72++ Development
+
+The MyJSQLView Version 2.72 release has been out in the
+public domain for about a month now and all seems relatively
+quiet. A quiet project after a release always seems to mean
+a couple things to me. Either the program is not being used, not many
+downloads, or it generally functions as desired and is documented
+well enough so not many bugs are submitted or questions asked.
+
+The development for MyJSQLView 2.72++ is already being planned
+and tasks are starting to be identified. Generally there will
+no major new features, except a database SQL export. The plan
+at this time is to continue enhancing the interface and capabilities
+in the add/edit form. One of those enhancements will the inclusion
+of the capability of implementing functions on the table fields.
+Ideally the work will continue on the basic interface until all
+operations that may be performed on a table field are available.
+The next version should be able to accomplish this and then
+new features will be considered again.

@@ -1,0 +1,1405 @@
+//=================================================================
+//                  SQL DatabaseDumpThread
+//=================================================================
+//   This class provides a thread to safely dump the current
+// database data, all tables, to a local file in SQL format. A
+// status dialog with cancel is provided to provide the ability
+// to prematurely terminate the dump.
+//
+//                 << SQLDatabaseDumpThread.java >>
+//
+//=================================================================
+// Copyright (C) 2007-2010 Dana M. Proctor
+// Version 6.2 02/18/2010
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version
+// 2 of the License, or (at your option) any later version. This
+// program is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+// the GNU General Public License for more details. You should
+// have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// (http://opensource.org)
+//
+//=================================================================
+// Revision History
+// Changes to the code should be documented here and reflected
+// in the present version number. Author information should
+// also be included with the original copyright author.
+//=================================================================
+// Version 1.0 Original SQLDatabaseDumpThread Class.
+//         1.1 Added Class Instance databaseDumpProgressBar for
+//             Tracking Dump and Cancel Ability. Cleaned Out &
+//             Finalized.
+//         1.2 Corrected AutoIncrement to NULL as Determined by
+//             SQL Preferences Panel. Class Instance Check 
+//             databaseDumpProgressBar.isCanceled() in Class Methods
+//             insertReplaceStatmentData() & explicitStatementData().
+//             Deleted Exported File if Dump Canceled.
+//         1.3 Code Cleanup.
+//         1.4 Fix for Year Fields That Were Reading A Complete Date,
+//             YYYY-MM-DD, From the Database. Used subString(0,4)
+//             in Class Methods insertReplaceStatementData() &
+//             explicitStatementData(). Had to Detect the Index of
+//             YEAR Fields in the Latter Method.
+//         1.5 Class Methods insertReplaceStatementData() &
+//             explicitStatementData() TableTabPanel.getAutoIncrementHashMap().
+//             Exchanged Class Instance autoIncrement With autoIncrementFieldIndexes
+//             in Class Method insertReplaceStatementData().
+//         1.6 Changed Boolean Operator in Class Method insertReplaceStatementData()
+//             in Conditional for Check for Autocommit.
+//         1.7 Class Method insertReplaceStatementData() Changed Method Instance
+//             autoIncrementFieldIndexes to HashMap. Modified the Auto-Increment
+//             Field Handling in the Same Method & explicitStatementData() Method
+//             to Sequence Properly in PostgreSQL Database.
+//         1.8 Header Update.
+//         1.9 Addition of Bit Type and Modification of How Binary, Bytea, Data is
+//             Handled in Class Method explicitStatementData(). Change of Class 
+//             Method dumpBlobData() to dumpBinaryData(). Modification to Dump
+//             Binary Octal Values for PostgreSQL database. Changed Class Method
+//             addSlashes() to addEscaptes().
+//         2.0 Escaped Backslashes in Class Method addEscapes(). BIT Fields to
+//             Class Method explicitStatementData().
+//         2.1 BIT Field Single Quote Addition for MyJSQL in Class Methods
+//             insertReplaceStatementData() & explicitStatementData(). Implement
+//             Proper Lock SQL Statement for PostgreSQL, Default.
+//         2.2 Class Method explicitStatementData() Modified to Handle the UPDATE
+//             WHERE Condition. Corrected to Handle PostgreSQL Data. Class Method
+//             getMySQLVersion() Changed to getDatabaseVersion().
+//         2.3 Class Instance identfifierQuoteString Added & Implemented.
+//             Modifications to getTableDefinitions() to Properly Implements SQL
+//             Database Structure Exports.
+//         2.4 Corrected DROP TABLE Statement to Properly Implement identifierQuoteString.
+//         2.5 Class Instance identfierQuoteString Add to Table Name in Class
+//             Method explicitStatementData().
+//         2.6 Proper Creation of SQL Statement With identifierQuoteString in Class
+//             Method insertReplaceStatementData().
+//         2.7 Changed the Handling of Escaping Single Quote Characters in the Class
+//             Method addEscapes(). Also Replace the Sequence ";\n" With "; \n".
+//         2.8 MySQL Bit Types Handled by Standard Format Prefix B Followed By String
+//             in Bit Format in Class Methods insertReplaceStatementData() &
+//             explicitStatementData().
+//         2.9 Added 'As t' to sqlStatement String in Class Method run() for HSQLDB. 
+//             Removed Class Method getDatabaseVersion(). Added
+//             getDBProductionNaMe_And_Version() to Class Method generateHeaders() &
+//             Removed Connection Argument. Binary Field Detection in Class Methods
+//             insertReplaceStatementData() & explicitStatementData().
+//         3.0 DataExportProperties Change From getInsertExplicit() to getInsertExpression().
+//         3.1 Implemented Singular & Plural SQL Statement in Class Method
+//             insertReplaceStatementData().
+//         3.2 Proper Export of Binary Data Format, Hexadecimal With Quotes in Class
+//             Methods explicitStatementData() & insertReplaceStatementData()
+//             for HSQLDB.
+//         3.3 Removal of Class Method getTableDefinition(). Process Transfered to
+//             New Class TableDefinitionGenerator.
+//         3.4 Class Instance columnNameFields Derived from Change getTableFields()
+//             to getTableHeadings().
+//         3.5 TableTabPanel getTableHeadings() to getAllTableHeadings()
+//             in Class Method run().
+//         3.6 Class Method insertReplaceStatementData() Added arrayIndexes. Both Class
+//             Methods insertReplace/explicitStatementData() Modifications to Fields
+//             TimeStamps & Bit for Arrays.
+//         3.7 Added Class Instance dbIdentiferQuoteString. Fix So That Exports May
+//             Properly Have the Selected Identifer String Used From the Preferences
+//             Panel.
+//         3.8 Class Method dumpBinaryData(), Added Operand for Detection of HSQL to
+//             Insure Single Quote Added to End of Data.
+//         3.9 Implemented Fully Qualified Table Name. Added Class Instances schemaName,
+//             tableName, schemaTableName, dbSchemaTableName. Localized exportedTable
+//             Too run().
+//         4.0 Correction in SQL Statement in Class Method run().
+//         4.1 Class Method run() Check for Data Conditional Properly Created the
+//             LIMIT of One Row Return for Oracle With the ROWNUM=1 SQL Statement.
+//             Clarification in the Class Methods insertRplace/explicitStatementData()
+//             for Statement ResultSet to be SCROLL_INSENSITIVE & CONCUR_READ_ONLY.
+//             Oracle Defaults to FORWARD_ONLY.
+//         4.2 Detection for BLOB Fields for Oracle and Replacement of SYSTIMESTAMP
+//             for NOW() Also for Oracle. All in Class Methods
+//             insertReplace/explicitStatementData().
+//         4.3 Moved the LOCK/UNLOCK Statements Creation Inside the Test for Data
+//             in Class Method run().
+//         4.4 Oracle Export Functionality. Not Tested.
+//         4.5 Implemented Auto-Increment of Sequence Fields for Oracle on Preferences
+//             Panel Selection. Class Methods insertReplace/explicitStatementData().
+//             Added Class Instance insertReplaceDump.
+//         4.6 Removed DROP TABLE IF EXISTS for Oracle Table Structure Creation
+//             in run().
+//         4.7 Replaced MyJSQLView.getTableTabCount() With DBTablesPanel.getTableCount().
+//             Also MyJSQLView.getSelectedTab() With DBTablesPanel.getSelectedTableTabPanel().
+//             Also MyJSQLView.getTab() With DBTablesPanel.getTableTabPanel(). Added
+//             Iterator Instance tablesIterator for Cycling in Class Method run().
+//         4.8 MyJSQLView Project Common Source Code Formatting.
+//         4.9 Class Method run() getDataExportProperites Changed Over to the
+//             MyJSQLView_Frame Class.
+//         5.0 Changed MyJSQLView_Frame.getDatabaseExportProperties() Method Moved
+//             Over to the DBTablesPanel.
+//         5.1 Conditional Check for NULL dbConnection in run().
+//         5.2 Name String Change for Thread.
+//         5.3 Removed DROP TABLE Statement Generation in run() Because It is Now
+//             Handled in the TableDefinitionGenerator Class.
+//         5.4 Corrected Behavior to Export Just Database Tables' Structure If
+//             Export Properites Are Table Structure True, and Data False.
+//         5.5 Cleared dumpData Instance if Just Dumping Database Table(s) Structure
+//             After Each Loop in While, Class Method run().
+//         5.6 Changed Class Instance databaseDumpProgressBar to SQLDatabaseDump_ProgressBar.
+//             Also Modified the Behavior of Obtaining currentTableTabPanel in
+//             Class Methods insertReplace/explicitStatementData() to be Independent
+//             of DBTablesPanel.
+//         5.7 Class Instance databaseDumpProgressBar.setTableDumpCurrentValue() New
+//             String Argument, Table Name.
+//         5.8 Update WebSite URL in headers String in Class Method generateHeaders().
+//         5.9 Header Format Changes/Update.
+//         6.0 Check for SecurityException in run() for makeNewFile.delete().
+//         6.1 Class Method explicitStatementData() Instance columnNameString.
+//         6.2 Changed Package to Reflect Dandy Made Productions Code.
+//                         
+//-----------------------------------------------------------------
+//                    danap@dandymadeproductions.com
+//=================================================================
+
+package com.dandymadeproductions.myjsqlview;
+
+import java.sql.*;
+import java.io.*;
+import java.util.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import javax.swing.JOptionPane;
+
+/**
+ *    The SQLDatabaseDumpThread class provides a thread to safely
+ * dump the current database data, all tables, to a local file in
+ * SQL format. A status dialog with cancel is provided to provide
+ * the ability to prematurely terminate the dump.
+ * 
+ * @author Dana Proctor
+ * @version 6.2 02/18/2010
+ */
+
+class SQLDatabaseDumpThread implements Runnable
+{
+   // Class Instances.
+   Thread dumpThread;
+   private Object dumpData;
+   private Vector columnNameFields;
+   private HashMap tableColumnNames;
+   private HashMap tableColumnClassHashMap;
+   private HashMap tableColumnTypeHashMap;
+   private String fileName;
+   private String schemaName, tableName;
+   private String dbSchemaTableName, schemaTableName;
+   private String dbIdentifierQuoteString, identifierQuoteString;
+   private String[] myJSQLView_Version;
+   private TableTabPanel currentTableTabPanel;
+
+   private boolean insertReplaceDump, updateDump;
+   private DataExportProperties sqlDataExportOptions;
+   private BufferedOutputStream filebuff;
+   private SQLDatabaseDump_ProgressBar databaseDumpProgressBar;
+
+   //==============================================================
+   // SQLDatabaseDumpThread Constructor.
+   //==============================================================
+
+   SQLDatabaseDumpThread(String fileName, String[] myJSQLView_Version)
+   {
+      this.fileName = fileName;
+      this.myJSQLView_Version = myJSQLView_Version;
+
+      // Create and start the class thread.
+      dumpThread = new Thread(this, "SQLDatabaseDumpThread");
+      // System.out.println("SQL Data Dumb Thread");
+
+      dumpThread.start();
+   }
+
+   //==============================================================
+   // Class method for normal start of the thread
+   //==============================================================
+
+   public void run()
+   {
+      // Class Method Instances.
+      Iterator tablesIterator;
+      String exportedTable;
+      FileOutputStream fileStream;
+      int i, tableCount;
+
+      Statement sqlStatement;
+      ResultSet rs;
+
+      // Get Connection to Database & Export Options.
+      Connection dbConnection = MyJSQLView_Access.getConnection("SQLDatabaseDumpThread run()");
+      
+      if (dbConnection == null)
+         return;
+      
+      dbIdentifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
+      identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
+
+      // Setting up OutputStream
+      try
+      {
+         File makeNewFile = new File(fileName);
+         if (makeNewFile.exists())
+         {
+            try
+            {
+               makeNewFile.delete();
+            }
+            catch (SecurityException se){}
+         }
+         fileStream = new FileOutputStream(fileName, true);
+         filebuff = new BufferedOutputStream(fileStream);
+
+         // Create a progress bar for giving the user a
+         // visual and cancel ability.
+         databaseDumpProgressBar = new SQLDatabaseDump_ProgressBar("SQL Database Dump");
+
+         // =========================================================
+         // Begin creating the data characters to be dumped into
+         // the selected file.
+
+         // Header info.
+         dumpData = generateHeaders(dbConnection);
+
+         // Collect Database Table Count and Proceed with Dump.
+         tableCount = DBTablesPanel.getTableCount();
+
+         try
+         {
+            sqlStatement = dbConnection.createStatement();
+
+            // Start a progress bar for tracking/canceling.
+            databaseDumpProgressBar.setDatabaseDumpTaskLength(tableCount);
+            databaseDumpProgressBar.pack();
+            databaseDumpProgressBar.center();
+            databaseDumpProgressBar.setVisible(true);
+
+            // Cycle Through the Tables in the Database.
+            i = 0;
+            tablesIterator = MyJSQLView_Access.getTableNames().iterator();
+
+            while (tablesIterator.hasNext() & !databaseDumpProgressBar.isCanceled())
+            {
+               databaseDumpProgressBar.setDatabaseDumpCurrentValue(i + 1);
+               
+               exportedTable = (String) tablesIterator.next();
+               
+               // MySQL
+               if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                  currentTableTabPanel = new TableTabPanel_MySQL(exportedTable, dbConnection);
+               // PostgreSQL
+               else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                  currentTableTabPanel = new TableTabPanel_PostgreSQL(exportedTable, dbConnection);
+               // HSQL
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+                  currentTableTabPanel = new TableTabPanel_HSQL(exportedTable, dbConnection);
+               // Oracle
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                  currentTableTabPanel = new TableTabPanel_Oracle(exportedTable, dbConnection);
+               // Generic
+               else
+                  currentTableTabPanel = new TableTabPanel_Generic(exportedTable, dbConnection);
+               
+               // Create the appropriate SQL table name qualifier.
+               if (exportedTable.indexOf(".") != -1)
+               {
+                  dbSchemaTableName = dbIdentifierQuoteString
+                                      + exportedTable.substring(0, exportedTable.indexOf("."))
+                                      + dbIdentifierQuoteString + "." + dbIdentifierQuoteString
+                                      + exportedTable.substring(exportedTable.indexOf(".") + 1)
+                                      + dbIdentifierQuoteString;
+                  schemaTableName = identifierQuoteString
+                                    + exportedTable.substring(0, exportedTable.indexOf("."))
+                                    + identifierQuoteString + "." + identifierQuoteString
+                                    + exportedTable.substring(exportedTable.indexOf(".") + 1)
+                                    + identifierQuoteString;
+               }
+               else
+               {
+                  dbSchemaTableName = dbIdentifierQuoteString + exportedTable + dbIdentifierQuoteString;
+                  schemaTableName = identifierQuoteString + exportedTable + identifierQuoteString;
+               }
+
+               columnNameFields = new Vector();
+               columnNameFields = currentTableTabPanel.getAllTableHeadings();
+               tableColumnNames = currentTableTabPanel.getColumnNamesHashMap();
+               tableColumnClassHashMap = currentTableTabPanel.getColumnClassHashMap();
+               tableColumnTypeHashMap = currentTableTabPanel.getColumnTypeHashMap();
+
+               // Create Table Statements As Needed.
+               if (sqlDataExportOptions.getTableStructure())
+               {
+                  dumpData = dumpData + genCommentSep("Table structure for table " + schemaTableName);
+
+                  dumpData = dumpData
+                             + (new TableDefinitionGenerator(dbConnection, dbSchemaTableName))
+                                   .getTableDefinition();
+                  
+                  // Check to see if we need to proceed with dumping
+                  // data. If not dump structure and clean up.
+
+                  if (!sqlDataExportOptions.getTableData())
+                  {
+                     dumpChunkOfData(dumpData);
+                     dumpData = "";
+                     i++;
+                     continue;
+                  }
+               }
+
+               // Comments for Table.
+               dumpData = dumpData + genCommentSep("Dumping data for table " + schemaTableName);
+
+               // Check to see if there is any data to actually be
+               // dumped from the table.
+
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                  rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " WHERE ROWNUM=1");
+               else
+                  rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t LIMIT 1");
+
+               if (rs.next())
+               {
+                  // Lock.
+                  if (sqlDataExportOptions.getLock())
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                     {
+                        dumpData = dumpData
+                                   + ("/*!40000 ALTER TABLE " + schemaTableName + " DISABLE KEYS */;\n");
+                        dumpData = dumpData + ("LOCK TABLES " + schemaTableName + " WRITE;\n");
+                     }
+                     else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                        dumpData = dumpData + ("LOCK TABLE " + schemaTableName + ";\n");
+                  }
+
+                  // Create the Appropriate Insert,Replace or Update Statements
+                  // with data as needed.
+
+                  if ((sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert") ||
+                       sqlDataExportOptions.getInsertReplaceUpdate().equals("Replace")) &&
+                      !sqlDataExportOptions.getInsertExpression().equals("Explicit"))
+                     insertReplaceStatementData(dbConnection);
+                  else
+                     explicitStatementData(dbConnection);
+                  dumpData = dumpData + ";\n";
+
+                  // Finishing up.
+                  if (sqlDataExportOptions.getLock())
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                     {
+                        dumpData = dumpData + "UNLOCK TABLES;\n";
+                        dumpData = dumpData + "/*!40000 ALTER TABLE " + schemaTableName
+                                   + " ENABLE KEYS */;\n";
+                     }
+                  }
+               }
+               rs.close();
+
+               dumpChunkOfData(dumpData);
+               dumpData = "";
+               i++;
+            }
+            if (databaseDumpProgressBar.isCanceled())
+            {
+               try
+               {
+                  makeNewFile.delete();
+               }
+               catch (SecurityException se){}
+            }
+            databaseDumpProgressBar.dispose();
+            sqlStatement.close();
+            filebuff.close();
+         }
+         catch (SQLException e)
+         {
+            if (databaseDumpProgressBar.isCanceled())
+            {
+               try
+               {
+                  makeNewFile.delete();
+               }
+               catch (SecurityException se){}
+            }
+            databaseDumpProgressBar.dispose();
+            MyJSQLView_Access.displaySQLErrors(e, "SQLDataDumpThread run()");
+         }
+      }
+      catch (IOException e)
+      {
+         String msg = "Unable to Create filestream for: '" + fileName + "'.";
+         JOptionPane.showMessageDialog(null, msg, fileName, JOptionPane.ERROR_MESSAGE);
+         return;
+      }
+      MyJSQLView_Access.closeConnection(dbConnection, "SQLDatabaseDumpThread run()");
+   }
+
+   //==============================================================
+   // Class method to create the insert/replace statement and data.
+   //==============================================================
+
+   private void insertReplaceStatementData(Connection dbConnection)
+   {
+      // Class Method Instances
+      Iterator columnNamesIterator;
+      HashMap autoIncrementFieldIndexes;
+      Vector blobFieldIndexes;
+      Vector bitFieldIndexes;
+      Vector timeStampIndexes;
+      Vector oracleTimeStamp_TZIndexes;
+      Vector oracleTimeStamp_LTZIndexes;
+      Vector dateIndexes;
+      Vector yearIndexes;
+      Vector arrayIndexes;
+      String field, columnClass, columnType;
+      String sqlFieldValuesString;
+      String expressionType;
+      int rowsCount, currentRow, columnsCount;
+
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet rs;
+
+      // Setting up the initial dump data string with insert/replace, type,
+      // and table.
+
+      insertReplaceDump = true;
+      sqlFieldValuesString = (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase()
+                              + sqlDataExportOptions.getType().toUpperCase() + "INTO " 
+                              + schemaTableName + " (");
+
+      if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT"))
+         expressionType = sqlDataExportOptions.getInsertExpression();
+      else
+         expressionType = sqlDataExportOptions.getReplaceExpression();
+
+      // Obtain the table fields and obtain list of
+      // fields that are blob data while at the same
+      // time begin creating the data select SQLStatement.
+
+      columnsCount = 0;
+      sqlStatementString = "SELECT ";
+      columnNamesIterator = columnNameFields.iterator();
+      autoIncrementFieldIndexes = new HashMap();
+      blobFieldIndexes = new Vector();
+      bitFieldIndexes = new Vector();
+      timeStampIndexes = new Vector();
+      oracleTimeStamp_TZIndexes = new Vector();
+      oracleTimeStamp_LTZIndexes = new Vector();
+      dateIndexes = new Vector();
+      yearIndexes = new Vector();
+      arrayIndexes = new Vector();
+
+      while (columnNamesIterator.hasNext())
+      {
+         field = (String) columnNamesIterator.next();
+         columnClass = (String) tableColumnClassHashMap.get(field);
+         columnType = (String) tableColumnTypeHashMap.get(field);
+         //System.out.println("field:" + field + " class:" + columnClass
+         //                   + "type:" + columnType);
+
+         // Save the index of autoIncrement field.
+         if (currentTableTabPanel.getAutoIncrementHashMap().containsKey(field))
+         {
+            String currentIndex = columnsCount + 1 + "";
+            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+               autoIncrementFieldIndexes.put(currentIndex,
+                                             currentTableTabPanel.getAutoIncrementHashMap().get(field));
+            else
+               autoIncrementFieldIndexes.put(currentIndex, tableColumnNames.get(field));
+         }
+
+         // Save the index of blob/bytea/binary entries.
+         if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+             (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+             (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
+             (columnType.indexOf("RAW") != -1))
+         {
+            String currentIndex = columnsCount + 1 + "";
+            blobFieldIndexes.add(currentIndex);
+         }
+
+         // Save the index of bit entries.
+         if (columnType.indexOf("BIT") != -1)
+         {
+            String currentIndex = columnsCount + 1 + "";
+            bitFieldIndexes.add(currentIndex);
+         }
+
+         // Save the indox of TimeStamp Fields.
+         if (columnType.indexOf("TIMESTAMP") != -1)
+         {
+            String currentIndex = columnsCount + 1 + "";
+            timeStampIndexes.add(currentIndex);
+         }
+
+         // Save the index of Oracle TimeStamp(TZ) Fields.
+         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
+             (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")))
+         {
+            String currentIndex = columnsCount + 1 + "";
+            oracleTimeStamp_TZIndexes.add(currentIndex);
+         }
+
+         // Save the index of Oracle TimeStamp(TZ) Fields.
+         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
+             columnType.equals("TIMESTAMPLTZ"))
+         {
+            String currentIndex = columnsCount + 1 + "";
+            oracleTimeStamp_LTZIndexes.add(currentIndex);
+         }
+
+         // Save the index of date entries.
+         if (columnType.equals("DATE"))
+         {
+            String currentIndex = columnsCount + 1 + "";
+            dateIndexes.add(currentIndex);
+         }
+
+         // Save the index of year entries.
+         if (columnType.indexOf("YEAR") != -1)
+         {
+            String currentIndex = columnsCount + 1 + "";
+            yearIndexes.add(currentIndex);
+         }
+
+         // Save the index of array entries.
+         if (columnType.indexOf("_") != -1)
+         {
+            String currentIndex = columnsCount + 1 + "";
+            arrayIndexes.add(currentIndex);
+         }
+
+         // Modify Statement as needed for Oracle TIMESTAMPLTZ Fields.
+         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
+             columnType.equals("TIMESTAMPLTZ"))
+         {
+            sqlStatementString += "TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                  + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", ";
+         }
+         else
+            sqlStatementString += dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", ";
+         sqlFieldValuesString += (identifierQuoteString + tableColumnNames.get(field) 
+                                 + identifierQuoteString + ", ");
+
+         columnsCount++;
+      }
+
+      // Finishing creating the Select statement to retrieve data.
+
+      sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 2);
+      sqlStatementString += " FROM " + dbSchemaTableName;
+      //System.out.println(sqlStatementString);
+
+      // Do an initial dump of data created so far.
+
+      sqlFieldValuesString = sqlFieldValuesString.substring(0, sqlFieldValuesString.length() - 2);
+      sqlFieldValuesString += ") VALUES";
+      dumpData = dumpData + sqlFieldValuesString;
+
+      dumpChunkOfData(dumpData);
+      dumpData = "";
+
+      // Ok now ready so beginning by connecting to database for
+      // data and proceeding with building the dump data.
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+
+         // Setting up to begin insert statements.
+         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+         currentRow = 0;
+
+         // Start the table progress bar.
+         databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
+         
+         rs = sqlStatement.executeQuery(sqlStatementString);
+
+         // Begin the creation of insert statements.
+         while (rs.next() && !databaseDumpProgressBar.isCanceled())
+         {
+            databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), currentRow++);
+
+            // SQL Singular Statement
+            if (expressionType.equals("Singular"))
+               dumpData = dumpData + "(";
+            // SQL Plural Statement
+            else
+               dumpData = dumpData + ("\n(");
+
+            for (int i = 1; i <= columnsCount; i++)
+            {
+               String currentIndex = i + "";
+               // System.out.print(i + " ");
+
+               // Determining binary types and acting appropriately.
+               if (blobFieldIndexes.contains(currentIndex))
+               {
+                  byte[] theBytes = rs.getBytes(i);
+
+                  if (theBytes != null)
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                        dumpData = dumpData + "E'";
+                     else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+                        dumpData = dumpData + "'";
+                     else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        dumpData = dumpData + "HEXTORAW('";
+                     else
+                        dumpData = dumpData + "0x";
+
+                     // Go convert to hexadecimal/octal values
+                     // and dump data as we go for blob/bytea.
+                     dumpBinaryData(theBytes);
+                  }
+                  else
+                     dumpData = dumpData + "NULL, ";
+               }
+               // Regular Fields
+               else
+               {
+                  // Check for an AutoIncrement
+                  if (autoIncrementFieldIndexes.containsKey(currentIndex)
+                      && sqlDataExportOptions.getAutoIncrement())
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                     {
+                        schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
+                        tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                               identifierQuoteString, "");
+
+                        dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
+                                   + autoIncrementFieldIndexes.get(currentIndex) + "_seq\"'), ";
+                     }
+                     else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     {
+                        dumpData = dumpData + identifierQuoteString
+                                   + autoIncrementFieldIndexes.get(currentIndex) 
+                                   + identifierQuoteString + ".NEXTVAL, ";
+                     }
+                     else
+                        dumpData = dumpData + "NULL, ";
+                  }
+                  else
+                  {
+                     // Check for a TimeStamp
+                     if (timeStampIndexes.contains(currentIndex) && sqlDataExportOptions.getTimeStamp())
+                     {
+                        if (arrayIndexes.contains(currentIndex))
+                           dumpData = dumpData + "'{NOW()}', ";
+                        else
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                              dumpData = dumpData + "SYSTIMESTAMP, ";
+                           else
+                              dumpData = dumpData + "NOW(), ";
+                        }
+                     }
+
+                     // Check for Oracle TimeStamp(TZ)
+                     else if (oracleTimeStamp_TZIndexes.contains(currentIndex)
+                              && !sqlDataExportOptions.getTimeStamp())
+                     {
+                        if (rs.getTimestamp(i) != null)
+                        {
+                           Object currentData = rs.getTimestamp(i);
+                           dumpData = dumpData + "TO_TIMESTAMP('" + currentData
+                                      + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Check for a Date
+                     else if (dateIndexes.contains(currentIndex))
+                     {
+                        if (rs.getString(i) != null)
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                              dumpData = dumpData + "TO_DATE('" + rs.getDate(i) + "', 'YYYY-MM-DD'), ";
+                           else
+                              dumpData = dumpData + "'" + addEscapes(rs.getString(i) + "") + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Check for a Year
+                     else if (yearIndexes.contains(currentIndex))
+                     {
+                        // Fix for a bug in connectorJ, I think, that returns
+                        // a whole date YYYY-MM-DD. Don't know what else
+                        // to do it hangs my imports, but works with
+                        // mysql console.
+                        if (rs.getString(i) != null)
+                        {
+                           if (rs.getString(i).length() > 4)
+                              dumpData = dumpData + "'" + addEscapes(rs.getString(i).substring(0, 4)) + "', ";
+                           else
+                              dumpData = dumpData + "'" + addEscapes(rs.getString(i)) + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Check for Bit fields.
+                     else if (bitFieldIndexes.contains(currentIndex))
+                     {
+                        if (rs.getString(i) != null)
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                           {
+                              if (arrayIndexes.contains(currentIndex))
+                                 dumpData = dumpData + "'" + rs.getString(i) + "', ";
+                              else
+                                 dumpData = dumpData + "B'" + rs.getString(i) + "', ";
+                           }
+                           else
+                           {
+                              try
+                              {
+                                 dumpData = dumpData + "B'"
+                                            + Integer.toBinaryString(Integer.parseInt(rs.getString(i)))
+                                            + "', ";
+                              }
+                              catch (NumberFormatException e)
+                              {
+                                 dumpData = dumpData + "B'0', ";
+                              }
+                           }
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // All other fields
+                     else
+                     {
+                        // Do not remove. Oracle LONG Types, which are
+                        // processed here, only alows the resultSet get once.
+
+                        String contentString = rs.getString(i);
+
+                        if (contentString != null)
+                        {
+                           // Check for Oracle TimeStampLTZ
+                           if (oracleTimeStamp_LTZIndexes.contains(currentIndex) &&
+                               !sqlDataExportOptions.getTimeStamp())
+                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" 
+                                         + contentString + "', 'MM-DD-YYYY HH24:MI:SS TZH:TZM'), ";
+                           else
+                              dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+                  }
+               }
+            }
+            dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+
+            // SQL Singular Statement
+            if (expressionType.equals("Singular"))
+               dumpData = dumpData + ");\n";
+            // SQL Plural Statement
+            else
+               dumpData = dumpData + "),";
+
+            if (currentRow >= rowsCount)
+            {
+               // SQL Singular Statement
+               if (expressionType.equals("Singular"))
+                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+               // SQL Plural Statement
+               else
+                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1);
+               dumpChunkOfData(dumpData);
+               dumpData = "";
+               currentRow = 0;
+            }
+            else
+            {
+               dumpChunkOfData(dumpData);
+               // SQL Singular Statement Resetup
+               if (expressionType.equals("Singular"))
+                  dumpData = sqlFieldValuesString;
+               // SQL Plural Statement
+               else
+                  dumpData = "";
+            }
+         }
+         // Closing out
+         rs.close();
+         sqlStatement.close();
+         databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), 0);
+      }
+      catch (SQLException e)
+      {
+         databaseDumpProgressBar.setCanceled(true);
+         MyJSQLView_Access.displaySQLErrors(e, "SQLDatabaseDumpThread insertReplaceStatementData()");
+      }
+   }
+
+   //==============================================================
+   // Class method to create the explicit or update statement and
+   // data.
+   //==============================================================
+
+   private void explicitStatementData(Connection dbConnection)
+   {
+      // Class Method Instances
+      StringBuffer columnNamesString;
+      Iterator columnNamesIterator;
+      String field, columnClass, columnType;
+      
+      Vector keys;
+      String keyStringStatement;
+      int rowsCount, currentRow;
+
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet rs;
+
+      // Setting up for possible update dump.
+
+      keys = new Vector();
+      updateDump = false;
+      keyStringStatement = " WHERE ";
+
+      // Setting up the initial dump data string with insert/replace/update,
+      // type, and table.
+
+      dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
+      dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
+
+      // Explicit
+      if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT") ||
+          sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("REPLACE"))
+         dumpData = dumpData + "INTO ";
+      // Update
+      else
+      {
+         updateDump = true;
+         keys = currentTableTabPanel.getPrimaryKeys();
+      }
+
+      dumpData = dumpData + schemaTableName + " SET ";
+
+      // Obtain the table fields and create select statement
+      // to obtain the data.
+
+      
+      sqlStatementString = "SELECT ";
+      columnNamesString = new StringBuffer();
+      columnNamesIterator = columnNameFields.iterator();
+
+      while (columnNamesIterator.hasNext())
+      {
+         field = (String) columnNamesIterator.next();
+
+         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
+             && ((String) tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
+         {
+            columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                  + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", ");
+         }
+         else
+            columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", ");
+      }
+      columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
+      sqlStatementString += columnNamesString.toString() + " FROM " + dbSchemaTableName;
+      // System.out.println(sqlStatementString);
+
+      // Do an initial dump of data created so far.
+      dumpChunkOfData(dumpData);
+      dumpData = "";
+
+      // Ok now ready so beginning by connecting to database for
+      // data and proceeding with building the dump data.
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+
+         // Setting up to begin update statements.
+         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+         currentRow = 0;
+         
+         // Start the table progress bar.
+         databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
+
+         rs = sqlStatement.executeQuery(sqlStatementString);
+
+         // Begin the creation of statements.
+         while (rs.next() && !databaseDumpProgressBar.isCanceled())
+         {
+            databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), currentRow++);
+            columnNamesIterator = columnNameFields.iterator();
+
+            // Cycle through each field and set value.
+            while (columnNamesIterator.hasNext())
+            {
+               field = (String) columnNamesIterator.next();
+               columnClass = (String) tableColumnClassHashMap.get(field);
+               columnType = (String) tableColumnTypeHashMap.get(field);
+               // System.out.println("field:" + field + " class:" + columnClass
+               // + " type:" + columnType);
+
+               // Setting up WHERE Statement for Update Dump.
+               if (keys.contains(tableColumnNames.get(field)) && updateDump)
+               {
+                  keyStringStatement = keyStringStatement + identifierQuoteString
+                                       + ((String) tableColumnNames.get(field)) 
+                                       + identifierQuoteString + "=";
+
+                  if (rs.getString((String) tableColumnNames.get(field)) != null)
+                  {
+                     keyStringStatement = keyStringStatement + "'"
+                                          + rs.getString((String) tableColumnNames.get(field)) 
+                                          + "' AND ";
+                  }
+                  else
+                     keyStringStatement = keyStringStatement + "NULL AND ";
+               }
+               else
+               {
+                  dumpData = dumpData + identifierQuoteString + ((String) tableColumnNames.get(field))
+                             + identifierQuoteString + "=";
+
+                  // Blob/Bytea/Binary data adding
+                  if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+                      (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+                      (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
+                      (columnType.indexOf("RAW") != -1))
+                  {
+                     byte[] theBytes = rs.getBytes((String) tableColumnNames.get(field));
+
+                     if (theBytes != null)
+                     {
+                        // Let Oracle RAW & BLOB fall through if not update
+                        // since
+                        // an explicit statement is not supported. Allows to
+                        // convert
+                        // these from Oracle to MySQL.
+
+                        if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                           dumpData = dumpData + "E'";
+                        else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+                           dumpData = dumpData + "'";
+                        else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 && updateDump)
+                           dumpData = dumpData + "HEXTORAW('";
+                        else
+                           dumpData = dumpData + "0x";
+
+                        // Go convert to hexadecimal/octal values
+                        // and dump data as we go for blob/bytea.
+                        dumpBinaryData(theBytes);
+                     }
+                     else
+                        dumpData = dumpData + "NULL, ";
+                  }
+                  // Normal field
+                  else
+                  {
+                     // Setting Auto-Increment Fields
+                     if (currentTableTabPanel.getAutoIncrementHashMap().containsKey(field)
+                         && sqlDataExportOptions.getAutoIncrement())
+                     {
+                        if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                        {
+                           schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
+                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(identifierQuoteString, "");
+
+                           dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
+                                      + "_seq\"'), ";
+                        }
+                        else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        {
+                           dumpData = dumpData
+                                      + identifierQuoteString
+                                      + DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field) 
+                                      + identifierQuoteString + ".NEXTVAL, ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Setting TimeStamp Fields
+                     else if (columnType.indexOf("TIMESTAMP") != -1 && sqlDataExportOptions.getTimeStamp())
+                     {
+                        if (columnType.indexOf("_") != -1)
+                           dumpData = dumpData + "'{NOW()}'. ";
+                        else
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                              dumpData = dumpData + "SYSTIMESTAMP, ";
+                           else
+                              dumpData = dumpData + "NOW(), ";
+                        }
+                     }
+
+                     // Setting Oracle TimeStamp(TZ)
+                     else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")) &&
+                              MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
+                              !sqlDataExportOptions.getTimeStamp())
+                     {
+                        if (rs.getTimestamp((String) tableColumnNames.get(field)) != null)
+                        {
+                           Object currentData = rs.getTimestamp((String) tableColumnNames.get(field));
+                           dumpData = dumpData + "TO_TIMESTAMP('" + currentData
+                                      + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Setting Date Fields
+                     else if (columnType.equals("DATE"))
+                     {
+                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                              dumpData = dumpData + "TO_DATE('"
+                                         + rs.getDate((String) tableColumnNames.get(field))
+                                         + "', 'YYYY-MM-DD'), ";
+                           else
+                              dumpData = dumpData + "'"
+                                         + addEscapes(rs.getString((String) tableColumnNames.get(field)))
+                                         + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Fix for a bug in connectorJ, I think, that returns
+                     // a whole date YYYY-MM-DD. Don't know what else
+                     // to do it hangs my imports, but works with
+                     // mysql console.
+                     else if (columnType.equals("YEAR"))
+                     {
+                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        {
+                           if (rs.getString((String) tableColumnNames.get(field)).length() > 4)
+                              dumpData = dumpData + "'"
+                                         + addEscapes(rs.getString((String) tableColumnNames.get(field)).substring(0, 4)) 
+                                         + "', ";
+                           else
+                              dumpData = dumpData + "'"
+                                         + addEscapes(rs.getString((String) tableColumnNames.get(field)))
+                                         + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // Setting Bit Fields
+                     else if (columnType.indexOf("BIT") != -1)
+                     {
+                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        {
+                           if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                           {
+                              if (columnType.indexOf("_") != -1)
+                                 dumpData = dumpData + "'"
+                                            + rs.getString((String) tableColumnNames.get(field)) + "', ";
+                              else
+                                 dumpData = dumpData + "B'"
+                                            + rs.getString((String) tableColumnNames.get(field)) + "', ";
+                           }
+                           else
+                           {
+                              try
+                              {
+                                 dumpData = dumpData + "B'"
+                                            + Integer.toBinaryString(Integer.parseInt(rs.getString((String) tableColumnNames.get(field)))) 
+                                            + "', ";
+                              }
+                              catch (NumberFormatException e)
+                              {
+                                 dumpData = dumpData + "B'0', ";
+                              }
+                           }
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+
+                     // All other fields
+                     else
+                     {
+                        // Do not remove. Oracle LONG Types, which are
+                        // processed here, only alows the resultSet get once.
+                        // Oh, Oracle doesn't support the explicit INSERT,
+                        // but what the hell maybe someone will use to export
+                        // from Oracle to import into a MySQL database.
+
+                        String contentString = rs.getString((String) tableColumnNames.get(field));
+
+                        if (contentString != null)
+                        {
+                           if (columnType.equals("TIMESTAMPLTZ") &&
+                               MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
+                                         + "', 'MM-DD-YYYY HH24:MI:SS TZH:TZM'), ";
+                           else
+                              dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
+                        }
+                        else
+                           dumpData = dumpData + "NULL, ";
+                     }
+                  }
+               }
+            }
+
+            // Creating end of extended SQL statement and
+            // setting up for the next as needed.
+
+            if (currentRow < rowsCount)
+            {
+               dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+
+               if (updateDump && !keys.isEmpty())
+                  dumpData = dumpData + keyStringStatement.substring(0, keyStringStatement.length() - 5)
+                             + (";\n");
+               else
+                  dumpData = dumpData + (";\n");
+
+               dumpChunkOfData(dumpData);
+               dumpData = "";
+
+               keyStringStatement = " WHERE ";
+
+               dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
+               dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
+
+               if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT") ||
+                   sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("REPLACE"))
+                  dumpData = dumpData + "INTO ";
+
+               dumpData = dumpData + schemaTableName + " SET ";
+            }
+            else
+            {
+               if (updateDump)
+                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2)
+                             + keyStringStatement.substring(0, keyStringStatement.length() - 5);
+               else
+                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+            }
+         }
+         // Closing out
+         rs.close();
+         sqlStatement.close();
+         databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), 0);
+      }
+      catch (SQLException e)
+      {
+         databaseDumpProgressBar.setCanceled(true);
+         MyJSQLView_Access.displaySQLErrors(e, "SQLDatabaseDumpThread explicitStatementData()");
+      }
+   }
+
+   //==============================================================
+   // Class method to get the table data row count
+   //==============================================================
+
+   private int getRowsCount(Connection dbConnection, String tableName)
+   {
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet rs;
+      int rowCount = 0;
+
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+         sqlStatementString = "SELECT COUNT(*) FROM " + tableName;
+         // System.out.println(sqlStatementString);
+
+         rs = sqlStatement.executeQuery(sqlStatementString);
+         rs.next();
+         rowCount = rs.getInt(1);
+
+         rs.close();
+         sqlStatement.close();
+         return rowCount;
+      }
+      catch (SQLException e)
+      {
+         MyJSQLView_Access.displaySQLErrors(e, "SQLDataDumpThread getRowsCount()");
+         return rowCount;
+      }
+   }
+
+   //==============================================================
+   // Class method to get the table data row count
+   //==============================================================
+
+   private void dumpBinaryData(byte[] theBytes)
+   {
+      // Class Method Instances
+      int b;
+      String hexadecimalString, octalString;
+      BufferedInputStream in;
+
+      // Otain byes in a stream and convert to
+      // hex for dumping.
+      if (theBytes != null)
+      {
+         in = new BufferedInputStream(new ByteArrayInputStream(theBytes));
+
+         try
+         {
+            while ((b = in.read()) != -1)
+            {
+               // Dump as octal data.
+               if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+               {
+                  octalString = Integer.toString(b, 8);
+                  if (octalString.length() == 1)
+                     octalString = "00" + octalString;
+                  if (octalString.length() > 1 && octalString.length() < 3)
+                     octalString = "0" + octalString;
+                  dumpData = dumpData + "\\\\" + octalString;
+                  dumpChunkOfData(dumpData);
+                  dumpData = "";
+               }
+               // Dump as hexadecimal data.
+               else
+               {
+                  hexadecimalString = Integer.toString(b, 16);
+                  if (hexadecimalString.length() < 2)
+                     hexadecimalString = "0" + hexadecimalString;
+                  if (hexadecimalString.length() > 2)
+                     hexadecimalString = hexadecimalString.substring(hexadecimalString.length() - 2);
+                  dumpData = dumpData + hexadecimalString;
+                  dumpChunkOfData(dumpData);
+                  dumpData = "";
+               }
+            }
+            if (MyJSQLView_Access.getSubProtocol().equals("postgresql")
+                || MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+               dumpData = dumpData + "', ";
+            else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
+                     && (updateDump || insertReplaceDump))
+               dumpData = dumpData + "'), ";
+            else
+               dumpData = dumpData + ", ";
+         }
+         catch (IOException e)
+         {
+            String msg = "Unable to Create Buffered InputStream for Blob Data";
+            JOptionPane.showMessageDialog(null, msg, fileName, JOptionPane.ERROR_MESSAGE);
+            return;
+         }
+      }
+      else
+         dumpData = dumpData + "NULL, ";
+   }
+
+   //==============================================================
+   // Class method for generating dump header info
+   //==============================================================
+
+   protected String generateHeaders(Connection dbConnection)
+   {
+      // Class Method Instances.
+      String dateTime, headers;
+      SimpleDateFormat dateTimeFormat;
+
+      // Create Header.
+      dateTimeFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
+      dateTime = dateTimeFormat.format(new Date());
+
+      headers = "--\n" + "-- MyJSQLView SQL Dump\n" + "-- Version: " + myJSQLView_Version[1] + "\n"
+                + "-- WebSite: http://myjsqlview.org\n" + "--\n" + "-- Host: "
+                + MyJSQLView_Access.getHostName() + "\n" + "-- Generated On: " + dateTime + "\n"
+                + "-- SQL version: " + MyJSQLView_Access.getDBProductName_And_Version() + "\n"
+                + "-- Database: " + MyJSQLView_Access.getDBName() + "\n" + "--\n\n"
+                + "-- ------------------------------------------\n";
+
+      // System.out.println(headers);
+      return headers;
+   }
+
+   //==============================================================
+   // Class method for generating
+   //==============================================================
+
+   protected String genCommentSep(String str)
+   {
+      String res;
+      res = "\n--\n";
+      res += "-- " + str;
+      res += "\n--\n\n";
+      return res;
+   }
+
+   //==============================================================
+   // Class method for escaping a string with backslash before
+   // quotes (')
+   //==============================================================
+
+   private String addEscapes(String str)
+   {
+      if (str == null)
+         return "";
+
+      // For some reason the sequence ;\n is not
+      // able to be properly pulled into either
+      // the MySQL or PostgreSQL. So what else hack
+      // it, add a space before newline. Could
+      // find no reason for this in either manual
+      // for characters that need escaping.
+
+      str = str.replaceAll(";\\n", "; \\n");
+
+      // Escape the single quote character which is
+      // the character being used to deliminate the
+      // content.
+      StringBuffer s = new StringBuffer((String) str);
+      for (int i = 0; i < s.length(); i++)
+      {
+         if (s.charAt(i) == '\'')
+            s.insert(i++, '\'');
+      }
+      return s.toString();
+   }
+
+   //==============================================================
+   // Class Method to dump a chunk of data to the output file.
+   //==============================================================
+
+   private void dumpChunkOfData(Object dumpData)
+   {
+      // Class Method Instances
+      byte[] currentBytes;
+
+      // Dump the Chunk.
+      try
+      {
+         currentBytes = dumpData.toString().getBytes();
+         filebuff.write(currentBytes);
+         filebuff.flush();
+      }
+      catch (IOException e)
+      {
+         String msg = "Error outputing data to: '" + fileName + "'.";
+         JOptionPane.showMessageDialog(null, msg, fileName, JOptionPane.ERROR_MESSAGE);
+      }
+   }
+}

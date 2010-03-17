@@ -1,0 +1,12 @@
+During the development on MyJSQLView Version 2.72++
+database export task a bug was discovered. The bug
+involves the export of SQL table data. A table which
+is empty will result in the insertion of a SQL command
+in the exported file for values that do not exist. A
+fix can be achieved by the deletion of the offending
+line in the exported file. During import either with
+MyJSQLView or the MySQL console the offended line will
+be reported.
+
+A fix for this problem has already been implemented in
+Version 2.72++ of MyJSQLView.

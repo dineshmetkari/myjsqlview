@@ -1,0 +1,19 @@
+MyJSQLView Version 2.72++ Development Begins
+
+The MyJSQLView Version 2.72++ development has now begun in
+earnest. One of the first tasks to be completed has been the
+ability to FLUSH PRIVILEGES when logged as the root user for
+the mysql database. The application's primary purpose to
+view, add, and edit database table entries necessitated
+this feature. After all what use is editing an entry for
+managing users if it will not take effect unless a flush
+of the cache takes place?
+
+Over the last several months the MyJSQLView application's
+future direction has been weighed heavily. It has pretty
+much at this time been determined it will not become a tool
+for managing a database. Rather focus is going to continue
+in the direction of accessing, processing, and analyzing,
+database table entries. A list of the current identified tasks
+to be completed for the next release is accessable via the
+project's development home with sourceforge.net

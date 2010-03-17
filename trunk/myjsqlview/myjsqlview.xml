@@ -1,0 +1,20 @@
+<MyJSQLView>
+<Sites>
+<Site Name="LocalHost" Driver="com.mysql.jdbc.Driver" Protocol="jdbc" SubProtocol="mysql" Host="127.0.0.1" Port="3306" Database="mysql" User="" Password="" SSH="0" />
+<Site Name="LocalHost" Driver="org.postgresql.Driver" Protocol="jdbc" SubProtocol="postgresql" Host="127.0.0.1" Port="5432" Database="postgresql" User="" Password="" SSH="0" />
+<Site Name="LocalHost" Driver="org.hsqldb.jdbcDriver" Protocol="jdbc" SubProtocol="hsqldb:hsql" Host="127.0.0.1" Port="9001" Database="hsql;" User="" Password="" SSH="0" />
+<Site Name="LocalHost" Driver="oracle.jdbc.driver.OracleDriver" Protocol="jdbc" SubProtocol="oracle:thin" Host="127.0.0.1" Port="1521" Database="oracle" User="" Password="" SSH="0" />
+</Sites>
+<Settings>
+<Item name="Last Server Name" type="string">Last Site</Item>
+<Item name="Last Driver" type="string">com.mysql.jdbc.Driver</Item>
+<Item name="Last Protocol" type="string">jdbc</Item>
+<Item name="Last SubProtocol" type="string">mysql</Item>
+<Item name="Last Host" type="string">localhost</Item>
+<Item name="Last Port" type="numeric">3306</Item>
+<Item name="Last Database" type="string"> </Item>
+<Item name="Last User" type="string"> </Item>
+<Item name="Last Password" type="string"> </Item>
+<Item name="Last SSH" type="string">0</Item>
+</Settings>
+</MyJSQLView>

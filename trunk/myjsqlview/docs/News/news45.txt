@@ -1,0 +1,35 @@
+MyJSQLView 3.01++ Development
+
+The MyJSQLView project would liked to have had an update to the
+application this April, but a few side projects have distracted me
+as the project manager from properly pushing the development
+forward. On a positive note the production release, v3.01, seems
+to be solid because no major bugs have been reported or discovered.
+Currently the tasks list for the next release has been fixed and
+amounts to mainly solidifying the core architecture for the plugin
+framework. There will be a few added features such as a search
+and replace and the ability to allow the control of date formats
+in the CSV, comma separated values, imports/exports. A translation
+framework is also on the list of items to be accomplished, but might
+be sacrificed to get the next release out the door. As a side note
+that translation will probably be in the running two month 2nd place
+download leader of the country of Germany.
+
+One final piece of information for those that might have noticed.
+The MyJSQLView project will no longer be actively supported at the
+Sourceforge site. The Sourceforge site's leadership in this developer's
+opinion has deviated to a purely business model that is far removed
+from its origin concept of a software source forge for developers. I
+understand the need to generate revenue, but the new site owners look
+like they are only interested in traffic and creating another social
+networking site. One of their main sponsors Microsoft and an appointee
+to their board of the same bodes no good will toward open source. So
+all current news, documentation, and downloads will only be available
+with the Dandy Made Productions web site.
+
+Dana M. Proctor
+MyJSQLView Project Manager  
+
+
+
+

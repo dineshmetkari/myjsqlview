@@ -1,0 +1,26 @@
+MyJSQLView Version 3.03++ Development
+
+The MyJSQLView project development has been proceeding steadily for the past
+few months and will release the next version in early November. The coding up
+to this point has mainly focused on inconsistencies in the program's behavior,
+a couple of new features and some minor bug fixes. One of those bugs involves
+the import of SQL statement content that has semicolons stripped out. A more
+trouble some issue has been reported on the program's functionality with MS
+Vista that has not been completely addressed. The project would like to also
+have some testing done with the new MS Windows 7, so if you do try MyJSQLView
+with that OS and problems occur please contact us. Development on the next
+release has mainly been oriented on tidying up the program and organizing the
+architecture so that less work will be involved in the coding for the translation
+and plugin environments. Since much of this work is almost complete it has
+been decided to go ahead and release 3.03++ as an incremental version prior
+to an update with the code for translations and the plugins. Much more work still
+needs to be done to complete the plugin environment and identify a suitable
+feature for implementation, so no sense in delaying to the public updates as
+they arise.
+
+The project would also like to gracious thank the Montana State University,
+College of Business for selection in participation with students in the MGMT475R,
+Management Practicum Course.
+
+Dana M. Proctor
+MyJSQLView Project Manager 

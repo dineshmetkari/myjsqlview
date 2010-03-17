@@ -1,0 +1,9 @@
+   The MyJSQLView project is pleased to have its
+initial import to CVS. The project is on schedule
+for a Beta release Sept. 29, 2006. All basic
+features are working.
+
+MyJSQLView is an easy to use Java frontend 
+application used to access a MyJSQL database.
+
+

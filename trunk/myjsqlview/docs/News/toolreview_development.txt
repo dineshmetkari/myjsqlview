@@ -1,0 +1,21 @@
+The MyJSQLView project will continue development soon. As the admin. of the project I have
+been tied with many other various projects and tasks that have underminded my attention
+to the application. Last month I spoke of a tool review that took place. The project has
+reviewed other database open source access tools and will use this information gathered
+to enhance MyJSQLView. The list of applications reviewed was HeidiSQL, MySQLGraphic,
+MySQLDump, DBEdit, SQLeonardo, SquirrelSQL, ExecuteQuery, SuperQuail, FreeQueryBuilder,
+JavaMyAdmin, and PhpMyAdmin. The last of course being the predominate most popular tool
+available. Beside PhpMyAdmin, ExecuteQuery turned out in my opinion to be the most polished
+well put together application out there. All the tools beside PhpMyAdmin had deficiencies
+in the user interface with regard to database connection. MyJSQLView I believe addresses
+both this issue and also includes a very simple user interface for manipulating a database.
+
+Today I began the process of outlining the tasks that will address further development
+with MyJSQLView. The tasks have been broken down into these key areas: Improvements/Additions
+to the Preferences Menu, Fixes of bugs and enhancements to the Data Import/Export, Query Frame
+Improvements, and Help Menu Additions. As said last month a lot of this will be code clean
+up and bug fixes, but some will further the formulation of the future for MyJSQLView. A
+decision has been made to include basic database administration in a separate UI, la Query
+Frame. The separation of this functionality will allow the creation later of a MyJSQLView
+enterprise version aimed toward businesses where the tool may be used in a a multiuser/controlled
+environment.

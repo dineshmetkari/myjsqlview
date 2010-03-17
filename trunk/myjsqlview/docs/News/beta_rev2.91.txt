@@ -1,0 +1,35 @@
+MyJSQLView Version 2.91 Released
+
+The MyJSQLView Beta release has been update to Version 2.91.
+The release highlights the implementation for support of the
+Oracle database 10g. All basic aspects of the application
+that had been in place for the other supported databases is
+now available for 10g. As a developer and project manager I
+have to said though that I have been rather disappointed with
+the performance of this newly supported database. The Oracle
+database appears to have a rich set of features for the
+enterprise, but seems to have dragged core components as it
+has evolved that are legacy in nature. In all fairness though
+I'm just a novice in the configuration, and tuning of this
+database and was more focused on functionality with the MyJSQLView
+application than optimizing. One must also consider of course
+the hardware platform used in this development process.
+
+With the release of MyJSQLView version 2.91 the project will
+end Phase II of development. A production release will be
+forthcoming near the end of the year which will provide the
+framework for Phase III evolution and refinement of the GUI.
+Any comments regarding the application's functionality, interface,
+or feature set/enhancements would be most welcome in this
+coming process to production.
+
+Dana M. Proctor
+MyJSQLView Project Admin.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, and PostgreSQL databases. A query
+frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
+

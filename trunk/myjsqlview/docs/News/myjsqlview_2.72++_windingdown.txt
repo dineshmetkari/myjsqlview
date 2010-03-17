@@ -1,0 +1,11 @@
+MyJSQLView Release 2.72++ Development Winding Down
+
+The development for the next release of MyJSQLView is winding down.
+All the major tasks have been completed. Over the next fews days
+the application will finish up testing then proceed to a release
+early next week. This release of MyJSQLView completes to a great
+extent the application's ability to perform all aspects of
+manipulating data in a MySQL database. As indicated in prior
+information for the application the tool is generally aimed at
+developers and users who would like a simple easy interface to
+manipulate data in a MySQL database.

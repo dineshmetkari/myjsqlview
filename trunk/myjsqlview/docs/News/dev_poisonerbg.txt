@@ -1,0 +1,7 @@
+MyJSQLView Developer Poisonerbg
+
+The MyJSQLView project would like to inform
+the public of the addition of a new developer
+to the team. Poisonerbg has been implementing
+a SQL export feature in the application. Thank
+you and welcome!

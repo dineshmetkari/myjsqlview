@@ -1,0 +1,20 @@
+MyJSQLView Version 2.86 Released
+
+The MyJSQLView Beta release has been update to Version 2.86.
+The release has focused on providing the ability of the
+application to connect to a HSQL database. All the basic
+features that MyJSQLView has provided to other databases are
+now available with the HSQL database. Several minor bugs were
+fixed in the release in addition to proper support for
+PostgreSQL Version 8.3.0. Two new features were also added,
+basic array data type support and the ability to import
+delimited text files as either an insert or update.
+
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the MySQL, PostgreSQL, and HSQL databases. A query frame allows
+the building of complex SELECT SQL statements. The application
+allows easy sorting, searching, and import/export of table
+data.
+

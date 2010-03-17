@@ -1,0 +1,13 @@
+MyJSQLView 2.5 Bug Notification
+
+A bug has been reported that may effect the startup
+of the application for certain types of tables with
+date fields. A bug has been submitted and because of
+the seriousness of the problem MyJSQLView will rev. to
+2.6 within the next few days to address this issue.
+
+MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database. A basic query frame allows
+the building of complex SQL statements. Sorting
+searching, and export of all table data easily.

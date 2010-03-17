@@ -1,0 +1,416 @@
+//=================================================================
+//             MyJSQLView PreferencesPanelSummer
+//=================================================================
+//
+//    This class provides a generic panel used in the Preferences
+// Menu to highlight the top tree element during the northern
+// hemisphere's summer months, June-August.
+//
+//           << PreferencesPanelSummer.java >>
+//
+//=================================================================
+// Copyright (C) 2007-2010 Dana M. Proctor
+// Version 2.7 02/18/2010
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version
+// 2 of the License, or (at your option) any later version. This
+// program is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+// the GNU General Public License for more details. You should
+// have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// (http://opensource.org)
+//
+//=================================================================
+// Revision History
+// Changes to the code should be documented here and reflected
+// in the present version number. Author information should
+// also be included with the original copyright author.
+//=================================================================
+// Version 1.0 05/03/2007 Original PreferencesPanel Class.
+//         1.1 09/09/2007 Removed Unused Class Instance dateFormat.
+//         1.2 09/18/2007 Implemented Runnable Interface. Added Class Method
+//                        setThreadAction().
+//         1.3 09/21/2007 Changed Class Name to PreferencesPanelSummer.
+//                        Implementation of FireFlies.
+//         1.4 10/22/2007 Change in Javadoc Comments.
+//         1.5 11/23/2007 Changed the backGroundImage to PreferencesPanelSummer.jpg.
+//         1.6 11/24/2007 Relinquished Control of Calendar Date Creation to
+//                        Parent PreferencesPanel.
+//         1.7 12/12/2007 Header Update.
+//         1.8 03/02/2008 Comment Change for Active Season, July-September.
+//         1.9 05/12/2008 Added Class Instance serialVersionUID. Declared
+//                        Instances backgroundImage, fireFlyImages, &
+//                        offScreenGraphicsImage.
+//         2.0 10/21/2008 MyJSQLView Project Common Source Code Formatting.
+//         2.1 12/16/2008 Class Methods updateFireFlies(), render(), checkImage(),
+//                        and timeStep() Made Private.
+//         2.2 05/25/2009 Check on Constructor Instance fileSeparator.
+//         2.3 06/12/2009 Class Method checkImage() Dimension Conditional For
+//                        Less Than or Equal.
+//         2.4 09/03/2009 Implemented Crickets Sound in Panel. Added Class Instance
+//                        cricketsSoundClip. Modifications to Constructor to Load,
+//                        run() to Start, Methods setThreadAction() & suspendPanel()
+//                        to Control the Sounds Activity.
+//         2.5 10/12/2009 Removed Sound Implementation for Panel. To Volatile.
+//         2.6 10/25/2009 Obtained Constructor Instance fileSeparator From MyJSQLView_Utils
+//                        Class.
+//         2.7 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//
+//-----------------------------------------------------------------
+//                danap@dandymadeproductions.com
+//=================================================================
+
+package com.dandymadeproductions.myjsqlview;
+
+import java.awt.*;
+import java.awt.Image;
+import java.util.*;
+import javax.swing.*;
+
+/**
+ * The PreferencesPanelSummer class provides a generic panel used in the
+ * Preferences Menu to highlight the top tree element during the northern
+ * hemisphere's summer months, July-September.
+ * @author Dana M. Proctor
+ * 
+ * @version 2.7 02/18/2010
+ */
+
+class PreferencesPanelSummer extends PreferencesPanel implements Runnable
+{
+   // Class Instances.
+   private static final long serialVersionUID = 2484935547937050383L;
+   private transient Image backgroundImage;
+   private int backgroundImageWidth, backgroundImageHeight;
+   private transient Image offScreenGraphicsImage;
+
+   private static final int fireFlyColors = 6;
+   private transient Image[] fireFlyImages = new Image[fireFlyColors];
+   private int fireFlyImageWidth, fireFlyImageHeight;
+   private Vector fireFlies;
+
+   private volatile boolean runThread;
+   private volatile boolean suspendThread;
+   private static final int frameDelay = 40;
+
+   //==============================================================
+   // PreferencesPanelSummer Constructor
+   //==============================================================
+
+   protected PreferencesPanelSummer()
+   {
+      // Class Instances
+      Thread t;
+      String fileSeparator;
+      String[] fireFlyImageName = {"red_firefly.gif", "green_firefly.gif", "blue_firefly.gif",
+                                   "yellow_firefly.gif", "purple_firefly.gif", "white_firefly.gif"};
+
+      // Setting up the panel stuff.
+      setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                                              BorderFactory.createLoweredBevelBorder()));
+
+      // ==========================================================
+      // Obtaining the background image and setting up as
+      // needed instances values.
+
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+
+      backgroundImage = new ImageIcon("images" + fileSeparator + "PreferencesPanelSummer.jpg").getImage();
+      backgroundImageWidth = backgroundImage.getWidth(null);
+      backgroundImageHeight = backgroundImage.getHeight(null);
+
+      // ===========================================================
+      // Obtaing the firefly images and setting up as needed.
+
+      for (int i = 0; i < fireFlyColors; i++)
+         fireFlyImages[i] = new ImageIcon("images" + fileSeparator + fireFlyImageName[i]).getImage();
+      fireFlyImageWidth = fireFlyImages[0].getWidth(null);
+      fireFlyImageHeight = fireFlyImages[0].getHeight(null);
+      fireFlies = new Vector();
+
+      // Run the panel's thread.
+      runThread = true;
+      suspendThread = false;
+
+      t = new Thread(this, "PreferencesPanel");
+      t.start();
+   }
+
+   //==============================================================
+   // Class method for starting the runnable thread.
+   //==============================================================
+
+   public void run()
+   {
+      // Class Instances
+      int fireFlyCount;
+      Random randomNumber;
+      Rectangle panelBounds;
+
+      // Create fireflies from the firefly image files.
+      fireFlyCount = 15;
+      randomNumber = new Random(System.currentTimeMillis());
+      panelBounds = new Rectangle(0, 0, backgroundImageWidth, backgroundImageHeight);
+
+      for (int i = 0; i < fireFlyCount; i++)
+      {
+         Point currentFireFlyPosition = getEmptyPosition();
+         fireFlies.add(new FireFly(this, panelBounds, fireFlyImages[i % fireFlyImages.length],
+                                   currentFireFlyPosition, new Point(randomNumber.nextInt() % 4,
+                                   randomNumber.nextInt() % 4)));
+      }
+
+      // Cycling through the routine
+      // to animate the panel.
+      while (runThread)
+      {
+         updateFireFlies();
+         render();
+         timeStep();
+      }
+   }
+
+   //==============================================================
+   // Class method to obtain an empty postion in the panel that
+   // fire fly may be placed.
+   //==============================================================
+
+   private Point getEmptyPosition()
+   {
+      // Class Method Instances
+      Rectangle trialSpaceOccupied;
+      Random randomNumber;
+      boolean empty, collision;
+      int numberOfTries;
+
+      // Setting up.
+      trialSpaceOccupied = new Rectangle(0, 0, fireFlyImageWidth, fireFlyImageHeight);
+      randomNumber = new Random(System.currentTimeMillis());
+      empty = false;
+      numberOfTries = 0;
+
+      // Begin the search for an empty position
+      while (!empty && numberOfTries++ < 100)
+      {
+         // Obtain a random postion.
+         trialSpaceOccupied.x = Math.abs(randomNumber.nextInt() % backgroundImageWidth);
+         trialSpaceOccupied.y = Math.abs(randomNumber.nextInt() % backgroundImageHeight);
+
+         // Check to see if an existing firefly occupies
+         // the randomly selected postion.
+         collision = false;
+         for (int i = 0; i < fireFlies.size(); i++)
+         {
+            Rectangle testSpaceOccupied = ((FireFly) (fireFlies.elementAt(i))).getSpaceOccupied();
+            if (trialSpaceOccupied.intersects(testSpaceOccupied))
+               collision = true;
+         }
+         empty = !collision;
+      }
+      // Return the empty postion.
+      return new Point(trialSpaceOccupied.x, trialSpaceOccupied.y);
+   }
+
+   // ==============================================================
+   // Class method to update the fireflies' positions in the panel.
+   // ==============================================================
+
+   private void updateFireFlies()
+   {
+      // Class Method Instances
+      FireFly currentFireFly;
+      int fireFlyOccupiedIndex;
+      Point tempSwapPoint;
+
+      // Cycle through the fireflies, updating postion and
+      // testing for collision.
+      for (int i = 0; i < fireFlies.size(); i++)
+      {
+         currentFireFly = (FireFly) fireFlies.elementAt(i);
+         currentFireFly.updatePosition();
+
+         // Collision check and recoil action as needed.
+         fireFlyOccupiedIndex = testForCollision(currentFireFly);
+
+         if (fireFlyOccupiedIndex >= 0)
+         {
+            tempSwapPoint = currentFireFly.getNextPosition();
+            currentFireFly.setNextPosition(((FireFly) fireFlies.elementAt(fireFlyOccupiedIndex))
+                  .getNextPosition());
+            ((FireFly) fireFlies.elementAt(fireFlyOccupiedIndex)).setNextPosition(tempSwapPoint);
+         }
+      }
+   }
+
+   //==============================================================
+   // Class Method to check if the input FireFly collides with any
+   // of the other fireflies. If does return the index in the vector
+   // of offending firefly, else -1.
+   //==============================================================
+
+   private int testForCollision(FireFly testFireFly)
+   {
+      // Class Method Instances.
+      FireFly currentFireFly;
+
+      // Cycle through the fireflies, checking against input
+      // firefly.
+      for (int i = 0; i < fireFlies.size(); i++)
+      {
+         currentFireFly = (FireFly) fireFlies.elementAt(i);
+
+         // Don't need to check itself.
+         if (currentFireFly == testFireFly)
+            continue;
+
+         if (testFireFly.testCollision(currentFireFly))
+            return i;
+      }
+      return -1;
+   }
+
+   //==============================================================
+   // Class method to create a double buffered offscreen graphic.
+   //==============================================================
+
+   private void render()
+   {
+      // Class Instances
+      Graphics g2 = (Graphics2D) getGraphics();
+      Graphics2D imageGraphics;
+
+      // Clear and redraw the graphics background then
+      // draw the component offscreen.
+      if (g2 != null)
+      {
+         Dimension d = getSize();
+         if (checkImage(d))
+         {
+            imageGraphics = (Graphics2D) offScreenGraphicsImage.getGraphics();
+
+            // Draw this component offscreen then to screen.
+            paint(imageGraphics);
+            g2.drawImage(offScreenGraphicsImage, 0, 0, null);
+
+            imageGraphics.dispose();
+         }
+         g2.dispose();
+      }
+   }
+
+   //==============================================================
+   // Class method to setup a offscreen image.
+   //==============================================================
+
+   private boolean checkImage(Dimension d)
+   {
+      if (d.width <= 0 || d.height <= 0)
+         return false;
+      if (offScreenGraphicsImage == null || offScreenGraphicsImage.getWidth(null) != d.width
+          || offScreenGraphicsImage.getHeight(null) != d.height)
+      {
+         offScreenGraphicsImage = createImage(d.width, d.height);
+      }
+      return true;
+   }
+
+   //==============================================================
+   // Class method for delaying the animation/framerate change.
+   //==============================================================
+
+   private void timeStep()
+   {
+      try
+      {
+         Thread.sleep(frameDelay);
+         synchronized (this)
+         {
+            while (suspendThread)
+               wait();
+         }
+      }
+      catch (InterruptedException e)
+      {
+         System.out.println("Process Interrupted.");
+      }
+   }
+
+   //==============================================================
+   // Overiding public update method that the panel will not
+   // be cleared then refilled.
+   //==============================================================
+
+   public void update(Graphics g)
+   {
+      paint(g);
+   }
+
+   //==============================================================
+   // Overiding public paint method so that a image may be placed
+   // in the background.
+   //==============================================================
+
+   public void paint(Graphics g)
+   {
+      // Class Methods
+      int panelWidth, panelHeight;
+      int xPosition, yPosition;
+
+      // Panel parameters.
+      panelWidth = this.getWidth();
+      panelHeight = this.getHeight();
+
+      // Make sure refill background color.
+      g.setColor(this.getBackground());
+      g.fillRect(0, 0, panelWidth, panelHeight);
+
+      // Draw image in center.
+      xPosition = (panelWidth - backgroundImageWidth) / 2;
+      if (xPosition < 0)
+         xPosition = 0;
+
+      yPosition = (panelHeight - backgroundImageHeight) / 2;
+      if (yPosition < 0)
+         yPosition = 0;
+
+      g.drawImage(backgroundImage, xPosition, yPosition, this);
+
+      // Draw the current date.
+      g.setFont(fontSerifPlain_12);
+      g.drawString(dateString, 10, 20);
+
+      // Draw Fireflies
+      for (int i = 0; i < fireFlies.size(); i++)
+      {
+         g.drawImage(((FireFly) fireFlies.elementAt(i)).getImage(), ((FireFly) fireFlies.elementAt(i))
+               .getSpaceOccupied().x, ((FireFly) fireFlies.elementAt(i)).getSpaceOccupied().y, this);
+      }
+   }
+
+   //==============================================================
+   // Class Method to start and stop the thread.
+   //==============================================================
+
+   public synchronized void setThreadAction(boolean action)
+   {
+      suspendThread = action;
+
+      if (!suspendThread)
+         notify();
+   }
+
+   //==============================================================
+   // Class Method to let the thread run() method naturally
+   // finish.
+   //==============================================================
+
+   public void suspendPanel(boolean action)
+   {
+      runThread = !action;
+   }
+}

@@ -1,0 +1,16 @@
+MyJSQLView Incremental Release
+
+The MyJSQLView project will release an incremental version
+within the next week to address the schema issue with
+PostgreSQL and HSQL databases. A development version,
+2.8610, has been posted to the download section to temporary
+address the selection of fully qualified tables with schema.
+Most users that use the default PUBLIC schema will not be
+effected by this issue with table names. The access to MySQL
+databases with the MyJSQLView application do not incur any
+problems in this area.
+
+The release next week will correct the deficiency in the
+MyJSQLView application architecture and allow users to
+access all non-system tables and views associated with a
+database that the user has rights to.

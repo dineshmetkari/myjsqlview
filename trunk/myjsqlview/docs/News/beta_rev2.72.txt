@@ -1,0 +1,13 @@
+MyJSQLView Version 2.72 Released
+
+The MyJSQLView Beta release has been update to Version 2.72.
+The release fixed deficiencies in table key recognition and
+bugs in the import/export of data. Several enhancements have
+been made to the application's Table Entry Form input and
+preferences settings.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+a MySQL database. A query frame allows the building of complex
+SELECT SQL statements. The application allows easy sorting, 
+searching, and import/export of table data.

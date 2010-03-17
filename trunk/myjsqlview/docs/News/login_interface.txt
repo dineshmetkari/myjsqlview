@@ -1,0 +1,20 @@
+MyJSQLView Login Interface
+
+The MyJSQLView project would like to inform the
+public of its work to improve the MyJSQLView
+login interface to allow the loading and saving
+of connection parameters. The MyJSQLView project
+feels this is an important step in making the
+application more user friendly. The new login
+interface will also allow the moving of the
+application to the possible next step of accessing
+databases beyond MySQL. So please bookmark us
+and check with us again in the future for the
+next realease.
+
+MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database. A basic query frame
+allows the building of complex SQL statements.
+Sorting searching, and export of all table data
+easily.

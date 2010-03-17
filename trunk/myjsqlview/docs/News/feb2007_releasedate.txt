@@ -1,0 +1,12 @@
+MyJSQLView Next Version Release Date Feb. 2, 2007
+
+   MyJSQLView has set the date for the next release of
+the application to be the 2nd of February 2007. The main
+feature addition for this release the ConnectionManager
+has been completed and is under additional testing. For
+those not wishing to wait, then CVS is maintained with
+the current working code that may be downloaded and
+compiled. The project is currently looking for individuals
+that would like to test the program with DB2, Oracle,
+and MSSQL databases.
+

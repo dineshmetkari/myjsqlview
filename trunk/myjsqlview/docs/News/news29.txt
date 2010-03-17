@@ -1,0 +1,30 @@
+MyJSQLView Version 2.76++ Development
+
+The development for the next release of MyJSQLView
+is proceeding slowly. The core changes have been
+made to allow alternate database access and the
+changes seem to be working relatively fine. Over
+90% of the code has needed no adjustments. The
+TableEntryForm and DataDumpThread classes are
+still of some concern, because of already know
+multiplicity that will be needed if these classes
+remain singular in nature. As indicated in the
+last couple of news releases the focus on an
+alternate database access has been with PostgreSQL
+at this point. About a third of the documentation
+for that database has been reviewed to include the
+data types defined. All the standard data types have
+been tested in MyJSQLView, except for the geometric
+types. Some perplexity is noted on the inclusion of
+these forms of 'Objects' as data types. With the
+successful access/functionality also taking place in
+some sample PostgreSQL databases things are looking
+promising for Phase II of MyJSQLView.
+
+On a side note all the known bugs for version 2.76 of
+MyJSQLView have been corrected in the current development.
+At this time a release could be generated, but since the
+bugs are minor in nature and the core changes for alternate
+database access have not been fully tested its probably
+best to delay. Also head over to the web site's documentation
+page to see a Perspective of the code for the application.

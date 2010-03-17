@@ -1,0 +1,24 @@
+MyJSQLView Webpage Redesign
+
+The MyJSQLView project's webpage has under gone a major redesign in the
+last month that is sure to serve the application's needs for the future.
+The old webpage design was adequate for basic information, but lacked
+the ability to expand easily into new areas. The new site is all most
+pure HTML/CSS beside some scripting to ease maintenance. There is no
+Flash, or Javascript to slow the loading or cripple navigation for those
+that browse without plugins enabled. The site has been tested with most
+of the major browsers out there and seems to function decently except
+for some quirks with IE. Hey what can I say if IE does not adhere to basic
+standards. Included in the new site is a News mailing list that users
+may stay informed about updates to the application. With this new design
+extension for expansion should scale without as much effort which will
+allow focus on the MyJSQLView application's needs. It might also be noted
+that the MyJSQLView program is used in the maintenance of this site's
+news. The program provides a convenient method to generate and update
+news stories that has lessen the requirement to create HTML content.
+Sure phpMyAdmin could be used, but MyJSQLView can be fired up, edit,
+and update content before you even get through the login with your
+browser with that tool.
+
+Dana M. Proctor
+MyJSQLView Project Manager 

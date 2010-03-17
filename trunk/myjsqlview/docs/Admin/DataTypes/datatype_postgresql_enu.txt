@@ -1,0 +1,15 @@
+DROP TABLE IF EXISTS person;
+-- CREATE TYPE mood AS ENUM ('sad', 'ok', 'happy');
+CREATE TABLE person (
+    id SERIAL NOT NULL,
+    name text,
+    current_mood mood,
+    PRIMARY KEY ("id")
+);
+INSERT INTO person VALUES ('1', 'Moe', 'happy');
+
+i, colName, columnClass, columnType, columnSize
+
+1 id java.lang.Integer int4 11
+2 name java.lang.String text 2147483647
+3 current_mood Mood java.lang.Object mood 2147483647

@@ -1,0 +1,20 @@
+MyJSQLView Bug With PostgreSQL 8.3.0
+
+The MyJSQLView project is well into the testing phase
+for the version 2.81++ release. Currently all development
+work and testing as been performed with PostgreSQL 8.2.5.
+Last night I was able to finally setup a spare server
+with the 8.3.0 release of PostgreSQL for testing. Upon
+running the MyJSQLView application it immediately crashed.
+Upon tracing down the problem it was discovered a boolean
+conditional expression "WHERE 1" was not properly single
+quoted. The bug has been fixed and is available from the
+CVS depository at SourceForge.
+
+As indicated MyJSQLView is well into the testing phase and
+is ahead of the projected schedule for the next release.
+Expect an updated version of MyJSQLView at the end of next
+week.
+
+MyJSQLView Project Manager
+Dana M. Proctor

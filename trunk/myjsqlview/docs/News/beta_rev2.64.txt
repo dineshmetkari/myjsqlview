@@ -1,0 +1,17 @@
+MyJSQLView Version 2.64 Released
+
+The MyJSQLView Beta release has been updated to
+Version 2.64. The release highlights the new
+login access features. The user is now allowed
+to stipulate the connection parameters to the
+selected database. A Connection Manager has also
+been created for the managing and saving site
+connections.
+
+The project is looking for individuals that have
+access to DB2, Oracle, or MSSQL databases to try
+MyJSQLView with. Any feedback on the functionality
+of the tool for use with these databases would be
+greatly appreciated. Contact the project manager
+for help if need be, in the setup of the Driver,
+and advanced parameters settings.

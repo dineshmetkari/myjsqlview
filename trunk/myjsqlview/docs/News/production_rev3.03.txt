@@ -1,0 +1,25 @@
+MyJSQLView Version 3.03 Released
+
+The MyJSQLView project is pleased to provide the incremental release of
+Version 3.03 to the public. The release is minor in nature, but continues
+to polish the application with some minor bug fixes, and performance
+enhancements with regard to network bandwidth reduction. The software
+resumes the march toward the goal of providing additional capabilities
+besides a simple database access and update tool. Though release v3.03
+does not show outwardly to the user any of these Phase III features, a
+framework is being created for a plugin environment to enable expanded
+enhancements. What the user will find new in v3.03 is the ability to save
+and load individual summary table states and control date field formats
+for CSV import/exports. If you use MyJSQLView and have questions about
+the software or additional needs from the tool, let us know. Input is
+always welcome about the tool's usefulness or lack thereof.
+
+Dana M. Proctor
+MyJSQLView Project Manager 
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in the HSQL, MySQL, Oracle,
+and PostgreSQL databases. A query frame allows the building of complex
+SELECT SQL statements. The application allows easy sorting, searching,
+and import/export of table data.
+

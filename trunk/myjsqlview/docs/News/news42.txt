@@ -1,0 +1,22 @@
+MyJSQLView Revamped GUI Available for Trial
+
+The MyJSQLView project has now entered Phase III of its
+development and as such will begin the implementation of
+a plugin framework for extensions to the application.
+The plugin framework should allow the project and others
+the ability to easily add features to the tool with the
+continued goal of allowing access and analysis of database
+data. With that in mind the project has released a
+development version that begins some of that framework
+for a plugin environment which has resulted in GUI,
+graphical user interface, changes. The public is welcome
+and encouraged to try the new interface in the hope of
+providing the team with feedback on its usability. The
+development release, 2.93X, is not a stand alone package,
+but rather a limited set of files that are meant to
+replace or add to an existing installation. Make a backup
+copy of your current MyJSQLView.jar file so that you may
+revert back to a prior release as needed before installation
+of the development version. 
+
+

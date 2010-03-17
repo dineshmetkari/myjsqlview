@@ -1,0 +1,24 @@
+MyJSQLView 2.81++ Development
+
+The MyJSQLView team is continuing to implement Phase II of
+the project by supporting additional databases. As of this
+news release the project has successfully added HSQLDB to
+the list. Currently the basic data interface is functioning
+correctly with the ability to view, add, edit, delete, and
+import SQL dumps. A complete review is taking place in the
+process of adding HSQLDB to insure an easily modular architecture
+is in place to successfully implement Phase II of the project.
+HSQLDB was functional within a few hours, with the majority
+of that time spent reviewing documentation, so version 2.81
+work has come to fruition. The next release 2.81++ will work
+to fully support the HSLQDB and try to support all data types,
+to include arrays. A update feature for CSV imports will also
+be implemented.
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the MySQL & PostgreSQL databases. A query frame allows the
+building of complex SELECT SQL statements. The application
+allows easy sorting, searching, and import/export of table
+data.
+

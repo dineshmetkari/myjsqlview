@@ -1,0 +1,22 @@
+MyJSQLView Schema With PostgreSQL & HSQL
+
+Most databases use schema to fully qualify table names
+in the database. MyJSQLView does not use a fully qualified
+table name in any of its SQL statements. It relies on the
+database server to qualify the table name through parameters
+set in the database server configuration. In PostgreSQL
+this is done via the search_path and with HSQL just the
+schema setting. Both of these settings can be done at the
+server or at runtime through the connection.
+
+If the database that MyJSQLView is attempting to connect to
+does not have the correct schema settings then tables may fail
+to load. A development release has been posted that will allow
+a user to select the schema to be set at runtime if a table
+that is being loaded is not defined by the default schema with
+PostgreSQL and HSQL. This issue with schema is not present with
+MySQL database connections with MyJSQLView. The next release of
+MyJSQLView will address this issue more fully. 
+
+MyJSQLView Project Manager
+Dana M. Proctor

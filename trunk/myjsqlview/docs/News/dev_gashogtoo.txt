@@ -1,0 +1,5 @@
+The MyJSQLView project would like to inform
+the public of the addition of a new developer/
+tester to the team. Gashogtoo has been helping
+with testing, stressing, the application.
+Welcome!

@@ -1,0 +1,21 @@
+MyJSQLView Release 2.64++ Development Winding Down
+
+The development for the next release of MyJSQLView is winding down.
+All the major aspects identified as bugs/goals have been completed.
+Some wrapping up is taking place for the Query Frame and Entry Form
+add/edits. In addition to the development some administrative tasks
+will now begin, documentation update and package creation being the
+major tasks. So a release should be expected soon. MyJSQLView 2.64++
+has focused on the user interaction with a MySQL database and its
+tables' entries being viewed, added, and edited. At this time no
+major additional features such as MySQL administration have been
+implemented. 
+
+As the project manager I have been a little concerned over the current
+2.64 package being downloaded because of bugs in the keys as discussed
+in the last news release. The thought has occurred to me to remove this
+release, but I have kept it present, because I feel as though the
+application may still be useful to users that wish to access database
+tables with single primary keys. So please if the current download
+turns out deficit for your needs check back for release 2.64++.  
+

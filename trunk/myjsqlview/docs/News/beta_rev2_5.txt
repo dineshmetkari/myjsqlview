@@ -1,0 +1,12 @@
+   MyJSQLView Beta Updated to Version 2.5
+
+   The MyJSQLView Beta release has been updated to
+Version 2.5. The release addresses a bug in the
+manner that the application formatted TIMESTAMP
+field data.
+
+MyJSQLView provides an easy to use Java based user
+interface frontend for viewing, editing, or deleting
+entries in a MySQL database.
+
+
