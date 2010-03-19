@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.62 02/26/2010
+// Version 6.63 03/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -211,6 +211,7 @@
 //        6.61 Resource Loading for connectionManagerSaveExit/CancelButtons. Class Method
 //             ConnectionManager Argument resourceBundle.
 //        6.62 SplashPanel Constructor Creation, resourceBundle Addition in createSplashWindow().
+//        6.63 Moved cancelButton in Constructor to Proceed loginButton.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -240,7 +241,7 @@ import javax.swing.*;
  * a valid connection to a database. Arguments -debug. 
  * 
  * @author Dana M. Proctor
- * @version 6.62 02/26/2010
+ * @version 6.63 03/18/2010
  */
 
 class MyJSQLView_Access extends JFrame implements ActionListener
@@ -480,14 +481,6 @@ class MyJSQLView_Access extends JFrame implements ActionListener
       sshCheckBox.setFocusPainted(false);
       actionPanel.add(sshCheckBox);
       
-      resource = resourceBundle.getResource("MyJSQLView_Access.button.login");
-      if (resource.equals(""))
-         loginButton = new JButton("login");
-      else
-         loginButton = new JButton(resource);
-      loginButton.addActionListener(this);
-      actionPanel.add(loginButton);
-
       resource = resourceBundle.getResource("MyJSQLView_Access.button.cancel");
       if (resource.equals(""))
          cancelButton = new JButton("cancel");
@@ -495,6 +488,14 @@ class MyJSQLView_Access extends JFrame implements ActionListener
          cancelButton = new JButton(resource);
       cancelButton.addActionListener(this);
       actionPanel.add(cancelButton);
+      
+      resource = resourceBundle.getResource("MyJSQLView_Access.button.login");
+      if (resource.equals(""))
+         loginButton = new JButton("login");
+      else
+         loginButton = new JButton(resource);
+      loginButton.addActionListener(this);
+      actionPanel.add(loginButton);
       
       // Setting the component, connection parameters,
       // to last site, and then adding everything to the
