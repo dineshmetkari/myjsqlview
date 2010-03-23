@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.5 02/18/2010
+// Version 1.6 03/22/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.3 MyJSQLView Project Common Source Code Formatting.
 //         1.4 Header Format Changes/Update.
 //         1.5 Changed Package to Reflect Dandy Made Productions Code.
+//         1.6 Organized Imports.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -49,7 +50,7 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Font;
-import java.util.*;
+import java.util.Calendar;
 import javax.swing.JPanel;
 
 /**
@@ -59,7 +60,7 @@ import javax.swing.JPanel;
  * varying top preferences panels based on the current season.
  * 
  * @author Dana M. Proctor
- * @version 1.5 02/18/2010
+ * @version 1.6 03/22/2010
  */
 
 abstract class PreferencesPanel extends JPanel implements PreferencesPanelInterface
