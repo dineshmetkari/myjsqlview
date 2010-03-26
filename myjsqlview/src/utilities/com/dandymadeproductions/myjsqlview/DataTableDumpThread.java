@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,9 @@
 //         1.9 Changed Method Instance currentTableName in run() to
 //             currentTableFieldName.
 //         2.0 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 Conditional Check in run() Between (i < rowNumber) and
+//             dumpProgressBar.isCanceled() to Short-Circuit &&. Organized
+//             imports.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -57,8 +60,8 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.util.HashMap;
 import javax.swing.JTable;
-import java.util.*;
 
 /**
  *    The DataTableDumpThread class provides a thread to safely
@@ -67,7 +70,7 @@ import java.util.*;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 03/26/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -136,7 +139,7 @@ class DataTableDumpThread implements Runnable
          currentEntry = currentEntry.substring(0, currentEntry.length() - 1) + "\n";
 
       int i = 0;
-      while (i < rowNumber & !dumpProgressBar.isCanceled())
+      while ((i < rowNumber) && !dumpProgressBar.isCanceled())
       {
          dumpProgressBar.setCurrentValue(i);
 
