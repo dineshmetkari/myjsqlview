@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 3.5 02/18/2010
+// Version 3.6 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,9 @@
 //             iconsDirectory From MyJSQLView_Utils Class."
 //         3.4 Added fileSeparator to iconsDirectory.
 //         3.5 Changed Package to Reflect Dandy Made Productions Code.
+//         3.6 Conditional Checks in Method addSite() & renameSite() From
+//             Non-Short-Circut to Short-Circuit &&. Organized Imports
+//             SomeWhat.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,14 +83,24 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 
 /**
  *    The SitesTreePanel class provides the construction of a sites
@@ -95,7 +108,7 @@ import javax.swing.tree.*;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 3.5 02/18/2010
+ * @version 3.6 03/26/2010
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -360,7 +373,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             // Check to see if trying to add an
             // already existing site or empty string.
 
-            if (!siteNameCollection.contains(newSite) & !newSite.equals(""))
+            if (!siteNameCollection.contains(newSite) && !newSite.equals(""))
             {
                siteNameDialog.dispose();
                parentNode = addSite(parentNode, newSite, false);
@@ -550,7 +563,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                // Check to see if trying to add an
                // already existing site or empty string.
 
-               if (!siteNameCollection.contains(newSite) & !newSite.equals(""))
+               if (!siteNameCollection.contains(newSite) && !newSite.equals(""))
                {
                   siteNameDialog.dispose();
                   String currentNewSite, currentSiteDatabase;
@@ -636,7 +649,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                // Check to see if trying to add an
                // already existing site or empty string.
 
-               if (!siteNameCollection.contains(newSite) & !newSite.equals(""))
+               if (!siteNameCollection.contains(newSite) && !newSite.equals(""))
                {
                   siteNameDialog.dispose();
                   treeModel.removeNodeFromParent(selectedNode);
