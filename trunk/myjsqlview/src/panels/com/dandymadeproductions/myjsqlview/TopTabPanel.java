@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 03/22/2010
+// Version 1.1 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,9 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 03/22/2010 Original MyJSQLView TopTabPanel Class.
+//         1.1 03/26/2010 Changed Class Instances imageIconSize & moveIncrement
+//                        to static. Class Method paint() Changed Fixed int, 10,
+//                        to 10.0.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,15 +66,15 @@ import java.util.Random;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.0 03/22/2010
+ * @version 1.1 03/26/2010
  */
 
 class TopTabPanel extends JPanel implements MouseListener, Runnable
 {
    // Class Instances.
    private static final long serialVersionUID = 624771970044294469L;
-   private final int imageIconSize = 50;
-   private final int moveIncrement = imageIconSize / 5;
+   private static final int imageIconSize = 50;
+   private static final int moveIncrement = imageIconSize / 5;
 
    private transient Image backgroundImage;
    private int backgroundImageWidth, backgroundImageHeight;
@@ -455,7 +458,7 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
                                   Math.abs(randomNumber.nextInt() % 254));
          
          fontGradient = new GradientPaint(new Point2D.Double(0.0, 0.0), randomColor1,
-            new Point2D.Double(panelWidth, (panelHeight / 10)), randomColor2);
+            new Point2D.Double(panelWidth, (panelHeight / 10.0)), randomColor2);
          g2D.setPaint(fontGradient);
          g2D.setFont(drawingFont);
          
