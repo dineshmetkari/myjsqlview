@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.2 02/18/2010
+// Version 6.3 02/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,8 @@
 //         6.0 Check for SecurityException in run() for makeNewFile.delete().
 //         6.1 Class Method explicitStatementData() Instance columnNameString.
 //         6.2 Changed Package to Reflect Dandy Made Productions Code.
+//         6.3 Conditional Check in Method run() Between tablesIterator and
+//             databaseDumpProgressBar to Short-Circut &&. Organized Imports.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -163,11 +165,21 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.sql.*;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import javax.swing.JOptionPane;
 
 /**
@@ -177,7 +189,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.2 02/18/2010
+ * @version 6.3 03/26/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -285,7 +297,7 @@ class SQLDatabaseDumpThread implements Runnable
             i = 0;
             tablesIterator = MyJSQLView_Access.getTableNames().iterator();
 
-            while (tablesIterator.hasNext() & !databaseDumpProgressBar.isCanceled())
+            while (tablesIterator.hasNext() && !databaseDumpProgressBar.isCanceled())
             {
                databaseDumpProgressBar.setDatabaseDumpCurrentValue(i + 1);
                
