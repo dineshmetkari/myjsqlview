@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 4.9 02/18/2010
+// Version 5.0 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,7 +61,7 @@
 //         3.1 MyJSQLView.getDataExportProperties().
 //         3.2 Output Non-Modified Field Names. Same As Table Name.
 //             Modified rowCount Method to SELECT COUNT(*). Inserted
-//            identifierQuoteString. Trimmed Default Content.
+//             identifierQuoteString. Trimmed Default Content.
 //         3.3 Deliminator to Delimiter.
 //         3.4 ColumnType Binary Exclusion, mysqlStatement Changed to
 //             sqlStatement, and rs Changed to dbResultSet, All in
@@ -91,6 +91,9 @@
 //         4.8 Added Class Method Instance columnNames_String, StringBuffer,
 //             to run().
 //         4.9 Changed Package to Reflect Dandy Made Productions Code.
+//         5.0 Minor Comment Changes and Conditional Check in run() Between
+//             dbResultSet.next() and dumpProgressBar.isCanceled() to Short-
+//             Circuit &&. Organized imports.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -98,9 +101,14 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.*;
-import java.sql.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  *    The DataDumpThread class provides a thread to safely dump
@@ -108,7 +116,7 @@ import java.sql.*;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 4.9 02/18/2010
+ * @version 5.0 03/26/2010
  */
 
 class DataDumpThread implements Runnable
@@ -255,7 +263,7 @@ class DataDumpThread implements Runnable
 
          // Collect contents of table field rows and to dump.
 
-         while (dbResultSet.next() & !dumpProgressBar.isCanceled())
+         while (dbResultSet.next() && !dumpProgressBar.isCanceled())
          {
             int i = 1;
             dumpProgressBar.setCurrentValue(currentRow);
