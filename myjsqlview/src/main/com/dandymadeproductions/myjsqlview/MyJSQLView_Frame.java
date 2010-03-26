@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 02/27/2010
+// Version 3.3 03/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,8 +72,16 @@
 //         2.9 11/15/2009 Replaced Graphic Filler for the Plugin Tab, With TableFieldChartsPanel
 //                        in Constructor. Also Reloaded Same in Class Method reloadDBTables().
 //         3.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
-//         3.1 02/27/2010 Class Method createGUI(), DatabaseTableThread Addition of resourceBundle
-//                        and resource Instances to Handle Internationalization.
+//         3.1 02/27/2010 Class Method createGUI(), DatabaseTableThread Addition of
+//                        resourceBundle and resource Instances to Handle Internationalization.
+//         3.2 03/22/2010 Moved the Creation of the Main Tab, DMP, to a New Class TopTabPanel.
+//                        Created Class Instance mainTabPanel, removed Setting up That
+//                        Panel TopTabPanel. Added ChangeListener to mainTabsPane &
+//                        Suspended mainTabPanel as Needed to Stop Thread. Removed Method
+//                        Instances mainTabImageFileName, calendar, and timeOfDay from
+//                        createGUI().
+//         3.3 03/25/2010 Class Method stateChanged() mainTabPanel.resetPanel(). Hook for
+//                        Future Possible Password Protection for Idle Application.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -81,13 +89,15 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.sql.*;
-import java.util.Calendar;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Vector;
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.event.*;
-import javax.swing.event.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *    The MyJSQLView_Frame class is used to setup the main user interface
@@ -96,7 +106,7 @@ import javax.swing.event.*;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.1 02/27/2010
+ * @version 3.3 03/25/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -109,6 +119,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
    private MyJSQLView_JToolBar myJSQLViewToolBar;
    
    private static ImageIcon mainTabIcon, databaseTablesIcon, pluginsIcons;
+   private TopTabPanel mainTabPanel;
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
    private static TableFieldChartsPanel tableFieldChartsPanel;
@@ -139,10 +150,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       // Class Instances
       JPanel mainPanel;
       String iconsDirectory;
-      String mainTabImageFileName;
-      Calendar calendar;
-      int timeOfDay;
-
+      
       // Setting up Various Instances.
       
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -170,36 +178,16 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       mainTabsPane.setBorder(BorderFactory.createLoweredBevelBorder());
       mainTabsPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 
+      //=========================================
+      // Standard dmp Main Tab
+      
+      mainTabPanel = new TopTabPanel();
+      mainTabsPane.addTab(null, mainTabIcon, mainTabPanel, "Dandy Made Productions");   
+      
       // ===============================================
       // Fill the tabs with the default MyJSQlView
       // database tables tab and any other plugins.
       // ===============================================
-      
-      //=========================================
-      // Standard dmp Main Tab
-      
-      JPanel mainTabPanel = new JPanel();
-      
-      calendar = Calendar.getInstance();
-      timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-      
-      // {8:00pm - 4:00am} Night
-      if (timeOfDay >= 20 || timeOfDay <=4)
-         mainTabImageFileName = "mainTab_night.jpg";  
-      // {5:00am - 9:00am} Morning
-      else if (timeOfDay >= 5  && timeOfDay <= 9)
-         mainTabImageFileName = "mainTab_morning.jpg";
-      // {10:00am - 4:00pm} Afternoon
-      else if (timeOfDay >= 10  && timeOfDay <= 16)
-         mainTabImageFileName = "mainTab_day.jpg";
-      // {5:00pm - 7:00pm} Evening
-      else
-         mainTabImageFileName = "mainTab_evening.jpg";
-      
-      JLabel mainTabLabel = new JLabel(new ImageIcon("images" + fileSeparator
-            + mainTabImageFileName));
-      mainTabPanel.add(mainTabLabel);
-      mainTabsPane.addTab(null, mainTabIcon, mainTabPanel, "Dandy Made Productions");     
       
       //=========================================
       // Database Tables Tab
@@ -247,7 +235,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       }, "MyJSQLView_Frame.createGUI(), tempPluginThread");
       tempPluginThread.start();  
       
-      //mainTabsPane.addChangeListener(this);
+      mainTabsPane.addChangeListener(this);
       mainPanel.add(mainTabsPane, BorderLayout.CENTER);
       getContentPane().add(mainPanel);
    }
@@ -275,7 +263,18 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       
       if (changeSource != null && (JTabbedPane) changeSource == mainTabsPane)
       {
-         // System.out.println(mainTabsPane.getSelectedIndex());
+         // The top mainTabPanel is a runnable thread so
+         // constrol the animation.
+         
+         if (mainTabsPane.getSelectedIndex() == 0)
+         {
+            mainTabPanel.resetPanel();
+            mainTabPanel.setThreadAction(false);
+         }
+         else
+         {
+            mainTabPanel.setThreadAction(true);
+         }
       }
    }
    
