@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.63 03/18/2010
+// Version 6.64 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -212,6 +212,8 @@
 //             ConnectionManager Argument resourceBundle.
 //        6.62 SplashPanel Constructor Creation, resourceBundle Addition in createSplashWindow().
 //        6.63 Moved cancelButton in Constructor to Proceed loginButton.
+//        6.64 Conditional Checks in Methods actionPerformed() & fillSiteDataStructures() From
+//             Non-Short-Circut to Short-Circuit &&.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -219,6 +221,13 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
@@ -227,9 +236,6 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.sound.sampled.Clip;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
 import javax.swing.*;
 
 /**
@@ -241,7 +247,7 @@ import javax.swing.*;
  * a valid connection to a database. Arguments -debug. 
  * 
  * @author Dana M. Proctor
- * @version 6.63 03/18/2010
+ * @version 6.64 03/26/2010
  */
 
 class MyJSQLView_Access extends JFrame implements ActionListener
@@ -712,8 +718,8 @@ class MyJSQLView_Access extends JFrame implements ActionListener
          String actionCommandName = selectedMenuItem.getActionCommand();
          // System.out.println(actionCommandName);
 
-         if (!actionCommandName.equals("Cut") & !actionCommandName.equals("Copy")
-             & !actionCommandName.equals("Paste"))
+         if (!actionCommandName.equals("Cut") && !actionCommandName.equals("Copy")
+             && !actionCommandName.equals("Paste"))
          {
             SiteParameters selectedSite = (SiteParameters) sites.get(actionCommandName);
             setSelectedSite(selectedSite);
@@ -755,7 +761,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
          else
             siteSelectMenu.add(createMenuItem(siteName, siteName));
 
-         if (!sitesTreeSet.contains(siteName) & !siteName.equals("Last Site"))
+         if (!sitesTreeSet.contains(siteName) && !siteName.equals("Last Site"))
             sitesTreeSet.add(siteName);
       }
 
