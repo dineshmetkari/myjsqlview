@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,16 +37,16 @@
 //         1.2 01/21/2007 JOptionPane Dialog for IOException Output.
 //         1.3 01/21/2007 DumbProgressBar Option Argument to Class Method
 //                        mainWriteDataString().
-//         1.4 04/17/2007 Class Instance fileStream Flushed and Closed Before
-//                        Finishing. Bug With XML Configuration File Corruption,
-//                        Fix?
-//         1.5 09/03.2007 Class Instance dumpProgressBar Set pack() and
-//                        setVisible(true).
+//         1.4 04/17/2007 Class Instance fileStream Flushed and Closed Before Finishing.
+//                        Bug With XML Configuration File Corruption, Fix?
+//         1.5 09/03.2007 Class Instance dumpProgressBar Set pack() and setVisible(true).
 //         1.6 10/21/2007 Cleaned Up Javadoc Comments.
 //         1.7 12/12/2008 Header Update.
 //         1.8 10/23/2008 MyJSQLView Project Common Source Code Formatting.
 //         1.9 05/27/2009 Header Format Changes/Update.
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 03/26/2010 Conditional Check in Constructor Between (i < buf.length) and
+//                        dumpProgressBar to Short-Circuit &&. Organized imports.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -54,7 +54,9 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.io.*;
+import java.io.BufferedOutputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import javax.swing.JOptionPane;
 
 /**
@@ -64,7 +66,7 @@ import javax.swing.JOptionPane;
  * also provides a generic means to output byte[] data to a file.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 03/26/2010
  */
 
 class WriteDataFile
@@ -103,7 +105,7 @@ class WriteDataFile
             dumpProgressBar.center();
             dumpProgressBar.setVisible(true);
 
-            while (i < buf.length & !dumpProgressBar.isCanceled())
+            while ((i < buf.length) && !dumpProgressBar.isCanceled())
             {
                dumpProgressBar.setCurrentValue(i);
                filebuff.write(buf[i++]);
