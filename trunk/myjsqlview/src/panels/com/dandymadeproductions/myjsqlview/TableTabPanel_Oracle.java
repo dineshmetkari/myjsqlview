@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.1 02/19/2010
+// Version 8.2 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -200,6 +200,8 @@
 //         8.1 Correction in Class Method getColumnNames() To Handle Possible Event of No
 //             Fields in the Table. Detected Because 6.2 Exclused Blob and key_tables Has
 //             table key_table3 With One Field and It is Blob.
+//         8.2 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
+//             sqlStatementString to a StringBuffer.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -232,7 +234,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.1 02/19/2010
+ * @version 8.2 03/26/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -771,7 +773,7 @@ class TableTabPanel_Oracle extends TableTabPanel
    public void viewSelectedItem(Connection dbConnection, int rowToView)
    {
       // Method Instances
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
       Statement sqlStatement;
       ResultSet db_resultSet;
 
@@ -786,8 +788,9 @@ class TableTabPanel_Oracle extends TableTabPanel
       {
          // Begin the SQL statement creation.
          sqlStatement = dbConnection.createStatement();
-         sqlStatementString = "SELECT " + sqlTableFieldsStringLTZ + " FROM "
-                              + schemaTableName + " WHERE ";
+         sqlStatementString = new StringBuffer();
+         sqlStatementString.append("SELECT " + sqlTableFieldsStringLTZ + " FROM "
+                                   + schemaTableName + " WHERE ");
 
          // Find the key column, in case it has been moved
          // in the summary table, then obtain entry content.
@@ -812,9 +815,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                keyString = keyString.replaceAll("'", "''");
 
                // select * from t1 where a like "hello%";
-               sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                     + identifierQuoteString
-                                     + " LIKE '" + keyString + "%' AND ";
+               sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                         + identifierQuoteString
+                                         + " LIKE '" + keyString + "%' AND ");
             }
             // Normal keys
             else
@@ -823,9 +826,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                if ((currentContentData + "").toLowerCase().equals("null"))
                {
                   currentContentData = "IS NULL";
-                  sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                        + identifierQuoteString + " "
-                                        + currentContentData + " AND ";
+                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                            + identifierQuoteString + " "
+                                            + currentContentData + " AND ");
                }
                else
                {
@@ -839,20 +842,20 @@ class TableTabPanel_Oracle extends TableTabPanel
                   currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
-                     sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                           + identifierQuoteString + "=TO_DATE('" + currentContentData
-                                           + "', 'MM-dd-YYYY') AND ";
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "=TO_DATE('" + currentContentData
+                                               + "', 'MM-dd-YYYY') AND ");
                   }
                   else
-                     sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                           + identifierQuoteString + "='" + currentContentData
-                                           + "' AND ";
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "='" + currentContentData
+                                               + "' AND ");
                }
             }
          }
-         sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 5);
+         sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
          // System.out.println(sqlStatementString);
-         db_resultSet = sqlStatement.executeQuery(sqlStatementString);
+         db_resultSet = sqlStatement.executeQuery(sqlStatementString.toString());
          db_resultSet.next();
 
          // Cycling through the item fields and setting
@@ -1106,7 +1109,7 @@ class TableTabPanel_Oracle extends TableTabPanel
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
    {
       // Method Instances
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
       Statement sqlStatement;
       ResultSet db_resultSet;
 
@@ -1145,8 +1148,9 @@ class TableTabPanel_Oracle extends TableTabPanel
          sqlStatement = dbConnection.createStatement();
 
          // Begin the SQL statement(s) creation.
-         sqlStatementString = "SELECT " + sqlTableFieldsStringLTZ + " FROM "
-                              + schemaTableName + " WHERE ";
+         sqlStatementString = new StringBuffer();
+         sqlStatementString.append("SELECT " + sqlTableFieldsStringLTZ + " FROM "
+                                   + schemaTableName + " WHERE ");
 
          keyIterator = primaryKeys.iterator();
 
@@ -1170,9 +1174,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                String keyString = ((BlobTextKey) currentContentData).getContent();
                keyString = keyString.replaceAll("'", "''");
 
-               sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                     + identifierQuoteString
-                                     + " LIKE '" + keyString + "%' AND ";
+               sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                         + identifierQuoteString
+                                         + " LIKE '" + keyString + "%' AND ");
             }
             // Normal key.
             else
@@ -1181,9 +1185,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                if ((currentContentData + "").toLowerCase().equals("null"))
                {
                   currentContentData = "IS NULL";
-                  sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                        + identifierQuoteString + " "
-                                        + currentContentData + " AND ";
+                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                            + identifierQuoteString + " "
+                                            + currentContentData + " AND ");
                }
                else
                {
@@ -1197,20 +1201,20 @@ class TableTabPanel_Oracle extends TableTabPanel
                   currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
-                     sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                           + identifierQuoteString + "=TO_DATE('"
-                                           + currentContentData + "', 'MM-dd-YYYY') AND ";
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "=TO_DATE('"
+                                               + currentContentData + "', 'MM-dd-YYYY') AND ");
                   }
                   else
-                     sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                           + identifierQuoteString + "='"
-                                           + currentContentData + "' AND ";
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "='"
+                                               + currentContentData + "' AND ");
                }
             }
          }
-         sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 5);
+         sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
          // System.out.println(sqlStatementString);
-         db_resultSet = sqlStatement.executeQuery(sqlStatementString);
+         db_resultSet = sqlStatement.executeQuery(sqlStatementString.toString());
          db_resultSet.next();
 
          // Now that we have the data for the selected field entry in
