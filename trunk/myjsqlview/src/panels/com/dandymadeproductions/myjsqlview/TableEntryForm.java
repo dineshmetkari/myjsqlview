@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.67 03/03/2010
+// Version 8.68 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -294,6 +294,8 @@
 //                        Added Constructor Instance resource and Same to createEditMenu(). Added
 //                        Instances resource & message to Methods actionPerformed(), openBlobTextField(),
 //                        addUpdateTableEntry(), and selectFunctionOperator().
+//        8.68 03/26/2010 Class Method addUpdateTableEntry() Changed Instance sqlStatementString to
+//                        Type StringBuffer.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -301,14 +303,24 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.io.*;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.awt.event.*;
-import java.util.*;
-import java.io.*;
-import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 
@@ -317,7 +329,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.67 03/03/2010
+ * @version 8.68 03/26/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1100,7 +1112,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // Method Instances
       String schemaName, tableName;
       String columnName, columnClass, columnType;
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
       String sqlFieldNamesString, sqlValuesString;
       Statement sqlStatement;
       PreparedStatement prepared_sqlStatement;
@@ -1128,6 +1140,7 @@ class TableEntryForm extends JFrame implements ActionListener
       {
          db_Connection.setAutoCommit(false);
          sqlStatement = db_Connection.createStatement();
+         sqlStatementString = new StringBuffer();
 
          // HSQL & Oracle does not support.
          if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
@@ -1140,7 +1153,7 @@ class TableEntryForm extends JFrame implements ActionListener
          if (addItem)
          {
             // Beginner SQL statement creation.
-            sqlStatementString = "INSERT INTO " + sqlTable + " ";
+            sqlStatementString.append("INSERT INTO " + sqlTable + " ");
             sqlFieldNamesString = "(";
             sqlValuesString = "VALUES (";
 
@@ -1360,7 +1373,7 @@ class TableEntryForm extends JFrame implements ActionListener
             else
                sqlValuesString += ")";
 
-            sqlStatementString += sqlFieldNamesString + " " + sqlValuesString;
+            sqlStatementString.append(sqlFieldNamesString + " " + sqlValuesString);
             // System.out.println(sqlStatementString);
          }
 
@@ -1370,7 +1383,7 @@ class TableEntryForm extends JFrame implements ActionListener
          else
          {
             // Beginner SQL statement creation.
-            sqlStatementString = "UPDATE " + sqlTable + " SET ";
+            sqlStatementString.append("UPDATE " + sqlTable + " SET ");
 
             columnNamesIterator = formFields.iterator();
 
@@ -1406,8 +1419,8 @@ class TableEntryForm extends JFrame implements ActionListener
                else if (!isTextField && !isBlobField && !isArrayField
                         && getFormField(columnName).toLowerCase().equals("default"))
                {
-                  sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                        + identifierQuoteString + "=default, ";
+                  sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                            + identifierQuoteString + "=default, ");
                }
 
                // Null Entry Field
@@ -1415,8 +1428,8 @@ class TableEntryForm extends JFrame implements ActionListener
                else if (!isTextField && !isBlobField && !isArrayField
                         && getFormField(columnName).toLowerCase().equals("null"))
                {
-                  sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                        + identifierQuoteString + "=null, ";
+                  sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                            + identifierQuoteString + "=null, ");
                }
 
                // Normal/special Data Entry Fields
@@ -1434,8 +1447,8 @@ class TableEntryForm extends JFrame implements ActionListener
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
                               identifierQuoteString, "");
 
-                           sqlStatementString += "nextval('" + schemaName + tableName + "_"
-                                                 + columnNamesHashMap.get(columnName) + "_seq\"'), ";
+                           sqlStatementString.append("nextval('" + schemaName + tableName + "_"
+                                                     + columnNamesHashMap.get(columnName) + "_seq\"'), ");
                         }
                         else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                         {
@@ -1443,16 +1456,15 @@ class TableEntryForm extends JFrame implements ActionListener
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
                               identifierQuoteString, "");
 
-                           sqlStatementString += autoIncrementHashMap.get(columnName) + ".NEXTVAL, ";
+                           sqlStatementString.append(autoIncrementHashMap.get(columnName) + ".NEXTVAL, ");
                         }
                         else
-                           sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                                 + identifierQuoteString + "=null, ";
+                           sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                     + identifierQuoteString + "=null, ");
                      }
                      else
-                        sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                              + identifierQuoteString + "=?, ";
-                     ;
+                        sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                  + identifierQuoteString + "=?, ");
                   }
 
                   // Special fields that can not be represented
@@ -1461,8 +1473,9 @@ class TableEntryForm extends JFrame implements ActionListener
                   // PostgreSQL Interval fields.
                   else if (columnType.equals("INTERVAL"))
                   {
-                     sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                           + identifierQuoteString + "='" + getFormField(columnName) + "', ";
+                     sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                               + identifierQuoteString + "='" + getFormField(columnName)
+                                               + "', ");
                   }
 
                   // PostgreSQL Bit fields.
@@ -1470,8 +1483,9 @@ class TableEntryForm extends JFrame implements ActionListener
                            && !MyJSQLView_Access.getSubProtocol().equals("mysql")
                            && columnType.indexOf("_") == -1)
                   {
-                     sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                           + identifierQuoteString + "=B'" + getFormField(columnName) + "', ";
+                     sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                               + identifierQuoteString + "=B'" + getFormField(columnName)
+                                               + "', ");
                   }
 
                   // PostgreSQL Geometric fields.
@@ -1479,16 +1493,18 @@ class TableEntryForm extends JFrame implements ActionListener
                            || columnType.equals("BOX") || columnType.equals("PATH")
                            || columnType.equals("POLYGON") || columnType.equals("CIRCLE"))
                   {
-                     sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                           + identifierQuoteString + "='" + getFormField(columnName) + "', ";
+                     sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                               + identifierQuoteString + "='" + getFormField(columnName)
+                                               + "', ");
                   }
 
                   // PostgreSQL Network Address fields.
                   else if (columnType.equals("CIDR") || columnType.equals("INET")
                            || columnType.equals("MACADDR"))
                   {
-                     sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                           + identifierQuoteString + "='" + getFormField(columnName) + "', ";
+                     sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                               + identifierQuoteString + "='" + getFormField(columnName)
+                                               + "', ");
                   }
 
                   // Oracle BFILE fields.
@@ -1513,28 +1529,28 @@ class TableEntryForm extends JFrame implements ActionListener
                            if (currentRemoveBlobCheckBox != null)
                            {
                               if (currentRemoveBlobCheckBox.isSelected())
-                                 sqlStatementString += identifierQuoteString
-                                                       + columnNamesHashMap.get(columnName)
-                                                       + identifierQuoteString + "=null, ";
+                                 sqlStatementString.append(identifierQuoteString
+                                                           + columnNamesHashMap.get(columnName)
+                                                           + identifierQuoteString + "=null, ");
                               else
-                                 sqlStatementString += identifierQuoteString
-                                                       + columnNamesHashMap.get(columnName)
-                                                       + identifierQuoteString + "='"
-                                                       + getFormFieldText(columnName) + "', ";
+                                 sqlStatementString.append(identifierQuoteString
+                                                           + columnNamesHashMap.get(columnName)
+                                                           + identifierQuoteString + "='"
+                                                           + getFormFieldText(columnName) + "', ");
                            }
                            else
-                              sqlStatementString += identifierQuoteString
-                                                    + columnNamesHashMap.get(columnName)
-                                                    + identifierQuoteString + "='"
-                                                    + getFormFieldText(columnName) + "', ";
+                              sqlStatementString.append(identifierQuoteString
+                                                        + columnNamesHashMap.get(columnName)
+                                                        + identifierQuoteString + "='"
+                                                        + getFormFieldText(columnName) + "', ");
                         }
                         else
-                           sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                                 + identifierQuoteString + "=null, ";
+                           sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                     + identifierQuoteString + "=null, ");
                      }
                      else
-                        sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                              + identifierQuoteString + "=null, ";
+                        sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                  + identifierQuoteString + "=null, ");
                   }
 
                   // Function or Normal Fields
@@ -1543,18 +1559,18 @@ class TableEntryForm extends JFrame implements ActionListener
                      // Implement function operator as needed.
                      if (functionsHashMap.containsKey(columnName))
                      {
-                        sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                              + identifierQuoteString + "=";
-                        sqlStatementString += createFunctionSQLStatement(columnName);
+                        sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                  + identifierQuoteString + "=");
+                        sqlStatementString.append(createFunctionSQLStatement(columnName));
                      }
                      else
-                        sqlStatementString += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                              + identifierQuoteString + "=?, ";
+                        sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                  + identifierQuoteString + "=?, ");
                   }
                }
             }
-            sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 2);
-            sqlStatementString += " WHERE ";
+            sqlStatementString.delete((sqlStatementString.length() - 2), sqlStatementString.length());
+            sqlStatementString.append(" WHERE ");
 
             // ==============================
             // Continuing with construction
@@ -1584,8 +1600,8 @@ class TableEntryForm extends JFrame implements ActionListener
                   String keyString = ((BlobTextKey) currentContentData).getContent();
                   keyString = keyString.replaceAll("'", "''");
 
-                  sqlStatementString += identifierQuoteString + currentKey_ColumnName + identifierQuoteString
-                                        + " LIKE '" + keyString + "%' AND ";
+                  sqlStatementString.append(identifierQuoteString + currentKey_ColumnName + identifierQuoteString
+                                            + " LIKE '" + keyString + "%' AND ");
                }
                // Normal key.
                else
@@ -1600,16 +1616,17 @@ class TableEntryForm extends JFrame implements ActionListener
                         .parseColumnNameField(currentKey_ColumnName));
                   if (columnType.indexOf("DATE") != -1)
                   {
-                     sqlStatementString += identifierQuoteString + currentKey_ColumnName
-                                           + identifierQuoteString + "="
-                                           + formatDatabaseDateString(currentContentData) + " AND ";
+                     sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                                               + identifierQuoteString + "="
+                                               + formatDatabaseDateString(currentContentData) + " AND ");
                   }
                   else
-                     sqlStatementString += identifierQuoteString + currentKey_ColumnName
-                                           + identifierQuoteString + "='" + currentContentData + "' AND ";
+                     sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                                               + identifierQuoteString + "='" + currentContentData
+                                               + "' AND ");
                }
             }
-            sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 5);
+            sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
 
             // Adding LIMIT expression for supported databases.
             if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
@@ -1621,7 +1638,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      int limitValue = Integer.parseInt(limitTextField.getText());
                      if (limitValue <= 0)
                         Integer.parseInt("a");
-                     sqlStatementString += " LIMIT " + limitValue;
+                     sqlStatementString.append(" LIMIT " + limitValue);
                   }
                   catch (NumberFormatException e)
                   {
@@ -1644,7 +1661,7 @@ class TableEntryForm extends JFrame implements ActionListener
                }
                else
                {
-                  sqlStatementString += " LIMIT 1";
+                  sqlStatementString.append(" LIMIT 1");
                }
             }
          }
@@ -1654,7 +1671,7 @@ class TableEntryForm extends JFrame implements ActionListener
          // Accessing the database and setting values for each
          // selected entry in the prepareStatement.
 
-         prepared_sqlStatement = db_Connection.prepareStatement(sqlStatementString);
+         prepared_sqlStatement = db_Connection.prepareStatement(sqlStatementString.toString());
          columnNamesIterator = formFields.iterator();
          int i = 1;
 
