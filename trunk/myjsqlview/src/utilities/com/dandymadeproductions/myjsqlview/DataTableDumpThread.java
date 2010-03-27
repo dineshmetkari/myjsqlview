@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.2 03/27/2010
+// Version 2.3 03/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,8 @@
 //             imports.
 //         2.2 Class Method run() Changed Instance currentEntry to Type
 //             StringBuffer.
+//         2.3 Correction in Conparison of currentEntry to length() !=0 
+//             Instead of String Equality in Class Method run().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -72,7 +74,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.2 03/27/2010
+ * @version 2.3 03/27/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -138,7 +140,7 @@ class DataTableDumpThread implements Runnable
          currentEntry.append(tableColumnNamesHashMap.get(currentTableFieldName) + delimiterString);
          summaryListTableNameTypes.put(i + "", tableColumnTypeHashMap.get(currentTableFieldName));
       }
-      if (!currentEntry.equals(""))
+      if (currentEntry.length() != 0)
       {
          currentEntry.delete((currentEntry.length() - 1), currentEntry.length());
          currentEntry.append("\n");
