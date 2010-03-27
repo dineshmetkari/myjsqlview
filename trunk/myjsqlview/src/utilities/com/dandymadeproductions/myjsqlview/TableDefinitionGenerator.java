@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.6 02/18/2010
+// Version 3.7 03/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,9 @@
 //             From String to StringBuffer. Class Method createPostgreSQLTableDefinition()
 //             Changed Instances primaryKeys, uniqueKeys, foreignKeys to StringBuffers.
 //         3.6 Changed Package to Reflect Dandy Made Productions Code.
+//         3.7 Class Method createOracleTableDefinition() Changed Instances primaryKeys,
+//             uniqueKeys, & foreignKeys to Type StringBuffer. Oranized imports.
+//             
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -105,7 +108,12 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 
 /**
@@ -114,7 +122,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 3.6 02/18/2010
+ * @version 3.7 03/27/2010
  */
 
 class TableDefinitionGenerator
@@ -848,7 +856,7 @@ class TableDefinitionGenerator
       HashMap autoIncrementColumnNameHashMap;
       String sequenceKeyPresent;
 
-      String primaryKeys, uniqueKeys, foreignKeys;
+      StringBuffer primaryKeys, uniqueKeys, foreignKeys;
       String referenceTableName, referenceColumnName;
       // String onUpdateRule;
       String onDeleteRule;
@@ -1081,9 +1089,9 @@ class TableDefinitionGenerator
          // Create the keys for the table.
 
          columnName = "";
-         primaryKeys = "";
-         uniqueKeys = "";
-         foreignKeys = "";
+         primaryKeys = new StringBuffer();
+         uniqueKeys = new StringBuffer();
+         foreignKeys = new StringBuffer();
          referenceTableName = "";
          referenceColumnName = "";
          // onUpdateRule = "";
@@ -1098,7 +1106,7 @@ class TableDefinitionGenerator
             if (autoIncrementColumnNameHashMap.containsKey(columnName))
                sequenceKeyPresent = "primary_" + columnName;
 
-            primaryKeys += identifierQuoteString + columnName + identifierQuoteString + ",";
+            primaryKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
          }
 
          // Unique Keys
@@ -1118,17 +1126,17 @@ class TableDefinitionGenerator
                if (autoIncrementColumnNameHashMap.containsKey(columnName))
                   sequenceKeyPresent = "unique_" + columnName;
 
-               uniqueKeys += identifierQuoteString + columnName + identifierQuoteString + ",";
+               uniqueKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
             }
          }
 
          // Add Unique & Primary Keys.
-         if (!uniqueKeys.equals("") && sequenceKeyPresent.indexOf("unique") == -1)
+         if (uniqueKeys.length() != 0 && sequenceKeyPresent.indexOf("unique") == -1)
             tableDefinition.append("UNIQUE (" 
                                    + uniqueKeys.substring(0, uniqueKeys.length() - 1)
                                    + "),\n    ");
 
-         if (!primaryKeys.equals("") && sequenceKeyPresent.indexOf("primary") == -1)
+         if (primaryKeys.length() != 0 && sequenceKeyPresent.indexOf("primary") == -1)
             tableDefinition.append("PRIMARY KEY (" 
                                    + primaryKeys.substring(0, primaryKeys.length() - 1)
                                    + "),\n    ");
@@ -1150,9 +1158,9 @@ class TableDefinitionGenerator
             // onDeleteRule = resultSet.getString("DELETE_RULE");
             onDeleteRule = "CASCADE";
 
-            foreignKeys += identifierQuoteString + columnName + identifierQuoteString;
+            foreignKeys.append(identifierQuoteString + columnName + identifierQuoteString);
 
-            tableDefinition.append("FOREIGN KEY (" + foreignKeys + ") REFERENCES " 
+            tableDefinition.append("FOREIGN KEY (" + foreignKeys.toString() + ") REFERENCES " 
                                    + identifierQuoteString + referenceTableName 
                                    + identifierQuoteString + "(" + identifierQuoteString
                                    + referenceColumnName + identifierQuoteString + ") ON DELETE "
