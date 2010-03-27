@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.48 03/05/2010
+// Version 4.49 03/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,6 +116,8 @@
 //             & UpdateForm in Class Methods createAdvancedSortSearchFrame() and
 //             createUpdateFrame().
 //        4.48 Organized Constructor Instances.
+//        4.49 Class Method deleteSelectedItem() Changed Method Instance sqlStatementString
+//             to a StringBuffer.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -148,7 +150,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.48 03/05/2010
+ * @version 4.49 03/26/2010
  */
 
 abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1491,7 +1493,7 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
    public void deleteSelectedItems(Connection dbConnection)
    {
       // Method Instances
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
       Statement sqlStatement;
       int[] selectedRows;
       
@@ -1547,7 +1549,8 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
                   sqlStatement.executeUpdate("BEGIN");
 
                // Begin the SQL statement(s) creation.
-               sqlStatementString = "DELETE FROM " + schemaTableName + " WHERE ";
+               sqlStatementString = new StringBuffer();
+               sqlStatementString.append("DELETE FROM " + schemaTableName + " WHERE ");
 
                // Delete multiple rows if selected.
                for (int i = 0; i < selectedRows.length; i++)
@@ -1576,8 +1579,9 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
                            String keyString = ((BlobTextKey) currentContentData).getContent();
                            keyString = keyString.replaceAll("'", "''");
 
-                           sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                                 + identifierQuoteString + " LIKE '" + keyString + "%' AND ";
+                           sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                     + identifierQuoteString + " LIKE '"
+                                                     + keyString + "%' AND ");
                         }
                         // Normal keys.
                         else
@@ -1595,35 +1599,36 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
                               // MySQL & Oracle Require Special Handling.
                               if (MyJSQLView_Access.getSubProtocol().indexOf("mysql") != -1)
                               {
-                                 sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                                       + identifierQuoteString + "=STR_TO_DATE('"
-                                                       + currentContentData + "', '%m-%d-%Y') AND ";
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "=STR_TO_DATE('"
+                                                           + currentContentData + "', '%m-%d-%Y') AND ");
                               }
                               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                               {
-                                 sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                                       + identifierQuoteString + "=TO_DATE('"
-                                                       + currentContentData + "', 'MM-dd-YYYY') AND ";
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "=TO_DATE('"
+                                                           + currentContentData + "', 'MM-dd-YYYY') AND ");
                               }
                               else
                               {
-                                 sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                                       + identifierQuoteString + "='"
-                                                       + MyJSQLView_Utils.formatJavaDateString(
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "='"
+                                                           + MyJSQLView_Utils.formatJavaDateString(
                                                                            currentContentData + "")
-                                                       + "' AND ";
+                                                           + "' AND ");
                               }
                            }
                            else
-                              sqlStatementString += identifierQuoteString + currentDB_ColumnName
-                                                    + identifierQuoteString + "='" + currentContentData
-                                                    + "' AND ";
+                              sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                        + identifierQuoteString + "='" + currentContentData
+                                                        + "' AND ");
                         }
                      }
-                     sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 5);
+                     sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
                      // System.out.println(sqlStatementString);
-                     sqlStatement.executeUpdate(sqlStatementString);
-                     sqlStatementString = "DELETE FROM " + schemaTableName + " WHERE ";
+                     sqlStatement.executeUpdate(sqlStatementString.toString());
+                     sqlStatementString.delete(0, sqlStatementString.length());
+                     sqlStatementString.append("DELETE FROM " + schemaTableName + " WHERE ");
                   }
                }
                dbConnection.commit();
