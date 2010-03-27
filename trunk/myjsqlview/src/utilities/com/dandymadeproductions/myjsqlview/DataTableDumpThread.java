@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.1 03/26/2010
+// Version 2.2 03/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@
 //         2.1 Conditional Check in run() Between (i < rowNumber) and
 //             dumpProgressBar.isCanceled() to Short-Circuit &&. Organized
 //             imports.
+//         2.2 Class Method run() Changed Instance currentEntry to Type
+//             StringBuffer.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -70,7 +72,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.1 03/26/2010
+ * @version 2.2 03/27/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -111,14 +113,15 @@ class DataTableDumpThread implements Runnable
       // Class Method Instances
       MyJSQLView_ProgressBar dumpProgressBar;
       HashMap summaryListTableNameTypes;
-      String currentTableFieldName, currentEntry, delimiterString;
+      StringBuffer currentEntry;
+      String currentTableFieldName, delimiterString;
       String currentType, currentString;
       int rowNumber;
 
       // Setting up
       summaryListTableNameTypes = new HashMap();
       delimiterString = DBTablesPanel.getDataExportProperties().getDataDelimiter();
-      currentEntry = "";
+      currentEntry = new StringBuffer();
 
       // Constructing progress bar.
       rowNumber = summaryListTable.getRowCount();
@@ -132,11 +135,14 @@ class DataTableDumpThread implements Runnable
       for (int i = 0; i < summaryListTable.getColumnCount(); i++)
       {
          currentTableFieldName = summaryListTable.getColumnName(i);
-         currentEntry += tableColumnNamesHashMap.get(currentTableFieldName) + delimiterString;
+         currentEntry.append(tableColumnNamesHashMap.get(currentTableFieldName) + delimiterString);
          summaryListTableNameTypes.put(i + "", tableColumnTypeHashMap.get(currentTableFieldName));
       }
       if (!currentEntry.equals(""))
-         currentEntry = currentEntry.substring(0, currentEntry.length() - 1) + "\n";
+      {
+         currentEntry.delete((currentEntry.length() - 1), currentEntry.length());
+         currentEntry.append("\n");
+      }
 
       int i = 0;
       while ((i < rowNumber) && !dumpProgressBar.isCanceled())
@@ -186,15 +192,16 @@ class DataTableDumpThread implements Runnable
                      }
                   }
                }
-               currentEntry += currentString + delimiterString;
+               currentEntry.append(currentString + delimiterString);
             }
-            currentEntry = currentEntry.substring(0, currentEntry.length() - 1) + "\n";
+            currentEntry.delete((currentEntry.length() - 1), currentEntry.length());
+            currentEntry.append("\n");
          }
          i++;
       }
       dumpProgressBar.dispose();
 
       // Outputting Summary Table to Selected File.
-      WriteDataFile.mainWriteDataString(fileName, currentEntry.getBytes(), false);
+      WriteDataFile.mainWriteDataString(fileName, (currentEntry.toString()).getBytes(), false);
    }
 }
