@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.3 02/26/2010
+// Version 6.4 03/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,6 +158,8 @@
 //         6.2 Changed Package to Reflect Dandy Made Productions Code.
 //         6.3 Conditional Check in Method run() Between tablesIterator and
 //             databaseDumpProgressBar to Short-Circut &&. Organized Imports.
+//         6.4 Class Method explicitStatementData() Instance keyStringStatement
+//             Changed to Type StringBuffer.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -189,7 +191,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.3 03/26/2010
+ * @version 6.4 03/27/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -877,7 +879,7 @@ class SQLDatabaseDumpThread implements Runnable
       String field, columnClass, columnType;
       
       Vector keys;
-      String keyStringStatement;
+      StringBuffer keyStringStatement;
       int rowsCount, currentRow;
 
       String sqlStatementString;
@@ -888,7 +890,8 @@ class SQLDatabaseDumpThread implements Runnable
 
       keys = new Vector();
       updateDump = false;
-      keyStringStatement = " WHERE ";
+      keyStringStatement = new StringBuffer();
+      keyStringStatement.append(" WHERE ");
 
       // Setting up the initial dump data string with insert/replace/update,
       // type, and table.
@@ -974,18 +977,18 @@ class SQLDatabaseDumpThread implements Runnable
                // Setting up WHERE Statement for Update Dump.
                if (keys.contains(tableColumnNames.get(field)) && updateDump)
                {
-                  keyStringStatement = keyStringStatement + identifierQuoteString
-                                       + ((String) tableColumnNames.get(field)) 
-                                       + identifierQuoteString + "=";
+                  keyStringStatement.append(identifierQuoteString
+                                            + ((String) tableColumnNames.get(field)) 
+                                            + identifierQuoteString + "=");
 
                   if (rs.getString((String) tableColumnNames.get(field)) != null)
                   {
-                     keyStringStatement = keyStringStatement + "'"
-                                          + rs.getString((String) tableColumnNames.get(field)) 
-                                          + "' AND ";
+                     keyStringStatement.append("'"
+                                               + rs.getString((String) tableColumnNames.get(field)) 
+                                               + "' AND ");
                   }
                   else
-                     keyStringStatement = keyStringStatement + "NULL AND ";
+                     keyStringStatement.append("NULL AND ");
                }
                else
                {
@@ -1185,7 +1188,9 @@ class SQLDatabaseDumpThread implements Runnable
                dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
 
                if (updateDump && !keys.isEmpty())
-                  dumpData = dumpData + keyStringStatement.substring(0, keyStringStatement.length() - 5)
+                  dumpData = (String) dumpData
+                             + keyStringStatement.delete((keyStringStatement.length() - 5),
+                                                          keyStringStatement.length())
                              + (";\n");
                else
                   dumpData = dumpData + (";\n");
@@ -1193,7 +1198,8 @@ class SQLDatabaseDumpThread implements Runnable
                dumpChunkOfData(dumpData);
                dumpData = "";
 
-               keyStringStatement = " WHERE ";
+               keyStringStatement.delete(0, keyStringStatement.length());
+               keyStringStatement.append(" WHERE ");
 
                dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
                dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
@@ -1208,7 +1214,8 @@ class SQLDatabaseDumpThread implements Runnable
             {
                if (updateDump)
                   dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2)
-                             + keyStringStatement.substring(0, keyStringStatement.length() - 5);
+                             + keyStringStatement.delete((keyStringStatement.length() - 5),
+                                                          keyStringStatement.length());
                else
                   dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
             }
