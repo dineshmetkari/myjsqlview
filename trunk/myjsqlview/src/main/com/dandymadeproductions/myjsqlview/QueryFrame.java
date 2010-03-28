@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.6 03/05/2010
+// Version 5.7 03/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,8 @@
 //                        Added Class Instances resourceAlert, resourceFileNOTFound and
 //                        Methods createMenuBar() & createToolBar(). Cleared queryResultTextArea
 //                        on Close.
+//         5.7 03/27/2010 Commented columnNameFields = new Vector() in Class Method
+//                        actionPerformed().
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -176,7 +178,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 5.6 03/05/2010
+ * @version 5.7 03/27/2010
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -735,11 +737,10 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
                if (!fileName.equals(""))
                {
-
                   Vector columnNameFields = new Vector();
                   if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
                   {
-                     columnNameFields = new Vector();
+                     //columnNameFields = new Vector();
                      columnNameFields = (getSelectedTab()).getTableFields();
                      tableColumnNamesHashMap = (getSelectedTab()).getColumnNamesHashMap();
                      tableColumnClassHashMap = (getSelectedTab()).getColumnClassHashMap();
