@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.2 03/26/2010
+// Version 8.3 03/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,9 @@
 //             table key_table3 With One Field and It is Blob.
 //         8.2 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
+//         8.3 Class Method setTableHeadings() Removing the Reloading of the Class Instance
+//             sqlTableFieldsStringLTZ. Should NOT Be Changed. Only Used in this Panel for
+//             Views and Edits.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -234,7 +237,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.2 03/26/2010
+ * @version 8.3 03/29/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -1406,7 +1409,6 @@ class TableTabPanel_Oracle extends TableTabPanel
       centerPanel.remove(tableScrollPane);
       currentTableHeadings = newHeadingFields;
       sqlTableFieldsString = "";
-      sqlTableFieldsStringLTZ = "";
 
       // Reconstitute the table field names.
 
@@ -1418,19 +1420,6 @@ class TableTabPanel_Oracle extends TableTabPanel
 
          sqlTableFieldsString += identifierQuoteString + columnNamesHashMap.get(columnName)
                                  + identifierQuoteString + ", ";
-
-         // Explained in getColumnNames().
-
-         if (columnTypeHashMap.get(columnName).equals("TIMESTAMPLTZ"))
-         {
-            sqlTableFieldsStringLTZ += "TO_CHAR(" + identifierQuoteString
-                                       + columnNamesHashMap.get(columnName) + identifierQuoteString
-                                       + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS " + identifierQuoteString
-                                       + columnNamesHashMap.get(columnName) + identifierQuoteString + ", ";
-         }
-         else
-            sqlTableFieldsStringLTZ += identifierQuoteString + columnNamesHashMap.get(columnName)
-                                       + identifierQuoteString + ", ";
       }
       // No fields, just load empty table else
       // clean up and load.
@@ -1439,7 +1428,7 @@ class TableTabPanel_Oracle extends TableTabPanel
       else
       {
          sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
-         sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
+         //sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
          loadTable(work_dbConnection);
       }
       
