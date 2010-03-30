@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.2 03/05/2010
+// Version 7.3 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -175,6 +175,8 @@
 //         7.2 Implementation of Internationalization Through Constructor Argument
 //             resourceBundle. Added Class Instance resource to Same and Method
 //             createListTablePopupMenu(). Added Method setRowsLabel().
+//         7.3 Class Method actionPerformed() Added Instance columnTypeHashMap to
+//             AdvancedSortSearchForm Creation.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -200,13 +202,14 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
+
 /**
  *    The QueryTabPanel provides the view of resultant data from
  * a query. The panel allows the copying, sorting, and searching
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.2 03/05/2010
+ * @version 7.3 03/30/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -681,9 +684,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             {
                advancedSortSearchFrame = new AdvancedSortSearchForm(identifierQuoteString
                                                                     + sqlTable + identifierQuoteString,
-                                                                    resourceBundle,
-                                                                    columnNamesHashMap,
-                                                                    comboBoxFields);
+                                                                    resourceBundle, columnNamesHashMap,
+                                                                    columnTypeHashMap, comboBoxFields);
 
                advancedSortButton = advancedSortSearchFrame.sortButton;
                advancedSortButton.addActionListener(this);
