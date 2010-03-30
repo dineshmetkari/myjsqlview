@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.7 02/18/2010
+// Version 1.8 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,9 @@
 //         1.6 Class Method createColumnsSQLQuery() Class Instance columnsSQLQuery
 //             Changed From String to StringBuffer.
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
+//         1.8 Class Method createColumnsSQLQuery() Excluded NOT RAW, But LONG Types
+//             Which Are Both Oracle Data Types. Modified in Same the Ability to
+//             Properly Search DATE Data Types for Oracle. Organized imports.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -52,16 +55,22 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import javax.swing.*;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JProgressBar;
 
 /**
  *    The SearchDatabaseThread class provides a thread to search through
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 1.7 02/18/2010
+ * @version 1.8 03/30/2010
  */
 
 class SearchDatabaseThread implements Runnable
@@ -309,7 +318,7 @@ class SearchDatabaseThread implements Runnable
             // Exclude binary & file column types.
             if (columnType.indexOf("BLOB") == -1 && columnType.indexOf("BYTEA") == -1
                 && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
-                && columnType.indexOf("RAW") == -1 && columnType.indexOf("FILE") == -1)
+                && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1)
             {
                if (dbType.equals("postgresql"))
                {
@@ -318,8 +327,13 @@ class SearchDatabaseThread implements Runnable
                }
                else
                {
-                  columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
-                                     + " LIKE \'%" + searchQueryString + "%\' OR ");
+                  if (dbType.indexOf("oracle") != -1 && columnType.equals("DATE"))
+                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                                            + " LIKE TO_DATE(\'" + searchQueryString + "\', "
+                                            + "\'MM-dd-YYYY\') OR ");
+                  else
+                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                                            + " LIKE \'%" + searchQueryString + "%\' OR ");   
                }
             }
          }
