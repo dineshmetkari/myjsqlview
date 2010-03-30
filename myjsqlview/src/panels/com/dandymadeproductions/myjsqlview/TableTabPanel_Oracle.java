@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.3 03/29/2010
+// Version 8.4 03/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,9 +202,11 @@
 //             table key_table3 With One Field and It is Blob.
 //         8.2 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
-//         8.3 Class Method setTableHeadings() Removing the Reloading of the Class Instance
+//         8.3 Class Method setTableHeadings() Removed the Reloading of the Class Instance
 //             sqlTableFieldsStringLTZ. Should NOT Be Changed. Only Used in this Panel for
 //             Views and Edits.
+//         8.4 Class Mehod loadTable(), Bug Fix to Correct Inablilty to Search For Date Type
+//             Values. Still Broken For TimeStamp and Interval?
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -237,7 +239,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.3 03/29/2010
+ * @version 8.4 03/29/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -435,7 +437,7 @@ class TableTabPanel_Oracle extends TableTabPanel
          if (sqlTableFieldsString.length() > 2)
         	 sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
          if (sqlTableFieldsStringLTZ.length() > 2)
-        	 sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
+            sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
 
          // Make a final check to see if there are any keys columns
          // columns in the table. If not then try foreign keys.
@@ -516,31 +518,51 @@ class TableTabPanel_Oracle extends TableTabPanel
       String keyLength;
       int columnSize, preferredColumnSize;
 
-      // Obtain search parameters column names as needed.
+      // Obtain search parameters, column names as needed.
       columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
-
+      
       searchQueryString = new StringBuffer();
+      
       if (searchTextString.equals(""))
          searchQueryString.append("'1' LIKE '%'");
       else
       {
+         // No column specified so create WHERE for all except
+         // BFILE and LONG. Sepcial case with date.
+         
          if (columnSearchString == null)
          {
             String[] tableColumns;
             tableColumns = sqlTableFieldsString.split(",");
-
+            
             for (int i = 0; i < tableColumns.length; i++)
             {
-               if (i < tableColumns.length - 1)
-                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
+               columnType = (String) columnTypeHashMap.get((parseColumnNameField(tableColumns[i].
+                                                           replaceAll(identifierQuoteString, ""))).trim());
+               
+               if (columnType.equals("BFILE") || columnType.equals("LONG"))
+                  continue;
+               
+               if (columnType.equals("DATE"))
+                  searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchTextString
+                                           + "', 'MM-dd-YYYY') OR");
                else
-                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%'");
+                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
             }
+            if (searchQueryString.length() >= 3)
+               searchQueryString.delete((searchQueryString.length() - 3), searchQueryString.length());
          }
          else
-            searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                + " LIKE '%" + searchTextString + "%'");
+         {
+            columnType = (String) columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            if (columnType.equals("DATE"))
+               searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
+                                        + " LIKE TO_DATE('" + searchTextString + "', 'MM-dd-YYYY')");
+            else
+               searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
+                                        + " LIKE '%" + searchTextString + "%'");
+         }
       }
 
       // Connect to database to obtain the initial/new items set
