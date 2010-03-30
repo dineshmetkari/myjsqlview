@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.49 03/26/2010
+// Version 4.50 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,8 @@
 //        4.48 Organized Constructor Instances.
 //        4.49 Class Method deleteSelectedItem() Changed Method Instance sqlStatementString
 //             to a StringBuffer.
+//        4.50 Class Method createAdvancedSortSearchFrame() Added Instance columnTypeHashMap
+//             to AdvancedSortSeaarchForm Creation.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -150,7 +152,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.49 03/26/2010
+ * @version 4.50 03/30/2010
  */
 
 abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1236,7 +1238,8 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
    public void createAdvancedSortSearchFrame()
    {
       advancedSortSearchFrame = new AdvancedSortSearchForm(schemaTableName, resourceBundle,
-                                                           columnNamesHashMap, comboBoxFields);
+                                                           columnNamesHashMap, columnTypeHashMap,
+                                                           comboBoxFields);
       advancedSortButton = advancedSortSearchFrame.sortButton;
       advancedSortButton.addActionListener(this);
       advancedSearchButton = advancedSortSearchFrame.searchButton;
