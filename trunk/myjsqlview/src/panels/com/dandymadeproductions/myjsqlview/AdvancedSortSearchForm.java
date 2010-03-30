@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.69 02/28/2010
+// Version 4.71 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -128,12 +128,16 @@
 //                        Message for Internationalization.
 //        4.70 03/01/2010 Moved Constructor resourceBundle Instance to Class Instance.
 //                        Cleaned Up a Bit.
+//        4.71 03/30/2010 Bug Fix For Inability to Search Date Data Types in Oracle. Class
+//                        Method getAdvancedSortSearchSQL(). Added Class Instance columnTypesHashMap
+//                        Instantiated Through Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -156,7 +160,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.70 03/01/2010
+ * @version 4.71 03/30/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -166,7 +170,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
    private String sqlTable;
    private String identifierQuoteString;
-   private HashMap columnNamesHashMap;
+   private HashMap columnNamesHashMap, columnTypesHashMap;
    private Vector comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -196,11 +200,13 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    //==============================================================
 
    protected AdvancedSortSearchForm(String table, MyJSQLView_ResourceBundle resourceBundle,
-                                    HashMap columnNamesHashMap, Vector comboBoxColumnNames)
+                                    HashMap columnNamesHashMap, HashMap columnTypesHashMap,
+                                    Vector comboBoxColumnNames)
    {
       sqlTable = table;
       this.resourceBundle = resourceBundle;
       this.columnNamesHashMap = columnNamesHashMap;
+      this.columnTypesHashMap = columnTypesHashMap;
       this.comboBoxColumnNames = comboBoxColumnNames;
 
       // Constructor Instances
@@ -892,7 +898,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                              int tableRowLimit)
    {
       String sqlStatementString;
-      String columnNameString, operatorString, tempSearchString;
+      String columnNameString, columnTypeString;
+      String operatorString, tempSearchString;
       String unionString;
       String ascDescString;
       boolean notFieldSort;
@@ -911,6 +918,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Adding the search(s), WHERE, option.
 
       columnNameString = (String) columnNamesHashMap.get(searchComboBox1.getSelectedItem());
+      columnTypeString = (String) columnTypesHashMap.get(searchComboBox1.getSelectedItem());
       operatorString = (String) operatorComboBox1.getSelectedItem();
       tempSearchString = searchTextField1.getText();
       unionString = "";
@@ -928,15 +936,24 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                      + identifierQuoteString + " " + operatorString + " " + tempSearchString
                                      + " ";
             else
-               sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                     + identifierQuoteString + " " + operatorString + " '" + tempSearchString
-                                     + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                         + identifierQuoteString + " " + operatorString
+                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                         + identifierQuoteString + " " + operatorString + " '"
+                                         + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox1.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(searchComboBox2.getSelectedItem());
+      columnTypeString = (String) columnTypesHashMap.get(searchComboBox2.getSelectedItem());
       operatorString = (String) operatorComboBox2.getSelectedItem();
       tempSearchString = searchTextField2.getText();
 
@@ -954,14 +971,23 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox2.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(searchComboBox3.getSelectedItem());
+      columnTypeString = (String) columnTypesHashMap.get(searchComboBox3.getSelectedItem());
       operatorString = (String) operatorComboBox3.getSelectedItem();
       tempSearchString = searchTextField3.getText();
 
@@ -979,14 +1005,23 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox3.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(searchComboBox4.getSelectedItem());
+      columnTypeString = (String) columnTypesHashMap.get(searchComboBox4.getSelectedItem());
       operatorString = (String) operatorComboBox4.getSelectedItem();
       tempSearchString = searchTextField4.getText();
 
@@ -1004,14 +1039,23 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox4.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(searchComboBox5.getSelectedItem());
+      columnTypeString = (String) columnTypesHashMap.get(searchComboBox5.getSelectedItem());
       operatorString = (String) operatorComboBox5.getSelectedItem();
       tempSearchString = searchTextField5.getText();
 
@@ -1029,8 +1073,16 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
       }
 
