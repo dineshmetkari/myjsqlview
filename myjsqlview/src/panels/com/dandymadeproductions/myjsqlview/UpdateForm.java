@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.3 03/01/2010
+// Version 2.4 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,12 +69,16 @@
 //                        Setting whereLabel to resourceWhere. Cleaned Up a Bit. Moved
 //                        Constructor Instance resourceBundle to Class Instance. Removed
 //                        MyJSQLView_ResourceBundle Argument From createUpdateWhereInterface().
+//         2.4 03/30/2010 Implemented Capability to Perform Updates on Oracle Date and Timestamp
+//                        Data Types From WHERE Clause. Class Method getWhereSQLExpression().
+//                        Code Needs Consolidated.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
+
 
 import java.awt.*;
 import java.awt.event.*;
@@ -1159,7 +1163,8 @@ class UpdateForm extends JFrame implements ActionListener
    private String getWhereSQLExpression()
    {
       String sqlStatementString;
-      String columnNameString, operatorString, tempSearchString;
+      String columnNameString, columnTypeString;
+      String operatorString, tempSearchString;
       String unionString;
 
       sqlStatementString = "";
@@ -1168,6 +1173,7 @@ class UpdateForm extends JFrame implements ActionListener
       // Adding the search(s), WHERE, option.
 
       columnNameString = (String) columnNamesHashMap.get(whereComboBox1.getSelectedItem());
+      columnTypeString = (String) columnTypeHashMap.get(whereComboBox1.getSelectedItem());
       operatorString = (String) operatorComboBox1.getSelectedItem();
       tempSearchString = whereTextField1.getText();
       unionString = "";
@@ -1185,15 +1191,29 @@ class UpdateForm extends JFrame implements ActionListener
                                      + identifierQuoteString + " " + operatorString + " " + tempSearchString
                                      + " ";
             else
-               sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                     + identifierQuoteString + " " + operatorString + " '" + tempSearchString
-                                     + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               else
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString + " '" + tempSearchString
+                                        + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox1.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(whereComboBox2.getSelectedItem());
+      columnTypeString = (String) columnTypeHashMap.get(whereComboBox2.getSelectedItem());
       operatorString = (String) operatorComboBox2.getSelectedItem();
       tempSearchString = whereTextField2.getText();
 
@@ -1211,14 +1231,28 @@ class UpdateForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox2.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(whereComboBox3.getSelectedItem());
+      columnTypeString = (String) columnTypeHashMap.get(whereComboBox3.getSelectedItem());
       operatorString = (String) operatorComboBox3.getSelectedItem();
       tempSearchString = whereTextField3.getText();
 
@@ -1236,14 +1270,28 @@ class UpdateForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox3.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(whereComboBox4.getSelectedItem());
+      columnTypeString = (String) columnTypeHashMap.get(whereComboBox4.getSelectedItem());
       operatorString = (String) operatorComboBox4.getSelectedItem();
       tempSearchString = whereTextField4.getText();
 
@@ -1261,14 +1309,28 @@ class UpdateForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
 
          unionString = ((String) andOrComboBox4.getSelectedItem()).toUpperCase() + " ";
       }
 
       columnNameString = (String) columnNamesHashMap.get(whereComboBox5.getSelectedItem());
+      columnTypeString = (String) columnTypeHashMap.get(whereComboBox5.getSelectedItem());
       operatorString = (String) operatorComboBox5.getSelectedItem();
       tempSearchString = whereTextField5.getText();
 
@@ -1286,11 +1348,25 @@ class UpdateForm extends JFrame implements ActionListener
                sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                      + operatorString + " " + tempSearchString + " ";
             else
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " '" + tempSearchString + "' ";
+            {
+               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                   && columnTypeString.equals("DATE"))
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               else
+                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
+                                        + operatorString + " '" + tempSearchString + "' ";
+            }
          }
       }
-
+      
+      // System.out.println(sqlStatementString);
       return sqlStatementString;
    }
 
