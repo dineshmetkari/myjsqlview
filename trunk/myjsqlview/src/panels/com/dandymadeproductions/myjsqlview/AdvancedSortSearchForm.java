@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.71 03/30/2010
+// Version 4.72 03/30/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,13 +131,14 @@
 //        4.71 03/30/2010 Bug Fix For Inability to Search Date Data Types in Oracle. Class
 //                        Method getAdvancedSortSearchSQL(). Added Class Instance columnTypesHashMap
 //                        Instantiated Through Constructor.
+//        4.72 03/30/2010 Implemented Basic Support For Search TIMESTAMP Data Types in Oracle.
+//                        Class Method getAdvancedSortSearchSQL().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
-
 
 import java.awt.*;
 import java.awt.event.*;
@@ -160,7 +161,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.71 03/30/2010
+ * @version 4.72 03/30/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -942,6 +943,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
                                          + identifierQuoteString + " " + operatorString
                                          + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
                else
                   sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
                                          + identifierQuoteString + " " + operatorString + " '"
@@ -977,6 +983,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   sqlStatementString += identifierQuoteString + columnNameString
                                         + identifierQuoteString + " " + operatorString
                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
                else
                   sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                         + operatorString + " '" + tempSearchString + "' ";
@@ -1011,6 +1022,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   sqlStatementString += identifierQuoteString + columnNameString
                                         + identifierQuoteString + " " + operatorString
                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                        && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
                else
                   sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                         + operatorString + " '" + tempSearchString + "' ";
@@ -1045,6 +1061,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   sqlStatementString += identifierQuoteString + columnNameString
                                         + identifierQuoteString + " " + operatorString
                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
                else
                   sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                         + operatorString + " '" + tempSearchString + "' ";
@@ -1079,6 +1100,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   sqlStatementString += identifierQuoteString + columnNameString
                                         + identifierQuoteString + " " + operatorString
                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     && columnTypeString.indexOf("TIMESTAMP") != -1)
+                  sqlStatementString += identifierQuoteString + columnNameString
+                                        + identifierQuoteString + " " + operatorString
+                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
                else
                   sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
                                         + operatorString + " '" + tempSearchString + "' ";
