@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.4 03/30/2010
+// Version 2.5 04/01/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,13 +72,15 @@
 //         2.4 03/30/2010 Implemented Capability to Perform Updates on Oracle Date and Timestamp
 //                        Data Types From WHERE Clause. Class Method getWhereSQLExpression().
 //                        Code Needs Consolidated.
+//         2.5 04/01/2010 Consolidated Code in createUpdateWhereInterface(), Constructor, 
+//                        actionPerformed(), and getWhereSQLExpression(). Replaced Comboboxes,
+//                        and Textfields With Arrays.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
-
 
 import java.awt.*;
 import java.awt.event.*;
@@ -98,7 +100,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 2.3 03/01/2010
+ * @version 2.5 04/01/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -127,13 +129,9 @@ class UpdateForm extends JFrame implements ActionListener
    private JTextField updateColumnToTextField;
    private JCheckBox quoteCheckBox;
 
-   private JComboBox whereComboBox1, whereComboBox2, whereComboBox3;
-   private JComboBox whereComboBox4, whereComboBox5;
-   private JComboBox operatorComboBox1, operatorComboBox2, operatorComboBox3;
-   private JComboBox operatorComboBox4, operatorComboBox5;
-   private JTextField whereTextField1, whereTextField2, whereTextField3;
-   private JTextField whereTextField4, whereTextField5;
-   private JComboBox andOrComboBox1, andOrComboBox2, andOrComboBox3, andOrComboBox4;
+   private static final int updateFormExpressionNumber = 5;
+   private JComboBox[] whereComboBox, operatorComboBox, andOrComboBox;
+   private JTextField[] whereTextField;
    private Vector stateComponents;
 
    private JButton updateButton, closeButton, clearButton;
@@ -180,6 +178,12 @@ class UpdateForm extends JFrame implements ActionListener
       statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
       statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
       deleteDataIcon = new ImageIcon(iconsDirectory + "deleteDataIcon.gif");
+      
+      whereComboBox = new JComboBox[updateFormExpressionNumber];
+      operatorComboBox = new JComboBox[updateFormExpressionNumber];
+      andOrComboBox = new JComboBox[whereComboBox.length - 1];
+      whereTextField = new JTextField[updateFormExpressionNumber];
+      
       stateComponents = new Vector();
 
       // Setting up the frame's main panel.
@@ -427,25 +431,19 @@ class UpdateForm extends JFrame implements ActionListener
             updateColumnComboBox.setSelectedIndex(0);
             updateColumnToTextField.setText("");
             quoteCheckBox.setSelected(true);
-            whereComboBox1.setSelectedIndex(0);
-            whereComboBox2.setSelectedIndex(0);
-            whereComboBox3.setSelectedIndex(0);
-            whereComboBox4.setSelectedIndex(0);
-            whereComboBox5.setSelectedIndex(0);
-            operatorComboBox1.setSelectedIndex(0);
-            operatorComboBox2.setSelectedIndex(0);
-            operatorComboBox3.setSelectedIndex(0);
-            operatorComboBox4.setSelectedIndex(0);
-            operatorComboBox5.setSelectedIndex(0);
-            andOrComboBox1.setSelectedIndex(0);
-            andOrComboBox2.setSelectedIndex(0);
-            andOrComboBox3.setSelectedIndex(0);
-            andOrComboBox4.setSelectedIndex(0);
-            whereTextField1.setText("");
-            whereTextField2.setText("");
-            whereTextField3.setText("");
-            whereTextField4.setText("");
-            whereTextField5.setText("");
+            
+            int i = 0;
+            do
+            {
+               whereComboBox[i].setSelectedIndex(0);
+               operatorComboBox[i].setSelectedIndex(0);
+               if (i < andOrComboBox.length)
+                  andOrComboBox[i].setSelectedIndex(0);
+               whereTextField[i].setText("");
+               
+               i++;
+            }
+            while (i < updateFormExpressionNumber);
          }
 
          // Close Button Action
@@ -499,7 +497,8 @@ class UpdateForm extends JFrame implements ActionListener
       String resource, resourceWhere;
       
       JLabel setLabel, withLabel;
-      JLabel whereLabel1, whereLabel2, whereLabel3, whereLabel4, whereLabel5;
+      JLabel[] whereLabel;
+      //JLabel whereLabel1, whereLabel2, whereLabel3, whereLabel4, whereLabel5;
 
       Object[] whereOperators;
       Object[] mysqlWhereOperators = {"LIKE", "LIKE BINARY", "NOT LIKE", "REGEXP", "NOT REGEXP", "IS NULL",
@@ -601,242 +600,82 @@ class UpdateForm extends JFrame implements ActionListener
       wherePanel.setLayout(gridbag);
       wherePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
                                          BorderFactory.createEmptyBorder(10, 6, 10, 6)));
-
+      
+      whereLabel = new JLabel[updateFormExpressionNumber];
       resourceWhere = resourceBundle.getResource("UpdateForm.label.Where");
-      if (resourceWhere.equals(""))
-         whereLabel1 = new JLabel("Where : ", JLabel.LEFT);
-      else
-         whereLabel1 = new JLabel(resourceWhere + " : ", JLabel.LEFT);
+      
+      int i = 0;
+      do
+      {
+         if (resourceWhere.equals(""))
+            whereLabel[i] = new JLabel("Where : ", JLabel.LEFT);
+         else
+            whereLabel[i] = new JLabel(resourceWhere + " : ", JLabel.LEFT);
 
-      buildConstraints(constraints, 0, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereLabel1, constraints);
-      wherePanel.add(whereLabel1);
+         buildConstraints(constraints, 0, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(whereLabel[i], constraints);
+         wherePanel.add(whereLabel[i]);
 
-      whereComboBox1 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(whereComboBox1);
+         whereComboBox[i] = new JComboBox(comboBoxColumnNames);
+         stateComponents.addElement(whereComboBox[i]);
 
-      buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereComboBox1, constraints);
-      wherePanel.add(whereComboBox1);
+         buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(whereComboBox[i], constraints);
+         wherePanel.add(whereComboBox[i]);
 
-      operatorComboBox1 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox1);
+         operatorComboBox[i] = new JComboBox(whereOperators);
+         stateComponents.addElement(operatorComboBox[i]);
 
-      buildConstraints(constraints, 2, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox1, constraints);
-      wherePanel.add(operatorComboBox1);
+         buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(operatorComboBox[i], constraints);
+         wherePanel.add(operatorComboBox[i]);
 
-      whereTextField1 = new JTextField(15);
-      stateComponents.addElement(whereTextField1);
+         whereTextField[i] = new JTextField(15);
+         stateComponents.addElement(whereTextField[i]);
 
-      buildConstraints(constraints, 3, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereTextField1, constraints);
-      wherePanel.add(whereTextField1);
+         buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(whereTextField[i], constraints);
+         wherePanel.add(whereTextField[i]);
 
-      andOrComboBox1 = new JComboBox();
-      andOrComboBox1.addItem("And");
-      andOrComboBox1.addItem("Or");
-      stateComponents.addElement(andOrComboBox1);
+         if (i < andOrComboBox.length)
+         {
+            andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i].addItem("And");
+            andOrComboBox[i].addItem("Or");
+            stateComponents.addElement(andOrComboBox[i]);
 
-      buildConstraints(constraints, 4, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox1, constraints);
-      wherePanel.add(andOrComboBox1);
-
-      if (resourceWhere.equals(""))
-         whereLabel2 = new JLabel("Where : ", JLabel.LEFT);
-      else
-         whereLabel2 = new JLabel(resourceWhere + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereLabel2, constraints);
-      wherePanel.add(whereLabel2);
-
-      whereComboBox2 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(whereComboBox2);
-
-      buildConstraints(constraints, 1, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereComboBox2, constraints);
-      wherePanel.add(whereComboBox2);
-
-      operatorComboBox2 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox2);
-
-      buildConstraints(constraints, 2, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox2, constraints);
-      wherePanel.add(operatorComboBox2);
-
-      whereTextField2 = new JTextField(15);
-      stateComponents.addElement(whereTextField2);
-
-      buildConstraints(constraints, 3, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereTextField2, constraints);
-      wherePanel.add(whereTextField2);
-
-      andOrComboBox2 = new JComboBox();
-      andOrComboBox2.addItem("And");
-      andOrComboBox2.addItem("Or");
-      stateComponents.addElement(andOrComboBox2);
-
-      buildConstraints(constraints, 4, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox2, constraints);
-      wherePanel.add(andOrComboBox2);
-
-      if (resourceWhere.equals(""))
-         whereLabel3 = new JLabel("Where : ", JLabel.LEFT);
-      else
-         whereLabel3 = new JLabel(resourceWhere + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereLabel3, constraints);
-      wherePanel.add(whereLabel3);
-
-      whereComboBox3 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(whereComboBox3);
-
-      buildConstraints(constraints, 1, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereComboBox3, constraints);
-      wherePanel.add(whereComboBox3);
-
-      operatorComboBox3 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox3);
-
-      buildConstraints(constraints, 2, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox3, constraints);
-      wherePanel.add(operatorComboBox3);
-
-      whereTextField3 = new JTextField(15);
-      stateComponents.addElement(whereTextField3);
-
-      buildConstraints(constraints, 3, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereTextField3, constraints);
-      wherePanel.add(whereTextField3);
-
-      andOrComboBox3 = new JComboBox();
-      andOrComboBox3.addItem("And");
-      andOrComboBox3.addItem("Or");
-      stateComponents.addElement(andOrComboBox3);
-
-      buildConstraints(constraints, 4, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox3, constraints);
-      wherePanel.add(andOrComboBox3);
-
-      if (resourceWhere.equals(""))
-         whereLabel4 = new JLabel("Where : ", JLabel.LEFT);
-      else
-         whereLabel4 = new JLabel(resourceWhere + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereLabel4, constraints);
-      wherePanel.add(whereLabel4);
-
-      whereComboBox4 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(whereComboBox4);
-
-      buildConstraints(constraints, 1, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereComboBox4, constraints);
-      wherePanel.add(whereComboBox4);
-
-      operatorComboBox4 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox4);
-
-      buildConstraints(constraints, 2, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox4, constraints);
-      wherePanel.add(operatorComboBox4);
-
-      whereTextField4 = new JTextField(15);
-      stateComponents.addElement(whereTextField4);
-
-      buildConstraints(constraints, 3, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereTextField4, constraints);
-      wherePanel.add(whereTextField4);
-
-      andOrComboBox4 = new JComboBox();
-      andOrComboBox4.addItem("And");
-      andOrComboBox4.addItem("Or");
-      stateComponents.addElement(andOrComboBox4);
-
-      buildConstraints(constraints, 4, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox4, constraints);
-      wherePanel.add(andOrComboBox4);
-
-      if (resourceWhere.equals(""))
-         whereLabel5 = new JLabel("Where : ", JLabel.LEFT);
-      else
-         whereLabel5 = new JLabel(resourceWhere + " : ", JLabel.LEFT);
-         
-      buildConstraints(constraints, 0, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereLabel5, constraints);
-      wherePanel.add(whereLabel5);
-
-      whereComboBox5 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(whereComboBox5);
-
-      buildConstraints(constraints, 1, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereComboBox5, constraints);
-      wherePanel.add(whereComboBox5);
-
-      operatorComboBox5 = new JComboBox(whereOperators);
-
-      buildConstraints(constraints, 2, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox5, constraints);
-      wherePanel.add(operatorComboBox5);
-
-      whereTextField5 = new JTextField(15);
-      stateComponents.addElement(whereTextField5);
-      stateComponents.addElement(operatorComboBox5);
-
-      buildConstraints(constraints, 3, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(whereTextField5, constraints);
-      wherePanel.add(whereTextField5);
-
+            buildConstraints(constraints, 4, (i + 3), 1, 1, 100, 100);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.CENTER;
+            gridbag.setConstraints(andOrComboBox[i], constraints);
+            wherePanel.add(andOrComboBox[i]);
+         }
+         i++;
+      }
+      while (i < updateFormExpressionNumber);
+      
+      // Ok whats going on here? Well the Update Form uses the AdvancedSortSearchForm
+      // to perform the search. Data from this panel on find is sent to that form
+      // via the setKeyComponents(). The string is parsed with delimiter, but does
+      // not catch the whereTextField if its the last element if is empty. So the
+      // panel complains since it does not think the correct number of paramerters
+      // are sent to fill the form. Remember there are only updateFormExpressionNumber
+      // minus one andOrComboBoxes, so the last parameter assigned will be a text
+      // field. So swap the last two entries, to get text:text:combobox.
+      
+      Object swapEndComponent;
+      swapEndComponent = stateComponents.get(stateComponents.size() - 1);
+      stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
+      stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
+      
       buildConstraints(constraints, 0, 1, 1, 1, 100, 80);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
@@ -1162,212 +1001,74 @@ class UpdateForm extends JFrame implements ActionListener
 
    private String getWhereSQLExpression()
    {
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
+      String whereString;
       String columnNameString, columnTypeString;
       String operatorString, tempSearchString;
       String unionString;
 
-      sqlStatementString = "";
+      sqlStatementString = new StringBuffer();
+      //sqlStatementString = "";
 
       // ========================================
       // Adding the search(s), WHERE, option.
-
-      columnNameString = (String) columnNamesHashMap.get(whereComboBox1.getSelectedItem());
-      columnTypeString = (String) columnTypeHashMap.get(whereComboBox1.getSelectedItem());
-      operatorString = (String) operatorComboBox1.getSelectedItem();
-      tempSearchString = whereTextField1.getText();
-      unionString = "";
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
+      
+      int i = 0;
+      whereString = "WHERE ";
+      do
       {
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += "WHERE " + identifierQuoteString + columnNameString + identifierQuoteString
-                                  + " " + operatorString + " ";
-         else
+         columnNameString = (String) columnNamesHashMap.get(whereComboBox[i].getSelectedItem());
+         columnTypeString = (String) columnTypeHashMap.get(whereComboBox[i].getSelectedItem());
+         operatorString = (String) operatorComboBox[i].getSelectedItem();
+         tempSearchString = whereTextField[i].getText();
+         unionString = "";
+
+         if (columnNameString != null
+             && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
          {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                     + identifierQuoteString + " " + operatorString + " " + tempSearchString
-                                     + " ";
+            if (i > 0)
+               sqlStatementString.append(unionString.equals("") ? "WHERE " : unionString);
+            
+            
+            if (operatorString.toLowerCase().indexOf("null") != -1)
+               sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                         + identifierQuoteString + " " + operatorString + " ");
             else
             {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
+                  sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                            + identifierQuoteString + " " + operatorString
+                                            + " " + tempSearchString + " ");
                else
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString + " '" + tempSearchString
-                                        + "' ";
+               {
+                  if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                      && columnTypeString.equals("DATE"))
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString
+                                               + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ");
+                  else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                           && columnTypeString.indexOf("TIMESTAMP") != -1)
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString
+                                               + " TO_TIMESTAMP('" + tempSearchString
+                                               + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                  else
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString
+                                               + " '" + tempSearchString + "' ");
+               }
             }
+
+            if (i < andOrComboBox.length)
+               unionString = ((String) andOrComboBox[i].getSelectedItem()).toUpperCase() + " ";
          }
-
-         unionString = ((String) andOrComboBox1.getSelectedItem()).toUpperCase() + " ";
+         i++;
+         whereString = "";
       }
-
-      columnNameString = (String) columnNamesHashMap.get(whereComboBox2.getSelectedItem());
-      columnTypeString = (String) columnTypeHashMap.get(whereComboBox2.getSelectedItem());
-      operatorString = (String) operatorComboBox2.getSelectedItem();
-      tempSearchString = whereTextField2.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox2.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(whereComboBox3.getSelectedItem());
-      columnTypeString = (String) columnTypeHashMap.get(whereComboBox3.getSelectedItem());
-      operatorString = (String) operatorComboBox3.getSelectedItem();
-      tempSearchString = whereTextField3.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox3.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(whereComboBox4.getSelectedItem());
-      columnTypeString = (String) columnTypeHashMap.get(whereComboBox4.getSelectedItem());
-      operatorString = (String) operatorComboBox4.getSelectedItem();
-      tempSearchString = whereTextField4.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox4.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(whereComboBox5.getSelectedItem());
-      columnTypeString = (String) columnTypeHashMap.get(whereComboBox5.getSelectedItem());
-      operatorString = (String) operatorComboBox5.getSelectedItem();
-      tempSearchString = whereTextField5.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-      }
+      while (i < updateFormExpressionNumber);
       
       // System.out.println(sqlStatementString);
-      return sqlStatementString;
+      return sqlStatementString.toString();
    }
 
    //==============================================================
@@ -1395,7 +1096,7 @@ class UpdateForm extends JFrame implements ActionListener
                          + delimiter + "0" + delimiter + "0" + delimiter);
 
       // Cycle through the WHERE components to add to the state string.
-
+      
       keyComponentIterator = stateComponents.iterator();
 
       while (keyComponentIterator.hasNext())
@@ -1408,6 +1109,7 @@ class UpdateForm extends JFrame implements ActionListener
          if (currentComponent instanceof JTextField)
             stateString.append(((JTextField) currentComponent).getText() + delimiter);
       }
+      
       // System.out.println(stateString.toString());
       return stateString.toString();
    }
