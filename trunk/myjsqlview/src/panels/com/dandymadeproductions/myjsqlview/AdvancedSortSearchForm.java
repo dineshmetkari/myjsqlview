@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.72 03/30/2010
+// Version 4.73 04/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,20 +120,25 @@
 //                        scheme Table Name by the Calling Class. In the Case the
 //                        QueryPanel.
 //        4.67 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
-//        4.68 02/28/2010 Added Argument MyJSQLView_ResourceBundle to Constructor and
-//                        Implemented Internationalization. Added Constructor Instance
-//                        resource. Class Method createSortSeachInterface() Added
-//                        resourceBundle & resource Instances.
-//        4.69 02/28/2010 Class Method setKeyComponentsState() Created Resource Bundle
-//                        Message for Internationalization.
-//        4.70 03/01/2010 Moved Constructor resourceBundle Instance to Class Instance.
-//                        Cleaned Up a Bit.
-//        4.71 03/30/2010 Bug Fix For Inability to Search Date Data Types in Oracle. Class
-//                        Method getAdvancedSortSearchSQL(). Added Class Instance columnTypesHashMap
-//                        Instantiated Through Constructor.
-//        4.72 03/30/2010 Implemented Basic Support For Search TIMESTAMP Data Types in Oracle.
-//                        Class Method getAdvancedSortSearchSQL().
-//
+//        4.68 02/28/2010 Added Argument MyJSQLView_ResourceBundle to Constructor
+//                        and Implemented Internationalization. Added Constructor
+//                        Instance resource. Class Method createSortSeachInterface()
+//                        Added resourceBundle & resource Instances.
+//        4.69 02/28/2010 Class Method setKeyComponentsState() Created Resource
+//                        Bundle Message for Internationalization.
+//        4.70 03/01/2010 Moved Constructor resourceBundle Instance to Class
+//                        Instance. Cleaned Up a Bit.
+//        4.71 03/30/2010 Bug Fix For Inability to Search Date Data Types in Oracle.
+//                        Class Method getAdvancedSortSearchSQL(). Added Class
+//                        Instance columnTypesHashMap Instantiated Through
+//                        Constructor.
+//        4.72 03/30/2010 Implemented Basic Support For Search TIMESTAMP Data Types
+//                        in Oracle. Class Method getAdvancedSortSearchSQL().
+//        4.73 04/02/2010 Consolidated Code in Constructor, actionPerformed(), 
+//                        createSortSearchInterface(), getAdvancedSortSearchSQL(),
+//                        and orderString(). Changed ComboBoxes and Texfields Class
+//                        Instances to Arrays.
+//                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -161,7 +166,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.72 03/30/2010
+ * @version 4.73 04/02/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -181,16 +186,12 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private JPanel sortSearchPanel;
    private JButton questionButton;
    private JComboBox selectTypeComboBox;
-   private JComboBox sortComboBox1, sortComboBox2, sortComboBox3;
-   private JComboBox ascendingDescendingComboBox1, ascendingDescendingComboBox2,
-                     ascendingDescendingComboBox3;
-   private JComboBox searchComboBox1, searchComboBox2, searchComboBox3;
-   private JComboBox searchComboBox4, searchComboBox5;
-   private JComboBox operatorComboBox1, operatorComboBox2, operatorComboBox3;
-   private JComboBox operatorComboBox4, operatorComboBox5;
-   private JTextField searchTextField1, searchTextField2, searchTextField3;
-   private JTextField searchTextField4, searchTextField5;
-   private JComboBox andOrComboBox1, andOrComboBox2, andOrComboBox3, andOrComboBox4;
+   private static final int sortFormExpressionNumber = 3;
+   private JComboBox[] sortComboBox, ascendingDescendingComboBox;
+   
+   private static final int searchFormExpressionNumber = 5;
+   private JComboBox[] searchComboBox, operatorComboBox, andOrComboBox;
+   private JTextField[] searchTextField;
    private Vector stateComponents;
 
    private JButton closeButton, clearButton;
@@ -285,6 +286,13 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       sortSearchPanel.setLayout(gridbag);
       sortSearchPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 
+      sortComboBox = new JComboBox[sortFormExpressionNumber];
+      ascendingDescendingComboBox = new JComboBox[sortFormExpressionNumber];
+      searchComboBox = new JComboBox[searchFormExpressionNumber];
+      operatorComboBox = new JComboBox[searchFormExpressionNumber];
+      andOrComboBox = new JComboBox[searchComboBox.length - 1];
+      searchTextField = new JTextField[searchFormExpressionNumber];
+      
       createSortSearchInterface(resourceBundle);
 
       buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
@@ -401,32 +409,27 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          // Clear Button Action
          if (formSource == clearButton)
          {
+            // Reset all the forms components.
+            
             selectTypeComboBox.setSelectedIndex(0);
-            sortComboBox1.setSelectedIndex(0);
-            sortComboBox2.setSelectedIndex(0);
-            sortComboBox3.setSelectedIndex(0);
-            ascendingDescendingComboBox1.setSelectedIndex(0);
-            ascendingDescendingComboBox2.setSelectedIndex(0);
-            ascendingDescendingComboBox3.setSelectedIndex(0);
-            searchComboBox1.setSelectedIndex(0);
-            searchComboBox2.setSelectedIndex(0);
-            searchComboBox3.setSelectedIndex(0);
-            searchComboBox4.setSelectedIndex(0);
-            searchComboBox5.setSelectedIndex(0);
-            operatorComboBox1.setSelectedIndex(0);
-            operatorComboBox2.setSelectedIndex(0);
-            operatorComboBox3.setSelectedIndex(0);
-            operatorComboBox4.setSelectedIndex(0);
-            operatorComboBox5.setSelectedIndex(0);
-            andOrComboBox1.setSelectedIndex(0);
-            andOrComboBox2.setSelectedIndex(0);
-            andOrComboBox3.setSelectedIndex(0);
-            andOrComboBox4.setSelectedIndex(0);
-            searchTextField1.setText("");
-            searchTextField2.setText("");
-            searchTextField3.setText("");
-            searchTextField4.setText("");
-            searchTextField5.setText("");
+            
+            int i = 0;
+            do
+            {
+               if (i < sortFormExpressionNumber)
+               {
+                  sortComboBox[i].setSelectedIndex(0);
+                  ascendingDescendingComboBox[i].setSelectedIndex(0);
+               }
+               searchComboBox[i].setSelectedIndex(0);
+               operatorComboBox[i].setSelectedIndex(0);
+               if (i < andOrComboBox.length)
+                  andOrComboBox[i].setSelectedIndex(0);
+               searchTextField[i].setText("");
+               
+               i++;
+            }
+            while (i < searchFormExpressionNumber);
          }
 
          // Close Button Action
@@ -479,9 +482,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       JPanel sortPanel, searchPanel;
       String resourceSortBy, resourceThen, resourceSearch;
       
-      JLabel sortByLabel, sortByLabel2, sortByLabel3;
-      JLabel sortThenLabel, sortThenLabel2; 
-      JLabel searchLabel1, searchLabel2, searchLabel3, searchLabel4, searchLabel5;
+      JLabel[] sortByLabel, sortThenLabel, searchLabel;
+      Object swapEndComponent;
 
       Object[] whereOperators;
       Object[] mysqlWhereOperators = {"LIKE", "LIKE BINARY", "NOT LIKE", "REGEXP", "NOT REGEXP", "IS NULL",
@@ -516,373 +518,148 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       sortPanel.setLayout(gridbag);
       sortPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
                                                              BorderFactory.createEmptyBorder(10, 6, 10, 6)));
+      
+      sortByLabel = new JLabel[sortFormExpressionNumber];
+      sortThenLabel = new JLabel[sortFormExpressionNumber -1];
 
       resourceSortBy = resourceBundle.getResource("AdvancedSortSearchForm.label.SortBy");
       if (resourceSortBy.equals(""))
-         sortByLabel = new JLabel("Sort By : ", JLabel.LEADING);
-      else
-         sortByLabel = new JLabel(resourceSortBy + " : ", JLabel.LEADING);
-
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortByLabel, constraints);
-      sortPanel.add(sortByLabel);
-
-      sortComboBox1 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(sortComboBox1);
-
-      buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortComboBox1, constraints);
-      sortPanel.add(sortComboBox1);
-
-      ascendingDescendingComboBox1 = new JComboBox();
-      ascendingDescendingComboBox1.addItem("Ascending");
-      ascendingDescendingComboBox1.addItem("Descending");
-      stateComponents.addElement(ascendingDescendingComboBox1);
-
-      buildConstraints(constraints, 2, 0, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(ascendingDescendingComboBox1, constraints);
-      sortPanel.add(ascendingDescendingComboBox1);
-
+         resourceSortBy = "Sort By : ";
+      
       resourceThen = resourceBundle.getResource("AdvancedSortSearchForm.label.Then");
       if (resourceThen.equals(""))
-         sortThenLabel = new JLabel(" Then, ", JLabel.LEADING);
-      else
-         sortThenLabel = new JLabel(" " + resourceThen + ", ", JLabel.LEADING);
+         resourceThen = " Then, ";
+      
+      int i = 0;
+      do
+      {
+         sortByLabel[i] = new JLabel(resourceSortBy, JLabel.LEADING);
+        
+         buildConstraints(constraints, 0, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(sortByLabel[i], constraints);
+         sortPanel.add(sortByLabel[i]);
 
-      buildConstraints(constraints, 3, 0, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortThenLabel, constraints);
-      sortPanel.add(sortThenLabel);
+         sortComboBox[i] = new JComboBox(comboBoxColumnNames);
+         stateComponents.addElement(sortComboBox[i]);
 
-      if (resourceSortBy.equals(""))
-         sortByLabel2 = new JLabel("Sort By : ", JLabel.LEADING);
-      else
-         sortByLabel2 = new JLabel(resourceSortBy + " : ", JLabel.LEADING);
+         buildConstraints(constraints, 1, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(sortComboBox[i], constraints);
+         sortPanel.add(sortComboBox[i]);
 
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortByLabel2, constraints);
-      sortPanel.add(sortByLabel2);
+         ascendingDescendingComboBox[i] = new JComboBox();
+         ascendingDescendingComboBox[i].addItem("Ascending");
+         ascendingDescendingComboBox[i].addItem("Descending");
+         stateComponents.addElement(ascendingDescendingComboBox[i]);
 
-      sortComboBox2 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(sortComboBox2);
+         buildConstraints(constraints, 2, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(ascendingDescendingComboBox[i], constraints);
+         sortPanel.add(ascendingDescendingComboBox[i]);
+         
+         if (i < sortThenLabel.length)
+         {
+            sortThenLabel[i] = new JLabel(resourceThen, JLabel.LEADING);
 
-      buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortComboBox2, constraints);
-      sortPanel.add(sortComboBox2);
+            buildConstraints(constraints, 3, i, 1, 1, 100, 100);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.WEST;
+            gridbag.setConstraints(sortThenLabel[i], constraints);
+            sortPanel.add(sortThenLabel[i]);
+         }
 
-      ascendingDescendingComboBox2 = new JComboBox();
-      ascendingDescendingComboBox2.addItem("Ascending");
-      ascendingDescendingComboBox2.addItem("Descending");
-      stateComponents.addElement(ascendingDescendingComboBox2);
-
-      buildConstraints(constraints, 2, 1, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(ascendingDescendingComboBox2, constraints);
-      sortPanel.add(ascendingDescendingComboBox2);
-
-      if (resourceThen.equals(""))
-         sortThenLabel2 = new JLabel(" Then, ", JLabel.LEADING);
-      else
-         sortThenLabel2 = new JLabel(" " + resourceThen + ", ", JLabel.LEADING);
-
-      buildConstraints(constraints, 3, 1, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortThenLabel2, constraints);
-      sortPanel.add(sortThenLabel2);
-
-      if (resourceSortBy.equals(""))
-         sortByLabel3 = new JLabel("Sort By : ", JLabel.LEADING);
-      else
-         sortByLabel3 = new JLabel(resourceSortBy + " : ", JLabel.LEADING);
-
-      buildConstraints(constraints, 0, 2, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortByLabel3, constraints);
-      sortPanel.add(sortByLabel3);
-
-      sortComboBox3 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(sortComboBox3);
-
-      buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(sortComboBox3, constraints);
-      sortPanel.add(sortComboBox3);
-
-      ascendingDescendingComboBox3 = new JComboBox();
-      ascendingDescendingComboBox3.addItem("Ascending");
-      ascendingDescendingComboBox3.addItem("Descending");
-      stateComponents.addElement(ascendingDescendingComboBox3);
-
-      buildConstraints(constraints, 2, 2, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(ascendingDescendingComboBox3, constraints);
-      sortPanel.add(ascendingDescendingComboBox3);
-
+         i++;
+      }
+      while (i < sortFormExpressionNumber);
+      
       buildConstraints(constraints, 0, 0, 1, 1, 100, 37);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sortPanel, constraints);
       sortSearchPanel.add(sortPanel);
-
+      
       // ============================
       // Search Interface Setup
-
+      
       searchPanel = new JPanel();
       searchPanel.setLayout(gridbag);
       searchPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
-                                                               BorderFactory.createEmptyBorder(10, 6, 10, 6)));
-
+                                          BorderFactory.createEmptyBorder(10, 6, 10, 6)));
+      
+      searchLabel = new JLabel[searchFormExpressionNumber];
+      
       resourceSearch = resourceBundle.getResource("AdvancedSortSearchForm.label.Search");
       if (resourceSearch.equals(""))
-         searchLabel1 = new JLabel("Search : ", JLabel.LEFT);
-      else
-         searchLabel1 = new JLabel(resourceSearch + " : ", JLabel.LEFT);
+         resourceSearch = "Search : ";
+      
+      i = 0;
+      do
+      {
+         searchLabel[i] = new JLabel(resourceSearch, JLabel.LEFT);
 
-      buildConstraints(constraints, 0, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchLabel1, constraints);
-      searchPanel.add(searchLabel1);
+         buildConstraints(constraints, 0, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(searchLabel[i], constraints);
+         searchPanel.add(searchLabel[i]);
 
-      searchComboBox1 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(searchComboBox1);
+         searchComboBox[i] = new JComboBox(comboBoxColumnNames);
+         stateComponents.addElement(searchComboBox[i]);
 
-      buildConstraints(constraints, 1, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchComboBox1, constraints);
-      searchPanel.add(searchComboBox1);
+         buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(searchComboBox[i], constraints);
+         searchPanel.add(searchComboBox[i]);
 
-      operatorComboBox1 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox1);
+         operatorComboBox[i] = new JComboBox(whereOperators);
+         stateComponents.addElement(operatorComboBox[i]);
 
-      buildConstraints(constraints, 2, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox1, constraints);
-      searchPanel.add(operatorComboBox1);
+         buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(operatorComboBox[i], constraints);
+         searchPanel.add(operatorComboBox[i]);
 
-      searchTextField1 = new JTextField(15);
-      stateComponents.addElement(searchTextField1);
+         searchTextField[i] = new JTextField(15);
+         stateComponents.addElement(searchTextField[i]);
 
-      buildConstraints(constraints, 3, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchTextField1, constraints);
-      searchPanel.add(searchTextField1);
+         buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.CENTER;
+         gridbag.setConstraints(searchTextField[i], constraints);
+         searchPanel.add(searchTextField[i]);
 
-      andOrComboBox1 = new JComboBox();
-      andOrComboBox1.addItem("And");
-      andOrComboBox1.addItem("Or");
-      stateComponents.addElement(andOrComboBox1);
+         if (i < andOrComboBox.length)
+         {
+            andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i].addItem("And");
+            andOrComboBox[i].addItem("Or");
+            stateComponents.addElement(andOrComboBox[i]);
 
-      buildConstraints(constraints, 4, 3, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox1, constraints);
-      searchPanel.add(andOrComboBox1);
-
-      if (resourceSearch.equals(""))
-         searchLabel2 = new JLabel("Search : ", JLabel.LEFT);
-      else
-         searchLabel2 = new JLabel(resourceSearch + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchLabel2, constraints);
-      searchPanel.add(searchLabel2);
-
-      searchComboBox2 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(searchComboBox2);
-
-      buildConstraints(constraints, 1, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchComboBox2, constraints);
-      searchPanel.add(searchComboBox2);
-
-      operatorComboBox2 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox2);
-
-      buildConstraints(constraints, 2, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox2, constraints);
-      searchPanel.add(operatorComboBox2);
-
-      searchTextField2 = new JTextField(15);
-      stateComponents.addElement(searchTextField2);
-
-      buildConstraints(constraints, 3, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchTextField2, constraints);
-      searchPanel.add(searchTextField2);
-
-      andOrComboBox2 = new JComboBox();
-      andOrComboBox2.addItem("And");
-      andOrComboBox2.addItem("Or");
-      stateComponents.addElement(andOrComboBox2);
-
-      buildConstraints(constraints, 4, 4, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox2, constraints);
-      searchPanel.add(andOrComboBox2);
-
-      if (resourceSearch.equals(""))
-         searchLabel3 = new JLabel("Search : ", JLabel.LEFT);
-      else
-         searchLabel3 = new JLabel(resourceSearch + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchLabel3, constraints);
-      searchPanel.add(searchLabel3);
-
-      searchComboBox3 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(searchComboBox3);
-
-      buildConstraints(constraints, 1, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchComboBox3, constraints);
-      searchPanel.add(searchComboBox3);
-
-      operatorComboBox3 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox3);
-
-      buildConstraints(constraints, 2, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox3, constraints);
-      searchPanel.add(operatorComboBox3);
-
-      searchTextField3 = new JTextField(15);
-      stateComponents.addElement(searchTextField3);
-
-      buildConstraints(constraints, 3, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchTextField3, constraints);
-      searchPanel.add(searchTextField3);
-
-      andOrComboBox3 = new JComboBox();
-      andOrComboBox3.addItem("And");
-      andOrComboBox3.addItem("Or");
-      stateComponents.addElement(andOrComboBox3);
-
-      buildConstraints(constraints, 4, 5, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox3, constraints);
-      searchPanel.add(andOrComboBox3);
-
-      if (resourceSearch.equals(""))
-         searchLabel4 = new JLabel("Search : ", JLabel.LEFT);
-      else
-         searchLabel4 = new JLabel(resourceSearch + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchLabel4, constraints);
-      searchPanel.add(searchLabel4);
-
-      searchComboBox4 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(searchComboBox4);
-
-      buildConstraints(constraints, 1, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchComboBox4, constraints);
-      searchPanel.add(searchComboBox4);
-
-      operatorComboBox4 = new JComboBox(whereOperators);
-      stateComponents.addElement(operatorComboBox4);
-
-      buildConstraints(constraints, 2, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox4, constraints);
-      searchPanel.add(operatorComboBox4);
-
-      searchTextField4 = new JTextField(15);
-      stateComponents.addElement(searchTextField4);
-
-      buildConstraints(constraints, 3, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchTextField4, constraints);
-      searchPanel.add(searchTextField4);
-
-      andOrComboBox4 = new JComboBox();
-      andOrComboBox4.addItem("And");
-      andOrComboBox4.addItem("Or");
-      stateComponents.addElement(andOrComboBox4);
-
-      buildConstraints(constraints, 4, 6, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(andOrComboBox4, constraints);
-      searchPanel.add(andOrComboBox4);
-
-      if (resourceSearch.equals(""))
-         searchLabel5 = new JLabel("Search : ", JLabel.LEFT);
-      else
-         searchLabel5 = new JLabel(resourceSearch + " : ", JLabel.LEFT);
-
-      buildConstraints(constraints, 0, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchLabel5, constraints);
-      searchPanel.add(searchLabel5);
-
-      searchComboBox5 = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(searchComboBox5);
-
-      buildConstraints(constraints, 1, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchComboBox5, constraints);
-      searchPanel.add(searchComboBox5);
-
-      operatorComboBox5 = new JComboBox(whereOperators);
-
-      buildConstraints(constraints, 2, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(operatorComboBox5, constraints);
-      searchPanel.add(operatorComboBox5);
-
-      searchTextField5 = new JTextField(15);
-      stateComponents.addElement(searchTextField5);
-      stateComponents.addElement(operatorComboBox5);
-
-      buildConstraints(constraints, 3, 7, 1, 1, 100, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(searchTextField5, constraints);
-      searchPanel.add(searchTextField5);
-
+            buildConstraints(constraints, 4, (i + 3), 1, 1, 100, 100);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.CENTER;
+            gridbag.setConstraints(andOrComboBox[i], constraints);
+            searchPanel.add(andOrComboBox[i]);
+         }
+         
+         i++;
+      }
+      while (i < searchFormExpressionNumber);
+      
+      // Swap last state components so split in setKeyComponents() will behave
+      // correctly. Will not except an empty string, our searchTextField, as the
+      // last field. They are only two andOrComboBoxes.
+      
+      swapEndComponent = stateComponents.get(stateComponents.size() - 1);
+      stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
+      stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
+      
       buildConstraints(constraints, 0, 1, 1, 1, 100, 63);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
@@ -898,267 +675,127 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    protected String getAdvancedSortSearchSQL(String sqlTableFieldsString, int tableRowStart,
                                              int tableRowLimit)
    {
-      String sqlStatementString;
+      // Method Instances
+      StringBuffer sqlStatementString;
+      String whereString, unionString, ascDescString;
       String columnNameString, columnTypeString;
-      String operatorString, tempSearchString;
-      String unionString;
-      String ascDescString;
+      String operatorString, searchString;
       boolean notFieldSort;
 
-      sqlStatementString = "SELECT ";
+      sqlStatementString = new StringBuffer();
+      sqlStatementString.append("SELECT ");
 
       // ========================================
       // Adding DISTINCT option as needed.
 
       if (((String) selectTypeComboBox.getSelectedItem()).equals("All"))
-         sqlStatementString += sqlTableFieldsString + " FROM " + sqlTable + " ";
+         sqlStatementString.append(sqlTableFieldsString + " FROM " + sqlTable + " ");
       else
-         sqlStatementString += "DISTINCT " + sqlTableFieldsString + " FROM " + sqlTable + " ";
+         sqlStatementString.append("DISTINCT " + sqlTableFieldsString + " FROM " + sqlTable + " ");
 
       // ========================================
-      // Adding the search(s), WHERE, option.
-
-      columnNameString = (String) columnNamesHashMap.get(searchComboBox1.getSelectedItem());
-      columnTypeString = (String) columnTypesHashMap.get(searchComboBox1.getSelectedItem());
-      operatorString = (String) operatorComboBox1.getSelectedItem();
-      tempSearchString = searchTextField1.getText();
+      // Adding the search(s), WHERE, option(s).
+      
+      int i = 0;
+      whereString = "WHERE ";
       unionString = "";
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
+      do
       {
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += "WHERE " + identifierQuoteString + columnNameString + identifierQuoteString
-                                  + " " + operatorString + " ";
-         else
+         columnNameString = (String) columnNamesHashMap.get(searchComboBox[i].getSelectedItem());
+         columnTypeString = (String) columnTypesHashMap.get(searchComboBox[i].getSelectedItem());
+         operatorString = (String) operatorComboBox[i].getSelectedItem();
+         searchString = searchTextField[i].getText();
+
+         if (columnNameString != null
+             && (!searchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
          {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                     + identifierQuoteString + " " + operatorString + " " + tempSearchString
-                                     + " ";
+            if (i > 0)
+               sqlStatementString.append(unionString.equals("") ? "WHERE " : unionString);
+            
+            if (operatorString.toLowerCase().indexOf("null") != -1)
+               sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                         + identifierQuoteString + " " + operatorString + " ");
             else
             {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                         + identifierQuoteString + " " + operatorString
-                                         + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
+               if (operatorString.equals("<=>") && searchString.toLowerCase().equals("null"))
+                  sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                            + identifierQuoteString + " " + operatorString
+                                            + " " + searchString + " ");
                else
-                  sqlStatementString += "WHERE " + identifierQuoteString + columnNameString
-                                         + identifierQuoteString + " " + operatorString + " '"
-                                         + tempSearchString + "' ";
+               {
+                  if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                      && columnTypeString.equals("DATE"))
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString
+                                               + " TO_DATE('" + searchString + "', 'MM-dd-YYYY') ");
+                  else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                           && columnTypeString.indexOf("TIMESTAMP") != -1)
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString
+                                               + " TO_TIMESTAMP('" + searchString
+                                               + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                  else
+                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                               + identifierQuoteString + " " + operatorString + " '"
+                                               + searchString + "' ");
+               }
             }
+            
+            if (i < andOrComboBox.length)
+               unionString = ((String) andOrComboBox[i].getSelectedItem()).toUpperCase() + " ";
          }
-
-         unionString = ((String) andOrComboBox1.getSelectedItem()).toUpperCase() + " ";
+         i++;
+         whereString = "";
       }
-
-      columnNameString = (String) columnNamesHashMap.get(searchComboBox2.getSelectedItem());
-      columnTypeString = (String) columnTypesHashMap.get(searchComboBox2.getSelectedItem());
-      operatorString = (String) operatorComboBox2.getSelectedItem();
-      tempSearchString = searchTextField2.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                   && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox2.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(searchComboBox3.getSelectedItem());
-      columnTypeString = (String) columnTypesHashMap.get(searchComboBox3.getSelectedItem());
-      operatorString = (String) operatorComboBox3.getSelectedItem();
-      tempSearchString = searchTextField3.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                     && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                        && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox3.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(searchComboBox4.getSelectedItem());
-      columnTypeString = (String) columnTypesHashMap.get(searchComboBox4.getSelectedItem());
-      operatorString = (String) operatorComboBox4.getSelectedItem();
-      tempSearchString = searchTextField4.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                     && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                     && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-
-         unionString = ((String) andOrComboBox4.getSelectedItem()).toUpperCase() + " ";
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(searchComboBox5.getSelectedItem());
-      columnTypeString = (String) columnTypesHashMap.get(searchComboBox5.getSelectedItem());
-      operatorString = (String) operatorComboBox5.getSelectedItem();
-      tempSearchString = searchTextField5.getText();
-
-      if (columnNameString != null
-          && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
-      {
-         sqlStatementString += unionString.equals("") ? "WHERE " : unionString;
-
-         if (operatorString.toLowerCase().indexOf("null") != -1)
-            sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                  + operatorString + " ";
-         else
-         {
-            if (operatorString.equals("<=>") && tempSearchString.toLowerCase().equals("null"))
-               sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                     + operatorString + " " + tempSearchString + " ";
-            else
-            {
-               if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                     && columnTypeString.equals("DATE"))
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ";
-               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                     && columnTypeString.indexOf("TIMESTAMP") != -1)
-                  sqlStatementString += identifierQuoteString + columnNameString
-                                        + identifierQuoteString + " " + operatorString
-                                        + " TO_TIMESTAMP('" + tempSearchString + "', 'MM-dd-YYYY HH24:MI:SS') ";
-               else
-                  sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " "
-                                        + operatorString + " '" + tempSearchString + "' ";
-            }
-         }
-      }
-
+      while (i < searchFormExpressionNumber);
+       
       // ========================================
       // Adding the sort(s), ORDER BY, option.
-
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox1.getSelectedItem());
+      
+      columnNameString = (String) columnNamesHashMap.get(sortComboBox[0].getSelectedItem());
       ascDescString = "";
       notFieldSort = true;
 
       if (columnNameString != null)
       {
-         sqlStatementString += "ORDER BY " + identifierQuoteString + columnNameString + identifierQuoteString
-                               + " ";
+         sqlStatementString.append("ORDER BY " + identifierQuoteString + columnNameString + identifierQuoteString
+                               + " ");
+         ascDescString = orderString(0);
+         notFieldSort = false;
+      }
+
+      columnNameString = (String) columnNamesHashMap.get(sortComboBox[1].getSelectedItem());
+
+      if (columnNameString != null)
+      {
+         sqlStatementString.append(notFieldSort ? "ORDER BY " : ascDescString + ", ");
+         sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
          ascDescString = orderString(1);
          notFieldSort = false;
       }
 
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox2.getSelectedItem());
+      columnNameString = (String) columnNamesHashMap.get(sortComboBox[2].getSelectedItem());
 
       if (columnNameString != null)
       {
-         sqlStatementString += notFieldSort ? "ORDER BY " : ascDescString + ", ";
-         sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " ";
+         sqlStatementString.append(notFieldSort ? "ORDER BY " : ascDescString + ", ");
+         sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
          ascDescString = orderString(2);
-         notFieldSort = false;
-      }
-
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox3.getSelectedItem());
-
-      if (columnNameString != null)
-      {
-         sqlStatementString += notFieldSort ? "ORDER BY " : ascDescString + ", ";
-         sqlStatementString += identifierQuoteString + columnNameString + identifierQuoteString + " ";
-         ascDescString = orderString(3);
       }
 
       if (!ascDescString.equals(""))
-         sqlStatementString += ascDescString + " ";
-
+         sqlStatementString.append(ascDescString + " ");
+      
       // ========================================
       // Adding the LIMIT option.
 
-      sqlStatementString += "LIMIT " + tableRowLimit + " OFFSET " + tableRowStart;
+      sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
 
       // Return the resultant query.
 
       // System.out.println(sqlStatementString);
-      return sqlStatementString;
-
+      return sqlStatementString.toString();
+      
       // Sample outline of what a basic SQL SELECT query should be.
       // It was determined in the initial version to not include
       // GROUP BY or HAVING options.
@@ -1168,7 +805,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
        * columnSearchString + " " + "LIKE " + searchTextString + " " + "ORDER BY " +
        * columnNamesHashMap.get(sortComboBox.getSelectedItem()) + " " + "LIMIT " +
        * tableRowStart + "," + tableRowLimit;
-       */
+       */ 
    }
 
    //==============================================================
@@ -1178,31 +815,21 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
    private String orderString(int option)
    {
+      // Method Instances.
       String ascendingDescendingString;
-
-      switch (option)
+      
+      if (option >= 0 && option < ascendingDescendingComboBox.length)
       {
-      case 1:
-         if (ascendingDescendingComboBox1.getSelectedIndex() == 0)
+         System.out.println("Evaluating " + ascendingDescendingComboBox[option].getSelectedIndex());
+         if (ascendingDescendingComboBox[option].getSelectedIndex() == 0)
             ascendingDescendingString = "ASC";
          else
             ascendingDescendingString = "DESC";
-         break;
-      case 2:
-         if (ascendingDescendingComboBox2.getSelectedIndex() == 0)
-            ascendingDescendingString = "ASC";
-         else
-            ascendingDescendingString = "DESC";
-         break;
-      case 3:
-         if (ascendingDescendingComboBox3.getSelectedIndex() == 0)
-            ascendingDescendingString = "ASC";
-         else
-            ascendingDescendingString = "DESC";
-         break;
-      default:
-         ascendingDescendingString = "";
       }
+      else
+         ascendingDescendingString = "ASC";
+      
+      System.out.println(ascendingDescendingString);
       return ascendingDescendingString;
    }
 
@@ -1254,7 +881,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    // Class method for outside classes to set the current state of
    // the form.
    //==============================================================
-
+   
    protected void setKeyComponentsState(String stateString)
    {
       // Method Instances
@@ -1287,7 +914,6 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
             while (keyComponentIterator.hasNext())
             {
                currentComponent = keyComponentIterator.next();
-               // System.out.println(keyComponentSettings[i]);
 
                if (currentComponent instanceof JComboBox)
                {
