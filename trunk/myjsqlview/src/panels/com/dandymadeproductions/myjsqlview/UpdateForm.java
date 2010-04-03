@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.5 04/01/2010
+// Version 2.6 04/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,8 @@
 //         2.5 04/01/2010 Consolidated Code in createUpdateWhereInterface(), Constructor, 
 //                        actionPerformed(), and getWhereSQLExpression(). Replaced Comboboxes,
 //                        and Textfields With Arrays.
+//         2.6 04/02/2010 Minor Comment Changes and Move of Instance unionString to Outside
+//                        do Loop in Method getWhereSQLExpression().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -100,7 +102,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 2.5 04/01/2010
+ * @version 2.6 04/02/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -1001,6 +1003,7 @@ class UpdateForm extends JFrame implements ActionListener
 
    private String getWhereSQLExpression()
    {
+      // Method Instances
       StringBuffer sqlStatementString;
       String whereString;
       String columnNameString, columnTypeString;
@@ -1008,27 +1011,25 @@ class UpdateForm extends JFrame implements ActionListener
       String unionString;
 
       sqlStatementString = new StringBuffer();
-      //sqlStatementString = "";
 
       // ========================================
       // Adding the search(s), WHERE, option.
       
       int i = 0;
       whereString = "WHERE ";
+      unionString = "";
       do
       {
          columnNameString = (String) columnNamesHashMap.get(whereComboBox[i].getSelectedItem());
          columnTypeString = (String) columnTypeHashMap.get(whereComboBox[i].getSelectedItem());
          operatorString = (String) operatorComboBox[i].getSelectedItem();
          tempSearchString = whereTextField[i].getText();
-         unionString = "";
 
          if (columnNameString != null
              && (!tempSearchString.equals("") || operatorString.toLowerCase().indexOf("null") != -1))
          {
             if (i > 0)
                sqlStatementString.append(unionString.equals("") ? "WHERE " : unionString);
-            
             
             if (operatorString.toLowerCase().indexOf("null") != -1)
                sqlStatementString.append(whereString + identifierQuoteString + columnNameString
@@ -1054,8 +1055,8 @@ class UpdateForm extends JFrame implements ActionListener
                                                + "', 'MM-dd-YYYY HH24:MI:SS') ");
                   else
                      sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString
-                                               + " '" + tempSearchString + "' ");
+                                               + identifierQuoteString + " " + operatorString + " '"
+                                               + tempSearchString + "' ");
                }
             }
 
