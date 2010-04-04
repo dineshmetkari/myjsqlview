@@ -88,5 +88,20 @@
 			<li>'\Z' - Matches only at the end of word.</li>
 			<li>'[...]' - Matches any item in list. ex. [ab] matches either a 'a' or 'b'.</li>
  		</ul>
+
+		<p>
+			The operators AND and OR are based on the Intersection and Union respectively with
+                        a given search. The below example illustrate the difference between the typical boolean
+                        aspects of the these operators.<br /><br />
+
+			Given two search results:
+			<ul>
+				<li>A: {0.00, 11.0, 13.0, 22.00, 22.60, 34.23, 44.35}</li>
+				<li>B: {22.6, 34.23, 44.35, 100.00}</li>
+			</ul><br />
+
+			A AND B = {22.60, 34.23, 44.35}<br />
+			A OR B = {0.00, 11.00, 13.00, 22.00, 22.60, 34.35, 44.35, 100.00}			
+		</p>
 	</body>
 </html>
