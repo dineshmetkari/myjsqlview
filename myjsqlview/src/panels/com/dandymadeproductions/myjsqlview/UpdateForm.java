@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.6 04/02/2010
+// Version 2.7 04/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,9 @@
 //                        and Textfields With Arrays.
 //         2.6 04/02/2010 Minor Comment Changes and Move of Instance unionString to Outside
 //                        do Loop in Method getWhereSQLExpression().
+//         2.7 04/06/2010 Class Method updateTable() Correction in Processing DateTime Types.
+//                        Same Method Addition of Bit Type Processing for MySQL. Introduction
+//                        of Method Instance quoteCheckBoxState.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -102,7 +105,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 2.6 04/02/2010
+ * @version 2.7 04/06/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -704,6 +707,7 @@ class UpdateForm extends JFrame implements ActionListener
       String dateString, timeString;
       String resourceMessage1, resourceMessage2, resourceTitle, resourceOK, resourceCancel;
       boolean tableUpdated, tryingUpdate;
+      boolean quoteCheckBoxState;
 
       // Obtain connection to database & setup.
 
@@ -716,6 +720,7 @@ class UpdateForm extends JFrame implements ActionListener
       // was made.
       tableUpdated = false;
       tryingUpdate = false;
+      quoteCheckBoxState = quoteCheckBox.isSelected();
 
       try
       {
@@ -855,8 +860,8 @@ class UpdateForm extends JFrame implements ActionListener
                               java.sql.Date.valueOf("error");
                         
                            // Process
-                           updateTextString = updateTextString.substring(0, 10);
-                           dateString = MyJSQLView_Utils.formatJavaDateString(updateTextString);
+                           dateString = MyJSQLView_Utils.formatJavaDateString(
+                                                                   updateTextString.substring(0, 10));
                            timeString = updateTextString.substring(updateTextString.indexOf(" "));
                            dateTimeValue = Timestamp.valueOf(dateString + timeString);
                            updateString = dateTimeValue.toString();
@@ -949,7 +954,19 @@ class UpdateForm extends JFrame implements ActionListener
                         return false;
                      }
                   }
-                  // None Processed Field.
+                  // Bit Types
+                  else if (columnType.equals("BIT"))
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                     {
+                        updateString = "B'" + updateTextString + "'";
+                        quoteCheckBox.setSelected(false);
+                     }
+                     else
+                        updateString = updateTextString;
+                  }
+                  
+                  // None Process Given Input.
                   else
                      updateString = updateTextString;
                }
@@ -962,9 +979,11 @@ class UpdateForm extends JFrame implements ActionListener
                   sqlStatementString += "'" + updateString + "'" + " " + getWhereSQLExpression();
                else
                   sqlStatementString += updateString + " " + getWhereSQLExpression();
-               // System.out.println(sqlStatementString);
-
+              
+               quoteCheckBox.setSelected(quoteCheckBoxState);
+               
                // Proceed with execution and finish up.
+               // System.out.println(sqlStatementString);
                sqlStatement.executeUpdate(sqlStatementString);
                dbConnection.commit();
                dbConnection.setAutoCommit(true);
