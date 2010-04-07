@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.18 04/06/2010
+// Version 11.19 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -424,6 +424,8 @@
 //       11.18 Class Methods viewSelectedItem() & editSelectedItem(), Removed the Formatting
 //             for Date Keys Form STR_TO_DATE() to the MyJSQLView_Utils.formatJavaDateString().
 //             Consolidation for Later Date Displays Controlled by User.
+//       11.19 Removed the Exclusion of Blob Types in Initial Loading, Class Method
+//             getColumnNames().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -448,7 +450,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.18 04/06/2010
+ * @version 11.19 04/07/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -583,16 +585,9 @@ class TableTabPanel_MySQL extends TableTabPanel
             viewFormFields.addElement(comboBoxNameString);
             formFields.addElement(comboBoxNameString);
             comboBoxFields.addElement(comboBoxNameString);
-            
-            // Exclude Blob Fields Initially Unless Primary Key.
-            if (!(columnClass.indexOf("String") == -1 && columnType.toUpperCase().indexOf("BLOB") != -1)
-                  || primaryKeys.contains(colNameString))
-            {
-               currentTableHeadings.addElement(comboBoxNameString);
-               sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
-            }
-            
+            currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", "; 
 
             // Special Column Fields.
 
