@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.17 03/26/2010
+// Version 11.18 04/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -421,13 +421,15 @@
 //             table key_table3 With One Field and It is Blob.
 //       11.17 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
+//       11.18 Class Methods viewSelectedItem() & editSelectedItem(), Removed the Formatting
+//             for Date Keys Form STR_TO_DATE() to the MyJSQLView_Utils.formatJavaDateString().
+//             Consolidation for Later Date Displays Controlled by User.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
-
 
 import java.math.BigDecimal;
 import java.sql.Connection;
@@ -446,7 +448,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.17 03/26/2010
+ * @version 11.18 04/06/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -1004,8 +1006,9 @@ class TableTabPanel_MySQL extends TableTabPanel
                if (currentColumnType.equals("DATE"))
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                            + identifierQuoteString + "=STR_TO_DATE('" 
-                                            + currentContentData + "', '%m-%d-%Y') AND ");
+                                            + identifierQuoteString + "='"
+                                            + MyJSQLView_Utils.formatJavaDateString(currentContentData + "")
+                                            + "' AND ");
                }
                else
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1370,8 +1373,10 @@ class TableTabPanel_MySQL extends TableTabPanel
                currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                if (currentColumnType.equals("DATE"))
                {
-                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName + identifierQuoteString
-                                            + "=STR_TO_DATE('" + currentContentData + "', '%m-%d-%Y') AND ");
+                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                            + identifierQuoteString + "='"
+                                            + MyJSQLView_Utils.formatJavaDateString(currentContentData + "")
+                                            + "' AND ");
                }
                else
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName + identifierQuoteString
