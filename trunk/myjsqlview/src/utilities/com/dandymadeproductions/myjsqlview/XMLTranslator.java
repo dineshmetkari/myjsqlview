@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Nil_lin, Dana Proctor
-// Version 4.2 02/18/2010
+// Version 4.3 04/07/2010
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,7 @@
 //                        Test. Class Method setSites() passwordBufferString Proper Conversion
 //                        to passwordString and Check for Empty String.
 //         4.2 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         4.3 04/07/2010 Corrections in Class Method textConversion().
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -127,7 +128,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.2 02/18/2010
+ * @version 4.3 04/07/2010
  */
 
 class XMLTranslator
@@ -650,11 +651,35 @@ class XMLTranslator
    private String textConversion(char[] theseCharacters, boolean which)
    {
       // Class Method Instances.
-      char[] myCharacters = "k8^ef1209rEW-+$xB1aH".toCharArray();
-      if (System.getProperty("os.name").length() > 2)
-         myCharacters[4] = System.getProperty("os.name").charAt(1);
-      if (System.getProperty("user.home").length() > 4)
-         myCharacters[6] = System.getProperty("user.home").charAt(3);
+      char[] myCharacters;
+      
+      myCharacters = MyJSQLView_Utils.getStandardCharacters();
+      try
+      {
+         if (System.getProperty("os.name").length() > 2)
+            myCharacters[4] = System.getProperty("os.name").charAt(0);
+         if (System.getProperty("os.arch").length() > 2)
+            for (int i=0; i<2; i++)
+               myCharacters[i==0?2:7] = System.getProperty("os.arch").charAt(i);
+         if (System.getProperty("os.version").length() > 3)
+         {
+            for (int i=0; i<2; i++)
+               myCharacters[i==0?4:11] = System.getProperty("os.version").charAt(i);
+            myCharacters[18] = System.getProperty("os.version").charAt(2);
+         }
+         else if (System.getProperty("os.version").length() > 2)
+               myCharacters[17] = System.getProperty("os.version").charAt(1);
+         if (System.getProperty("user.name").length() > 4)
+            for (int i=3; i>=0; i--)
+               myCharacters[myCharacters.length - (i+2)] = System.getProperty("user.name").charAt(i);
+         if (System.getProperty("user.home").length() > 4)
+            myCharacters[6] = System.getProperty("user.home").charAt(3);
+      }
+      catch (SecurityException se)
+      {
+         // Well tried.
+      }
+      
       char[] ch1 = new char[theseCharacters.length];
       int stop = myCharacters.length;
       int index, currentPosition, ch;
@@ -692,7 +717,7 @@ class XMLTranslator
       
       for (int i = 0; i < ch1.length; i++)
          returnString.append(ch1[i]);
-
+      
       if (returnString.length() == 0)
          return "";
       else
