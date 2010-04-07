@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.68 03/26/2010
+// Version 8.69 04/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -296,12 +296,17 @@
 //                        addUpdateTableEntry(), and selectFunctionOperator().
 //        8.68 03/26/2010 Class Method addUpdateTableEntry() Changed Instance sqlStatementString to
 //                        Type StringBuffer.
+//        8.69 04/06/2010 Removed Class Method formatDatabaseDateString() and Moved That Processing,
+//                        Oracle Only, to the Place it is Being Used for Key Processing in the
+//                        addUpdateTableEntry() Method. Consolidated There For Later Date Processing
+//                        Modification. User Controls the Date Format Displayed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
+
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -329,7 +334,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.68 03/26/2010
+ * @version 8.69 04/06/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1616,9 +1621,15 @@ class TableEntryForm extends JFrame implements ActionListener
                         .parseColumnNameField(currentKey_ColumnName));
                   if (columnType.indexOf("DATE") != -1)
                   {
+                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        currentContentData = "TO_DATE('" + currentContentData + "', 'MM-dd-YYYY')";
+                     else
+                        currentContentData = "'" + MyJSQLView_Utils.formatJavaDateString(currentContentData
+                                             + "") + "'";
+                     
                      sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
                                                + identifierQuoteString + "="
-                                               + formatDatabaseDateString(currentContentData) + " AND ");
+                                               + currentContentData + " AND ");
                   }
                   else
                      sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
@@ -2144,20 +2155,6 @@ class TableEntryForm extends JFrame implements ActionListener
             MyJSQLView_Access.displaySQLErrors(e, "TableEntryForm addUpdateTableEntry() rollback failed");
          }
       }
-   }
-
-   //==============================================================
-   // Class method for converting the MyJSQLView date string into
-   // the appropriate format for the database.
-   //==============================================================
-
-   private Object formatDatabaseDateString(Object dateContent)
-   {
-
-      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-         return "TO_DATE('" + dateContent + "', 'MM-dd-YYYY')";
-      else
-         return "'" + MyJSQLView_Utils.formatJavaDateString(dateContent + "") + "'";
    }
 
    //==============================================================
