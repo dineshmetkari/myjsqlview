@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.4 03/29/2010
+// Version 8.5 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -207,6 +207,8 @@
 //             Views and Edits.
 //         8.4 Class Mehod loadTable(), Bug Fix to Correct Inablilty to Search For Date Type
 //             Values. Still Broken For TimeStamp and Interval?
+//         8.5 Removed the Exclusion of Blob, Raw, & Clob Types in Initial Loading, Class
+//             Method getColumnNames().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -239,7 +241,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.4 03/29/2010
+ * @version 8.5 04/07/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -393,17 +395,9 @@ class TableTabPanel_Oracle extends TableTabPanel
             viewFormFields.addElement(comboBoxNameString);
             formFields.addElement(comboBoxNameString);
             comboBoxFields.addElement(comboBoxNameString);
-            
-            // Exclude Blob, Raw, and Clob Fields Initially Unless Primary Key.
-            if (!(columnType.toUpperCase().equals("BLOB") || columnType.toUpperCase().indexOf("RAW") != -1
-                  || columnType.toUpperCase().indexOf("CLOB") != -1)
-                || primaryKeys.contains(colNameString))
-            {
-               currentTableHeadings.addElement(comboBoxNameString);
-               sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
-            }
-            
+            currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Create a second table field string that allows the collection
             // ot Timestamp Fields with Local Time Zone. Oracle JDBC doozie.
