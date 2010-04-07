@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.4 03/26/2010
+// Version 8.5 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,8 @@
 //             table key_table3 With One Field and It is Blob.
 //         8.4 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
+//         8.5 Removed the Exclusion of Binary Types in Initial Loading, Class Method
+//             getColumnNames().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -217,7 +219,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8,4 03/26/2010
+ * @version 8,5 04/07/2010
  */
 
 class TableTabPanel_HSQL extends TableTabPanel
@@ -349,16 +351,9 @@ class TableTabPanel_HSQL extends TableTabPanel
             viewFormFields.addElement(comboBoxNameString);
             formFields.addElement(comboBoxNameString);
             comboBoxFields.addElement(comboBoxNameString);
-            
-            // Exclude Binary Fields Initially.
-            if (!(columnType.toUpperCase().indexOf("BINARY") != -1)
-            	|| primaryKeys.contains(colNameString))
-            {
-               currentTableHeadings.addElement(comboBoxNameString);
-               sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
-            }
-            
+            currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Special Column Fields.
 
