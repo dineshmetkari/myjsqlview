@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.73 04/02/2010
+// Version 4.74 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -138,6 +138,7 @@
 //                        createSortSearchInterface(), getAdvancedSortSearchSQL(),
 //                        and orderString(). Changed ComboBoxes and Texfields Class
 //                        Instances to Arrays.
+//        4.74 04/07/2010 Removed and Commented System.out in Class Method orderString().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -166,7 +167,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.73 04/02/2010
+ * @version 4.74 04/07/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -820,7 +821,6 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       
       if (option >= 0 && option < ascendingDescendingComboBox.length)
       {
-         System.out.println("Evaluating " + ascendingDescendingComboBox[option].getSelectedIndex());
          if (ascendingDescendingComboBox[option].getSelectedIndex() == 0)
             ascendingDescendingString = "ASC";
          else
@@ -829,7 +829,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       else
          ascendingDescendingString = "ASC";
       
-      System.out.println(ascendingDescendingString);
+      // System.out.println(ascendingDescendingString);
       return ascendingDescendingString;
    }
 
