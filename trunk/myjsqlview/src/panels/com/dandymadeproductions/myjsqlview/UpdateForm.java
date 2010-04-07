@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.8 04/06/2010
+// Version 2.9 04/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,7 @@
 //                        of Method Instance quoteCheckBoxState.
 //         2.8 04/06/2010 Class Method updateTable() Addition of TO_DATE() and TO_TIMESTAMP()
 //                        Processing for Oracle Database.
+//         2.9 04/06/2010 Commented System.out in UpdateTable().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -107,7 +108,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 2.8 04/06/2010
+ * @version 2.9 04/06/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -1002,7 +1003,7 @@ class UpdateForm extends JFrame implements ActionListener
                quoteCheckBox.setSelected(quoteCheckBoxState);
                
                // Proceed with execution and finish up.
-               System.out.println(sqlStatementString);
+               // System.out.println(sqlStatementString);
                sqlStatement.executeUpdate(sqlStatementString);
                dbConnection.commit();
                dbConnection.setAutoCommit(true);
