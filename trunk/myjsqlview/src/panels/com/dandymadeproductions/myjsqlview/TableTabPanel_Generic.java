@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.8 03/26/2010
+// Version 7.9 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,8 @@
 //         7.7 Changed Package to Reflect Dandy Made Productions Code.
 //         7.8 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
+//         7.9 Removed the Exclusion of Blob, Bytea, & Binary Types in Initial Loading, Class
+//             Method getColumnNames().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -196,7 +198,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
-
 /**
  *    The TableTabPanel_Generic class provides the means to create a default table
  * summary view of data in an unknown database that in MyJSQLView is listed
@@ -205,7 +206,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 7.8 03/26/2010
+ * @version 7.9 04/07/2010
  */
 
 class TableTabPanel_Generic extends TableTabPanel
@@ -336,18 +337,9 @@ class TableTabPanel_Generic extends TableTabPanel
             viewFormFields.addElement(comboBoxNameString);
             formFields.addElement(comboBoxNameString);
             comboBoxFields.addElement(comboBoxNameString);
-            
-            // Exclude Blob, Bytea, & Binary Fields Initially.
-            if (!((columnClass.indexOf("String") == -1 && columnType.toUpperCase().indexOf("BLOB") != -1)
-                  || (columnType.toUpperCase().indexOf("BYTEA") != -1)
-                  || (columnType.toUpperCase().indexOf("BINARY") != -1))
-                || primaryKeys.contains(colNameString))
-            {
-               currentTableHeadings.addElement(comboBoxNameString);
-               sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";   
-            }
-            
+            currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";   
 
             // Special Column Fields.
 
