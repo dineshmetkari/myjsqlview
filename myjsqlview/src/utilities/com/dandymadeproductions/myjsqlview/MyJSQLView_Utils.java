@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.5 02/23/2010
+// Version 3.6 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //             Needed.
 //         3.4 Changed Package to Reflect Dandy Made Productions Code.
 //         3.5 Added Class Method processLocaleLanguage().
+//         3.6 Comment Changes and getStandardCharacters(().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -101,7 +102,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 3.5 02/23/2010
+ * @version 3.6 04/07/2010
  */
 
 class MyJSQLView_Utils extends MyJSQLView
@@ -401,14 +402,20 @@ class MyJSQLView_Utils extends MyJSQLView
 
    //==============================================================
    // Class method for converting a standard Java date string into
-   // a java.sql.date string. MM-dd-YYYY to YYYY-MM-dd.
+   // a java.sql.date string. MM-dd-YYYY to YYYY-MM-dd. Comments:
+   // MySQL-STR_TO_DATE('data', '%m-%d-%Y'), Oracle-TO_DATE('data',
+   // 'MM-dd-YYYY').
    //==============================================================
-
+   
    protected static String formatJavaDateString(String displayString)
    {
-      String javaDateString = displayString.trim();
-      int dashIndex = javaDateString.indexOf("-");
-      int lastDashIndex = javaDateString.lastIndexOf("-");
+      // Method Instances
+      String javaDateString;
+      int dashIndex, lastDashIndex;
+      
+      javaDateString = displayString.trim();
+      dashIndex = javaDateString.indexOf("-");
+      lastDashIndex = javaDateString.lastIndexOf("-");
 
       if ((lastDashIndex != -1) & (dashIndex >= 1 & dashIndex <= 2)
           & ((lastDashIndex - dashIndex >= 1) & (lastDashIndex - dashIndex <= 3)))
@@ -420,6 +427,7 @@ class MyJSQLView_Utils extends MyJSQLView
       else
          return "";
    }
+  
 
    //==============================================================
    // Method for providing a mechanism to process a choosen file
@@ -759,6 +767,15 @@ class MyJSQLView_Utils extends MyJSQLView
    protected static String getMyJSQLViewDirectory()
    {
       return System.getProperty("user.home") + getFileSeparator() + ".myjsqlview";
+   }
+   
+   //==============================================================
+   // Class method to allow standard characters retrieval.
+   //==============================================================
+
+   protected static char[] getStandardCharacters()
+   {
+      return "k8^ef1209rEW-+$xB1aH".toCharArray();
    }
 
    //==============================================================
