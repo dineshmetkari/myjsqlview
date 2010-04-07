@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 10.7 03/26/2010
+// Version 10.8 04/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -251,6 +251,8 @@
 //             table key_table3 With One Field and It is Blob.
 //        10.7 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
 //             sqlStatementString to a StringBuffer.
+//        10.8 Removed the Exclusion of Bytea Types in Initial Loading, Class Method
+//             getColumnNames().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -276,7 +278,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.7 03/26/2010
+ * @version 10.8 04/07/2010
  */
 
 class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -407,15 +409,9 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
             viewFormFields.addElement(comboBoxNameString);
             formFields.addElement(comboBoxNameString);
             comboBoxFields.addElement(comboBoxNameString);
-            
-            // Exclude Bytea Fields Initially Unless Primary Key.
-            if (!columnType.toUpperCase().equals("BYTEA") || primaryKeys.contains(colNameString))
-            {
-               currentTableHeadings.addElement(comboBoxNameString);
-               sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
-            }
-            
+            currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Special Column Fields.
 
