@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.50 03/30/2010
+// Version 4.51 04/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,7 @@
 //             to a StringBuffer.
 //        4.50 Class Method createAdvancedSortSearchFrame() Added Instance columnTypeHashMap
 //             to AdvancedSortSeaarchForm Creation.
+//        4.51 Added Class Instances lob_sqlTableFieldsString & lobDataTypesHashMap.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -152,7 +153,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.50 03/30/2010
+ * @version 4.51 04/10/2010
  */
 
 abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -171,6 +172,7 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
    protected String sqlTable;
    protected String schemaTableName;
    private String saveFileName;
+   protected String lob_sqlTableFieldsString;
    protected String sqlTableFieldsString;
    protected String sqlTableStatement;
    protected String identifierQuoteString;
@@ -211,10 +213,12 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
    protected Object[][] tableData;
    protected HashMap columnNamesHashMap, columnClassHashMap;
    protected HashMap columnTypeHashMap, columnSizeHashMap;
-   protected HashMap columnEnumHashMap, columnSetHashMap;
    protected HashMap preferredColumnSizeHashMap;
+   
+   protected HashMap lobDataTypesHashMap;
    protected HashMap autoIncrementHashMap, keyLengthHashMap;
-
+   protected HashMap columnEnumHashMap, columnSetHashMap;
+   
    private JLabel rowsLabel;
    private JButton refreshButton, previousTableRowsButton, nextTableRowsButton;
    private JButton viewButton, addButton, editButton, deleteButton, deleteAllButton;
@@ -270,16 +274,18 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
       allTableHeadings = new Vector();
       primaryKeys = new Vector();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-
-      autoIncrementHashMap = new HashMap();
+      
       columnNamesHashMap = new HashMap();
       columnClassHashMap = new HashMap();
       columnTypeHashMap = new HashMap();
       columnSizeHashMap = new HashMap();
+      preferredColumnSizeHashMap = new HashMap();
+      
+      lobDataTypesHashMap = new HashMap();
+      autoIncrementHashMap = new HashMap();
+      keyLengthHashMap = new HashMap();
       columnEnumHashMap = new HashMap();
       columnSetHashMap = new HashMap();
-      preferredColumnSizeHashMap = new HashMap();
-      keyLengthHashMap = new HashMap();
       advancedSortSearch = false;
       settingState = false;
       ascDescString = "ASC";
