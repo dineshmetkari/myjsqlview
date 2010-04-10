@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.19 04/07/2010
+// Version 11.20 04/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -426,6 +426,11 @@
 //             Consolidation for Later Date Displays Controlled by User.
 //       11.19 Removed the Exclusion of Blob Types in Initial Loading, Class Method
 //             getColumnNames().
+//       11.20 Implemented Fix For the Performance Issued That was Temporary Corrected in
+//             10.96 & 10.97. Permanently Excluded Any Loading of LOBs in the Summary Table,
+//             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
+//             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
+//             loadTable().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -450,7 +455,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.19 04/07/2010
+ * @version 11.20 04/10/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -549,6 +554,7 @@ class TableTabPanel_MySQL extends TableTabPanel
          // Column Names, Form Fields, ComboBox Text and HashMaps.
 
          sqlTableFieldsString = "";
+         lob_sqlTableFieldsString = "";
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
@@ -587,21 +593,31 @@ class TableTabPanel_MySQL extends TableTabPanel
             comboBoxFields.addElement(comboBoxNameString);
             currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
-            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", "; 
+            
+            sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
+            
+            //  Collect LOBs.
+            if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) 
+                || (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                    && Integer.parseInt(columnSize.toString()) > 65535)
+                    && !primaryKeys.contains(colNameString))
+            {
+               lobDataTypesHashMap.put(comboBoxNameString, colNameString);
+               lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
+            }
 
             // Special Column Fields.
-
             if (primaryKeys.contains(colNameString))
             {
                if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
-                  columnSize = new Integer("255");
+                   columnSize = new Integer("255");
                keyLengthHashMap.put(colNameString, columnSize.toString());
             }
          }
          // Clean up the SQL field string for later use.
          if (sqlTableFieldsString.length() > 2)
             sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
-
+         
          // Debug for key resolution varification.
          /*
           * System.out.print(sqlTable + ": "); Iterator temp =
@@ -630,14 +646,17 @@ class TableTabPanel_MySQL extends TableTabPanel
    {
       // Method Instances
       String sqlStatementString;
+      String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
 
       StringBuffer searchQueryString;
       String columnSearchString, searchTextString;
+      String lobLessFieldsString;
       String columnName, columnClass, columnType;
       String keyLength;
       int columnSize, preferredColumnSize;
+      Object currentContentData;
 
       // Obtain search parameters column names as needed.
       columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
@@ -671,24 +690,51 @@ class TableTabPanel_MySQL extends TableTabPanel
       try
       {
          sqlStatement = dbConnection.createStatement();
+         
+         lobLessFieldsString = sqlTableFieldsString;
+         
+         if (!lob_sqlTableFieldsString.equals(""))
+         {
+            String[]  lobColumns = lob_sqlTableFieldsString.split(" ");
+
+            for (int i = 0; i < lobColumns.length; i++)
+               lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
+            lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(identifierQuoteString));
+            lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
+            if (lobLessFieldsString.endsWith(", "))
+               lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
+         }
 
          if (advancedSortSearch)
          {
+            // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-               tableRowStart, tableRowLimit);
+                                             tableRowStart, tableRowLimit);
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                             tableRowStart, tableRowLimit);
          }
          else
          {
-            sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
-                                 + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+            // Complete With All Fields.
+            sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName
+                                 + " " + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
                                  + tableRowLimit + " " + "OFFSET " + tableRowStart;
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM " + schemaTableName
+                                        + " " + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+                                        + identifierQuoteString
+                                        + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                        + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
+                                        + tableRowLimit + " " + "OFFSET " + tableRowStart;
          }
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
-         rs = sqlStatement.executeQuery(sqlStatementString);
+         // System.out.println(lobLessSQLStatementString);
+         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
          // Placing the results columns desired into the table that
          // will be display to the user.
@@ -720,8 +766,10 @@ class TableTabPanel_MySQL extends TableTabPanel
                // or other formating, for a field here is where you
                // can take care of it.
 
-               Object currentContentData = rs.getObject(columnName);
-               // System.out.println(currentContentData);
+               if (lobDataTypesHashMap.containsKey(currentHeading))
+                  currentContentData = "lob";
+               else
+                  currentContentData = rs.getObject(columnName);
 
                if (currentContentData != null)
                {
@@ -806,7 +854,7 @@ class TableTabPanel_MySQL extends TableTabPanel
                         blobName = ("Long Blob");
                      else
                         blobName = ("Blob");
-
+                     
                      // Handles a key Blob
                      if (keyLength != null)
                      {
@@ -934,7 +982,7 @@ class TableTabPanel_MySQL extends TableTabPanel
          return false;
       }
    }
-
+   
    //==============================================================
    // Class method to view the current selected item in the table.
    //==============================================================
