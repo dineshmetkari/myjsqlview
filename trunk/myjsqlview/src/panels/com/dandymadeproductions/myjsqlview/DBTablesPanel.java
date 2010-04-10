@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.3 02/18/2010
+// Version 3.4 04/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,8 @@
 //             MyJSQLView_Utils Class.
 //         3.2 Added fileSeparator to iconsDirectory.
 //         3.3 Changed Package to Reflect Dandy Made Productions Code.
+//         3.4 Check for NULL tableTabPaneltoRemove in Class Method loadTable(). Organized
+//             imports.
 //                  
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,11 +91,23 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *    The DbTablesPanel class provides the panel that holds all the
@@ -102,7 +116,7 @@ import java.util.*;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.3 02/18/2010
+ * @version 3.4 04/10/2010
  */
 
 class DBTablesPanel extends JPanel implements ActionListener
@@ -330,8 +344,11 @@ class DBTablesPanel extends JPanel implements ActionListener
             tableNametoRemove = (String)tableCards.removeLast();
             tableTabPanelToRemove = (TableTabPanel)tableTabHashMap.get(tableNametoRemove);
             
-            tablesPanel.remove(tableTabPanelToRemove);
-            tablesPanel.validate();
+            if (tableTabPanelToRemove != null)
+            {
+               tablesPanel.remove(tableTabPanelToRemove);
+               tablesPanel.validate();
+            }
             tableTabHashMap.remove(tableNametoRemove);
          }
       }
