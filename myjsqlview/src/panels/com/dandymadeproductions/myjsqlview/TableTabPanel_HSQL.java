@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.5 04/07/2010
+// Version 8.6 04/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,6 +193,11 @@
 //             sqlStatementString to a StringBuffer.
 //         8.5 Removed the Exclusion of Binary Types in Initial Loading, Class Method
 //             getColumnNames().
+//         8.6 Implemented Fix For the Performance Issue That was Temporary Corrected in
+//             6.2 & 6.3. Permanently Excluded Any Loading of LOBs in the Summary Table,
+//             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
+//             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
+//             loadTable().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -219,7 +224,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8,5 04/07/2010
+ * @version 8,6 04/10/2010
  */
 
 class TableTabPanel_HSQL extends TableTabPanel
@@ -300,8 +305,7 @@ class TableTabPanel_HSQL extends TableTabPanel
                                       tableMetaData.getTableName(1), false, false);
          while (rs.next())
          {
-            if (rs.getString("COLUMN_NAME") != null && rs.getString("TABLE_NAME").equals(tableName))
-               ;
+            if (rs.getString("COLUMN_NAME") != null && rs.getString("TABLE_NAME").equals(tableName));
             {
                if (!primaryKeys.contains(rs.getString("COLUMN_NAME")))
                {
@@ -310,11 +314,34 @@ class TableTabPanel_HSQL extends TableTabPanel
                }
             }
          }
+         
+         // Make a final check to see if there are any keys columns
+         // columns in the table. If not then try foreign keys.
+
+         if (primaryKeys.isEmpty())
+         {
+            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1), tableMetaData.getSchemaName(1),
+               tableMetaData.getTableName(1));
+
+            while (rs.next())
+            {
+               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+               {
+                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+                     columnSize = new Integer("255");
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
+               }
+            }
+         }
 
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
          sqlTableFieldsString = "";
+         lob_sqlTableFieldsString = "";
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
@@ -355,8 +382,17 @@ class TableTabPanel_HSQL extends TableTabPanel
             allTableHeadings.addElement(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
+            // Collect LOBs.
+            if (((columnType.indexOf("BINARY") != -1)
+                 || (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                     && Integer.parseInt(columnSize.toString()) > 65535))
+                 && !primaryKeys.contains(colNameString))
+            {
+               lobDataTypesHashMap.put(comboBoxNameString, colNameString);
+               lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
+            }
+            
             // Special Column Fields.
-
             if (columnClass.indexOf("Boolean") != -1)
                columnEnumHashMap.put(parseColumnNameField(colNameString), columnType);
 
@@ -369,7 +405,7 @@ class TableTabPanel_HSQL extends TableTabPanel
             if (primaryKeys.contains(colNameString))
             {
                if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
-                  columnSize = new Integer("255");
+                   columnSize = new Integer("255");
                keyLengthHashMap.put(colNameString, columnSize.toString());
             }
 
@@ -378,29 +414,7 @@ class TableTabPanel_HSQL extends TableTabPanel
          }
          // Clean up the SQL field string for later use.
          if (sqlTableFieldsString.length() > 2)
-        	 sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
-
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
-
-         if (primaryKeys.isEmpty())
-         {
-            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1), tableMetaData.getSchemaName(1),
-               tableMetaData.getTableName(1));
-
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
-               }
-            }
-         }
+            sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
 
          // Debug for key resolution varification.
          /*
@@ -431,14 +445,17 @@ class TableTabPanel_HSQL extends TableTabPanel
    {
       // Method Instances
       String sqlStatementString;
+      String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
 
       StringBuffer searchQueryString;
       String columnSearchString, searchTextString;
+      String lobLessFieldsString;
       String columnName, columnClass, columnType;
       String keyLength;
       int columnSize, preferredColumnSize;
+      Object currentContentData;
 
       // Obtain search parameters column names as needed.
       columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
@@ -472,16 +489,48 @@ class TableTabPanel_HSQL extends TableTabPanel
       try
       {
          sqlStatement = dbConnection.createStatement();
+         
+         lobLessFieldsString = sqlTableFieldsString;
+         
+         if (!lob_sqlTableFieldsString.equals(""))
+         {
+            String[]  lobColumns = lob_sqlTableFieldsString.split(" ");
+
+            for (int i = 0; i < lobColumns.length; i++)
+               lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
+            lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(identifierQuoteString));
+            lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
+            if (lobLessFieldsString.endsWith(", "))
+               lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
+         }
 
          if (advancedSortSearch)
          {
+            // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-               tableRowStart, tableRowLimit);
+                                             tableRowStart, tableRowLimit);
+            
             // Clean up if no criteral specified, HSQL LIMIT Problem.
             if (sqlStatementString.indexOf("ORDER") == -1 && sqlStatementString.indexOf("WHERE") == -1)
             {
                sqlStatementString = sqlStatementString.substring(0, sqlStatementString.indexOf("LIMIT"));
                sqlStatementString = sqlStatementString.replaceFirst("SELECT",
+                                                                    "SELECT LIMIT "
+                                                                    + tableRowStart
+                                                                    + " " + tableRowLimit);
+            }
+            
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                                    tableRowStart, tableRowLimit);
+            
+            // Clean up if no criteral specified, HSQL LIMIT Problem.
+            if (lobLessSQLStatementString.indexOf("ORDER") == -1
+                && lobLessSQLStatementString.indexOf("WHERE") == -1)
+            {
+               lobLessSQLStatementString = lobLessSQLStatementString.substring(0,
+                                                                 lobLessSQLStatementString.indexOf("LIMIT"));
+               lobLessSQLStatementString = lobLessSQLStatementString.replaceFirst("SELECT",
                                                                     "SELECT LIMIT "
                                                                     + tableRowStart
                                                                     + " " + tableRowLimit);
@@ -495,10 +544,18 @@ class TableTabPanel_HSQL extends TableTabPanel
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString;
+            
+            lobLessSQLStatementString = "SELECT LIMIT " + tableRowStart + " " + tableRowLimit + " " 
+                                        + lobLessFieldsString + " FROM " + schemaTableName + " "
+                                        + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+                                        + identifierQuoteString
+                                        + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                        + identifierQuoteString + " " + ascDescString;
          }
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
-         rs = sqlStatement.executeQuery(sqlStatementString);
+         // System.out.println(lobLessSQLStatementString);
+         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
          // Placing the results columns desired into the table that
          // will be display to the user.
@@ -521,17 +578,19 @@ class TableTabPanel_HSQL extends TableTabPanel
                keyLength = (String) keyLengthHashMap.get(columnName);
                preferredColumnSize = ((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
-               //System.out.println(i + " " + j + " " + currentHeading + " " +
-               //columnName + " " + columnClass + " " +
-               //columnType + " " + columnSize + " " +
-               //preferredColumnSize + " " + keyLength);
+               // System.out.println(i + " " + j + " " + currentHeading + " " +
+               // columnName + " " + columnClass + " " +
+               // columnType + " " + columnSize + " " +
+               // preferredColumnSize + " " + keyLength);
 
                // Storing data appropriately. If you have some date
                // or other formating, for a field here is where you
                // can take care of it.
-
-               Object currentContentData = rs.getObject(columnName);
-               //System.out.println(currentContentData);
+               
+               if (lobDataTypesHashMap.containsKey(currentHeading))
+                  currentContentData = "lob";
+               else
+                  currentContentData = rs.getObject(columnName);
 
                if (currentContentData != null)
                {
@@ -562,18 +621,22 @@ class TableTabPanel_HSQL extends TableTabPanel
                   // BINARY
                   else if (columnType.indexOf("BINARY") != -1)
                   {
-                     // Handles a key BYTEA
-                     /*
-                      * if (keyLength != null) { BlobTextKey currentBlobElement =
-                      * new BlobTextKey(); currentBlobElement.setName(blobName);
-                      * String content = rs.getString(columnName); if
-                      * (content.length() > Integer.parseInt(keyLength)) content =
-                      * content.substring(0,Integer.parseInt(keyLength));
-                      * currentBlobElement.setContent(content);
-                      * tableData[i][j++] = currentBlobElement; } else {
-                      * tableData[i][j++] = blobName; }
-                      */
-                     tableData[i][j++] = "Binary";
+                     // Handles a key Binary,
+                     
+                     if (keyLength != null)
+                     {
+                        BlobTextKey currentBlobElement = new BlobTextKey();
+                        currentBlobElement.setName("Binary");
+                        String content = rs.getString(columnName);
+                        if (content.length() > Integer.parseInt(keyLength))
+                           content = content.substring(0,Integer.parseInt(keyLength));
+                        currentBlobElement.setContent(content);
+                        tableData[i][j++] = currentBlobElement;
+                     }
+                     else
+                     {
+                        tableData[i][j++] = "Binary";
+                     }
                   }
 
                   // =============================================
@@ -585,15 +648,26 @@ class TableTabPanel_HSQL extends TableTabPanel
                   }
 
                   // =============================================
-                  // Text
+                  // LongVarChar, Text
                   else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                            && columnSize > 255)
                   {
                      String stringName;
-                     stringName = (String) currentContentData;
+                     
+                     if (columnType.equals("VARCHAR"))
+                     {
+                        stringName = (String) currentContentData;
 
+                        // Limit Table Cell Memory Usage.
+                        if (stringName.length() > 512)
+                           stringName = stringName.substring(0, 512);
+
+                     }
+                     else
+                        stringName = ("Long Text");
+                     
                      // Handles a key String
-                     if (keyLength != null && columnSize != 255)
+                     if (keyLength != null && columnType.equals("LONGVARCHAR"))
                      {
                         BlobTextKey currentBlobElement = new BlobTextKey();
                         currentBlobElement.setName(stringName);
@@ -608,11 +682,7 @@ class TableTabPanel_HSQL extends TableTabPanel
                      }
                      else
                      {
-                        // Limit Table Cell Memory Usage.
-                        if (stringName.length() > 512)
-                           tableData[i][j++] = stringName.substring(0, 512);
-                        else
-                           tableData[i][j++] = stringName;
+                        tableData[i][j++] = stringName;
                      }
                   }
 
