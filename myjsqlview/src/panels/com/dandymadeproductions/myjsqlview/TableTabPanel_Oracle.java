@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.5 04/07/2010
+// Version 8.6 04/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -209,6 +209,11 @@
 //             Values. Still Broken For TimeStamp and Interval?
 //         8.5 Removed the Exclusion of Blob, Raw, & Clob Types in Initial Loading, Class
 //             Method getColumnNames().
+//         8.6 Implemented Fix For the Performance Issue That was Temporarily Corrected in
+//             6.1 & 6.2. Permanently Excluded Any Loading of LOBs in the Summary Table,
+//             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
+//             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
+//             loadTable().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -241,7 +246,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.5 04/07/2010
+ * @version 8.6 04/11/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -340,11 +345,32 @@ class TableTabPanel_Oracle extends TableTabPanel
                }
             }
          }
+         
+         // Make a final check to see if there are any keys columns
+         // columns in the table. If not then try foreign keys.
+
+         if (primaryKeys.isEmpty())
+         {
+            rs = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+            while (rs.next())
+            {
+               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+               {
+                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+                     columnSize = new Integer("255");
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
+               }
+            }
+         }
 
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
          sqlTableFieldsString = "";
+         lob_sqlTableFieldsString = "";
          sqlTableFieldsStringLTZ = "";
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
@@ -398,6 +424,15 @@ class TableTabPanel_Oracle extends TableTabPanel
             currentTableHeadings.addElement(comboBoxNameString);
             allTableHeadings.addElement(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
+            
+            // Collect LOBs.
+            if (((columnType.indexOf("BLOB") != -1) || (columnType.indexOf("RAW") != -1)
+                  || (columnType.indexOf("LONG") != -1) || (columnType.indexOf("CLOB") != -1))
+                 && !primaryKeys.contains(colNameString))
+            {
+               lobDataTypesHashMap.put(comboBoxNameString, colNameString);
+               lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
+            }
 
             // Create a second table field string that allows the collection
             // ot Timestamp Fields with Local Time Zone. Oracle JDBC doozie.
@@ -432,26 +467,6 @@ class TableTabPanel_Oracle extends TableTabPanel
         	 sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
          if (sqlTableFieldsStringLTZ.length() > 2)
             sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
-
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
-
-         if (primaryKeys.isEmpty())
-         {
-            rs = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
-               }
-            }
-         }
 
          // Debug for key resolution varification.
          /*
@@ -503,21 +518,23 @@ class TableTabPanel_Oracle extends TableTabPanel
    {
       // Method Instances
       String sqlStatementString;
+      String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
 
       StringBuffer searchQueryString;
       String columnSearchString, searchTextString;
+      String lobLessFieldsString;
       String columnName, columnClass, columnType;
       String keyLength;
       int columnSize, preferredColumnSize;
+      Object currentContentData;
 
       // Obtain search parameters, column names as needed.
       columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
       
       searchQueryString = new StringBuffer();
-      
       if (searchTextString.equals(""))
          searchQueryString.append("'1' LIKE '%'");
       else
@@ -564,14 +581,33 @@ class TableTabPanel_Oracle extends TableTabPanel
       try
       {
          sqlStatement = dbConnection.createStatement();
+         
+         lobLessFieldsString = sqlTableFieldsString;
+         
+         if (!lob_sqlTableFieldsString.equals(""))
+         {
+            String[]  lobColumns = lob_sqlTableFieldsString.split(" ");
+
+            for (int i = 0; i < lobColumns.length; i++)
+               lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
+            lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(identifierQuoteString));
+            lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
+            if (lobLessFieldsString.endsWith(", "))
+               lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
+         }
 
          if (advancedSortSearch)
          {
-            String sqlWhereString = "";
-            String sqlOrderString = "";
+            String sqlWhereString = "", lobLess_sqlWhereString = "";
+            String sqlOrderString = "", lobLess_sqlOrderString = "";
 
+            // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-               tableRowStart, tableRowLimit);
+                                             tableRowStart, tableRowLimit);
+            
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                                tableRowStart, tableRowLimit);
 
             // Clean up the standard sql to meet Oracle's lack of support
             // for the key word LIMIT.
@@ -580,17 +616,35 @@ class TableTabPanel_Oracle extends TableTabPanel
             if (sqlStatementString.indexOf("WHERE") != -1)
             {
                if (sqlStatementString.indexOf("ORDER") != -1)
+               {
                   sqlWhereString = sqlStatementString.substring(sqlStatementString.indexOf("WHERE"),
                                                                 sqlStatementString.indexOf("ORDER") - 1);
+                  lobLess_sqlWhereString = lobLessSQLStatementString.substring(
+                                                       lobLessSQLStatementString.indexOf("WHERE"),
+                                                       lobLessSQLStatementString.indexOf("ORDER") - 1);
+               }
                else
+               {
                   sqlWhereString = sqlStatementString.substring(sqlStatementString.indexOf("WHERE"),
                                                                 sqlStatementString.indexOf("LIMIT") - 1);
+                  lobLess_sqlWhereString = lobLessSQLStatementString.substring(
+                                                     lobLessSQLStatementString.indexOf("WHERE"),
+                                                     lobLessSQLStatementString.indexOf("LIMIT") - 1);
+               }
             }
             if (sqlStatementString.indexOf("ORDER") != -1)
+            {
                sqlOrderString = sqlStatementString.substring(sqlStatementString.indexOf("ORDER"),
                                                              sqlStatementString.indexOf("LIMIT") - 1);
+               lobLess_sqlOrderString = lobLessSQLStatementString.substring(
+                                                     lobLessSQLStatementString.indexOf("ORDER"),
+                                                     lobLessSQLStatementString.indexOf("LIMIT") - 1);
+            }
+            
             // Finish creating modifed SQL.
             sqlStatementString = sqlStatementString.substring(0, sqlStatementString.indexOf("FROM") + 5);
+            lobLessSQLStatementString = lobLessSQLStatementString.substring(0,
+                                                          lobLessSQLStatementString.indexOf("FROM") + 5);
 
             sqlStatementString += "(SELECT ROW_NUMBER() "
                                   + ((sqlOrderString.equals("")) ? ("OVER (ORDER BY "
@@ -601,6 +655,16 @@ class TableTabPanel_Oracle extends TableTabPanel
                                   + "FROM " + schemaTableName + " " + sqlWhereString + ") "
                                   + "WHERE dmprownumber BETWEEN " + (tableRowStart + 1) + " AND "
                                   + (tableRowStart + tableRowLimit);
+            
+            lobLessSQLStatementString += "(SELECT ROW_NUMBER() "
+                                         + ((lobLess_sqlOrderString.equals("")) ? ("OVER (ORDER BY "
+                                         + lobLessFieldsString.substring(0, lobLessFieldsString.indexOf(','))
+                                         + ") ")
+                                              : ("OVER (" + lobLess_sqlOrderString + ") "))
+                                         + "AS dmprownumber, " + sqlTableFieldsStringLTZ + " "
+                                         + "FROM " + schemaTableName + " " + lobLess_sqlWhereString + ") "
+                                         + "WHERE dmprownumber BETWEEN " + (tableRowStart + 1) + " AND "
+                                         + (tableRowStart + tableRowLimit);
          }
          else
          {
@@ -611,10 +675,21 @@ class TableTabPanel_Oracle extends TableTabPanel
                                  + sqlTableFieldsStringLTZ + " " + "FROM " + schemaTableName + " " + "WHERE "
                                  + searchQueryString.toString() + ") " + "WHERE dmprownumber BETWEEN "
                                  + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
+            
+            lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM "
+                                        + "(SELECT ROW_NUMBER() OVER "
+                                        + "(ORDER BY " + identifierQuoteString
+                                        + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                        + identifierQuoteString + " " + ascDescString + ") "
+                                        + "AS dmprownumber, " + sqlTableFieldsStringLTZ + " "
+                                        + "FROM " + schemaTableName + " " + "WHERE "
+                                        + searchQueryString.toString() + ") " + "WHERE dmprownumber BETWEEN "
+                                        + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
          }
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
-         rs = sqlStatement.executeQuery(sqlStatementString);
+         // System.out.println(lobLessSQLStatementString);
+         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
          // Placing the results columns desired into the table that
          // will be display to the user.
@@ -646,8 +721,10 @@ class TableTabPanel_Oracle extends TableTabPanel
                // or other formating, for a field here is where you
                // can take care of it.
 
-               Object currentContentData = rs.getObject(columnName);
-               // System.out.println(currentContentData);
+               if (lobDataTypesHashMap.containsKey(currentHeading))
+                  currentContentData = "lob";
+               else
+                  currentContentData = rs.getObject(columnName);
 
                if (currentContentData != null)
                {
@@ -685,27 +762,40 @@ class TableTabPanel_Oracle extends TableTabPanel
                   }
 
                   // =============================================
-                  // BLOB, RAW, & CLOB
+                  // BLOB, RAW, LONG, & CLOB
                   else if (columnType.equals("BLOB") || columnType.indexOf("RAW") != -1
-                           || columnType.indexOf("CLOB") != -1)
+                           || columnType.indexOf("CLOB") != -1
+                           || (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
                   {
-                     // Handles a key BLOB ?
-                     /*
-                      * if (keyLength != null) { BlobTextKey currentBlobElement =
-                      * new BlobTextKey(); currentBlobElement.setName(blobName);
-                      * String content = rs.getString(columnName); if
-                      * (content.length() > Integer.parseInt(keyLength)) content =
-                      * content.substring(0,Integer.parseInt(keyLength));
-                      * currentBlobElement.setContent(content);
-                      * tableData[i][j++] = currentBlobElement; } else {
-                      * tableData[i][j++] = blobName; }
-                      */
+                     String blobName;
+                     
                      if (columnType.equals("BLOB"))
-                        tableData[i][j++] = "Blob";
+                        blobName = "Blob";
                      else if (columnType.indexOf("RAW") != -1)
-                        tableData[i][j++] = "Raw";
+                        blobName = "Raw";
+                     else if (columnType.equals("LONG"))
+                        blobName = "Long";
                      else
-                        tableData[i][j++] = "Clob";
+                        blobName = "Clob";
+                     
+                     // Handles a key BLOB ?
+                     if (keyLength != null)
+                     { 
+                        BlobTextKey currentBlobElement = new BlobTextKey();
+                        currentBlobElement.setName(blobName);
+                        
+                        String content = rs.getString(columnName);
+                        
+                        if (content.length() > Integer.parseInt(keyLength))
+                           content = content.substring(0, Integer.parseInt(keyLength));
+                        
+                        currentBlobElement.setContent(content);
+                        tableData[i][j++] = currentBlobElement;
+                     }
+                     else
+                     {
+                        tableData[i][j++] = blobName;
+                     }  
                   }
 
                   // =============================================
@@ -716,9 +806,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                   }
 
                   // =============================================
-                  // VARCHAR2 & LONG
-                  else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") && columnSize > 255)
-                           || (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
+                  // VARCHAR2
+                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                            && columnSize > 255)
                   {
                      String stringName;
                      stringName = (String) currentContentData;
