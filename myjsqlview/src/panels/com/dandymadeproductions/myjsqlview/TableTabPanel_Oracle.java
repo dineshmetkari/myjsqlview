@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.6 04/11/2010
+// Version 8.7 04/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,8 @@
 //             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
 //             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
 //             loadTable().
+//         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted to
+//             UpperCase for Comparisons.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -246,7 +248,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.6 04/11/2010
+ * @version 8.7 04/12/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -395,12 +397,12 @@ class TableTabPanel_Oracle extends TableTabPanel
 
             if (columnClass == null)
             {
-               if (columnType.equals("BINARY_FLOAT"))
+               if (columnType.toUpperCase().equals("BINARY_FLOAT"))
                {
                   columnClass = "java.lang.Float";
                   columnType = "FLOAT";
                }
-               else if (columnType.equals("BINARY_DOUBLE"))
+               else if (columnType.toUpperCase().equals("BINARY_DOUBLE"))
                {
                   columnClass = "java.lang.Double";
                   columnType = "DOUBLE";
@@ -426,8 +428,10 @@ class TableTabPanel_Oracle extends TableTabPanel
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
             
             // Collect LOBs.
-            if (((columnType.indexOf("BLOB") != -1) || (columnType.indexOf("RAW") != -1)
-                  || (columnType.indexOf("LONG") != -1) || (columnType.indexOf("CLOB") != -1))
+            if (((columnType.toUpperCase().indexOf("BLOB") != -1)
+                  || (columnType.toUpperCase().indexOf("RAW") != -1)
+                  || (columnType.toUpperCase().indexOf("LONG") != -1)
+                  || (columnType.toUpperCase().indexOf("CLOB") != -1))
                  && !primaryKeys.contains(colNameString))
             {
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
@@ -439,7 +443,7 @@ class TableTabPanel_Oracle extends TableTabPanel
             // SESSION TIMEZONE NOT SET. Were not going to do this at the
             // connection or ALTER SESSION.
 
-            if (columnType.equals("TIMESTAMPLTZ"))
+            if (columnType.toUpperCase().equals("TIMESTAMPLTZ"))
             {
                sqlTableFieldsStringLTZ += "TO_CHAR(" + identifierQuoteString + colNameString
                                           + identifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "

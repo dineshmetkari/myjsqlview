@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.6 04/10/2010
+// Version 8.7 04/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -198,6 +198,8 @@
 //             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
 //             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
 //             loadTable().
+//         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted to
+//             UpperCase for Comparisons.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -215,7 +217,6 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 
-
 /**
  *    The TableTabPanel_HSQL class provides the means to create a table summary
  * view of data in a HSQL database that in MyJSQLView is listed according to a
@@ -224,7 +225,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8,6 04/10/2010
+ * @version 8,7 04/12/2010
  */
 
 class TableTabPanel_HSQL extends TableTabPanel
@@ -383,8 +384,8 @@ class TableTabPanel_HSQL extends TableTabPanel
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Collect LOBs.
-            if (((columnType.indexOf("BINARY") != -1)
-                 || (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+            if (((columnType.toUpperCase().indexOf("BINARY") != -1)
+                 || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
                      && Integer.parseInt(columnSize.toString()) > 65535))
                  && !primaryKeys.contains(colNameString))
             {

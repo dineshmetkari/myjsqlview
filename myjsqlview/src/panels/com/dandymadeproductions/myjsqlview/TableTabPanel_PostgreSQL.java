@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 10.9 04/11/2010
+// Version 11.0 04/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -258,6 +258,8 @@
 //             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
 //             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
 //             loadTable().
+//        11.0 Class Method getColumnNames() Instance columnType in Some Cases Converted to
+//             UpperCase for Comparisons.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -283,7 +285,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.9 04/11/2010
+ * @version 11.0 04/12/2010
  */
 
 class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -443,8 +445,8 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Collect LOBs.
-            if (((columnType.indexOf("bytea") != -1)
-                  || (columnClass.indexOf("String") != -1 && columnType.equals("text")))
+            if (((columnType.toUpperCase().indexOf("BYTEA") != -1)
+                  || (columnClass.indexOf("String") != -1 && columnType.toUpperCase().equals("TEXT")))
                  && !primaryKeys.contains(colNameString))
             {
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
