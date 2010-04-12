@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.21 04/10/2010
+// Version 11.22 04/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -433,6 +433,8 @@
 //             loadTable().
 //       11.21 Minor Format and Comment Changes. Correction to Conditional in Class Method
 //             getColumnNames() For Collecting LOBs.
+//       11.22 Class Method getColumnNames() Instance columnType in Some Cases Converted to
+//             UpperCase for Comparisons.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -457,7 +459,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.21 04/10/2010
+ * @version 11.22 04/12/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -598,8 +600,8 @@ class TableTabPanel_MySQL extends TableTabPanel
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
             
             //  Collect LOBs.
-            if (((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
-                  || (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+            if (((columnClass.indexOf("String") == -1 && columnType.toUpperCase().indexOf("BLOB") != -1)
+                  || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
                       && Integer.parseInt(columnSize.toString()) > 65535))
                   && !primaryKeys.contains(colNameString))
             {
@@ -901,7 +903,6 @@ class TableTabPanel_MySQL extends TableTabPanel
                      {
                         tableData[i][j++] = "0";
                      }
-
                   }
 
                   // =============================================
