@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 10.8 04/07/2010
+// Version 10.9 04/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -253,6 +253,11 @@
 //             sqlStatementString to a StringBuffer.
 //        10.8 Removed the Exclusion of Bytea Types in Initial Loading, Class Method
 //             getColumnNames().
+//        10.9 Implemented Fix For the Performance Issue That was Temporary Corrected in
+//             8.6 & 8.7. Permanently Excluded Any Loading of LOBs in the Summary Table,
+//             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
+//             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
+//             loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -278,7 +283,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.8 04/07/2010
+ * @version 10.9 04/11/2010
  */
 
 class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -368,11 +373,35 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                }
             }
          }
+         
+         // Make a final check to see if there are any keys columns
+         // columns in the table. If not then try foreign keys.
+
+         if (primaryKeys.isEmpty())
+         {
+            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
+                                            tableMetaData.getSchemaName(1),
+                                            tableMetaData.getTableName(1));
+
+            while (rs.next())
+            {
+               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+               {
+                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+                     columnSize = new Integer("255");
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
+               }
+            }
+         }
 
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
          sqlTableFieldsString = "";
+         lob_sqlTableFieldsString = "";
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
@@ -413,8 +442,16 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
             allTableHeadings.addElement(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
+            // Collect LOBs.
+            if (((columnType.indexOf("bytea") != -1)
+                  || (columnClass.indexOf("String") != -1 && columnType.equals("text")))
+                 && !primaryKeys.contains(colNameString))
+            {
+               lobDataTypesHashMap.put(comboBoxNameString, colNameString);
+               lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
+            }
+            
             // Special Column Fields.
-
             if (columnClass.indexOf("Boolean") != -1 && ((Integer) columnSize).intValue() == 1)
                columnEnumHashMap.put(parseColumnNameField(colNameString), columnType);
 
@@ -437,29 +474,6 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
          // Clean up the SQL field string for later use.
          if (sqlTableFieldsString.length() > 2)
         	 sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
-
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
-
-         if (primaryKeys.isEmpty())
-         {
-            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
-                                            tableMetaData.getSchemaName(1),
-                                            tableMetaData.getTableName(1));
-
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
-               }
-            }
-         }
 
          // Debug for key resolution varification.
          /*
@@ -490,14 +504,17 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
    {
       // Method Instances
       String sqlStatementString;
+      String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
 
       StringBuffer searchQueryString;
       String columnSearchString, searchTextString;
+      String lobLessFieldsString;
       String columnName, columnClass, columnType;
       String keyLength;
       int columnSize, preferredColumnSize;
+      Object currentContentData;
 
       // Obtain search parameters column names as needed.
       columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
@@ -531,24 +548,53 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
       try
       {
          sqlStatement = dbConnection.createStatement();
+         
+         lobLessFieldsString = sqlTableFieldsString;
+         
+         if (!lob_sqlTableFieldsString.equals(""))
+         {
+            String[]  lobColumns = lob_sqlTableFieldsString.split(" ");
+
+            for (int i = 0; i < lobColumns.length; i++)
+               lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
+            lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(identifierQuoteString));
+            lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
+            if (lobLessFieldsString.endsWith(", "))
+               lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
+         }
 
          if (advancedSortSearch)
          {
+            // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-               tableRowStart, tableRowLimit);
+                                             tableRowStart, tableRowLimit);
+            
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                             tableRowStart, tableRowLimit);
          }
          else
          {
+            // Complete With All Fields.
             sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
                                  + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
                                  + tableRowLimit + " " + "OFFSET " + tableRowStart;
+            
+            // Summary Table Without LOBs
+            lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
+                                        + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+                                        + identifierQuoteString
+                                        + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                        + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
+                                        + tableRowLimit + " " + "OFFSET " + tableRowStart;
          }
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
-         rs = sqlStatement.executeQuery(sqlStatementString);
+         // System.out.println(lobLessSQLStatementString);
+         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
          // Placing the results columns desired into the table that
          // will be display to the user.
@@ -580,8 +626,10 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                // or other formating, for a field here is where you
                // can take care of it.
 
-               Object currentContentData = rs.getObject(columnName);
-               // System.out.println(currentContentData);
+               if (lobDataTypesHashMap.containsKey(currentHeading))
+                  currentContentData = "lob";
+               else
+                  currentContentData = rs.getObject(columnName);
 
                if (currentContentData != null)
                {
@@ -627,18 +675,24 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                   // BYTEA
                   else if (columnType.equals("BYTEA"))
                   {
-                     // Handles a key BYTEA
-                     /*
-                      * if (keyLength != null) { BlobTextKey currentBlobElement =
-                      * new BlobTextKey(); currentBlobElement.setName(blobName);
-                      * String content = rs.getString(columnName); if
-                      * (content.length() > Integer.parseInt(keyLength)) content =
-                      * content.substring(0,Integer.parseInt(keyLength));
-                      * currentBlobElement.setContent(content);
-                      * tableData[i][j++] = currentBlobElement; } else {
-                      * tableData[i][j++] = blobName; }
-                      */
-                     tableData[i][j++] = "Bytea";
+                     // Handles a key Blob
+                     if (keyLength != null)
+                     {
+                        BlobTextKey currentBlobElement = new BlobTextKey();
+                        currentBlobElement.setName("Bytea");
+
+                        String content = rs.getString(columnName);
+
+                        if (content.length() > Integer.parseInt(keyLength))
+                           content = content.substring(0, Integer.parseInt(keyLength));
+
+                        currentBlobElement.setContent(content);
+                        tableData[i][j++] = currentBlobElement;
+                     }
+                     else
+                     {
+                        tableData[i][j++] = "Bytea";
+                     }
                   }
 
                   // =============================================
@@ -651,11 +705,10 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
 
                   // =============================================
                   // Text
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                  else if (columnClass.indexOf("String") != -1 && columnType.equals("TEXT")
                            && columnSize > 255)
                   {
-                     String stringName;
-                     stringName = (String) currentContentData;
+                     String stringName = "Text";
 
                      // Handles a key String
                      if (keyLength != null && columnSize != 255)
@@ -673,11 +726,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                      }
                      else
                      {
-                        // Limit Table Cell Memory Usage.
-                        if (stringName.length() > 512)
-                           tableData[i][j++] = stringName.substring(0, 512);
-                        else
-                           tableData[i][j++] = stringName;
+                        tableData[i][j++] = stringName;
                      }
                   }
 
