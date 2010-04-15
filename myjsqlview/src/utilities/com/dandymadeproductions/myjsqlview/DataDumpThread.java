@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.0 03/26/2010
+// Version 5.1 05/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,7 @@
 //         5.0 Minor Comment Changes and Conditional Check in run() Between
 //             dbResultSet.next() and dumpProgressBar.isCanceled() to Short-
 //             Circuit &&. Organized imports.
+//         5.1 Removed Class Method displayMyDateString(). Part of MyJSQLView_Utils.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -116,7 +117,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.0 03/26/2010
+ * @version 5.1 05/15/2010
  */
 
 class DataDumpThread implements Runnable
@@ -352,7 +353,7 @@ class DataDumpThread implements Runnable
                   {
                      if (columnType.equals("DATE"))
                      {
-                        fieldContent = displayMyDateString(dbResultSet.getDate(i) + "");
+                        fieldContent = MyJSQLView_Utils.displayMyDateString(dbResultSet.getDate(i) + "");
                         fieldContent = MyJSQLView_Utils.formatCSVExportDateString(fieldContent);
                      }
                      else
@@ -420,18 +421,5 @@ class DataDumpThread implements Runnable
          MyJSQLView_Access.displaySQLErrors(e, "DataDumpThread run()");
          MyJSQLView_Access.closeConnection(db_Connection, "DataDumpThread run()");
       }
-   }
-   
-   //=============================================================
-   // Class method for displaying the MyJSQLView standard date
-   // format from a java.sql.date string. YYYY-MM-dd to MM-dd-YYYY.
-   // =============================================================
-
-   String displayMyDateString(String javaDateString)
-   {
-      String displayString = javaDateString.trim();
-      String monthDay = displayString.substring(displayString.indexOf("-") + 1);
-      String year = javaDateString.substring(0, javaDateString.indexOf("-"));
-      return monthDay + "-" + year;
    }
 }
