@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.6 04/07/2010
+// Version 3.7 04/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,7 @@
 //         3.4 Changed Package to Reflect Dandy Made Productions Code.
 //         3.5 Added Class Method processLocaleLanguage().
 //         3.6 Comment Changes and getStandardCharacters(().
+//         3.7 Added Class Method displayMyDateString().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -102,7 +103,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 3.6 04/07/2010
+ * @version 3.7 05/15/2010
  */
 
 class MyJSQLView_Utils extends MyJSQLView
@@ -399,7 +400,20 @@ class MyJSQLView_Utils extends MyJSQLView
       else
          return month + "";
    }
+   
+   //=============================================================
+   // Class method for displaying the MyJSQLView standard date
+   // format from a java.sql.date string. YYYY-MM-dd to MM-dd-YYYY.
+   //=============================================================
 
+   protected static String displayMyDateString(String javaDateString)
+   {
+      String displayString = javaDateString.trim();
+      String monthDay = displayString.substring(displayString.indexOf("-") + 1);
+      String year = javaDateString.substring(0, javaDateString.indexOf("-"));
+      return monthDay + "-" + year;
+   }
+   
    //==============================================================
    // Class method for converting a standard Java date string into
    // a java.sql.date string. MM-dd-YYYY to YYYY-MM-dd. Comments:
