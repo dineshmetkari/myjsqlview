@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.51 04/10/2010
+// Version 4.52 04/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,7 @@
 //        4.50 Class Method createAdvancedSortSearchFrame() Added Instance columnTypeHashMap
 //             to AdvancedSortSeaarchForm Creation.
 //        4.51 Added Class Instances lob_sqlTableFieldsString & lobDataTypesHashMap.
+//        4.52 Moved Actions in displayMyDateString() Method to MyJSQLView_Utils Class.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -153,7 +154,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.51 04/10/2010
+ * @version 4.52 04/15/2010
  */
 
 abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1291,10 +1292,7 @@ abstract class TableTabPanel extends JPanel implements TableTabInterface, Action
 
    protected String displayMyDateString(String javaDateString)
    {
-      String displayString = javaDateString.trim();
-      String monthDay = displayString.substring(displayString.indexOf("-") + 1);
-      String year = javaDateString.substring(0, javaDateString.indexOf("-"));
-      return monthDay + "-" + year;
+      return MyJSQLView_Utils.displayMyDateString(javaDateString);
    }
 
    //==============================================================
