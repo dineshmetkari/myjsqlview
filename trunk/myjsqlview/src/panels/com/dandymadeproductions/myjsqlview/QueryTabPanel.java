@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.3 03/30/2010
+// Version 7.4 04/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,7 @@
 //             createListTablePopupMenu(). Added Method setRowsLabel().
 //         7.3 Class Method actionPerformed() Added Instance columnTypeHashMap to
 //             AdvancedSortSearchForm Creation.
+//         7.4 Fixed Oracle WHERE & GROUP BY Non-Support in Class Method getColumnNames().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -202,14 +203,13 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
-
 /**
  *    The QueryTabPanel provides the view of resultant data from
  * a query. The panel allows the copying, sorting, and searching
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.3 03/30/2010
+ * @version 7.4 04/15/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -944,7 +944,20 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                sqlStatementString = query + " AS lame LIMIT 1";
          }
          else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-            sqlStatementString = query + " WHERE ROWNUM=1";
+         {
+            if (query.toUpperCase().indexOf("WHERE") != -1)
+            {
+               if (query.toUpperCase().indexOf("GROUP BY") != -1)
+                  sqlStatementString = query.substring(0, query.indexOf("GROUP BY") - 1)
+                                       + " AND ROWNUM=1 " + query.substring(query.indexOf("GROUP BY"));
+               else
+                  sqlStatementString = query + " AND ROWNUM=1";
+            }
+            else
+            {
+               sqlStatementString = query + " WHERE ROWNUM=1";
+            }
+         }
          else
             sqlStatementString = query + " LIMIT 1";
          // System.out.println(sqlStatementString);
