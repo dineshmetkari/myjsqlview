@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.4 04/15/2010
+// Version 7.5 04/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -178,6 +178,7 @@
 //         7.3 Class Method actionPerformed() Added Instance columnTypeHashMap to
 //             AdvancedSortSearchForm Creation.
 //         7.4 Fixed Oracle WHERE & GROUP BY Non-Support in Class Method getColumnNames().
+//         7.5 Removed Class Method displayMyDateString(). Part of MyJSQLView_Utils.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -209,7 +210,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.4 04/15/2010
+ * @version 7.5 04/15/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1665,19 +1666,6 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       summaryTablePopupListener = new MyJSQLView_MouseAdapter(summaryTablePopupMenu);
    }
 
-   //==============================================================
-   // Class method for displaying the MyJSQLView standard date
-   // format from a java.sql.date string. YYYY-MM-dd to MM-dd-YYYY.
-   //==============================================================
-
-   private String displayMyDateString(String javaDateString)
-   {
-      String displayString = javaDateString.trim();
-      String monthDay = displayString.substring(displayString.indexOf("-") + 1);
-      String year = javaDateString.substring(0, javaDateString.indexOf("-"));
-      return monthDay + "-" + year;
-   }
-
    // =============================================================
    // Class method to parse the MyJSQLView table's column name
    // fields. The parsed strings creates a more user friendly
@@ -1816,7 +1804,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                if (currentColumnType.equals("DATE"))
                {
                   tableViewForm.setFormField(currentColumnName,
-                     (Object) displayMyDateString(currentContentData + ""));
+                     (Object) MyJSQLView_Utils.displayMyDateString(currentContentData + ""));
                }
 
                // DATETIME Type Field
@@ -1824,7 +1812,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                {
                   String dateString = currentContentData + "";
                   dateString = dateString.substring(0, (dateString.indexOf(" ")));
-                  dateString = displayMyDateString(dateString);
+                  dateString = MyJSQLView_Utils.displayMyDateString(dateString);
 
                   String timeString = currentContentData + "";
                   timeString = timeString.substring(timeString.indexOf(" "));
