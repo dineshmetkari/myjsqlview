@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.3 03/25/2010
+// Version 3.4 04/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,8 @@
 //                        createGUI().
 //         3.3 03/25/2010 Class Method stateChanged() mainTabPanel.resetPanel(). Hook for
 //                        Future Possible Password Protection for Idle Application.
+//         3.4 04/20/2010 Commented Plugin Loading, tableFieldChartsPanel & pluginsIcon to
+//                        Work on Plugin Framework.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -106,7 +108,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.3 03/25/2010
+ * @version 3.4 04/20/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -118,11 +120,12 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
    private String webSiteString;
    private MyJSQLView_JToolBar myJSQLViewToolBar;
    
-   private static ImageIcon mainTabIcon, databaseTablesIcon, pluginsIcons;
+   private static ImageIcon mainTabIcon, databaseTablesIcon;
    private TopTabPanel mainTabPanel;
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
-   private static TableFieldChartsPanel tableFieldChartsPanel;
+   //private static ImageIcon pluginIcons;
+   //private static TableFieldChartsPanel tableFieldChartsPanel;
    private String fileSeparator;
    
    //==============================================================
@@ -160,7 +163,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       
       mainTabIcon = new ImageIcon(iconsDirectory + "mainTabIcon.png");
       databaseTablesIcon = new ImageIcon(iconsDirectory + "databasetablesIcon.png");
-      pluginsIcons = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      //pluginsIcons = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
 
       // ===============================================
       // Setting up the tabbed pane with the various
@@ -225,6 +228,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       //=========================================
       // Plugins Tabs (Table Field Charts)
       
+      /* HAD TO COMMENT IN reloadDBTables() ALSO!
+      
       Thread tempPluginThread = new Thread(new Runnable()
       {
          public void run()
@@ -233,7 +238,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
             mainTabsPane.addTab(null, pluginsIcons, tableFieldChartsPanel, "Field Charts");
          }
       }, "MyJSQLView_Frame.createGUI(), tempPluginThread");
-      tempPluginThread.start();  
+      tempPluginThread.start();
+      */  
       
       mainTabsPane.addChangeListener(this);
       mainPanel.add(mainTabsPane, BorderLayout.CENTER);
@@ -317,8 +323,10 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
          dbTablesPanel.repaint();
          
          // Reload Table Field Charts.
+         /*
          tableFieldChartsPanel.reloadPanel(dbConnection, tableNames);
          tableFieldChartsPanel.repaint();
+         */
          
          // Try set the table showing before the reload.
          
