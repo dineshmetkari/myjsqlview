@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.64 03/26/2010
+// Version 6.65 04/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,8 @@
 //        6.63 Moved cancelButton in Constructor to Proceed loginButton.
 //        6.64 Conditional Checks in Methods actionPerformed() & fillSiteDataStructures() From
 //             Non-Short-Circut to Short-Circuit &&.
+//        6.65 Reviewed All Methods and Reassigned as Needed to private or public to Properly
+//             Protect and Allow Access for Plugins. Made Class Itself public.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -247,10 +249,10 @@ import javax.swing.*;
  * a valid connection to a database. Arguments -debug. 
  * 
  * @author Dana M. Proctor
- * @version 6.64 03/26/2010
+ * @version 6.65 04/20/2010
  */
 
-class MyJSQLView_Access extends JFrame implements ActionListener
+public class MyJSQLView_Access extends JFrame implements ActionListener
 {
    // Class Instances
    private static final long serialVersionUID = 9021939696353674626L;
@@ -949,7 +951,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // access to the database table.
    //==============================================================
 
-   protected boolean accessCheck()
+   private boolean accessCheck()
    {
       Connection dbConnection;
       char[] passwordCharacters;
@@ -980,7 +982,8 @@ class MyJSQLView_Access extends JFrame implements ActionListener
          try
          {
             String driver = advancedParametersPanel.getDriver();
-            Class.forName(driver).newInstance();
+            Class.forName(driver);
+            // Class.forName(driver).newInstance();
             // System.out.println("Database Driver Loaded");
          }
          catch (Exception e)
@@ -1202,7 +1205,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // myjsqlview.conf in default home directory.
    //==============================================================
 
-   protected static void loadDBParameters(Connection dbConnection) throws SQLException
+   private static void loadDBParameters(Connection dbConnection) throws SQLException
    {
       // Method Instances
       DatabaseMetaData dbMetaData;
@@ -1388,7 +1391,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method that provides the ability to load/reload the
    // database schemas & tables.
    //==============================================================
-
+   
    protected static void loadDBTables(Connection dbConnection) throws SQLException
    {
       // Method Instances
@@ -1535,7 +1538,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // accessing this method for a null return, no connection made.
    //==============================================================
 
-   protected static Connection getConnection(String description)
+   public static Connection getConnection(String description)
    {
       try
       {
@@ -1559,7 +1562,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // host, db, user and password.
    //==============================================================
 
-   protected static void closeConnection(Connection dbConnection, String description)
+   public static void closeConnection(Connection dbConnection, String description)
    {
       try
       {
@@ -1578,7 +1581,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // errors that occured during a connection to the database.
    //==============================================================
 
-   protected static void displaySQLErrors(SQLException e, String classCaller)
+   public static void displaySQLErrors(SQLException e, String classCaller)
    {
       String sqlExceptionString;
       
@@ -1625,7 +1628,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    //==============================================================
    // Class method to set the schemaPattern.
    //==============================================================
-
+   
    protected static void setSchemaPattern(String pattern)
    {
       schemaPattern = pattern;
@@ -1635,7 +1638,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the current host name.
    //==============================================================
 
-   protected static String getHostName()
+   public static String getHostName()
    {
       return host;
    }
@@ -1644,7 +1647,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the current database name.
    //==============================================================
 
-   protected static String getDBName()
+   public static String getDBName()
    {
       return db;
    }
@@ -1654,7 +1657,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // version.
    //==============================================================
 
-   protected static String getDBProductName_And_Version()
+   public static String getDBProductName_And_Version()
    {
       return dbProductNameVersion;
    }
@@ -1663,7 +1666,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the current subprotocol name.
    //==============================================================
 
-   protected static String getSubProtocol()
+   public static String getSubProtocol()
    {
       return subProtocol.toLowerCase();
    }
@@ -1672,7 +1675,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the available database schemas names.
    //==============================================================
 
-   protected static Vector getSchemas()
+   public static Vector getSchemas()
    {
       return schemas;
    }
@@ -1681,7 +1684,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the default database table names.
    //==============================================================
 
-   protected static Vector getTableNames()
+   public static Vector getTableNames()
    {
       return tables;
    }
@@ -1691,7 +1694,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // logged.
    //==============================================================
 
-   protected static String getCurrentUser()
+   public static String getCurrentUser()
    {
       return user;
    }
@@ -1701,7 +1704,7 @@ class MyJSQLView_Access extends JFrame implements ActionListener
    // logged.
    //==============================================================
 
-   protected static String getIdentifierQuoteString()
+   public static String getIdentifierQuoteString()
    {
       return identifierQuoteString;
    }
