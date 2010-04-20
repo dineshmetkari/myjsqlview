@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Vivek Singh, Dana M. Proctor
-// Version 1.4 02/20/2010
+// Version 1.5 04/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,13 +42,14 @@
 //         1.4 02/20/2010 Added Class Instance lastSaveDirectory, and Processing
 //                        in Constructor and saveImage() Method. Added getter/Setter
 //                        Methods for the Instance.
+//         1.5 04/20/2010 Made Class public Along With the Method getLastSaveDirectory()
+//                        & setLastSaveDirectory().
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
 package com.dandymadeproductions.myjsqlview;
-
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -62,10 +63,10 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.4 02/20/2010
+ * @version 1.5 04/20/2010
  */
 
-class ImageUtil
+public class ImageUtil
 {
    // Class Instances.
    private String lastSaveDirectory = "";
@@ -210,12 +211,12 @@ class ImageUtil
    // Getter/Setter Methos for Class Instance lastSaveDirectory.
    //==============================================================
    
-   protected String getLastSaveDiretory()
+   public String getLastSaveDiretory()
    {
       return lastSaveDirectory;
    }
    
-   protected void setLastSaveDirectory(String lastSave)
+   public void setLastSaveDirectory(String lastSave)
    {
       if (lastSave != null)
          lastSaveDirectory = lastSave;
