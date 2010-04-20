@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.4 04/10/2010
+// Version 3.5 04/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,8 @@
 //         3.3 Changed Package to Reflect Dandy Made Productions Code.
 //         3.4 Check for NULL tableTabPaneltoRemove in Class Method loadTable(). Organized
 //             imports.
+//         3.5 Reviewed All Methods and Reassigned as Needed to private or public to Properly
+//             Protect and Allow Access for Plugins. Made Classs Itself public.
 //                  
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,10 +118,10 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.4 04/10/2010
+ * @version 3.5 04/20/2010
  */
 
-class DBTablesPanel extends JPanel implements ActionListener
+public class DBTablesPanel extends JPanel implements ActionListener
 {
    // Class Instances
    private static final long serialVersionUID = 5906033083831415803L;
@@ -293,7 +295,7 @@ class DBTablesPanel extends JPanel implements ActionListener
    // Class Method for helping the parameters in gridbag.
    //==============================================================
 
-   void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx, double wy)
+   private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx, double wy)
    {
       gbc.gridx = gx;
       gbc.gridy = gy;
@@ -478,7 +480,7 @@ class DBTablesPanel extends JPanel implements ActionListener
    // database that the user has access to.
    //==============================================================
 
-   protected static int getTableCount()
+   public static int getTableCount()
    {
       if (tableSelectionComboBox.getItemCount() == 0)
          return 0;
@@ -491,7 +493,7 @@ class DBTablesPanel extends JPanel implements ActionListener
    // TableTabPanel in the panel.
    //==============================================================
 
-   protected static TableTabPanel getSelectedTableTabPanel()
+   public static TableTabPanel getSelectedTableTabPanel()
    {  
       // Insure the DB Panel is not empty.
       
@@ -521,7 +523,7 @@ class DBTablesPanel extends JPanel implements ActionListener
    // tableSelectionComboBox.
    //==============================================================
 
-   protected static void setSelectedTableTabPanel(String tableName)
+   public static void setSelectedTableTabPanel(String tableName)
    {
       // Method Instances.
       boolean validTable;
@@ -567,7 +569,7 @@ class DBTablesPanel extends JPanel implements ActionListener
    // by the tableSelectionComboBox.
    //==============================================================
    
-   protected static TableTabPanel getTableTabPanel(String tableName)
+   public static TableTabPanel getTableTabPanel(String tableName)
    {
       // Table not loaded so load it.
       if (tableTabHashMap.get(tableName) == null)
