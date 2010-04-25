@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.5 02/18/2010
+// Version 2.6 04/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //             getColumnNames(), loadTable(), viewSelectedItem(), editSelectedItem(),
 //             deleteSelectedItem(), deleteAllItems(), pastClipboardContents().
 //         2.5 Changed Package to Reflect Dandy Made Productions Code.
+//         2.6 Minor Comment Changes.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -72,19 +73,19 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 2.5 02/18/2010
+ * @version 2.6 04/25/2010
  */
 
 interface TableTabInterface
 {
    //==============================================================
-   // Class collect the column names from the table.
+   // Class method to collect the column names from the table.
    //==============================================================
 
    boolean getColumnNames(Connection dbConnection);
 
    //==============================================================
-   // Class load the table data into the summary view.
+   // Class method to load the table data into the summary view.
    //==============================================================
 
    boolean loadTable(Connection dbConnection);
