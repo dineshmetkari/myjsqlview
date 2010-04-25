@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.1 05/15/2010
+// Version 5.2 04/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,7 @@
 //             dbResultSet.next() and dumpProgressBar.isCanceled() to Short-
 //             Circuit &&. Organized imports.
 //         5.1 Removed Class Method displayMyDateString(). Part of MyJSQLView_Utils.
+//         5.2 Minor Comment Changes.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.1 05/15/2010
+ * @version 5.2 04/25/2010
  */
 
 class DataDumpThread implements Runnable
@@ -155,7 +156,10 @@ class DataDumpThread implements Runnable
       t.start();
    }
 
-   // Class Method for Normal Start of the Thread
+   //==============================================================
+   // Class method for normal start of the thread
+   //==============================================================
+   
    public void run()
    {
       // Class Method Instances
