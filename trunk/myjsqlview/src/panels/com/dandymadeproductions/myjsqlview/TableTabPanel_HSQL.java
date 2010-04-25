@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.7 04/12/2010
+// Version 8.8 04/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -200,6 +200,8 @@
 //             loadTable().
 //         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted to
 //             UpperCase for Comparisons.
+//         8.8 Removed Statement Termination on Conditional in Class Method getColumnNames()
+//             for Additional Indexes Check.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -225,7 +227,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8,7 04/12/2010
+ * @version 8,8 04/24/2010
  */
 
 class TableTabPanel_HSQL extends TableTabPanel
@@ -306,7 +308,7 @@ class TableTabPanel_HSQL extends TableTabPanel
                                       tableMetaData.getTableName(1), false, false);
          while (rs.next())
          {
-            if (rs.getString("COLUMN_NAME") != null && rs.getString("TABLE_NAME").equals(tableName));
+            if (rs.getString("COLUMN_NAME") != null && rs.getString("TABLE_NAME").equals(tableName))
             {
                if (!primaryKeys.contains(rs.getString("COLUMN_NAME")))
                {
