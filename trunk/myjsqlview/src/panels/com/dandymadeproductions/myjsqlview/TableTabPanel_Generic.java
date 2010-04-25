@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.0 04/12/2010
+// Version 8.1 04/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -186,6 +186,7 @@
 //             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
 //             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
 //             loadTable().
+//         8.1 Changed | to || in Class Method loadTable() LOB Conditional Check.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -211,7 +212,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.0 04/12/2010
+ * @version 8.1 04/24/2010
  */
 
 class TableTabPanel_Generic extends TableTabPanel
@@ -612,7 +613,7 @@ class TableTabPanel_Generic extends TableTabPanel
                   // LONG VARCHARS, & TEXT
                   else if ((columnType.equals("BLOB")) || (columnType.equals("BINARY"))
                         || (columnType.equals("RAW")) || (columnType.equals("LONG"))
-                        || (columnType.equals("CLOB")) | (columnType.equals("BYTEA"))
+                        || (columnType.equals("CLOB")) || (columnType.equals("BYTEA"))
                         || ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                              && columnSize > 65535))
                         || (columnClass.indexOf("String") != -1 && columnType.toUpperCase().equals("TEXT")))
