@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.4 04/20/2010
+// Version 3.5 04/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@
 //                        Future Possible Password Protection for Idle Application.
 //         3.4 04/20/2010 Commented Plugin Loading, tableFieldChartsPanel & pluginsIcon to
 //                        Work on Plugin Framework.
+//         3.5 04/23/2010 Initial Basic Working Framework for Plugins, Class Method createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -94,9 +95,16 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -108,7 +116,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.4 04/20/2010
+ * @version 3.5 04/24/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -124,7 +132,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
    private TopTabPanel mainTabPanel;
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
-   //private static ImageIcon pluginIcons;
+   private static ImageIcon pluginIcons;
    //private static TableFieldChartsPanel tableFieldChartsPanel;
    private String fileSeparator;
    
@@ -163,7 +171,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       
       mainTabIcon = new ImageIcon(iconsDirectory + "mainTabIcon.png");
       databaseTablesIcon = new ImageIcon(iconsDirectory + "databasetablesIcon.png");
-      //pluginsIcons = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      pluginIcons = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
 
       // ===============================================
       // Setting up the tabbed pane with the various
@@ -226,7 +234,35 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       databaseTablesThread.start();
       
       //=========================================
-      // Plugins Tabs (Table Field Charts)
+      // Plugins Tabs.
+      
+      PluginLoader pluginLoader = new PluginLoader();
+      HashMap plugins = pluginLoader.getPluginsHashMap();
+      
+      if (plugins != null && !plugins.isEmpty())
+      {
+         Set keySet = plugins.entrySet();
+         
+         Iterator pluginIterator = keySet.iterator();
+         while (pluginIterator.hasNext())
+         {
+            Map.Entry pluginEntry = (Map.Entry) pluginIterator.next();
+            try
+            {
+               File jarFile = new File((String) pluginEntry.getKey());
+               ClassLoader cl = new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader.getSystemClassLoader());
+               Class module = Class.forName((String) pluginEntry.getValue(), true, cl);
+              
+               MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+               mainTabsPane.addTab(null, pluginIcons, pluginModule.getPluginPanel(), "Field Charts");
+            }
+            catch (Exception e)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
+            }
+         }  
+      }
       
       /* HAD TO COMMENT IN reloadDBTables() ALSO!
       
