@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.5 04/24/2010
+// Version 3.6 04/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,10 @@
 //         3.4 04/20/2010 Commented Plugin Loading, tableFieldChartsPanel & pluginsIcon to
 //                        Work on Plugin Framework.
 //         3.5 04/23/2010 Initial Basic Working Framework for Plugins, Class Method createGUI().
+//         3.6 04/25/2010 Added Class Instance loadedPluginModules. Loaded in createGUI. Added
+//                        to Class Method reloadDBTables() To Allow Plugins to Be Updated.
+//                        Completed Initial Plugin Framework Loading Process in Class Method
+//                        createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -105,6 +109,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Map;
+import java.security.*;
+import java.net.MalformedURLException;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -116,7 +122,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.5 04/24/2010
+ * @version 3.6 04/25/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -132,8 +138,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
    private TopTabPanel mainTabPanel;
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
+   private static Vector loadedPluginModules = new Vector();;
    private static ImageIcon pluginIcons;
-   //private static TableFieldChartsPanel tableFieldChartsPanel;
    private String fileSeparator;
    
    //==============================================================
@@ -161,6 +167,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       // Class Instances
       JPanel mainPanel;
       String iconsDirectory;
+      PluginLoader pluginLoader;
+      HashMap pluginsHashMap;
       
       // Setting up Various Instances.
       
@@ -234,27 +242,48 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       databaseTablesThread.start();
       
       //=========================================
-      // Plugins Tabs.
+      // Plugins' Tabs.
       
-      PluginLoader pluginLoader = new PluginLoader();
-      HashMap plugins = pluginLoader.getPluginsHashMap();
+      pluginLoader = new PluginLoader();
+      pluginsHashMap = pluginLoader.getPluginsHashMap();
       
-      if (plugins != null && !plugins.isEmpty())
+      if (pluginsHashMap != null && !pluginsHashMap.isEmpty())
       {
-         Set keySet = plugins.entrySet();
-         
+         Set keySet = pluginsHashMap.entrySet();
          Iterator pluginIterator = keySet.iterator();
+         
          while (pluginIterator.hasNext())
          {
             Map.Entry pluginEntry = (Map.Entry) pluginIterator.next();
             try
             {
-               File jarFile = new File((String) pluginEntry.getKey());
-               ClassLoader cl = new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader.getSystemClassLoader());
-               Class module = Class.forName((String) pluginEntry.getValue(), true, cl);
-              
-               MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               mainTabsPane.addTab(null, pluginIcons, pluginModule.getPluginPanel(), "Field Charts");
+               final File jarFile = new File((String) pluginEntry.getKey());
+               ClassLoader classLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction()
+               {
+                  public Object run()
+                  {
+                     try
+                     {
+                        return new URLClassLoader(new URL[] {jarFile.toURI().toURL()},
+                                                  ClassLoader.getSystemClassLoader());
+                     }
+                     catch (MalformedURLException me)
+                     {
+                        if (MyJSQLView.getDebug())
+                           System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n"
+                                               + me.toString());
+                        return null;
+                     }
+                  }
+              });
+              if (classLoader != null)
+              {
+                 Class module = Class.forName((String) pluginEntry.getValue(), true, classLoader);
+                 MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+                 pluginModule.run();
+                 mainTabsPane.addTab(null, pluginIcons, pluginModule.getPluginPanel(), "Field Charts");
+                 loadedPluginModules.add(pluginModule);
+              }
             }
             catch (Exception e)
             {
@@ -263,19 +292,6 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
             }
          }  
       }
-      
-      /* HAD TO COMMENT IN reloadDBTables() ALSO!
-      
-      Thread tempPluginThread = new Thread(new Runnable()
-      {
-         public void run()
-         {
-            tableFieldChartsPanel = new TableFieldChartsPanel(MyJSQLView_Access.getTableNames());
-            mainTabsPane.addTab(null, pluginsIcons, tableFieldChartsPanel, "Field Charts");
-         }
-      }, "MyJSQLView_Frame.createGUI(), tempPluginThread");
-      tempPluginThread.start();
-      */  
       
       mainTabsPane.addChangeListener(this);
       mainPanel.add(mainTabsPane, BorderLayout.CENTER);
@@ -331,6 +347,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       // Method Instances
       Connection dbConnection;
       String currentSelectedTable;
+      Iterator pluginModulesIterator;
       Vector tableNames;
       
       // Create a connection, load the database tables again
@@ -358,11 +375,13 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
          DBTablesPanel.reloadPanel(dbConnection, MyJSQLView_Access.getTableNames());
          dbTablesPanel.repaint();
          
-         // Reload Table Field Charts.
-         /*
-         tableFieldChartsPanel.reloadPanel(dbConnection, tableNames);
-         tableFieldChartsPanel.repaint();
-         */
+         // Reload Plugins' Tables.
+         pluginModulesIterator = loadedPluginModules.iterator();
+         while (pluginModulesIterator.hasNext())
+         {
+            MyJSQLView_PluginModule currentPlugin = (MyJSQLView_PluginModule) pluginModulesIterator.next();
+            currentPlugin.setDBTables(tableNames);
+         }
          
          // Try set the table showing before the reload.
          
