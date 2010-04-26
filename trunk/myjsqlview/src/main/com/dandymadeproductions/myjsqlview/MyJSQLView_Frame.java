@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.6 04/25/2010
+// Version 3.7 04/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,8 @@
 //                        to Class Method reloadDBTables() To Allow Plugins to Be Updated.
 //                        Completed Initial Plugin Framework Loading Process in Class Method
 //                        createGUI().
+//         3.7 04/26/2010 Added Class Instance myJSQLViewMenuBar, and Its Instantiation in Method
+//                        createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -122,7 +124,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.6 04/25/2010
+ * @version 3.7 04/26/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -132,6 +134,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 
    private String[] myJSQLView_Version;
    private String webSiteString;
+   private MyJSQLView_JMenuBar myJSQLViewMenuBar;
    private MyJSQLView_JToolBar myJSQLViewToolBar;
    
    private static ImageIcon mainTabIcon, databaseTablesIcon;
@@ -188,6 +191,9 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       // ===============================================
       
       mainPanel = new JPanel(new BorderLayout());
+      
+      myJSQLViewMenuBar = new MyJSQLView_JMenuBar(this);
+      setJMenuBar(myJSQLViewMenuBar);
       
       myJSQLViewToolBar = new MyJSQLView_JToolBar(this, "MyJSQLView ToolBar");
       mainPanel.add(myJSQLViewToolBar, BorderLayout.PAGE_START);
