@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 04/22/2010
+// Version 1.1 04/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial MyJSQLView_PluginModule Class.
+//         1.1 Added Interface Methods run() & setDBTables().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -38,7 +39,8 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import javax.swing.*;
+import javax.swing.JPanel;
+import java.util.Vector;
 
 /**
  *    The MyJSQLView_PluginModule class This class defines the methods that
@@ -56,5 +58,24 @@ import javax.swing.*;
 
 public interface MyJSQLView_PluginModule
 {
+   //==============================================================
+   // Class method to collect the column names from the table.
+   //==============================================================
+
+   void run();
+   
+   //==============================================================
+   // Class method to return the panel associated with the module.
+   // ALL MyJSQLView_PluginModules MUST HAVE A JPANEL TO BE USED
+   // BY THE MyJSQLView APPLICATION TO POPULATE THE MAIN TAB TO
+   // BE ACCESSABLE!
+   //==============================================================
+   
    JPanel getPluginPanel();
+   
+   //==============================================================
+   // Class method to allow the setting the database tables.
+   //==============================================================
+
+   void setDBTables(Vector tables);
 }
