@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 04/25/2010
+// Version 1.2 04/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 //=================================================================
 // Version 1.0 Initial MyJSQLView_PluginModule Class.
 //         1.1 Added Interface Methods run() & setDBTables().
+//         1.2 Added Interface Methods getModuleName() & getMenuBar().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -40,6 +41,7 @@
 package com.dandymadeproductions.myjsqlview;
 
 import javax.swing.JPanel;
+import javax.swing.JMenuBar;
 import java.util.Vector;
 
 /**
@@ -48,7 +50,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.0 04/22/2010
+ * @version 1.2 04/26/2010
  */
 
 //=================================================================
@@ -63,6 +65,20 @@ public interface MyJSQLView_PluginModule
    //==============================================================
 
    void run();
+   
+   //==============================================================
+   // Class method to allow the collection of a name that will be
+   // used as the tooltip in MyJSQLViews tab structure.
+   //==============================================================
+
+   String getModuleName();
+   
+   //==============================================================
+   // Class method to allow the collection of a JMenuBar to be
+   // used with the plugin module.
+   //==============================================================
+
+   JMenuBar getMenuBar();
    
    //==============================================================
    // Class method to return the panel associated with the module.
