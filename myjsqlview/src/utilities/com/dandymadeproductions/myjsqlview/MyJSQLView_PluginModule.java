@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 04/26/2010
+// Version 1.3 04/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 // Version 1.0 Initial MyJSQLView_PluginModule Class.
 //         1.1 Added Interface Methods run() & setDBTables().
 //         1.2 Added Interface Methods getModuleName() & getMenuBar().
+//         1.3 Added Interface Method getModuleTabIcon().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -42,6 +43,7 @@ package com.dandymadeproductions.myjsqlview;
 
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
+import javax.swing.ImageIcon;
 import java.util.Vector;
 
 /**
@@ -50,7 +52,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.2 04/26/2010
+ * @version 1.3 04/28/2010
  */
 
 //=================================================================
@@ -68,10 +70,18 @@ public interface MyJSQLView_PluginModule
    
    //==============================================================
    // Class method to allow the collection of a name that will be
-   // used as the tooltip in MyJSQLViews tab structure.
+   // used as the tooltip in the MyJSQLViews tab structure.
    //==============================================================
 
    String getModuleName();
+   
+   //==============================================================
+   // Class method to allow the collection of a image icon that
+   // will be used as an identifier in the MyJSQLView tab structure.
+   // NOTE: The tab icon should be no larger than 12 x 12.
+   //==============================================================
+
+   ImageIcon getModuleTabIcon();
    
    //==============================================================
    // Class method to allow the collection of a JMenuBar to be
