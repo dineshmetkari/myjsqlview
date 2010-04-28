@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 04/22/2010
+// Version 1.1 04/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 04/22/2010 Initial PluginLoader Class.
+//         1.1 04/28/2010 Commented System.out in Class Method loadPluginModule()
+//                        and Organized imports.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -41,8 +43,10 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.io.File;
-import java.util.zip.*;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  *    The PluginLoader class is used to cycle through the jar/zip files
@@ -51,7 +55,7 @@ import java.util.*;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.0 04/22/2010
+ * @version 1.1 04/28/2010
  */
 
 class PluginLoader
@@ -74,7 +78,6 @@ class PluginLoader
                               + "plugins" + fileSeparator;
       
       pluginModulesHashMap = new HashMap();
-      
       
       // Obtain the Plugin Modules.
       loadPluginModules();
@@ -123,7 +126,7 @@ class PluginLoader
                   currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
                   
                   pluginModulesHashMap.put(pathKey, currentFileName);
-                  System.out.println("Located:" + pathKey + " " + currentFileName);
+                  // System.out.println("Located:" + pathKey + " " + currentFileName);
                }
             }
             jarFile.close();
