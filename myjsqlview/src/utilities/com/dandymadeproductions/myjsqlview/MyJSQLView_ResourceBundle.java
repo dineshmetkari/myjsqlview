@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 02/24/2010
+// Version 1.2 04/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 // Version 1.0 02/23/2010 Initial MyJSQLView_ResourceBundle Class.
 //         1.1 02/24/2010 Class Method getResource() Changed Conditional Check From
 //                        localeListData.contains() to localeListData.containsKey().
+//         1.2 04/28/2010 Constructor Added the MyJSQLView.getDebug() to Catching
+//                        the IOException and Additional Output Information.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +54,7 @@ import java.util.Hashtable;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.1 02/24/2010
+ * @version 1.2 02/28/2010
  */
 
 class MyJSQLView_ResourceBundle
@@ -115,7 +117,12 @@ class MyJSQLView_ResourceBundle
       }
       catch (IOException ioe)
       {
-         System.err.println("Failed to process the given locale file, " + localeFileName + " " + ioe);
+         if (MyJSQLView.getDebug())
+         {
+            System.err.println("MyJSQLView_ResourceBundle Constructor() \n" +
+                               "Failed to process the given locale file, " + localeFileName + "\n"
+                               + ioe);
+         }
       }
    }
 
