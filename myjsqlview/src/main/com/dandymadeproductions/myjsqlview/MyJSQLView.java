@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.15 04/26/2010
+// Version 3.16 04/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -162,6 +162,7 @@
 //         3.14 03/07/2010 Changed Valid Argument -locale to -lang in main(). Updated Version.
 //         3.15 04/26/2010 Moved the Creating & Assigning of the MyJSQLView_JMenuBar to
 //                         the MyJSQLViewFrame createGUI() Method.
+//         3.16 04/28/2010 Removed MyJSQLView.createGUI() in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -194,7 +195,7 @@ import javax.swing.text.DefaultEditorKit;
  * 
  * Arguments -debug.
  * @author Dana M. Proctor
- * @version 3.15 04/26/2010
+ * @version 3.16 04/28/2010
  */
 
 class MyJSQLView implements ActionListener
@@ -215,7 +216,7 @@ class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.15", "Build ID: 20100426"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.16", "Build ID: 20100428"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -328,10 +329,8 @@ class MyJSQLView implements ActionListener
 
             myJSQLViewFrame = new MyJSQLView_Frame(myJSQLView_Version, webSiteString);
             myJSQLViewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            
             myJSQLViewFrame.addMouseListener(myJSQLViewPopupListener);
             myJSQLViewFrame.setSize(800, 600);
-            myJSQLViewFrame.createGUI();
             myJSQLViewFrame.setVisible(true);
          }
       }
