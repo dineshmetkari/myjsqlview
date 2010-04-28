@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.3 02/18/2010
+// Version 5.4 04/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,9 @@
 //                        and Implemented MyJSQLView_Utils.processFileChooserSelection()
 //                        to Allow Warning of Overwriting file.
 //         5.3 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         5.4 04/28/2010 Added Class Instance resourceBundle and Implementation of
+//                        Iternationlization. Class Methods actionPerformed() &
+//                        createEditMenu()
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -152,7 +155,7 @@ import javax.swing.text.DefaultEditorKit;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.3 02/18/2010
+ * @version 5.4 04/28/2010
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -166,6 +169,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
    private HashMap fieldClassHashMap;
    private HashMap fieldSizeHashMap;
    private JButton previousViewButton, closeViewButton, nextViewButton;
+   private MyJSQLView_ResourceBundle resourceBundle;
 
    //==============================================================
    // TableViewForm Constructor
@@ -192,6 +196,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       blobBytesHashMap = new HashMap();
       String itemName, columnClass, columnType;
       Object currentField;
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
 
       // General Panel Configurations
       setLayout(new BorderLayout());
@@ -345,6 +350,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
                InputDialog textDialog;
                String textContent;
                JMenuBar editorMenuBar;
+               String resourceTitle, resourceSave, resourceClose;
 
                // Obtain content of text field
                
@@ -365,7 +371,19 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
                Object[] content = {scrollPane};
 
                // Create a frame to show.
-               textDialog = new InputDialog(null, "Text Data", "save", "close", content, null);
+               resourceTitle = resourceBundle.getResource("TableViewForm.dialogtitle.TextData");
+               if (resourceTitle.equals(""))
+                  resourceTitle = "Text Data";
+               
+               resourceSave = resourceBundle.getResource("TableViewForm.dialogbutton.Save");
+               if (resourceSave.equals(""))
+                  resourceSave = "Save";
+               
+               resourceClose = resourceBundle.getResource("TableViewForm.dialogbutton.Close");
+               if (resourceSave.equals(""))
+                  resourceClose = "Close";
+               
+               textDialog = new InputDialog(null, resourceTitle, resourceSave, resourceClose, content, null);
                editorMenuBar = new JMenuBar();
                editorMenuBar.add(createEditMenu());
                textDialog.setJMenuBar(editorMenuBar);
@@ -539,12 +557,21 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       JMenu editMenu;
       JMenuItem menuItem;
       JTextPane textComponent;
+      String resource;
 
       // Create menu items copy, & select all.
-      editMenu = new JMenu("Edit");
+      resource = resourceBundle.getResource("TableViewForm.menu.Edit");
+      if (resource.equals(""))
+         editMenu = new JMenu("Edit");
+      else
+         editMenu = new JMenu(resource);
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      menuItem.setText("Copy" + "       " + "Ctrl-c");
+      resource = resourceBundle.getResource("TableViewForm.menu.Copy");
+      if (resource.equals(""))
+         menuItem.setText("Copy" + "       " + "Ctrl-c");
+      else
+         menuItem.setText(resource + "       " + "Ctrl-c");
       menuItem.setMnemonic(KeyEvent.VK_C);
       editMenu.add(menuItem);
 
@@ -563,7 +590,11 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
          if (currentAction.getValue(Action.NAME).equals("select-all"))
          {
             menuItem = new JMenuItem(currentAction);
-            menuItem.setText("Select ALL");
+            resource = resourceBundle.getResource("TableViewForm.menu.SelectAll");
+            if (resource.equals(""))
+               menuItem.setText("Select ALL");
+            else
+               menuItem.setText(resource);
             editMenu.add(menuItem);
          }
       }
