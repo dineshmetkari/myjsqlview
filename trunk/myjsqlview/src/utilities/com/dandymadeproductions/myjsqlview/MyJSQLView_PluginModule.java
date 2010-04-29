@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 04/28/2010
+// Version 1.4 04/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 //         1.1 Added Interface Methods run() & setDBTables().
 //         1.2 Added Interface Methods getModuleName() & getMenuBar().
 //         1.3 Added Interface Method getModuleTabIcon().
+//         1.4 Added Interface Method getToolBar(). Changed Methods getModuleName()
+//             to getName(), getModuleTabIcon() to getTabIcon(), and getModulePanel()
+//             to getPanel().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -43,6 +46,7 @@ package com.dandymadeproductions.myjsqlview;
 
 import javax.swing.JPanel;
 import javax.swing.JMenuBar;
+import javax.swing.JToolBar;
 import javax.swing.ImageIcon;
 import java.util.Vector;
 
@@ -52,7 +56,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.3 04/28/2010
+ * @version 1.4 04/29/2010
  */
 
 //=================================================================
@@ -73,7 +77,7 @@ public interface MyJSQLView_PluginModule
    // used as the tooltip in the MyJSQLViews tab structure.
    //==============================================================
 
-   String getModuleName();
+   String getName();
    
    //==============================================================
    // Class method to allow the collection of a image icon that
@@ -81,7 +85,7 @@ public interface MyJSQLView_PluginModule
    // NOTE: The tab icon should be no larger than 12 x 12.
    //==============================================================
 
-   ImageIcon getModuleTabIcon();
+   ImageIcon getTabIcon();
    
    //==============================================================
    // Class method to allow the collection of a JMenuBar to be
@@ -91,13 +95,20 @@ public interface MyJSQLView_PluginModule
    JMenuBar getMenuBar();
    
    //==============================================================
+   // Class method to allow the collection of a JToolBar to be
+   // used with the plugin module.
+   //==============================================================
+
+   JToolBar getToolBar();
+   
+   //==============================================================
    // Class method to return the panel associated with the module.
    // ALL MyJSQLView_PluginModules MUST HAVE A JPANEL TO BE USED
    // BY THE MyJSQLView APPLICATION TO POPULATE THE MAIN TAB TO
    // BE ACCESSABLE!
    //==============================================================
    
-   JPanel getPluginPanel();
+   JPanel getPanel();
    
    //==============================================================
    // Class method to allow the setting the database tables.
