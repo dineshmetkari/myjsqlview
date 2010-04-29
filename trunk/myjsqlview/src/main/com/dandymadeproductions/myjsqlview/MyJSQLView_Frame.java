@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.8 04/29/2010
+// Version 3.9 04/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,7 @@
 //         3.8 04/29/2010 Implemented Module ToolBars and Selection Of Tab Icon for Modules.
 //                        Added Class Instances toolBarPanel, toolBarCardLayout, & defaultToolBar.
 //                        Class Methods Effected createGUI() and stateChanged().
+//         3.9 04/29/2010 Reorganized Slightly, Class Method createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -131,7 +132,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.8 04/29/2010
+ * @version 3.9 04/29/2010
  */
 
 class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -208,8 +209,6 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       
       defaultMenuBar = new Default_JMenuBar(this);
       loadedMenuBars.add(defaultMenuBar);
-      myJSQLViewMenuBar = new MyJSQLView_JMenuBar(this);
-      loadedMenuBars.add(myJSQLViewMenuBar);
       setJMenuBar(defaultMenuBar);
       
       // ===============================================
@@ -223,12 +222,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       // Toolbar
       toolBarCardLayout = new CardLayout();
       toolBarPanel = new JPanel(toolBarCardLayout);
-      
       defaultToolBar = new Default_JToolBar("Default ToolBar");
       toolBarPanel.add("0", defaultToolBar);
-      myJSQLViewToolBar = new MyJSQLView_JToolBar(this, "MyJSQLView ToolBar");
-      toolBarPanel.add("1", myJSQLViewToolBar);
-      
       mainPanel.add(toolBarPanel, BorderLayout.PAGE_START);
 
       // Central Area
@@ -245,6 +240,12 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
       
       //=========================================
       // Standard Database Tables Tab
+      
+      myJSQLViewMenuBar = new MyJSQLView_JMenuBar(this);
+      loadedMenuBars.add(myJSQLViewMenuBar);
+      
+      myJSQLViewToolBar = new MyJSQLView_JToolBar(this, "MyJSQLView ToolBar");
+      toolBarPanel.add("1", myJSQLViewToolBar);
       
       Thread databaseTablesThread = new Thread(new Runnable()
       {
@@ -321,8 +322,8 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
                   MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
                   pluginModule.run();
                  
-                  // Collect the required information needed by MyJSQLView
-                  // and add to tabbed pane.
+                  // Collect the required information needed
+                  // by MyJSQLView and add to tabbed pane.
                   
                   // Name
                   currentModuleName = pluginModule.getName();
