@@ -2,14 +2,14 @@
 //                    MyJSQLView_JToolBar Class
 //=================================================================
 //
-//    This class is used to constructed the toolbar for the
-// MyJSQLView application frame.
+//    This class is used to construct the toolbar for the MyJSQLView
+// application frame's database tables tab.
 //
 //               << MyJSQLView_JToolBar.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.8 02/26/2010
+// Version 1.9 04/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 Added Constructor Instances resourceBundle & resource. Implementation
 //             of Internationalization.
+//         1.9 Changed Description.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,11 +58,11 @@ import javax.swing.JButton;
 import javax.swing.JToolBar;
 
 /**
- *    The MyJSQLView_JToolBar class is used to constructed the toolbar
- * for the MyJSQLView application frame.
+ *    The MyJSQLView_JToolBar class is used to construct the toolbar
+ * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/26/2010
+ * @version 1.9 04/29/2010
  */
 
 class MyJSQLView_JToolBar extends JToolBar
@@ -103,6 +104,7 @@ class MyJSQLView_JToolBar extends JToolBar
       // JTool Bar for the Frame.
       buttonItem = null;
       setBorder(BorderFactory.createLoweredBevelBorder());
+      setFloatable(false);
 
       // ===============
       // File Menu
