@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.7 04/15/2010
+// Version 3.8 05/01/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,9 @@
 //         3.5 Added Class Method processLocaleLanguage().
 //         3.6 Comment Changes and getStandardCharacters(().
 //         3.7 Added Class Method displayMyDateString().
+//         3.8 Fix in Class Method processLocaleLanguage to Check and Create if
+//             Necessary the .myjsqlview Directory Before Trying to create the
+//             myjsqlview_locale.txt File. Added fileError Instance to Same.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -99,11 +102,11 @@ import java.sql.Statement;
 
 /**
  *    The MyJSQLView_Utils class provides various usedful methods
- * used in the
+ * used in the MyJSQLView application.
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 3.7 05/15/2010
+ * @version 3.8 05/01/2010
  */
 
 class MyJSQLView_Utils extends MyJSQLView
@@ -553,6 +556,7 @@ class MyJSQLView_Utils extends MyJSQLView
       String localeFileString;
       String[] localeFileNames;
       String errorString;
+      boolean fileError;
 
       File localeFile;
       File localeFileDirectory;
@@ -570,12 +574,30 @@ class MyJSQLView_Utils extends MyJSQLView
       localeString = "";
       localeFileName = "myjsqlview_locale.txt";
       localeFileDirectoryName = "locale";
+      fileError = false;
 
       localeFileString = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
                          + localeFileName;
 
       localeFileDirectory = new File(localeFileDirectoryName);
       localeFile = new File(localeFileString);
+      
+      // Make the .myjsqlview director if does not exist.
+      
+      File myjsqlviewDirectoryFile = new File(MyJSQLView_Utils.getMyJSQLViewDirectory());
+      if (!myjsqlviewDirectoryFile.isDirectory())
+      {
+         try
+         {
+            fileError = !myjsqlviewDirectoryFile.mkdir();
+         }
+         catch (SecurityException se)
+         {
+            errorString = "File Error: Failed to create .myjsqlview directory.\n" + se;
+            JOptionPane.showMessageDialog(null, errorString, "Alert", JOptionPane.ERROR_MESSAGE);
+            return "";
+         }
+      }
 
       // Make a check to see if the locale file is present and if
       // so then load the language string and return. Otherwise
@@ -585,11 +607,10 @@ class MyJSQLView_Utils extends MyJSQLView
       try
       {
          // Language not selected so allow the user to choose.
-         if (localeFile.createNewFile())
+         if (!fileError && localeFile.createNewFile())
          {
             // Collect the locale file names from the
             // locale directory.
-
             localeFileNames = localeFileDirectory.list();
 
             if (localeFileNames == null)
@@ -777,11 +798,12 @@ class MyJSQLView_Utils extends MyJSQLView
    //==============================================================
    // Class method to derive the user's home directory path.
    //==============================================================
-
+   
    protected static String getMyJSQLViewDirectory()
    {
       return System.getProperty("user.home") + getFileSeparator() + ".myjsqlview";
    }
+   
    
    //==============================================================
    // Class method to allow standard characters retrieval.
