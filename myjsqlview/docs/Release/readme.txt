@@ -1,4 +1,4 @@
-MyJSQLView Version 3.06
+MyJSQLView Version 3.17
 
 Copyright 2005-2009
 by Dana M. Proctor
@@ -21,15 +21,15 @@ be able to connect to the database either locally, same machine, or a
 server anywhere that was Internet accessable. Java and MySQL fit these
 needs.
    MyJSQLView has expanded beyond the scope of MySQL and now supports
-alternate databases. The application only needs two other pieces of code,
-the JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity, driver.
-The JDBC provides the driver interface between the Java SQL, structured
+alternate databases and plugins. The application only needs two other pieces
+of code, the JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity,
+driver. The JDBC provides the driver interface between the Java SQL, structured
 query language, statements, and the database. As of the release of this
 version of MyJSQLView the application has been tested with the HSQL, MySQL, 
 Oracle, and PostgreSQL databases. The application once installed can provide
 a much quicker access/update to a database than a web based interface
 frontend and MyJSQLView supports transaction locking. If your small business,
-scientific community, government agency, or educational institute want to
+scientific community, government agency, or educational institute wants to
 quickly access either a HSQL, MySQL, Oracle, or PostgreSQL, database for
 viewing, adding, editing, and searching data MyJSQLView provides an
 alternative that is simple and easy to use.
@@ -39,6 +39,8 @@ alternative that is simple and easy to use.
 
 Features:
 
+    * Internationalization Support.
+    * Plugin Framework.
     * User Connection Preferences Saving/Managing.
     * User Preferences Summary Table Column Selection & Sizing.
     * User Preferences Summary Table Row Sizing.
@@ -64,7 +66,7 @@ Features:
 
 Requirements:
 
-    * Windows 7 ?, Vista :(, XP, 2000, 98, NT, ME, MAC?, & Linux, X-Window Environment.
+    * Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, & Linux, X-Window Environment.
     * Java Runtime Environment, JRE 1.4 or Newer.
     * HSQL 1.8.0.8 - 1.8.1.1. (JDBC Integrated Into HSQLDB.jar)
     * MySQL 5.07 - 5.081, JDBC 5.0.7, 5.1.5, 5.1.6.
@@ -80,7 +82,7 @@ MyJSQLView files to the desired location on the hard disk. On a Windows
 system this may be any location, but on a Unix or Linux system it will
 be in the home directory of the user. If multiple users are to access
 the application then consult with the system administrator of your
-workstation. The likely location will be in the /usr/local or a shareddocs
+workstation. The likely location will be in the /usr/local or a public
 directory, which all users have access to for application execution.
 
 Update Notes:
@@ -99,7 +101,10 @@ will be different for the various database servers. To gain access to any
 new connection parameters one may just open the reference myjsqlview.xml
 file and copy and paste any additional entries desired into your own working
 copy of the myjsqlview.xml file. See the General Setup Instructions below
-for locating this file.
+for locating this file. NOTICE! THE MyJSQLView 3.17 RELEASE DOES HAVE A MINOR
+CHANGE IN THE myjsqlview.xml CONFIGURATION FILE THAT WILL INVALIDATE ALL
+PREVIOUSLY SAVED PASSWORDS. To remedy this discrepancy use the Connection
+Manager to Update your sites by typing in the password again.<br><br>
 
 General Setup Instructions
 
@@ -112,7 +117,7 @@ hsqldb.org, mysql.com, oracle.com, and jdbc.postgresql.org. Note, the HSQLDB
 contains no separate JDBC, it is embedded in the HSQLDB.jar. The jar file for
 these extensions needs to be installed to the JRE /lib/ext directory. On a
 Windows system this JRE directory in normally under C:/Windows/java. On a
-Linux/Unix system the directory is normally under the /usr directory, and is
+Linux/Unix system the directory is normally under the /usr/lib directory, and is
 most easily found by typing the command "which java" in a console. Please
 consult with each vendor for specific installation instructions for these
 JDBC pieces of code. Similarly if other databases are to be accessed via the
@@ -124,12 +129,15 @@ file for saving user preferences. Upon first running MyJSQLView a reference
 XML file, myjsqlview.xml, located in the installation directory is read
 then copied to the users home directory under a newly created directory,
 .myjsqlview. DO NOT MODIFY THIS REFERENCE FILE! The newly created directory
-On Windows 98 will be 'C:Windows\.myjsqlview'. On Windows XP the new
-directory will be in the user's 'Documents' folder. On a Linux system
-the new directory will be '/home/user/.myjsqview'. All saved changes
+On Windows 98 will be 'C:Windows\.myjsqlview'. On Windows XP, Vista, and
+Windows 7 the new directory will be in the user's home folder. On a Linux
+system the new directory will be '/home/user/.myjsqview'. All saved changes
 performed in site management will be stored in the XML file located in
 the above referenced directory. The user is encouraged to make a backup
-of this file on occasional.
+of this file occasionally. As of MyJSQLView Version 3.17 the application
+also supports internationalization. The .myjsqlview directory in addition
+to the XML configuration file will also contain the file myjsqlview_locale.txt
+which holds the entry that allows control of language support.
 
      MyJSQLView requires a database to be setup to communicate with in order
 to work. It is beyond the scope of this document for installing and setting
@@ -193,6 +201,7 @@ Version History:
 
 Production (2008-12-31):
 
+    * Version 3.17 Internationalization Support. Completed Plugin Framework.
     * Version 3.06 Initial Plugin Inclusion, Table Field Charts.
     * Version 3.05 Incremental Release with Core Architecture Cleanup, and Minor
                    Bug Fixes. Update  Multiple Rows Feature.
