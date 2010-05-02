@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.8 05/01/2010
+// Version 3.9 05/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,7 @@
 //         3.8 Fix in Class Method processLocaleLanguage to Check and Create if
 //             Necessary the .myjsqlview Directory Before Trying to create the
 //             myjsqlview_locale.txt File. Added fileError Instance to Same.
+//         3.9 Minor Changes in Declarations in Method processLocaleLanguage().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -106,7 +107,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 3.8 05/01/2010
+ * @version 3.9 05/02/2010
  */
 
 class MyJSQLView_Utils extends MyJSQLView
@@ -560,6 +561,7 @@ class MyJSQLView_Utils extends MyJSQLView
 
       File localeFile;
       File localeFileDirectory;
+      File myjsqlviewDirectoryFile;
       FileReader fileReader;
       BufferedReader bufferedReader;
 
@@ -584,7 +586,7 @@ class MyJSQLView_Utils extends MyJSQLView
       
       // Make the .myjsqlview director if does not exist.
       
-      File myjsqlviewDirectoryFile = new File(MyJSQLView_Utils.getMyJSQLViewDirectory());
+      myjsqlviewDirectoryFile = new File(MyJSQLView_Utils.getMyJSQLViewDirectory());
       if (!myjsqlviewDirectoryFile.isDirectory())
       {
          try
