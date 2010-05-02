@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.53 04/20/2010
+// Version 4.54 05/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,7 @@
 //        4.51 Added Class Instances lob_sqlTableFieldsString & lobDataTypesHashMap.
 //        4.52 Moved Actions in displayMyDateString() Method to MyJSQLView_Utils Class.
 //        4.53 Made Class public to Allow Plugin Classes Access.
+//        4.54 Added Class Instance serialVersionUID.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -155,13 +156,15 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.53 04/20/2010
+ * @version 4.54 05/02/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
                                                        Printable
 {
    // Class Instances.
+   private static final long serialVersionUID = 3857137515618481882L;
+   
    private int selectedRow;
    private int horizontalScrollBarPosition, verticalScrollBarPosition;
    protected int tableRowStart, tableRowLimit;
