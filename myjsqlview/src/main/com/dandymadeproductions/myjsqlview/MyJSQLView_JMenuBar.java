@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.2 04/26/2010
+// Version 6.3 05/03/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,7 @@
 //             Internationalization. Added Methods createFileMenu, createEditMenu,
 //             createDataMenu, createToolsMenu, createSchemasMenu, & createHelpMenu.
 //         6.2 Made Class Instance resourceBundle private.
+//         6.3 Minor Comment Changes.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -129,7 +130,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.2 04/26/2010
+ * @version 6.3 05/03/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar
@@ -140,9 +141,9 @@ class MyJSQLView_JMenuBar extends JMenuBar
    
    private MyJSQLView_ResourceBundle resourceBundle;
 
-   // ==============================================================
+   //==============================================================
    // MyJSQLView_JMenuBar JMenuBar Constructor.
-   // ==============================================================
+   //==============================================================
 
    protected MyJSQLView_JMenuBar(MyJSQLView_Frame parent)
    {
