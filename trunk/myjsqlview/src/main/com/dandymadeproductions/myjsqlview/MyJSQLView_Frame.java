@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.9 04/29/2010
+// Version 4.0 05/03/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,13 +33,12 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 10/30/2008 Initial MyJSQLView_Frame Class.
-//         1.1 11/01/2008 Added Class Method reloadDBTables(). Also Added
-//                        ImageIcons databaseTablesIcon, & pluginsIcons.
+//         1.1 11/01/2008 Added Class Method reloadDBTables(). Also Added ImageIcons
+//                        databaseTablesIcon, & pluginsIcons.
 //         1.2 11/03/2008 Class Method reloadDBTables() Added Instance 
 //                        currentSelectedTable.
-//         1.3 11/08/2008 Removed Class Instances dataImport/ExportProperties
-//                        & Getter/Setter Methods. Moved Down to the
-//                        DBTablesPanel.
+//         1.3 11/08/2008 Removed Class Instances dataImport/ExportProperties &
+//                        Getter/Setter Methods. Moved Down to the DBTablesPanel.
 //         1,4 11/13/2008 Added Conditional Check for NULL dbConnection in Class
 //                        Method reloadDBTables().
 //         1.5 11/17/2008 Class Method reloadDBTables() Cleared the DBTablesPanel
@@ -84,19 +83,21 @@
 //                        Future Possible Password Protection for Idle Application.
 //         3.4 04/20/2010 Commented Plugin Loading, tableFieldChartsPanel & pluginsIcon to
 //                        Work on Plugin Framework.
-//         3.5 04/23/2010 Initial Basic Working Framework for Plugins, Class Method createGUI().
-//         3.6 04/25/2010 Added Class Instance loadedPluginModules. Loaded in createGUI. Added
-//                        to Class Method reloadDBTables() To Allow Plugins to Be Updated.
-//                        Completed Initial Plugin Framework Loading Process in Class Method
+//         3.5 04/23/2010 Initial Basic Working Framework for Plugins, Class Method
 //                        createGUI().
-//         3.7 04/28/2010 Added Class Instance defaultMenuBar, and Its Instantiation in Method
-//                        createGUI() Along With loadedMenuBars. Control of MyJSQLView_Frame's
-//                        MenuBar via the stateChanged() Method. Additional Aspect Collection of
-//                        Each Plugin & Initialization in Class Method createGUI().
+//         3.6 04/25/2010 Added Class Instance loadedPluginModules. Loaded in createGUI.
+//                        Added to Class Method reloadDBTables() To Allow Plugins to Be
+//                        Updated. Completed Initial Plugin Framework Loading Process in
+//                        Class Method createGUI().
+//         3.7 04/28/2010 Added Class Instance defaultMenuBar, and Its Instantiation in
+//                        Method createGUI() Along With loadedMenuBars. Control of MyJSQLView_Frame's
+//                        MenuBar via the stateChanged() Method. Additional Aspect Collection
+//                        of Each Plugin & Initialization in Class Method createGUI().
 //         3.8 04/29/2010 Implemented Module ToolBars and Selection Of Tab Icon for Modules.
 //                        Added Class Instances toolBarPanel, toolBarCardLayout, & defaultToolBar.
 //                        Class Methods Effected createGUI() and stateChanged().
 //         3.9 04/29/2010 Reorganized Slightly, Class Method createGUI().
+//         4.0 05/03/2010 Made the Class Public So That Plugins Gain Access to the ActionListener.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -132,10 +133,10 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 3.9 04/29/2010
+ * @version 4.0 05/03/2010
  */
 
-class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
+public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -5105256432038108191L;
