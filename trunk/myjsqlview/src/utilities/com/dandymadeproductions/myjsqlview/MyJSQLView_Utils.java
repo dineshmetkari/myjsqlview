@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.9 05/02/2010
+// Version 4.0 05/03/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,10 @@
 //             Necessary the .myjsqlview Directory Before Trying to create the
 //             myjsqlview_locale.txt File. Added fileError Instance to Same.
 //         3.9 Minor Changes in Declarations in Method processLocaleLanguage().
+//         4.0 Made Class Public So That Plugins Can Gain Access to Key Methods.
+//             Made Methods buildConst(), nDigitChop(), convertCharMonthToDecimal(),
+//             convertDecimalToCharMonth(), getAudioClip(), getFileSeparator(),
+//             & getIconsDirectory().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -107,17 +111,17 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 3.9 05/02/2010
+ * @version 4.0 05/03/2010
  */
 
-class MyJSQLView_Utils extends MyJSQLView
+public class MyJSQLView_Utils extends MyJSQLView
 {
    //==============================================================
    // Protected class Method for helping the parameters in gridbag.
    // Most GUI panels call this class method.
    //==============================================================
 
-   protected static void buildConst(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx,
+   public static void buildConst(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx,
                                     double wy)
    {
       gbc.gridx = gx;
@@ -151,7 +155,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // input number.
    //==============================================================
 
-   protected static double nDigitChop(double numberToChop, int n)
+   public static double nDigitChop(double numberToChop, int n)
    {
       // Method Instances
       int decimal;
@@ -174,7 +178,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // Method for converting an input byte array either extracting
    // or dumping per a determined conversion definition.
    //==============================================================
-
+   
    protected static String stateConvert(byte[] bytesToProcess, boolean in)
    {
       // Method Instances
@@ -340,7 +344,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // valid numeric value.
    //==============================================================
 
-   protected static int convertCharMonthToDecimal(String month)
+   public static int convertCharMonthToDecimal(String month)
    {
       if (month.toLowerCase().indexOf("jan") != -1)
          return 1;
@@ -375,7 +379,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // three character month string.
    //==============================================================
 
-   protected static String convertDecimalToCharMonth(int month)
+   public static String convertDecimalToCharMonth(int month)
    {
       if (month == 1)
          return "Jan";
@@ -700,7 +704,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // properly created. The method will return NULL if it was not.
    //==============================================================
 
-   protected static Clip getAudioClip(String fileName)
+   public static Clip getAudioClip(String fileName)
    {
       // Method Instances
       File audioFile;
@@ -776,7 +780,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // Class method to return the system file separator character.
    //==============================================================
 
-   protected static String getFileSeparator()
+   public static String getFileSeparator()
    {
       String fileSeparator;
 
@@ -792,7 +796,7 @@ class MyJSQLView_Utils extends MyJSQLView
    // Class method to return the image icons directory path.
    //==============================================================
 
-   protected static String getIconsDirectory()
+   public static String getIconsDirectory()
    {
       return "images" + getFileSeparator() + "icons";
    }
