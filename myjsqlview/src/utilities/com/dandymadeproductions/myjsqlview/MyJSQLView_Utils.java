@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.0 05/03/2010
+// Version 4.1 05/04/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -78,6 +78,7 @@
 //             Made Methods buildConst(), nDigitChop(), convertCharMonthToDecimal(),
 //             convertDecimalToCharMonth(), getAudioClip(), getFileSeparator(),
 //             & getIconsDirectory().
+//         4.1 Added Class Method getPluginsDirectory().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -111,7 +112,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.0 05/03/2010
+ * @version 4.1 05/04/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -799,6 +800,15 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static String getIconsDirectory()
    {
       return "images" + getFileSeparator() + "icons";
+   }
+   
+   //==============================================================
+   // Class method to return the plugins directory path.
+   //==============================================================
+
+   public static String getPluginsDirectory()
+   {
+      return "lib" + getFileSeparator() + "plugins";
    }
 
    //==============================================================
