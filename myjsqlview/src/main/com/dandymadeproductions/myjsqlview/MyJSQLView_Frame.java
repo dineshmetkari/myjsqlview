@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.0 05/03/2010
+// Version 4.1 05/04/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,7 @@
 //                        Class Methods Effected createGUI() and stateChanged().
 //         3.9 04/29/2010 Reorganized Slightly, Class Method createGUI().
 //         4.0 05/03/2010 Made the Class Public So That Plugins Gain Access to the ActionListener.
+//         4.1 05/04/2010 Backed Out 4.0.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -133,10 +134,10 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.0 05/03/2010
+ * @version 4.1 05/04/2010
  */
 
-public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
+class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -5105256432038108191L;
