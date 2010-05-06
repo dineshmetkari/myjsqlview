@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.1 05/04/2010
+// Version 4.2 05/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,8 @@
 //         3.9 04/29/2010 Reorganized Slightly, Class Method createGUI().
 //         4.0 05/03/2010 Made the Class Public So That Plugins Gain Access to the ActionListener.
 //         4.1 05/04/2010 Backed Out 4.0.
+//         4.2 05/06/2010 What Else Put 4.0 Back In, Made Class Public and Passed this to the Plugins
+//                        via pluginModule.setParentFrame() in Class Method createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,10 +136,10 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.1 05/04/2010
+ * @version 4.2 05/06/2010
  */
 
-class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
+public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -5105256432038108191L;
@@ -173,9 +175,6 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
-      
-      // Creating MyJSQLView GUI.
-      createGUI();
    }
 
    //==============================================================
@@ -183,7 +182,7 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
    // pane.
    //==============================================================
 
-   private void createGUI()
+   protected void createGUI()
    {
       // Class Instances
       JPanel mainPanel;
@@ -322,8 +321,9 @@ class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
                   // Create the instance.
                   Class module = Class.forName((String) pluginEntry.getValue(), true, classLoader);
                   MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+                  pluginModule.setParentFrame(this);
                   pluginModule.run();
-                 
+                  
                   // Collect the required information needed
                   // by MyJSQLView and add to tabbed pane.
                   
