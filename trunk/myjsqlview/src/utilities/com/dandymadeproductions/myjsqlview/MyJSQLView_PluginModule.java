@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.4 04/29/2010
+// Version 1.5 05/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.4 Added Interface Method getToolBar(). Changed Methods getModuleName()
 //             to getName(), getModuleTabIcon() to getTabIcon(), and getModulePanel()
 //             to getPanel().
+//         1.5 Added Interface Method setParentFrame().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -56,7 +57,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.4 04/29/2010
+ * @version 1.5 05/06/2010
  */
 
 //=================================================================
@@ -109,6 +110,13 @@ public interface MyJSQLView_PluginModule
    //==============================================================
    
    JPanel getPanel();
+   
+   //==============================================================
+   // Class method to allow the setting of the parent frame to the
+   // plugin for access to common menu actions.
+   //==============================================================
+
+   void setParentFrame(MyJSQLView_Frame parentFrame);
    
    //==============================================================
    // Class method to allow the setting the database tables.
