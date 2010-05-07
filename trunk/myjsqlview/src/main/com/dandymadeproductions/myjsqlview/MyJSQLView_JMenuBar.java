@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.3 05/03/2010
+// Version 6.4 05/04/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,7 @@
 //             createDataMenu, createToolsMenu, createSchemasMenu, & createHelpMenu.
 //         6.2 Made Class Instance resourceBundle private.
 //         6.3 Minor Comment Changes.
+//         6.4 Implemented MyJSQLView_MenuActionCommands.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -130,14 +131,14 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.3 05/03/2010
+ * @version 6.4 05/06/2010
  */
 
-class MyJSQLView_JMenuBar extends JMenuBar
+class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
 {
    // Instance & Class Fields.
    private static final long serialVersionUID = 949237817664557715L;
-   private transient MyJSQLView_Frame mainFrame;
+   private static MyJSQLView_Frame mainFrame;
    
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -188,7 +189,7 @@ class MyJSQLView_JMenuBar extends JMenuBar
          flushButton.setDisabledIcon(flushIcon);
          flushButton.setFocusPainted(false);
          flushButton.setBorder(BorderFactory.createLoweredBevelBorder());
-         flushButton.setActionCommand("flush");
+         flushButton.setActionCommand(ACTION_FLUSH);
          resource = resourceBundle.getResource("MyJSQLView_JMenBar.tooltip.FlushPrivileges");
          if (resource.equals(""))
             flushButton.setToolTipText("Flush Privileges");
@@ -230,43 +231,43 @@ class MyJSQLView_JMenuBar extends JMenuBar
       // Open
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Open");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Open", "FO"));
+         fileMenu.add(menuItem("Open", ACTION_OPEN));
       else
-         fileMenu.add(menuItem(resource, "FO"));
+         fileMenu.add(menuItem(resource, ACTION_OPEN));
       fileMenu.addSeparator();
       
       // Save
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Save");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Save", "FS"));
+         fileMenu.add(menuItem("Save", ACTION_SAVE));
       else
-         fileMenu.add(menuItem(resource, "FS"));
+         fileMenu.add(menuItem(resource, ACTION_SAVE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.SaveAs");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Save As...", "FSA"));
+         fileMenu.add(menuItem("Save As...", ACTION_SAVE_AS));
       else
-         fileMenu.add(menuItem(resource, "FSA"));
+         fileMenu.add(menuItem(resource, ACTION_SAVE_AS));
       fileMenu.addSeparator();
       
       // Print
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Print");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Print", "FP"));
+         fileMenu.add(menuItem("Print", ACTION_PRINT));
       else
-         fileMenu.add(menuItem(resource, "FP"));
+         fileMenu.add(menuItem(resource, ACTION_PRINT));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.PageFormat");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Page Format", "FPG"));
+         fileMenu.add(menuItem("Page Format", ACTION_PAGE_FORMAT));
       else
-         fileMenu.add(menuItem(resource, "FPG"));
+         fileMenu.add(menuItem(resource, ACTION_PAGE_FORMAT));
       fileMenu.addSeparator();
       
       // Exit
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Exit");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", "FE"));
+         fileMenu.add(menuItem("Exit", ACTION_EXIT));
       else
-         fileMenu.add(menuItem(resource, "FE"));
+         fileMenu.add(menuItem(resource, ACTION_EXIT));
       
       add(fileMenu);
    }
@@ -326,9 +327,9 @@ class MyJSQLView_JMenuBar extends JMenuBar
       // Preferences
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Preferences");
       if (resource.equals(""))
-         editMenu.add(menuItem("Preferences", "EP"));
+         editMenu.add(menuItem("Preferences", ACTION_PREFERENCES));
       else
-         editMenu.add(menuItem(resource, "EP"));
+         editMenu.add(menuItem(resource, ACTION_PREFERENCES));
       
       add(editMenu);
    }
@@ -363,14 +364,14 @@ class MyJSQLView_JMenuBar extends JMenuBar
 
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ImportSQLDump");
       if (resource.equals(""))
-         importMenu.add(menuItem("SQL Dump", "DISQLD"));
+         importMenu.add(menuItem("SQL Dump", ACTION_IMPORT_SQL_DUMP));
       else
-         importMenu.add(menuItem(resource, "DISQLD"));
+         importMenu.add(menuItem(resource, ACTION_IMPORT_SQL_DUMP));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ImportCSVFile");
       if (resource.equals(""))
-         importMenu.add(menuItem("CSV File", "DICSVF"));
+         importMenu.add(menuItem("CSV File", ACTION_IMPORT_CSV_FILE));
       else
-         importMenu.add(menuItem(resource, "DICSVF"));
+         importMenu.add(menuItem(resource, ACTION_IMPORT_CSV_FILE));
       
       dataMenu.add(importMenu);
 
@@ -389,14 +390,14 @@ class MyJSQLView_JMenuBar extends JMenuBar
          exportCSVMenu = new JMenu(resource);
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportCSVTable");
       if (resource.equals(""))
-         exportCSVMenu.add(menuItem("Table", "DECSVT"));
+         exportCSVMenu.add(menuItem("Table", ACTION_EXPORT_CSV_TABLE));
       else
-         exportCSVMenu.add(menuItem(resource, "DECSVT"));
+         exportCSVMenu.add(menuItem(resource, ACTION_EXPORT_CSV_TABLE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportCSVSummaryTable");
       if (resource.equals(""))
-         exportCSVMenu.add(menuItem("Summary Table", "DECSVST"));
+         exportCSVMenu.add(menuItem("Summary Table", ACTION_EXPORT_CSV_SUMMARY_TABLE));
       else
-         exportCSVMenu.add(menuItem(resource, "DECSVST"));
+         exportCSVMenu.add(menuItem(resource, ACTION_EXPORT_CSV_SUMMARY_TABLE));
       exportMenu.add(exportCSVMenu);
 
       // Export SQL
@@ -407,24 +408,24 @@ class MyJSQLView_JMenuBar extends JMenuBar
          exportSQLMenu = new JMenu(resource);
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLTable");
       if (resource.equals(""))
-         exportSQLMenu.add(menuItem("Table", "DESQLT"));
+         exportSQLMenu.add(menuItem("Table", ACTION_EXPORT_SQL_TABLE));
       else
-         exportSQLMenu.add(menuItem(resource, "DESQLT"));
+         exportSQLMenu.add(menuItem(resource, ACTION_EXPORT_SQL_TABLE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLSummaryTable");
       if (resource.equals(""))
-         exportSQLMenu.add(menuItem("Summary Table", "DESQLST"));
+         exportSQLMenu.add(menuItem("Summary Table", ACTION_EXPORT_SQL_SUMMARY_TABLE));
       else
-         exportSQLMenu.add(menuItem(resource, "DESQLST"));
+         exportSQLMenu.add(menuItem(resource, ACTION_EXPORT_SQL_SUMMARY_TABLE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLDatabase");
       if (resource.equals(""))
-         exportSQLMenu.add(menuItem("Database", "DESQLD"));
+         exportSQLMenu.add(menuItem("Database", ACTION_EXPORT_SQL_DATABASE));
       else
-         exportSQLMenu.add(menuItem(resource, "DESQLD"));
+         exportSQLMenu.add(menuItem(resource, ACTION_EXPORT_SQL_DATABASE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLDatabaseScheme");
       if (resource.equals(""))
-         exportSQLMenu.add(menuItem("Database Scheme", "DESQLDS"));
+         exportSQLMenu.add(menuItem("Database Scheme", ACTION_EXPORT_SQL_DATABASE_SCHEME));
       else
-         exportSQLMenu.add(menuItem(resource, "DESQLDS"));
+         exportSQLMenu.add(menuItem(resource, ACTION_EXPORT_SQL_DATABASE_SCHEME));
       exportMenu.add(exportSQLMenu);
 
       dataMenu.add(exportMenu);
@@ -455,19 +456,19 @@ class MyJSQLView_JMenuBar extends JMenuBar
       // Query Frame, Reload Database, & Search Database.
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.QueryFrame");
       if (resource.equals(""))
-         toolsMenu.add(menuItem("Query Frame", "TQ"));
+         toolsMenu.add(menuItem("Query Frame", ACTION_QUERY_FRAME));
       else
-         toolsMenu.add(menuItem(resource, "TQ"));
+         toolsMenu.add(menuItem(resource, ACTION_QUERY_FRAME));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ReloadDatabase");
       if (resource.equals(""))
-         toolsMenu.add(menuItem("Reload Database", "TRD"));
+         toolsMenu.add(menuItem("Reload Database", ACTION_RELOAD_DATABASE));
       else
-         toolsMenu.add(menuItem(resource, "TRD"));
+         toolsMenu.add(menuItem(resource, ACTION_RELOAD_DATABASE));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.SearchDatabase");
       if (resource.equals(""))
-         toolsMenu.add(menuItem("Search Database", "TSD"));
+         toolsMenu.add(menuItem("Search Database", ACTION_SEARCH_DATABASE));
       else
-         toolsMenu.add(menuItem(resource, "TSD"));
+         toolsMenu.add(menuItem(resource, ACTION_SEARCH_DATABASE));
       
       add(toolsMenu);
    }
@@ -557,30 +558,30 @@ class MyJSQLView_JMenuBar extends JMenuBar
       // Manual
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Manual");
       if (resource.equals(""))
-         helpMenu.add(menuItem("Manual", "HM"));
+         helpMenu.add(menuItem("Manual", ACTION_MANUAL));
       else
-         helpMenu.add(menuItem(resource, "HM"));
+         helpMenu.add(menuItem(resource, ACTION_MANUAL));
       helpMenu.addSeparator();
       
       // Legal & Release Notes.
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Legal");
       if (resource.equals(""))
-         helpMenu.add(menuItem("Legal", "HL"));
+         helpMenu.add(menuItem("Legal", ACTION_LEGAL));
       else
-         helpMenu.add(menuItem(resource, "HL"));
+         helpMenu.add(menuItem(resource, ACTION_LEGAL));
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ReleaseNotes");
       if (resource.equals(""))
-         helpMenu.add(menuItem("Release Notes", "HR"));
+         helpMenu.add(menuItem("Release Notes", ACTION_RELEASE_NOTES));
       else
-         helpMenu.add(menuItem(resource, "HR"));
+         helpMenu.add(menuItem(resource, ACTION_RELEASE_NOTES));
       helpMenu.addSeparator();
       
       // About
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.About");
       if (resource.equals(""))
-         helpMenu.add(menuItem("About", "HA"));
+         helpMenu.add(menuItem("About", ACTION_ABOUT));
       else
-         helpMenu.add(menuItem(resource, "HA"));
+         helpMenu.add(menuItem(resource, ACTION_ABOUT));
       
       add(helpMenu);
    }
@@ -590,7 +591,7 @@ class MyJSQLView_JMenuBar extends JMenuBar
    // bar items. Helper Method.
    // ==============================================================
 
-   private JMenuItem menuItem(String label, String actionLabel)
+   public static JMenuItem menuItem(String label, String actionLabel)
    {
       JMenuItem item = new JMenuItem(label);
       item.addActionListener(mainFrame);
