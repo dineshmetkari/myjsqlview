@@ -1,6 +1,6 @@
 MyJSQLView Version 3.17
 
-Copyright 2005-2009
+Copyright 2005-2010
 by Dana M. Proctor
 http://dandymadeproductions.com
 
@@ -39,8 +39,8 @@ alternative that is simple and easy to use.
 
 Features:
 
+    * Plugin Framework.    
     * Internationalization Support.
-    * Plugin Framework.
     * User Connection Preferences Saving/Managing.
     * User Preferences Summary Table Column Selection & Sizing.
     * User Preferences Summary Table Row Sizing.
@@ -77,8 +77,8 @@ Installation Notes:
 
     MyJSQLView is a stand alone application. To get started download and
 unzip the release file to your local hard drive using a program such as
-WinZip, 7-Zip, Tar or similar compression/decompression program. Extract the
-MyJSQLView files to the desired location on the hard disk. On a Windows
+WinZip, 7-Zip, Tar or similar compression/decompression program. Extract
+the MyJSQLView files to the desired location on the hard disk. On a Windows
 system this may be any location, but on a Unix or Linux system it will
 be in the home directory of the user. If multiple users are to access
 the application then consult with the system administrator of your
@@ -117,12 +117,12 @@ hsqldb.org, mysql.com, oracle.com, and jdbc.postgresql.org. Note, the HSQLDB
 contains no separate JDBC, it is embedded in the HSQLDB.jar. The jar file for
 these extensions needs to be installed to the JRE /lib/ext directory. On a
 Windows system this JRE directory in normally under C:/Windows/java. On a
-Linux/Unix system the directory is normally under the /usr/lib directory, and is
-most easily found by typing the command "which java" in a console. Please
-consult with each vendor for specific installation instructions for these
-JDBC pieces of code. Similarly if other databases are to be accessed via the
-application then again installed the recommended driver(s) to the Java Runtime
-/lib/ext directory.
+Linux/Unix system the directory is normally under the /usr/lib directory,
+and is most easily found by typing the command "which java" in a console.
+Please consult with each vendor for specific installation instructions for
+these JDBC pieces of code. Similarly if other databases are to be accessed
+via the application then again installed the recommended driver(s) to the
+Java Runtime /lib/ext directory.
 
     The new login interface and Connection Manager use a XML configuration
 file for saving user preferences. Upon first running MyJSQLView a reference
@@ -206,8 +206,8 @@ Production (2008-12-31):
     * Version 3.05 Incremental Release with Core Architecture Cleanup, and Minor
                    Bug Fixes. Update  Multiple Rows Feature.
     * Version 3.03 Incremental Release with Minor Bug Fixes and Network Bandwidth
-				   Reduction Enhancements. CSV Import/Export Date Format Option and
-				   Summary Table State Saving/Loading.
+		   Reduction Enhancements. CSV Import/Export Date Format Option and
+		   Summary Table State Saving/Loading.
     * Version 3.01 Minor Bug Fixes and Performance Enhancements, GUI Revisions,
                    and Plugin Framework.
 
@@ -217,12 +217,12 @@ Beta (2006-10-01):
     * Version 2.87 Fully Qualified Schema.TableNames Support, Fault Tolerance
                    Enhancements.
     * Version 2.86 Minor Bug Fixes, HSQL Database Access, PostgreSQL Array Support, &
-		           CSV Insert/Update Import. 
+		   CSV Insert/Update Import. 
     * Version 2.81 Minor Bug Fixes, PostgreSQL Database Access, & CSV Import. 
     * Version 2.76 Code Cleanup, Field Function Operations, Advanced Sort/Search,
-		           Database SQL Export, & Root User Flush Privileges.
+		   Database SQL Export, & Root User Flush Privileges.
     * Version 2.72 Bug Fix for Multiple Keys, SQL Data Import/Export. TableEntryForm
-		           Enhancements.
+		   Enhancements.
     * Version 2.64 New Login Interface & Connection Manager.
     * Version 2.63 Another Attempt Bug Fix for Timestamp Fields.
                    Primary Keys Editing if not AutoIncrement.
