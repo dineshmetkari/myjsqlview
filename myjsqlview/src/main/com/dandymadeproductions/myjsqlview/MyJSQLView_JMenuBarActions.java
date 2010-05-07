@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.17 02/18/2010
+// Version 7.18 05/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -220,6 +220,7 @@
 //             dataImportAction().
 //        7.16 Class Instance fileSeperator Obtained From MyJSQLView_Utils Class.
 //        7.17 Changed Package to Reflect Dandy Made Productions Code.
+//        7.18 Implemented MyJSQLView_MenuActionCommands.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -246,10 +247,10 @@ import java.util.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.17 02/18/2010
+ * @version 7.18 05/06/2010
  */
 
-class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
+class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
 {
    // Class Instances
    private static boolean preferencesVisible = false;
@@ -303,14 +304,14 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ==================================
 
       // Open
-      if (actionCommand.equals("FO") && DBTablesPanel.getTableCount() != 0)
+      if (actionCommand.equals(ACTION_OPEN) && DBTablesPanel.getTableCount() != 0)
       {
          openAction(parent);
          return;
       }
       
       // Save & Save As..
-      if ((actionCommand.equals("FS") || actionCommand.equals("FSA"))
+      if ((actionCommand.equals(ACTION_SAVE) || actionCommand.equals(ACTION_SAVE_AS))
            && DBTablesPanel.getTableCount() != 0)
       {
          saveAction(parent, actionCommand);
@@ -318,14 +319,14 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
 
       // Print
-      if (actionCommand.equals("FP") && DBTablesPanel.getTableCount() != 0)
+      if (actionCommand.equals(ACTION_PRINT) && DBTablesPanel.getTableCount() != 0)
       {
          printAction();
          return;
       }
 
       // Print PageFormat Dialog
-      if (actionCommand.equals("FPG") && DBTablesPanel.getTableCount() != 0)
+      if (actionCommand.equals(ACTION_PAGE_FORMAT) && DBTablesPanel.getTableCount() != 0)
       {
          currentPrintJob = PrinterJob.getPrinterJob();
          mPageFormat = currentPrintJob.pageDialog(mPageFormat);
@@ -333,7 +334,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
       
       // Exit
-      if (actionCommand.equals("FE"))
+      if (actionCommand.equals(ACTION_EXIT))
       {
          System.exit(0);
       }
@@ -343,7 +344,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ==================================
 
       // Preferences
-      if (actionCommand.equals("EP") && !preferencesVisible && DBTablesPanel.getTableCount() != 0)
+      if (actionCommand.equals(ACTION_PREFERENCES) && !preferencesVisible && DBTablesPanel.getTableCount() != 0)
       {
          // Showing the Edit Preferences Frame.
          PreferencesFrame editPreferences = new PreferencesFrame();
@@ -360,8 +361,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ==================================
 
       // Data Import
-      if (actionCommand.equals("DISQLD")
-          || (actionCommand.equals("DICSVF") && DBTablesPanel.getTableCount() != 0))
+      if (actionCommand.equals(ACTION_IMPORT_SQL_DUMP)
+          || (actionCommand.equals(ACTION_IMPORT_CSV_FILE) && DBTablesPanel.getTableCount() != 0))
       {
          dataImportAction(parent, actionCommand);
          return;
@@ -380,7 +381,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ==================================
 
       // Query Frame
-      if (actionCommand.equals("TQ") && !queryFrameVisible)
+      if (actionCommand.equals(ACTION_QUERY_FRAME) && !queryFrameVisible)
       {
          QueryFrame queryFrame = new QueryFrame();
          queryFrame.setSize(800, 600);
@@ -391,7 +392,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
       
       // Reload Database
-      if (actionCommand.equals("TRD"))
+      if (actionCommand.equals(ACTION_RELOAD_DATABASE))
       {
          DBTablesPanel.startStatusTimer();
          
@@ -408,7 +409,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
       
       // Search Database
-      if (actionCommand.equals("TSD") && !searchFrameVisible)
+      if (actionCommand.equals(ACTION_SEARCH_DATABASE) && !searchFrameVisible)
       {
          if (DBTablesPanel.getTableCount() != 0)
          {
@@ -460,7 +461,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ==================================
 
       // Manual
-      if (actionCommand.equals("HM"))
+      if (actionCommand.equals(ACTION_MANUAL))
       {
          HelpFrame manualContents = new HelpFrame("MyJSQLView Manual",
                                                   "/docs/Manual/MyJSQLView_Manual.html",
@@ -471,7 +472,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
       
       // Legal
-      if (actionCommand.equals("HL"))
+      if (actionCommand.equals(ACTION_LEGAL))
       {
          HelpFrame webSiteContents = new HelpFrame("MyJSQLView Legal",
                                                    "/docs/Release/legal.html",
@@ -482,7 +483,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
 
       // Release Notes (Readme)
-      if (actionCommand.equals("HR"))
+      if (actionCommand.equals(ACTION_RELEASE_NOTES))
       {
          HelpFrame webSiteContents = new HelpFrame("MyJSQLView Readme",
                                                    "/docs/Release/readme.html",
@@ -493,7 +494,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       }
       
       // About
-      if (actionCommand.equals("HA"))
+      if (actionCommand.equals(ACTION_ABOUT))
       {
          AboutFrame about_Frame = new AboutFrame(myJSQLView_Version, webSiteString,
                                                  new ImageIcon("images" + fileSeparator
@@ -510,7 +511,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
       // ========================================
 
       // Flush Privileges for root/mysql
-      if (actionCommand.equals("flush"))
+      if (actionCommand.equals(ACTION_FLUSH))
       {
          if (flushPrivileges())
          {
@@ -617,7 +618,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
          return;
       exportedTable = selectedTableTabPanel.getTableName();
 
-      if (actionCommand.equals("FS") && !selectedTableTabPanel.getSaveFileName().equals(""))
+      if (actionCommand.equals(ACTION_SAVE) && !selectedTableTabPanel.getSaveFileName().equals(""))
          fileName = selectedTableTabPanel.getSaveFileName();
       else
       {
@@ -636,7 +637,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
 
       // Open the file chooser Dialog as needed.
       
-      if (actionCommand.equals("FS") && !selectedTableTabPanel.getSaveFileName().equals(""))
+      if (actionCommand.equals(ACTION_SAVE) && !selectedTableTabPanel.getSaveFileName().equals(""))
          resultsOfFileChooser = JFileChooser.APPROVE_OPTION;
       else
          resultsOfFileChooser = MyJSQLView_Utils.processFileChooserSelection(parent, dataFileChooser);
@@ -735,7 +736,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
          if (!fileName.equals(""))
          {
             // Data Import SQL Table(s)
-            if (actionCommand.equals("DISQLD"))
+            if (actionCommand.equals(ACTION_IMPORT_SQL_DUMP))
             {
                // Create a dialog to warn the user of possible
                // data overwriting. Also allow the selection
@@ -769,7 +770,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Date Import CSV File
-            else if (actionCommand.equals("DICSVF"))
+            else if (actionCommand.equals(ACTION_IMPORT_CSV_FILE))
             {
                // Create a dialog to warn the user of possible
                // data overwriting and selecting Insert or Update.
@@ -850,9 +851,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
          database = database.replaceAll(";", "");
       exportedTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
 
-      if (actionCommand.equals("DESQLD"))
+      if (actionCommand.equals(ACTION_EXPORT_SQL_DATABASE))
          fileName = database;
-      else if (actionCommand.equals("DESQLDS"))
+      else if (actionCommand.equals(ACTION_EXPORT_SQL_DATABASE_SCHEME))
          fileName = database + "_scheme";
       else
       {
@@ -891,8 +892,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             // approach.
             
             Vector tableHeadings = new Vector();
-            if (actionCommand.equals("DECSVT") || actionCommand.equals("DECSVST") ||
-                actionCommand.equals("DESQLT") || actionCommand.equals("DESQLST"))
+            if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE)
+                || actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE)
+                || actionCommand.equals(ACTION_EXPORT_SQL_TABLE)
+                || actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
                tableHeadings = new Vector();
                tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
@@ -903,7 +906,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Data Export CSV Table
-            if (actionCommand.equals("DECSVT"))
+            if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
             {
                summaryListTable = null;
                new DataDumpThread(tableHeadings, tableColumnNamesHashMap,
@@ -912,7 +915,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Data Export CSV Summary Table
-            else if (actionCommand.equals("DECSVST"))
+            else if (actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE))
             {
                summaryListTable = (DBTablesPanel.getSelectedTableTabPanel()).getListTable();
                if (summaryListTable != null)
@@ -921,7 +924,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Data Export SQL Table
-            else if (actionCommand.equals("DESQLT"))
+            else if (actionCommand.equals(ACTION_EXPORT_SQL_TABLE))
             {
                new SQLDataDumpThread(tableHeadings, tableColumnNamesHashMap, false,
                                      tableColumnClassHashMap, tableColumnTypeHashMap,
@@ -929,7 +932,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Data Export SQL Summary Table
-            else if (actionCommand.equals("DESQLST"))
+            else if (actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
                tableHeadings = new Vector();
                tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
@@ -940,12 +943,12 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements ActionListener
             }
 
             // Data Export SQL Database
-            else if (actionCommand.equals("DESQLD"))
+            else if (actionCommand.equals(ACTION_EXPORT_SQL_DATABASE))
             {
                new SQLDatabaseDumpThread(fileName, myJSQLView_Version);
             }
 
-            // Data Export SQL Database Scheme. Must be "DESQLDS".
+            // Data Export SQL Database Scheme. Must be "DESQLDS", ACTION_EXPORT_SQL_DATABASE_SCHEME.
             else
             {
                new SQLDatabaseSchemeDumpThread(fileName, myJSQLView_Version);
