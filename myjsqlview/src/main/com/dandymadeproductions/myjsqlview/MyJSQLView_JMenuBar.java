@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.4 05/04/2010
+// Version 6.5 05/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,9 @@
 //         6.2 Made Class Instance resourceBundle private.
 //         6.3 Minor Comment Changes.
 //         6.4 Implemented MyJSQLView_MenuActionCommands.
+//         6.5 Restored Class Back to a Prior State After Modification to Test
+//             the Passing of the Class Instance mainFrame Through the Method
+//             menuItem(). Removed static From Both of These Items.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -131,15 +134,15 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.4 05/06/2010
+ * @version 6.5 05/07/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
 {
    // Instance & Class Fields.
    private static final long serialVersionUID = 949237817664557715L;
-   private static MyJSQLView_Frame mainFrame;
    
+   private MyJSQLView_Frame mainFrame;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    //==============================================================
@@ -195,7 +198,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
             flushButton.setToolTipText("Flush Privileges");
          else
             flushButton.setToolTipText(resource);
-         flushButton.addActionListener((MyJSQLView_Frame) mainFrame);
+         flushButton.addActionListener(mainFrame);
          add(flushButton);
       }
 
@@ -591,7 +594,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
    // bar items. Helper Method.
    // ==============================================================
 
-   public static JMenuItem menuItem(String label, String actionLabel)
+   private JMenuItem menuItem(String label, String actionLabel)
    {
       JMenuItem item = new JMenuItem(label);
       item.addActionListener(mainFrame);
