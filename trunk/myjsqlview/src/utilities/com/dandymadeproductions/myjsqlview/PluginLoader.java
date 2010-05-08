@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 04/28/2010
+// Version 1.2 05/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 // Version 1.0 04/22/2010 Initial PluginLoader Class.
 //         1.1 04/28/2010 Commented System.out in Class Method loadPluginModule()
 //                        and Organized imports.
+//         1.2 05/07/2010 Changed validPluginModuleName to PluginModule.class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +56,7 @@ import java.util.zip.ZipFile;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.1 04/28/2010
+ * @version 1.2 05/07/2010
  */
 
 class PluginLoader
@@ -63,7 +64,7 @@ class PluginLoader
    // Class Instances.
    private String fileSeparator;
    private String pluginDirectoryString;
-   private static final String validPluginModuleName = "MyJSQLView_PluginModule.class";
+   private static final String validPluginModuleName = "PluginModule.class";
    private HashMap pluginModulesHashMap;
    
    //==============================================================
