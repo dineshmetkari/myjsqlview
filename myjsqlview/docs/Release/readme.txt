@@ -88,12 +88,12 @@ directory, which all users have access to for application execution.
 Update Notes:
 
     MyJSQLView updates need no special attention. Just install the latest
-release into your existing directory. For prior releases to Version 3.01
+release into your existing directory. For prior releases to Version v3.01
 though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release 3.06 does not, will have an example configuration
+additional database, release v3.17 does not, will have an example configuration
 for the connection parameters of the advanced login. Likely changes will be
 included in the reference myjsqlview.xml file located in the installation
 directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -101,7 +101,7 @@ will be different for the various database servers. To gain access to any
 new connection parameters one may just open the reference myjsqlview.xml
 file and copy and paste any additional entries desired into your own working
 copy of the myjsqlview.xml file. See the General Setup Instructions below
-for locating this file. NOTICE! THE MyJSQLView 3.17 RELEASE DOES HAVE A MINOR
+for locating this file. NOTICE! THE MyJSQLView v3.17 RELEASE DOES HAVE A MINOR
 CHANGE IN THE myjsqlview.xml CONFIGURATION FILE THAT WILL INVALIDATE ALL
 PREVIOUSLY SAVED PASSWORDS. To remedy this discrepancy use the Connection
 Manager to Update your sites by typing in the password again.<br><br>
@@ -136,7 +136,7 @@ performed in site management will be stored in the XML file located in
 the above referenced directory. The user is encouraged to make a backup
 of this file occasionally. As of MyJSQLView Version 3.17 the application
 also supports internationalization. The .myjsqlview directory in addition
-to the XML configuration file will also contain the file myjsqlview_locale.txt
+to retaining the XML configuration file will also house the file myjsqlview_locale.txt
 which holds the entry that allows control of language support.
 
      MyJSQLView requires a database to be setup to communicate with in order
