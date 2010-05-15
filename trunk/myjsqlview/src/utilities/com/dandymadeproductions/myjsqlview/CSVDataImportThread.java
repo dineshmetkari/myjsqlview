@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.7 02/18/2010
+// Version 4.8 05/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,8 @@
 //         4.6 Method importCSVFile() Changed Method Instances sqlFieldNamesString &
 //             sqlValuesString From Strings to StringBuffers.
 //         4.7 Changed Package to Reflect Dandy Made Productions Code.
+//         4.8 Parameterized Instances primaryKeys, tableFields, & fields in Class Method
+//             importCSVFile() to Bring Code Into Compliance With Java 5.0 API.
 //          
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -129,7 +131,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 4.7 02/18/2010
+ * @version 4.8 05/14/2010
  */
 
 class CSVDataImportThread implements Runnable
@@ -214,7 +216,7 @@ class CSVDataImportThread implements Runnable
       BufferedReader bufferedReader;
 
       String importTable, schemaTableName;
-      Vector primaryKeys, tableFields, fields;
+      Vector<String> primaryKeys, tableFields, fields;
       HashMap columnTypeHashMap;
       HashMap columnClassHashMap;
       String identifierQuoteString;
@@ -250,8 +252,8 @@ class CSVDataImportThread implements Runnable
          schemaTableName = identifierQuoteString + importTable + identifierQuoteString;
 
       primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
-      tableFields = new Vector();
-      fields = new Vector();
+      tableFields = new Vector <String>();
+      fields = new Vector <String>();
       columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
 
