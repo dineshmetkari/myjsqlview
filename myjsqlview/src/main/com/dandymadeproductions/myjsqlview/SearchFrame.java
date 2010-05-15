@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.7 03/06/2018
+// Version 2.8 05/12/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //             resourceBundle. Added Constructor Instance resource and Methods
 //             createMenuBar() & createPopupMenuItem().
 //         2.7 Set Title via resourceBundle in Constructor.
+//         2.8 Parameterized Instance tableHeadings in Constructor to Bring Code
+//             Into Compliance With Java 5.0 API.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -101,7 +103,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.7 03/06/2010
+ * @version 2.8 05/12/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -139,7 +141,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
    {
       // Constructor Instances.
       JMenuBar searchFrameMenuBar;
-      Vector tableHeadings;
+      Vector<String> tableHeadings;
       JScrollPane tableScrollPane;
       String resource;
       
@@ -246,7 +248,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       centerPanel = new JPanel(new GridLayout(1, 1, 0, 0));
       centerPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      tableHeadings = new Vector();
+      tableHeadings = new Vector<String>();
       resource = resourceBundle.getResource("SearchFrame.label.Table");
       if (resource.equals(""))
          tableHeadings.addElement("Table");
