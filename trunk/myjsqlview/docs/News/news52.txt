@@ -1,0 +1,31 @@
+MyJSQLView Development & Google Code
+
+The MyJSQLView next release development is close to three quarters complete and the
+expected availability will be either at the end of this month or early May. Currently
+there has been lots of refinements in the program's features and some performance
+enhancements. The code has also gone through some major cleanup and consolidation
+that will help future database support additions. Presently the project has SQLite,
+MongoDB, Firebird, MonetDB, and HBase databases targeted for review. The latter is
+of particular interest because of the frenzy in the tech world for the cloud. Though
+the next release will not support any additional databases this development cycle 
+will greatly enhance the ability to add support for future additions. 
+
+The project would like to also at this time announce the choice of Google Code as the
+central location for all development activity. Developers and users alike may find a
+forum there where issues may be addressed directly and the latest SVN repository for
+the code. It was found that Google Code provided a much cleaner and efficient interface
+for managing the development aspects of the project than Sourceforge. Several Google
+Groups have been setup to allow monitoring & contributing to input for the MyJSQLView
+project. Links have been provided below that can direct individuals to these areas on
+the web with Google.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+Google Code
+MyJSQLView:	 http://code.google.com/p/myjsqlview/
+
+Google Groups
+Users:		http://groups.google.com/group/myjsqlview-users
+Developers:	http://groups.google.com/group/myjsqlview-developers
+Subversion:	http://groups.google.com/group/myjsqlview-subversion
