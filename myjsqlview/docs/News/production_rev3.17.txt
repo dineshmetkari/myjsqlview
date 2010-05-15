@@ -1,0 +1,33 @@
+MyJSQLView Version 3.17 Released
+
+The MyJSQLView project is pleased to provide the release of
+Version  3.17 to the public. The release marks the cumulative
+effort of many years now to complete an easy to use framework
+for database access, and versatility through a plugin environment.
+Several enhancements have been implemented in this release
+to improve network performance and proper searches in the
+database with regard to date fields. Included in the v3.17
+release too is Internationalization, i18n.
+
+The exciting highlight in this release in my opinion as the
+Project Manager is the modular plugin framework. One can now
+create an independent piece of Java code that MyJSQLView will
+load dynamically at runtime. The first test case for this
+modularity came in the last release, v3.06, with the Table
+Field Profiler tab. That plotting routine now is a plugin that
+is loaded at runtime. Though the group would have wished to
+include other plugins at this time that are being worked on
+they were just not stable enough for production. In the coming
+weeks documenation will be released to the web site to outline
+how to create plugins for MyJSQLView.
+
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, and PostgreSQL databases. A query
+frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
