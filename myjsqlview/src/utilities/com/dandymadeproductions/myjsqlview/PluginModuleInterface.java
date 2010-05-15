@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 05/08/2010
+// Version 1.8 05/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial PluginModuleInterface Class.
+//         1.1 Comment Changes to Description of Class.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -45,12 +46,12 @@ import javax.swing.ImageIcon;
 import java.util.Vector;
 
 /**
- *    The MyJSQLView_PluginModule class This class defines the methods that
+ *    The MyJSQLView_PluginModule class defines the methods that
  * are required by all Plugin Modules in order to properly function within
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/08/2010
+ * @version 1.8 05/14/2010
  */
 
 //=================================================================
