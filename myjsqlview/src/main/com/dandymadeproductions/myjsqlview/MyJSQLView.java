@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.17 05/06/2010
+// Version 3.18 05/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -166,6 +166,7 @@
 //         3.17 05/06/2010 What Else Added myJSQLViewFrame.createGUI() Back Into actionPerformed().
 //                         Needed to Enable the Passing of the Frame's ActionEvent Handler
 //                         to Plugins.
+//         3.18 05/15/2010 Updated Documentation for Class by Including the Argument -lang.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -196,9 +197,10 @@ import javax.swing.text.DefaultEditorKit;
  * for the application will be created through the MyJSQLView_Frame
  * class to setup the main user interface.
  * 
- * Arguments -debug.
+ * Arguments -debug, -lang='locale'
+ * 
  * @author Dana M. Proctor
- * @version 3.17 05/06/2010
+ * @version 3.18 05/15/2010
  */
 
 class MyJSQLView implements ActionListener
@@ -343,6 +345,8 @@ class MyJSQLView implements ActionListener
    //============================================================
    // Main public access point method for instantiating the
    // MyJSQLView application. Valid Arguments: -debug, -lang.
+   //
+   // Example Startup: java -jar MyJSQLView.jar -debug -lang=en_US
    //==============================================================
 
    public static void main(String[] args)
