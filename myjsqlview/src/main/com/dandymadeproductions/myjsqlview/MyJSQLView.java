@@ -221,7 +221,7 @@ class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.17", "Build ID: 20100506"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.18", "Build ID: 20100516"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
