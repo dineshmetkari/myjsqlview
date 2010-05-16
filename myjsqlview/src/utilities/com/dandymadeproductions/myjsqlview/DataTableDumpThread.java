@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.3 03/27/2010
+// Version 2.4 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,18 +35,18 @@
 // Version 1.0 Original DataTableDumpThread Class.
 //         1.1 Header Update.
 //         1.2 MyJSQLView.getDataExportProperties().
-//         1.3 Added Class Instance tableColumnNamesHashMap.
-//             Also Same to Arguments to Constructor. Output
-//             Summary Table List Headers as Database Field Name.
+//         1.3 Added Class Instance tableColumnNamesHashMap. Also Same to
+//             Arguments to Constructor. Output Summary Table List Headers
+//             as Database Field Name.
 //         1.4 Deliminator to Delimiter.
 //         1.5 MyJSQLView Project Common Source Code Formatting.
-//         1.6 Class Method run() getDataExportProperites Changed
-//             Over to the MyJSQLView_Frame Class.
-//         1.7 Changed MyJSQLView_Frame.getDatabaseExportProperties()
-//             Method Moved Over to the DBTablesPanel.
-//         1.8 Added Formatting of Date Fields in run() Method. Added
-//             Instances tableColumnTypeHashMap & currentType. Constructor
-//             Argument tableColumnTypeHashMap Addition.
+//         1.6 Class Method run() getDataExportProperites Changed Over to
+//             the MyJSQLView_Frame Class.
+//         1.7 Changed MyJSQLView_Frame.getDatabaseExportProperties() Method
+//             Moved Over to the DBTablesPanel.
+//         1.8 Added Formatting of Date Fields in run() Method. Added Instances
+//             tableColumnTypeHashMap & currentType. Constructor Argument
+//             tableColumnTypeHashMap Addition.
 //         1.9 Changed Method Instance currentTableName in run() to
 //             currentTableFieldName.
 //         2.0 Changed Package to Reflect Dandy Made Productions Code.
@@ -57,6 +57,9 @@
 //             StringBuffer.
 //         2.3 Correction in Conparison of currentEntry to length() !=0 
 //             Instead of String Equality in Class Method run().
+//         2.4 Parameterized Class Instances tableColumnNamesHashMap and
+//             tableColumnTypeHashMap in Addition to Arguments to Bring
+//             Code Into Compliance With Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -74,7 +77,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.3 03/27/2010
+ * @version 2.4 05/16/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -82,15 +85,16 @@ class DataTableDumpThread implements Runnable
    // Class Instances
    Thread t;
    private JTable summaryListTable;
-   private HashMap tableColumnNamesHashMap, tableColumnTypeHashMap;
+   private HashMap<String, String> tableColumnNamesHashMap;
+   private HashMap<String, String> tableColumnTypeHashMap;
    private String exportedTable, fileName;
 
    //==============================================================
    // DataDumpThread Constructor.
    //==============================================================
 
-   DataTableDumpThread(JTable summaryListTable, HashMap tableColumnNamesHashMap,
-                       HashMap tableColumnTypeHashMap, String exportedTable,
+   DataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnNamesHashMap,
+                       HashMap<String, String> tableColumnTypeHashMap, String exportedTable,
                        String fileName)
    {
       this.summaryListTable = summaryListTable;
@@ -114,14 +118,14 @@ class DataTableDumpThread implements Runnable
    {
       // Class Method Instances
       MyJSQLView_ProgressBar dumpProgressBar;
-      HashMap summaryListTableNameTypes;
+      HashMap<String, String> summaryListTableNameTypes;
       StringBuffer currentEntry;
       String currentTableFieldName, delimiterString;
       String currentType, currentString;
       int rowNumber;
 
       // Setting up
-      summaryListTableNameTypes = new HashMap();
+      summaryListTableNameTypes = new HashMap <String, String>();
       delimiterString = DBTablesPanel.getDataExportProperties().getDataDelimiter();
       currentEntry = new StringBuffer();
 
@@ -138,7 +142,7 @@ class DataTableDumpThread implements Runnable
       {
          currentTableFieldName = summaryListTable.getColumnName(i);
          currentEntry.append(tableColumnNamesHashMap.get(currentTableFieldName) + delimiterString);
-         summaryListTableNameTypes.put(i + "", tableColumnTypeHashMap.get(currentTableFieldName));
+         summaryListTableNameTypes.put(Integer.toString(i), tableColumnTypeHashMap.get(currentTableFieldName));
       }
       if (currentEntry.length() != 0)
       {
