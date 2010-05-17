@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 05/07/2010
+// Version 1.3 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //         1.1 04/28/2010 Commented System.out in Class Method loadPluginModule()
 //                        and Organized imports.
 //         1.2 05/07/2010 Changed validPluginModuleName to PluginModule.class.
+//         1.3 05/16/2010 Parameterized Class Instance pluginModulesHashMap to
+//                        Bring Code Into Compliance With Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,7 +58,7 @@ import java.util.zip.ZipFile;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.2 05/07/2010
+ * @version 1.3 05/16/2010
  */
 
 class PluginLoader
@@ -65,7 +67,7 @@ class PluginLoader
    private String fileSeparator;
    private String pluginDirectoryString;
    private static final String validPluginModuleName = "PluginModule.class";
-   private HashMap pluginModulesHashMap;
+   private HashMap<String, String> pluginModulesHashMap;
    
    //==============================================================
    // PluginLoader Constructor
@@ -78,7 +80,7 @@ class PluginLoader
       pluginDirectoryString = System.getProperty("user.dir") + fileSeparator + "lib" + fileSeparator
                               + "plugins" + fileSeparator;
       
-      pluginModulesHashMap = new HashMap();
+      pluginModulesHashMap = new HashMap <String, String>();
       
       // Obtain the Plugin Modules.
       loadPluginModules();
@@ -159,7 +161,7 @@ class PluginLoader
    // that were found.
    //==============================================================
 
-   protected HashMap getPluginsHashMap()
+   protected HashMap<String, String> getPluginsHashMap()
    {
       return pluginModulesHashMap;
    }
