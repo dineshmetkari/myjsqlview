@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 2.2 02/24/2010
+// Version 2.3 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,10 @@
 //         2.1 Changed Package to Reflect Dandy Made Productions Code.
 //         2.2 Constructor Argument resourceBundle Added and Constructor
 //             Instance resource. Implementation of Internationalization.
+//         2.3 Parameterized Vector Arguments hostList, databaseList,
+//             & userList to Bring Code Into Compliance With Java 5.0 API.
+//             Also the Same for Argument content in Class Methods setHost(),
+//             setDatabase(), and setUser().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +74,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.2 02/24/2010
+ * @version 2.3 05/17/2010
  */
 
 class StandardParametersPanel extends JPanel
@@ -87,8 +91,8 @@ class StandardParametersPanel extends JPanel
    // StandardParametersPanel Constructor
    //==============================================================
 
-   protected StandardParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector hostList,
-                                     Vector databaseList, Vector userList)
+   protected StandardParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector<String> hostList,
+                                     Vector<String> databaseList, Vector<String> userList)
    {
       // Constructor Instances.
       JLabel hostLabel, dbLabel, userLabel, passwordLabel;
@@ -184,7 +188,7 @@ class StandardParametersPanel extends JPanel
       hostJComboBox.setSelectedItem(content);
    }
 
-   protected void setHost(Vector content)
+   protected void setHost(Vector<String> content)
    {
       hostJComboBox.removeAllItems();
 
@@ -207,7 +211,7 @@ class StandardParametersPanel extends JPanel
       dbJComboBox.setSelectedItem(content);
    }
 
-   protected void setDataBase(Vector content)
+   protected void setDataBase(Vector<String> content)
    {
       dbJComboBox.removeAllItems();
 
@@ -230,7 +234,7 @@ class StandardParametersPanel extends JPanel
       userJComboBox.setSelectedItem(content);
    }
 
-   protected void setUser(Vector content)
+   protected void setUser(Vector<String> content)
    {
       userJComboBox.removeAllItems();
 
