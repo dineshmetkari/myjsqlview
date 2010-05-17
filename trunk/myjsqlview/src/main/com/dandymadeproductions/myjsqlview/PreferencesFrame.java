@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.2 03/09/2018
+// Version 7.3 05/17/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,7 +145,10 @@
 //             createNodeResourceNames().
 //         7.2 Added Required Argument Instance resourceBundle to CSVImportPreferencesPanel,
 //             CSVExportPreferencesPanel, SQLExportPreferencesPanel,
-//             TableFieldSelectionPreferencesPanel & TableRowSelectionPreferencesPanel..
+//             TableFieldSelectionPreferencesPanel & TableRowSelectionPreferencesPanel.
+//         7.3 Parameterized Class Instances tableFieldCards, tableFieldPanelsHashtable,
+//             tableRowsCards, & tableRowPanelsHashtable in Order for Code to Comply
+//             With Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -175,7 +178,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a pereferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.2 03/09/2010
+ * @version 7.3 05/17/2010
  */
 
 //=================================================================
@@ -210,8 +213,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
    private JLabel currentPreferencesSelectionLabel;
    private JComboBox tableSelectionFieldsComboBox, tableSelectionRowsComboBox;
-   private Vector tableFieldCards, tableRowCards;
-   private Hashtable tableFieldPanelsHashtable, tableRowPanelsHashtable;
+   private Vector<String> tableFieldCards, tableRowCards;
+   private Hashtable<String, TableFieldSelectionPreferencesPanel> tableFieldPanelsHashtable;
+   private Hashtable<String, TableRowSelectionPreferencesPanel> tableRowPanelsHashtable;
    private JButton okButton, cancelButton, helpButton, helpCloseButton;
 
    //==============================================================
@@ -255,11 +259,11 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       
       mainPanel = new JPanel(new BorderLayout());
 
-      tableFieldCards = new Vector();
-      tableRowCards = new Vector();
+      tableFieldCards = new Vector <String>();
+      tableRowCards = new Vector <String>();
 
-      tableFieldPanelsHashtable = new Hashtable();
-      tableRowPanelsHashtable = new Hashtable();
+      tableFieldPanelsHashtable = new Hashtable <String, TableFieldSelectionPreferencesPanel>();
+      tableRowPanelsHashtable = new Hashtable <String, TableRowSelectionPreferencesPanel>();
 
       // =====================================
       // Creating the tree preferences panel.
@@ -551,13 +555,11 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             cardsIterator = tableFieldCards.iterator();
 
             while (cardsIterator.hasNext())
-               ((TableFieldSelectionPreferencesPanel) tableFieldPanelsHashtable.get(cardsIterator.next()))
-                     .updatePreferences();
+               (tableFieldPanelsHashtable.get(cardsIterator.next())).updatePreferences();
             cardsIterator = tableRowCards.iterator();
 
             while (cardsIterator.hasNext())
-               ((TableRowSelectionPreferencesPanel) tableRowPanelsHashtable.get(cardsIterator.next()))
-                     .updatePreferences();
+               (tableRowPanelsHashtable.get(cardsIterator.next())).updatePreferences();
 
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
