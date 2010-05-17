@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 04/28/2010
+// Version 1.3 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //                        localeListData.contains() to localeListData.containsKey().
 //         1.2 04/28/2010 Constructor Added the MyJSQLView.getDebug() to Catching
 //                        the IOException and Additional Output Information.
+//         1.3 05/16/2010 Parameterized Class Instance localeListData to Bring Code
+//                        Into Compliance With Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,13 +56,13 @@ import java.util.Hashtable;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/28/2010
+ * @version 1.3 05/16/2010
  */
 
 class MyJSQLView_ResourceBundle
 {
    // Class Instances.
-   private Hashtable localeListData;
+   private Hashtable<String, String> localeListData;
 
    //==============================================================
    // MyJSQLView_ResourceBundle Constructor
@@ -91,7 +93,7 @@ class MyJSQLView_ResourceBundle
       // Begin processing the given locale file to obtain a hashtable
       // of the key, resource pairs.
 
-      localeListData = new Hashtable();
+      localeListData = new Hashtable <String, String>();
 
       try
       {
@@ -138,7 +140,7 @@ class MyJSQLView_ResourceBundle
       if (localeListData != null && resourceKey != null)
       {
          if (localeListData.containsKey(resourceKey))
-            return (String) localeListData.get(resourceKey);
+            return localeListData.get(resourceKey);
          else
             return "";
       }
