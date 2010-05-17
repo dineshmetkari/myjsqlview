@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Nil_lin, Dana Proctor
-// Version 4.3 04/07/2010
+// Version 4.4 05/16/2010
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,8 @@
 //                        to passwordString and Check for Empty String.
 //         4.2 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         4.3 04/07/2010 Corrections in Class Method textConversion().
+//         4.4 05/16.2010 Parameterized Instance sites in Class Method getSites() and Argument
+//                        to setSites() to Bring Code Into Compliance With Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -128,7 +130,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.3 04/07/2010
+ * @version 4.4 05/16/2010
  */
 
 class XMLTranslator
@@ -351,9 +353,10 @@ class XMLTranslator
    // the XML file.
    //==============================================================
    
-   protected Hashtable getSites()
+   protected Hashtable<String, SiteParameters> getSites()
    {
-      // Class Method Instances
+      // Class Method Instance.
+	  Hashtable<String, SiteParameters> sites;
       SiteParameters currentSiteParameter;
       NodeList siteElements;
       Node currentSite;
@@ -361,7 +364,7 @@ class XMLTranslator
       String currentSiteName;
 
       // Setting up some of the class instances.
-      Hashtable sites = new Hashtable();
+      sites = new Hashtable <String, SiteParameters>();
 
       // Finding the site nodes and then
       // setting each sites' attributes.
@@ -491,7 +494,7 @@ class XMLTranslator
    // into the XML file.
    //==============================================================
    
-   protected void setSites(Hashtable sites)
+   protected void setSites(Hashtable<String, SiteParameters> sites)
    {
       // Class Method Instances
       Node root;
@@ -525,7 +528,7 @@ class XMLTranslator
             while (sitesKeys.hasMoreElements())
             {
                String currentKey = (String) sitesKeys.nextElement();
-               SiteParameters currentParameter = (SiteParameters) sites.get(currentKey);
+               SiteParameters currentParameter = sites.get(currentKey);
 
                Element currentSiteElement = xmlDocument.createElement("Site");
 
