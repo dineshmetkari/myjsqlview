@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.6 04/25/2010
+// Version 2.7 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@
 //             deleteSelectedItem(), deleteAllItems(), pastClipboardContents().
 //         2.5 Changed Package to Reflect Dandy Made Productions Code.
 //         2.6 Minor Comment Changes.
+//         2.7 Configured Interface Methods With Vector and HashMap Types to be
+//             Parameterized So That the Code Will be Compliant to Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -73,7 +75,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 2.6 04/25/2010
+ * @version 2.7 05/17/2010
  */
 
 interface TableTabInterface
@@ -151,21 +153,21 @@ interface TableTabInterface
    // column names that can be viewed in the panel.
    //==============================================================
 
-   Vector getTableFields();
+   Vector<String> getTableFields();
 
    //==============================================================
    // Class method to allow classes to obtain the list of allowed
    // column names that are presently in the summary table.
    //==============================================================
 
-   Vector getCurrentTableHeadings();
+   Vector<String> getCurrentTableHeadings();
 
    //==============================================================
    // Class method to allow classes to obtain the list of all
    // column names that are possible in the summary table.
    //==============================================================
 
-   Vector getAllTableHeadings();
+   Vector<String> getAllTableHeadings();
 
    //==============================================================
    // Class method to allow classes to obtain name of the table.
@@ -225,38 +227,38 @@ interface TableTabInterface
    // index(s) used by this list table.
    //==============================================================
 
-   Vector getPrimaryKeys();
+   Vector<String> getPrimaryKeys();
 
    //==============================================================
    // Class method to allow classes to obtain the auto-increment
    // field name.
    //==============================================================
 
-   HashMap getAutoIncrementHashMap();
+   HashMap<String, String> getAutoIncrementHashMap();
 
    //==============================================================
    // Class method to allow classes to obtain the columnNamesHashMap.
    //==============================================================
 
-   HashMap getColumnNamesHashMap();
+   HashMap<String, String> getColumnNamesHashMap();
 
    //==============================================================
    // Class method to allow classes to obtain the columnClassHashMap.
    //==============================================================
 
-   HashMap getColumnClassHashMap();
+   HashMap<String, String> getColumnClassHashMap();
 
    //==============================================================
    // Class method to allow classes to obtain the columnTypeHashMap.
    //==============================================================
 
-   HashMap getColumnTypeHashMap();
+   HashMap<String, String> getColumnTypeHashMap();
 
    //==============================================================
    // Class method to allow classes to obtain the columnSizeHashMap.
    //==============================================================
 
-   HashMap getColumnSizeHashMap();
+   HashMap<String, Integer> getColumnSizeHashMap();
 
    //==============================================================
    // Class method to allow classes to obtain the table's state.
@@ -268,7 +270,7 @@ interface TableTabInterface
    // Class method to allow classes to set the table heading fields.
    //==============================================================
 
-   void setTableHeadings(Vector newHeadingFields);
+   void setTableHeadings(Vector<String> newHeadingFields);
 
    //==============================================================
    // Class method to allow classes to set the summary table row
