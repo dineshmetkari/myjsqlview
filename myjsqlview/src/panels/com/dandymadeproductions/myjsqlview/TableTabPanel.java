@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.54 05/02/2010
+// Version 4.55 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,8 @@
 //        4.52 Moved Actions in displayMyDateString() Method to MyJSQLView_Utils Class.
 //        4.53 Made Class public to Allow Plugin Classes Access.
 //        4.54 Added Class Instance serialVersionUID.
+//        4.55 Parameterized All Vector, & HashMap Types to Bring Code Into Compliance With
+//             Java 5.0 API.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -156,7 +158,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.54 05/02/2010
+ * @version 4.55 05/17/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -181,9 +183,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected String sqlTableFieldsString;
    protected String sqlTableStatement;
    protected String identifierQuoteString;
-   protected Vector fields, formFields, viewFormFields, comboBoxFields;
-   protected Vector currentTableHeadings, allTableHeadings;
-   protected Vector primaryKeys;
+   protected Vector<String> fields, formFields, viewFormFields, comboBoxFields;
+   protected Vector<String> currentTableHeadings, allTableHeadings;
+   protected Vector<String> primaryKeys;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private ImageIcon ascUpIcon, ascDownIcon, descUpIcon, descDownIcon;
@@ -216,13 +218,17 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected TableViewForm tableViewForm;
 
    protected Object[][] tableData;
-   protected HashMap columnNamesHashMap, columnClassHashMap;
-   protected HashMap columnTypeHashMap, columnSizeHashMap;
-   protected HashMap preferredColumnSizeHashMap;
+   protected HashMap<String, String> columnNamesHashMap;
+   protected HashMap<String, String> columnClassHashMap;
+   protected HashMap<String, String> columnTypeHashMap;
+   protected HashMap<String, Integer> columnSizeHashMap;
+   protected HashMap<String, Integer>preferredColumnSizeHashMap;
    
-   protected HashMap lobDataTypesHashMap;
-   protected HashMap autoIncrementHashMap, keyLengthHashMap;
-   protected HashMap columnEnumHashMap, columnSetHashMap;
+   protected HashMap<String, String> lobDataTypesHashMap;
+   protected HashMap<String, String> autoIncrementHashMap;
+   protected HashMap<String, Integer> keyLengthHashMap;
+   protected HashMap<String, String> columnEnumHashMap;
+   protected HashMap<String, String> columnSetHashMap;
    
    private JLabel rowsLabel;
    private JButton refreshButton, previousTableRowsButton, nextTableRowsButton;
@@ -271,26 +277,26 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       tableRowLimit = 50;
 
       saveFileName = "";
-      fields = new Vector();
-      formFields = new Vector();
-      viewFormFields = new Vector();
-      comboBoxFields = new Vector();
-      currentTableHeadings = new Vector();
-      allTableHeadings = new Vector();
-      primaryKeys = new Vector();
+      fields = new Vector <String>();
+      formFields = new Vector <String>();
+      viewFormFields = new Vector <String>();
+      comboBoxFields = new Vector <String>();
+      currentTableHeadings = new Vector <String>();
+      allTableHeadings = new Vector <String>();
+      primaryKeys = new Vector <String>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
-      columnNamesHashMap = new HashMap();
-      columnClassHashMap = new HashMap();
-      columnTypeHashMap = new HashMap();
-      columnSizeHashMap = new HashMap();
-      preferredColumnSizeHashMap = new HashMap();
+      columnNamesHashMap = new HashMap <String, String>();
+      columnClassHashMap = new HashMap <String, String>();
+      columnTypeHashMap = new HashMap <String, String>();
+      columnSizeHashMap = new HashMap <String, Integer>();
+      preferredColumnSizeHashMap = new HashMap <String, Integer>();
       
-      lobDataTypesHashMap = new HashMap();
-      autoIncrementHashMap = new HashMap();
-      keyLengthHashMap = new HashMap();
-      columnEnumHashMap = new HashMap();
-      columnSetHashMap = new HashMap();
+      lobDataTypesHashMap = new HashMap <String, String>();
+      autoIncrementHashMap = new HashMap <String, String>();
+      keyLengthHashMap = new HashMap <String, Integer>();
+      columnEnumHashMap = new HashMap <String, String>();
+      columnSetHashMap = new HashMap <String, String>();
       advancedSortSearch = false;
       settingState = false;
       ascDescString = "ASC";
@@ -466,7 +472,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       {
          Object currentHeading = headings.next();
          column = listTable.getColumnModel().getColumn(i++);
-         column.setPreferredWidth(((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue());
+         column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
       }
 
       // Create a scrollpane for the summary table and
@@ -1441,7 +1447,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          {
             db_resultSet = sqlStatement.executeQuery("SELECT YourTableField FROM YourTable");
 
-            Vector comboBoxList = new Vector();
+            Vector<String> comboBoxList = new Vector <String>();
+            
             while (db_resultSet.next())
                comboBoxList.add(db_resultSet.getString(1));
             fillForm.setComboBoxField(currentColumnName, comboBoxList, currentContentData);
@@ -1453,7 +1460,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          if (columnEnumHashMap.containsKey(currentColumnName)
              || columnSetHashMap.containsKey(currentColumnName))
          {
-            Vector comboBoxList = new Vector();
+            Vector<String> comboBoxList = new Vector <String>();
             String listStrings;
 
             if (columnEnumHashMap.containsKey(currentColumnName))
@@ -1598,12 +1605,12 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                         else
                         {
                            // Escape single quotes.
-                           if (((String) columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName)))
+                           if ((columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName)))
                                  .indexOf("String") != -1)
                               currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                            // Reformat date keys.
-                           currentColumnType = (String) columnTypeHashMap
+                           currentColumnType = columnTypeHashMap
                                  .get(parseColumnNameField(currentDB_ColumnName));
                            if (currentColumnType.equals("DATE"))
                            {
@@ -1928,7 +1935,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that can be viewed in the panel.
    //==============================================================
 
-   public Vector getTableFields()
+   public Vector<String> getTableFields()
    {
       return fields;
    }
@@ -1938,7 +1945,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that are presently in the summary table.
    //==============================================================
 
-   public Vector getCurrentTableHeadings()
+   public Vector<String> getCurrentTableHeadings()
    {
       return currentTableHeadings;
    }
@@ -1948,7 +1955,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that are possible in the summary table.
    //==============================================================
 
-   public Vector getAllTableHeadings()
+   public Vector<String> getAllTableHeadings()
    {
       return allTableHeadings;
    }
@@ -2043,7 +2050,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // index(s) used by this list table.
    //==============================================================
 
-   public Vector getPrimaryKeys()
+   public Vector<String> getPrimaryKeys()
    {
       return primaryKeys;
    }
@@ -2053,7 +2060,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // hashmap.
    //==============================================================
 
-   public HashMap getAutoIncrementHashMap()
+   public HashMap<String, String> getAutoIncrementHashMap()
    {
       return autoIncrementHashMap;
    }
@@ -2062,7 +2069,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to obtain the columnNamesHashMap.
    //==============================================================
 
-   public HashMap getColumnNamesHashMap()
+   public HashMap<String, String> getColumnNamesHashMap()
    {
       return columnNamesHashMap;
    }
@@ -2071,7 +2078,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to obtain the columnClassHashMap.
    //==============================================================
 
-   public HashMap getColumnClassHashMap()
+   public HashMap<String, String> getColumnClassHashMap()
    {
       return columnClassHashMap;
    }
@@ -2080,7 +2087,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to obtain the columnTypeHashMap.
    //==============================================================
 
-   public HashMap getColumnTypeHashMap()
+   public HashMap<String, String> getColumnTypeHashMap()
    {
       return columnTypeHashMap;
    }
@@ -2089,7 +2096,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to obtain the columnSizeHashMap.
    //==============================================================
 
-   public HashMap getColumnSizeHashMap()
+   public HashMap<String, Integer> getColumnSizeHashMap()
    {
       return columnSizeHashMap;
    }
@@ -2170,7 +2177,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to set the table heading fields.
    //==============================================================
 
-   public void setTableHeadings(Vector newHeadingFields)
+   public void setTableHeadings(Vector<String> newHeadingFields)
    {
       // Create connection, remove old summary table and
       // reload the center panel.
@@ -2338,7 +2345,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
                   if (tableHeadings.length != 0)
                   {
-                     Vector newTableHeadings = new Vector();
+                     Vector<String> newTableHeadings = new Vector <String>();
                      boolean validFields = true;
 
                      for (int j = 0; j < tableHeadings.length; j++)
