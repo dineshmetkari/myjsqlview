@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.7 03/27/2010
+// Version 5.8 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,30 +31,25 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 08/05/2006 MyJSQLView Initial QueryFrame.
-//         1.1 08/06/2006 Added Panel centerPanel &
-//                        Basic Functionality in Place.
+//         1.1 08/06/2006 Added Panel centerPanel & Basic Functionality in Place.
 //         1.2 08/14/2006 Added Instance maxTabs & queryTextAreaData.
 //         1.3 08/14/2006 Added ChangeListener to JTabbedPane.
-//         1.4 08/17/2006 Modified Interface to Allow Same
-//                        Query in Same Tab and New Queries.
+//         1.4 08/17/2006 Modified Interface to Allow Same Query in Same Tab
+//                        and New Queries.
 //         1.5 08/17/2006 Query Text Area Saving for Each Tab.
-//         1.6 11/14/2006 Fixed So That the queryResultTextArea
-//                        is Cleared Before the Query Execution.
-//                        Bug/Patches Task #132766.
-//         1.7 06/08/2007 Implemented MenuBar and Appropriate
-//                        Actions. Also Class Methods getSelectTab(),
-//                        getSelectedTabTitle() & menuItem().
+//         1.6 11/14/2006 Fixed So That the queryResultTextArea is Cleared
+//                        Before the Query Execution. Bug/Patches Task #132766.
+//         1.7 06/08/2007 Implemented MenuBar and Appropriate Actions. Also
+//                        Class Methods getSelectTab(), getSelectedTabTitle() &
+//                        menuItem().
 //         1.8 06/11/2007 Super("MyJSQLView Query Frame").
-//         1.9 09/01/2007 Cleaned Out and Added Menu Item Edit |
-//						  Preferences | Table Row Size and Appropriate
-//                        Action.
-//         2.0 09/08/2007 MyJSQLView_JMenuBarActions.setQueryFrameNotVisible
-//                        On Window Closing Event and File Menu | Exit.
-//                        Code Cleanup.
-//         2.1 09/09/2007 Removed Constructor Instance JMenuItem menuItem
-//                        Called DataDumpThread Directly. Also Removed
-//                        Class Method summaryListTable Created in Action
-//                        Block.
+//         1.9 09/01/2007 Cleaned Out and Added Menu Item Edit| Preferences |
+//                        Table Row Size and Appropriate Action.
+//         2.0 09/08/2007 MyJSQLView_JMenuBarActions.setQueryFrameNotVisible On
+//                        Window Closing Event and File Menu | Exit. Code Cleanup.
+//         2.1 09/09/2007 Removed Constructor Instance JMenuItem menuItem Called 
+//                        DataDumpThread Directly. Also Removed Class Method
+//                        summaryListTable Created in Action Block.
 //         2.2 09/19/2007 Used System.getProperty("file.separator") for All
 //                        File System Resources Accesses Through Instance
 //                        fileSeparator.
@@ -128,19 +123,25 @@
 //         5.0 10/19/2009 Added hostname and dbname to super() Call in Constructor.
 //         5.1 10/24/2009 Obtained Instances fileSeparator and iconsDirectory From
 //                        MyJSQLView_Utils Class.
-//         5.2 10/25/2009 Moved ToolBar Icons Around to Match Menu. Corrected Icon Image
-//                        Name for Export CSV Summary Table.
+//         5.2 10/25/2009 Moved ToolBar Icons Around to Match Menu. Corrected Icon
+//                        Image Name for Export CSV Summary Table.
 //         5.3 10/25/2009 Added fileSeparator to iconsDirectory.
-//         5.4 11/10/2009 Added Class Instance lastDirectory, For Storing The Last Directory
-//                        Used to Save/Open a Script. Implemented in actionPerformed().
+//         5.4 11/10/2009 Added Class Instance lastDirectory, For Storing The Last
+//                        Directory Used to Save/Open a Script. Implemented in
+//                        actionPerformed().
 //         5.5 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         5.6 03/05/2010 Implementation of Internationalization Through Class Instance
 //                        resourceBundle. Methods Effected Constructor, & actionPerformed().
-//                        Added Class Instances resourceAlert, resourceFileNOTFound and
-//                        Methods createMenuBar() & createToolBar(). Cleared queryResultTextArea
-//                        on Close.
+//                        Added Class Instances resourceAlert, resourceFileNOTFound
+//                        and Methods createMenuBar() & createToolBar(). Cleared
+//                        queryResultTextArea on Close.
 //         5.7 03/27/2010 Commented columnNameFields = new Vector() in Class Method
 //                        actionPerformed().
+//         5.8 05/17/2010 Class Method actionPerformed() Parameterized Method
+//                        Instances tableColumnNamesHashMap, tableColumnClassHashMap,
+//                        tableColumnTypeHashMap, tableColumnSizeHashMap, &
+//                        columnNameFields to Bring Code Into Compliance With Java
+//                        5.0 API.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -178,7 +179,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 5.7 03/27/2010
+ * @version 5.8 05/17/2010
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -704,10 +705,10 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
              && (actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DESQL") != -1))
          {
             String exportedTable;
-            HashMap tableColumnNamesHashMap = new HashMap();
-            HashMap tableColumnClassHashMap = new HashMap();
-            HashMap tableColumnTypeHashMap = new HashMap();
-            HashMap tableColumnSizeHashMap = new HashMap();
+            HashMap<String, String> tableColumnNamesHashMap = new HashMap <String, String>();
+            HashMap<String, String> tableColumnClassHashMap = new HashMap <String, String>();
+            HashMap<String, String> tableColumnTypeHashMap = new HashMap <String, String>();
+            HashMap<String, Integer> tableColumnSizeHashMap = new HashMap <String, Integer>();
 
             // Setting up a default file name based on the selected
             // database, or table and date.
@@ -737,7 +738,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
                if (!fileName.equals(""))
                {
-                  Vector columnNameFields = new Vector();
+                  Vector<String> columnNameFields = new Vector <String>();
                   if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
                   {
                      //columnNameFields = new Vector();
