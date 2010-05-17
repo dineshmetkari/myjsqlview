@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.5 04/20/2010
+// Version 3.6 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,10 @@
 //             imports.
 //         3.5 Reviewed All Methods and Reassigned as Needed to private or public to Properly
 //             Protect and Allow Access for Plugins. Made Classs Itself public.
+//         3.6 Parameterized Class Instances tableCards & tableTabHashMap to Bring Code
+//             Into Compliance With Java 5.0 API. Cleaned Up Code for tableTabHashMap in
+//             Class Methods getTableTabPanel(), getSelectedTableTabPanel() &
+//             setSelectedTableTabPanel().
 //                  
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +122,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.5 04/20/2010
+ * @version 3.6 05/16/2010
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -127,14 +131,14 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static final long serialVersionUID = 5906033083831415803L;
    
    private static final int tableTabPanelCardLimit = 10;
-   private static LinkedList tableCards = new LinkedList();
+   private static LinkedList<String> tableCards = new LinkedList <String>();
    private static CardLayout tablesCardLayout = new CardLayout();
    private static JPanel tablesPanel = new JPanel(tablesCardLayout);
    
    private static JLabel statusIndicator = new JLabel("", JLabel.LEFT);
    private static JTextField statusLabel = new JTextField("Idle", 8);
    private static JComboBox tableSelectionComboBox = new JComboBox();;
-   private static HashMap tableTabHashMap = new HashMap();
+   private static HashMap<String, TableTabPanel> tableTabHashMap = new HashMap <String, TableTabPanel>();
    private static boolean disableActions = false;
    private static long statusTimer;
    private volatile static boolean stopStatusDelayThread;
@@ -343,8 +347,8 @@ public class DBTablesPanel extends JPanel implements ActionListener
             TableTabPanel tableTabPanelToRemove;
             String tableNametoRemove;
             
-            tableNametoRemove = (String)tableCards.removeLast();
-            tableTabPanelToRemove = (TableTabPanel)tableTabHashMap.get(tableNametoRemove);
+            tableNametoRemove = tableCards.removeLast();
+            tableTabPanelToRemove = tableTabHashMap.get(tableNametoRemove);
             
             if (tableTabPanelToRemove != null)
             {
@@ -495,26 +499,16 @@ public class DBTablesPanel extends JPanel implements ActionListener
 
    public static TableTabPanel getSelectedTableTabPanel()
    {  
-      // Insure the DB Panel is not empty.
+      TableTabPanel selectedTableTabPanel;
       
-      if (tableSelectionComboBox.getItemCount() != 0  &&
-          tableTabHashMap.get(tableSelectionComboBox.getSelectedItem()) != null)
-      {
-         Object currentComponent = tableTabHashMap.get(tableSelectionComboBox.getSelectedItem());
-         
-         if (currentComponent instanceof TableTabPanel)
-         {
-            return (TableTabPanel) currentComponent;
-         }
-         else
-         {
-            return null;
-         }
-      }
+	   // Insure the DB Panel is not empty or null selection.
+      
+      selectedTableTabPanel = tableTabHashMap.get(tableSelectionComboBox.getSelectedItem());
+      
+      if (tableSelectionComboBox.getItemCount() != 0  && selectedTableTabPanel != null)
+         return selectedTableTabPanel;
       else
-      {
          return null;
-      }
    }
    
    //==============================================================
@@ -552,14 +546,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
          if (tableTabHashMap.get(tableName) == null)
             return;
          else
-         {
-            Object currentComponent = tableTabHashMap.get(tableName);
-
-            if (currentComponent instanceof TableTabPanel)
-            {
-               tableSelectionComboBox.setSelectedItem(tableName);
-            }
-         }
+            tableSelectionComboBox.setSelectedItem(tableName);
       }
    }
 
@@ -584,14 +571,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
       if (tableTabHashMap.get(tableName) == null)
          return null;
       else
-      {
-         Object currentComponent = tableTabHashMap.get(tableName);
-
-         if (currentComponent instanceof TableTabPanel)
-            return (TableTabPanel) currentComponent;
-         else
-            return null;
-      }
+         return tableTabHashMap.get(tableName);
    }
    
    //==============================================================
