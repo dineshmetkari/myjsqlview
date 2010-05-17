@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.2 02/24/2010
+// Version 4.3 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,9 @@
 //         4.1 Changed Package to Reflect Dandy Made Productions Code.
 //         4.2 Constructor Argument resourceBundle Added and Constructor
 //             Instance resource. Implementation of Internationalization.
+//         4.3 Parameterized Class Instance sitesClone and Return Type of Same for
+//             Class Method getSites() In Order to Properly Comply with Java
+//             5.0 API.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -88,10 +91,22 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.util.*;
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 /**
  *    The ConnectionManager class provides a frame that is accessed
@@ -100,7 +115,7 @@ import java.awt.event.*;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 4.2 02/24/2010
+ * @version 4.3 05/17/2010
  */
 
 class ConnectionManager extends JFrame implements ActionListener
@@ -112,7 +127,7 @@ class ConnectionManager extends JFrame implements ActionListener
    private String resource;
 
    private SitesTreePanel treePanel;
-   private Hashtable sitesClone;
+   private Hashtable<String, SiteParameters> sitesClone;
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
@@ -132,7 +147,8 @@ class ConnectionManager extends JFrame implements ActionListener
    // ConnectionManager Constructor
    //==============================================================
 
-   protected ConnectionManager(MyJSQLView_ResourceBundle resourceBundle, Hashtable sites,
+   protected ConnectionManager(MyJSQLView_ResourceBundle resourceBundle,
+                               Hashtable<String, SiteParameters> sites,
                                StandardParametersPanel standardParametersPanel,
                                AdvancedParametersPanel advancedParametersPanel,
                                JButton saveExitButton, JButton cancelButton)
@@ -150,11 +166,11 @@ class ConnectionManager extends JFrame implements ActionListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
       sitesKeys = sites.keys();
-      sitesClone = new Hashtable();
+      sitesClone = new Hashtable <String, SiteParameters>();
       while (sitesKeys.hasMoreElements())
       {
          String currentKey = (String) sitesKeys.nextElement();
-         sitesClone.put(currentKey, (SiteParameters) sites.get(currentKey));
+         sitesClone.put(currentKey, sites.get(currentKey));
          // System.out.println(currentKey);
       }
 
@@ -352,7 +368,7 @@ class ConnectionManager extends JFrame implements ActionListener
    // by this class or the SitesTreePanel.
    //==============================================================
 
-   protected Hashtable getSites()
+   protected Hashtable<String, SiteParameters> getSites()
    {
       return sitesClone;
    }
