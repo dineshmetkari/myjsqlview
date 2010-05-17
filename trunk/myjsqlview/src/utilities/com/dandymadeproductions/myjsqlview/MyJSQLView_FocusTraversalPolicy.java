@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.5 02/18/2010
+// Version 1.6 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,9 @@
 //         1.3 MyJSQLView Project Common Source Code Formatting.
 //         1.4 Header Format Changes/Update.
 //         1.5 Changed Package to Reflect Dandy Made Productions Code.
+//         1.6 Organized Imports and Parameterized Class Instance
+//             componentSequence and Argument to Constructor components
+//             to Bring Code Into Compliance With Java 5.0 API,
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,8 +47,12 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.FocusTraversalPolicy;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  *    The MyJSQLView_FocusTraversalPolicy class provides a means for
@@ -53,20 +60,20 @@ import java.util.*;
  * focus sequence for themselves.
  * 
  * @author Dana M. Proctor
- * @version 1.5 02/18/2010
+ * @version 1.6 05/16/2010
  */
 
 class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy
 {
    // Class Instances.
-   private ArrayList componentSequence = new ArrayList();
+   private ArrayList<Component> componentSequence = new ArrayList <Component>();
    private int lastIndex = 0;
 
    //==============================================================
    // MyJSQLView_FocusTraversalPolicy Constructor
    //==============================================================
 
-   protected MyJSQLView_FocusTraversalPolicy(Vector components)
+   protected MyJSQLView_FocusTraversalPolicy(Vector<Component> components)
    {
       Iterator componentsIterator = components.iterator();
 
