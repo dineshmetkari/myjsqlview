@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.65 04/20/2010
+// Version 6.66 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,38 +34,37 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original AccessDialog Class.
-//         1.1 Conversion to Required Frame for New Access
-//             Interface Allowing Connection Manager Access.
-//         1.2 JMenuBar for Access ot ConnectionManager,
-//             SelectConnection, and Advanced Options.
+//         1.1 Conversion to Required Frame for New Access Interface Allowing
+//             Connection Manager Access.
+//         1.2 JMenuBar for Access ot ConnectionManager, SelectConnection,
+//             and Advanced Options.
 //         1.3 Rename from AccessDialog to Replace MyJSQLView_Access.
 //         1.4 Finished Class's Main Functionality.
 //         1.5 Changed Advanced Button ImageIcon Name.
-//         1.6 Class Method displaySQLErrors(), Add Alert Dialog
-//             to Give Users Information About Errors Occuring.
+//         1.6 Class Method displaySQLErrors(), Add Alert Dialog to Give
+//             Users Information About Errors Occuring.
 //         1.7 Connection Manager Access.
 //         1.8 Removed WindowFrameListener.
-//         1.9 Release Version 2.63 Site Manager Play, Class
-//             Method actionPerformed().
-//         2.0 Implemented XMLTranslator getSites() to Fill
-//             JMenu Site Toolbar.
+//         1.9 Release Version 2.63 Site Manager Play, Class Method
+//             actionPerformed().
+//         2.0 Implemented XMLTranslator getSites() to Fill JMenu Site Toolbar.
 //         2.1 Modified Class Method displaySQLErrors(), e.getMessage()
 //             Chopped if Larger Than 200 Charaters.
-//         2.2 Implemented Parameters ComboBoxes Filling With
-//             Sites in myjsqlview.xml File.
-//         2.3 Implemented JMenu siteSelectionMenu actionPerformed()
-//             Action, Fill Combobox, TextField, and Checkbox.
-//         2.4 Creating of Instance lastSite and Saving Before
-//             Main Window Display.
+//         2.2 Implemented Parameters ComboBoxes Filling With Sites in
+//             myjsqlview.xml File.
+//         2.3 Implemented JMenu siteSelectionMenu actionPerformed() Action,
+//             Fill Combobox, TextField, and Checkbox.
+//         2.4 Creating of Instance lastSite and Saving Before Main Window
+//             Display.
 //         2.5 Loading Last Site Parameters and SSH CheckBox Icon.
-//         2.6 ConnectionManager Access & Basic Setup of Handling
-//             Actions Through Instances connectionManagerSaveExitButton,
-//             & connectionManagerCancelButton.
-//         2.7 Replacement of Parameters ComboBoxes & Associated Panels
-//             with Instances standardParametersPanel & advancedParametersPanel.
+//         2.6 ConnectionManager Access & Basic Setup of Handling Actions
+//             Through Instances connectionManagerSaveExitButton, &
+//             connectionManagerCancelButton.
+//         2.7 Replacement of Parameters ComboBoxes & Associated Panels with
+//             Instances standardParametersPanel & advancedParametersPanel.
 //         2.8 Sizing Change of Connection Manager Frame.
-//         2.9 Added Class Method setSitesJMenu() to Handle Creating
-//             the JMenuBar for the Frame.
+//         2.9 Added Class Method setSitesJMenu() to Handle Creating the JMenuBar
+//             for the Frame.
 //         3.0 Renamed Class Method setSitesJMenu to fillSitesDataStructures().
 //         3.1 Removed this, JFrame Argument to standard/advancedParamatersPanels().
 //         3.2 Class Method actionPerformed() save/exit Action Retrieval of
@@ -186,36 +185,46 @@
 //             If Login Attempt Fails. Added Comments in Method accessCheck().
 //        6.48 Implemented a Splash Screen to Reflect Startup Status. Added Class
 //             Instances splashWindow, splashPanel, and Class Method createSplashWindow().
-//        6.49 Class Method actionPerformed() Changed Inner Thread Class Sleep Block
-//             Catch to InterruptedException.
+//        6.49 Class Method actionPerformed() Changed Inner Thread Class Sleep
+//             Block Catch to InterruptedException.
 //        6.50 Class Name Change SiteParameter to SiteParameters.
 //        6.51 Added Class Instance errorSoundClip and Its Functionality.
 //        6.52 Modified passwordString Replacement of % Chararcter With Its Appropriate
 //             Hexadecimal Sequence For Proper URL Decoding. Class Method accessCheck().
-//        6.53 Moved Instance fileSeparator From Constructor to Class Instance. Added
-//             Method Instance javaExtDir to accessChech() and Provided this additonal
-//             Information to JDBC Driver Loading Error String.
-//        6.54 Class Method createSplashWindow() Changed splashWindow to setLayout and
-//             add Through contentPane() Instead of Directly.
-//        6.55 Class Instance fileSeparator and Constuctor Instance iconsDiroctory Obtained
-//             From MyJSQlView_Utils Class. Removed Method Instance myjsqlviewHomeDirectory
-//             From loadDBParameters().
+//        6.53 Moved Instance fileSeparator From Constructor to Class Instance.
+//             Added Method Instance javaExtDir to accessChech() and Provided this
+//             additonal Information to JDBC Driver Loading Error String.
+//        6.54 Class Method createSplashWindow() Changed splashWindow to setLayout
+//             and add Through contentPane() Instead of Directly.
+//        6.55 Class Instance fileSeparator and Constuctor Instance iconsDiroctory
+//             Obtained From MyJSQlView_Utils Class. Removed Method Instance
+//             myjsqlviewHomeDirectory From loadDBParameters().
 //        6.56 Added fileSeparator to iconsDirectory.
-//        6.57 Check In Constructor for Valid Processing of myjsqlview.xml file. If not
-//             New Class Method fillSitesDefaults(). Disable connectionManangerAccessButton
-//             on Same.
-//        6.58 Class Method fillSitesDefaults(), Corrections in defaultDrivers Set. Change in
-//             defaultDatabases to Just in Indicating Database Name.
+//        6.57 Check In Constructor for Valid Processing of myjsqlview.xml file.
+//             If not New Class Method fillSitesDefaults(). Disable
+//             connectionManangerAccessButton on Same.
+//        6.58 Class Method fillSitesDefaults(), Corrections in defaultDrivers Set.
+//             Change in defaultDatabases to Just in Indicating Database Name.
 //        6.59 Changed Package to Reflect Dandy Made Productions Code.
-//        6.60 Added Class Instance resourceBundle & resouce. Internationalization Code.
-//        6.61 Resource Loading for connectionManagerSaveExit/CancelButtons. Class Method
-//             ConnectionManager Argument resourceBundle.
-//        6.62 SplashPanel Constructor Creation, resourceBundle Addition in createSplashWindow().
+//        6.60 Added Class Instance resourceBundle & resouce. Internationalization
+//             Code.
+//        6.61 Resource Loading for connectionManagerSaveExit/CancelButtons. Class
+//             Method ConnectionManager Argument resourceBundle.
+//        6.62 SplashPanel Constructor Creation, resourceBundle Addition in
+//             createSplashWindow().
 //        6.63 Moved cancelButton in Constructor to Proceed loginButton.
-//        6.64 Conditional Checks in Methods actionPerformed() & fillSiteDataStructures() From
-//             Non-Short-Circut to Short-Circuit &&.
-//        6.65 Reviewed All Methods and Reassigned as Needed to private or public to Properly
-//             Protect and Allow Access for Plugins. Made Class Itself public.
+//        6.64 Conditional Checks in Methods actionPerformed() & fillSiteDataStructures()
+//             From Non-Short-Circut to Short-Circuit &&.
+//        6.65 Reviewed All Methods and Reassigned as Needed to private or public
+//             to Properly Protect and Allow Access for Plugins. Made Class Itself
+//             public.
+//        6.66 Parameterized Class Instances sitesNamesList, driverList, protocolList,
+//             subProtocolList, hostList, portList, databaseList, userList, sites,
+//             schemas, and tables in Order to Bring Code Into Compliance With Java
+//             5.0 API. Same for Instances oracleSystemSchemaHash and sitesTreeSet
+//             in Class Methods loadDBTables() and fillSiteDataStructures(). Also
+//             Parameterized Return Types for Class Methods getSchemas() &
+//             getTableNames().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -230,13 +239,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.TreeSet;
+import java.util.Vector;
 import javax.sound.sampled.Clip;
 import javax.swing.*;
 
@@ -246,10 +257,10 @@ import javax.swing.*;
  * access dialog to a database. The class provides the main frame used
  * to allow the user entry to the MyJSQLView application. Several input
  * preferences must be specified in this login in order to establish
- * a valid connection to a database. Arguments -debug. 
+ * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.65 04/20/2010
+ * @version 6.66 05/17/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -274,21 +285,21 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
 
    private JButton validLoginButton, loginButton, cancelButton;
 
-   private Vector sitesNameList, driverList, protocolList, subProtocolList,
+   private Vector<String> sitesNameList, driverList, protocolList, subProtocolList,
                   hostList, portList, databaseList, userList;
    private static String dbProductNameVersion;
    private static String protocol, subProtocol, host, port, db, user,
                   passwordString, ssh;
    
-   private Hashtable sites;
+   private Hashtable<String, SiteParameters> sites;
    private transient SiteParameters lastSite;
    private transient XMLTranslator xmlTranslator;
    
    private static boolean filter = true;
    private static String catalog, schemaPattern, tableNamePattern;
    private static String[] tableTypes;
-   private static Vector schemas = new Vector();
-   private static Vector tables = new Vector();
+   private static Vector<String> schemas = new Vector <String>();
+   private static Vector<String> tables = new Vector <String>();
    private static String identifierQuoteString;
    
    private ConnectionManager myjsqlview_ConnectionManager;
@@ -331,15 +342,15 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       // Setting up Various Instances.
       
       xmlTranslator = new XMLTranslator();
-      sites = new Hashtable();
-      sitesNameList = new Vector();
-      driverList = new Vector();
-      protocolList = new Vector();
-      subProtocolList = new Vector();
-      hostList = new Vector();
-      portList = new Vector();
-      databaseList = new Vector();
-      userList = new Vector();
+      sites = new Hashtable <String, SiteParameters>();
+      sitesNameList = new Vector <String>();
+      driverList = new Vector <String>();
+      protocolList = new Vector <String>();
+      subProtocolList = new Vector <String>();
+      hostList = new Vector <String>();
+      portList = new Vector <String>();
+      databaseList = new Vector <String>();
+      userList = new Vector <String>();
 
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
@@ -741,8 +752,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       Enumeration siteNames;
       Iterator sitesTreeIterator;
 
-      TreeSet sitesTreeSet;
-      Hashtable sitesJMenus;
+      TreeSet<String> sitesTreeSet;
+      Hashtable<String, JMenu> sitesJMenus;
       String siteName;
 
       // Remove all previous sites.
@@ -752,7 +763,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       // of the given sites' names.
 
       siteNames = sites.keys();
-      sitesTreeSet = new TreeSet();
+      sitesTreeSet = new TreeSet <String>();
 
       while (siteNames.hasMoreElements())
       {
@@ -768,7 +779,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       }
 
       sitesTreeIterator = sitesTreeSet.iterator();
-      sitesJMenus = new Hashtable();
+      sitesJMenus = new Hashtable <String, JMenu>();
 
       while (sitesTreeIterator.hasNext())
       {
@@ -809,7 +820,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             jmenuSiteName = siteName.substring(0, siteName.indexOf('#'));
             jmenuDBName = siteName.substring(siteName.indexOf('#') + 1);
 
-            JMenu currentSiteJMenu = (JMenu) sitesJMenus.get(jmenuSiteName);
+            JMenu currentSiteJMenu = sitesJMenus.get(jmenuSiteName);
             currentSiteJMenu.add(createMenuItem(jmenuDBName, siteName));
          }
 
@@ -1397,7 +1408,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       // Method Instances
       DatabaseMetaData dbMetaData;
       ResultSet db_resultSet;
-      HashSet oracleSystemSchemaHash;
+      HashSet<String> oracleSystemSchemaHash;
       
       try
       {
@@ -1417,7 +1428,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          db_resultSet = dbMetaData.getTables(catalog, schemaPattern, tableNamePattern, tableTypes);
          
          // Setup some Oracle system exclusion schema.
-         oracleSystemSchemaHash = new HashSet();
+         oracleSystemSchemaHash = new HashSet <String>();
          String[] oracleSystemSchemas = {"CTXSYS", "DBSNMP", "DSSYS", "MDSYS",
                                          "ODM", "ODM_MTR", "OLAPSYS", "ORDPLUGINS",
                                          "ORDSYS", "OUTLN", "PERFSTAT", "REPADMIN",
@@ -1675,7 +1686,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the available database schemas names.
    //==============================================================
 
-   public static Vector getSchemas()
+   public static Vector<String> getSchemas()
    {
       return schemas;
    }
@@ -1684,7 +1695,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
    // Class method to return the default database table names.
    //==============================================================
 
-   public static Vector getTableNames()
+   public static Vector<String> getTableNames()
    {
       return tables;
    }
