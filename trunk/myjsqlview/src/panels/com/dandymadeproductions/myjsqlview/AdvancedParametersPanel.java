@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.8 02/24/2010
+// Version 1.9 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,11 @@
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 Constructor Argument resourceBundle Added and Constructor
 //             Instance resource. Implementation of Internationalization.
+//         1.9 Parameterized Vector Arguments driverList, protocolList,
+//             subProtocolList, & portList to Bring Code Into Compliance
+//             With Java 5.0 API. Also the Same for Argument content in
+//             Class Methods setDriver(), setProtocol(), setSubProtocol(),
+//             and setPort().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +69,7 @@ import javax.swing.JPanel;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/24/2010
+ * @version 1.8 05/17/2010
  */
 
 class AdvancedParametersPanel extends JPanel
@@ -81,8 +86,9 @@ class AdvancedParametersPanel extends JPanel
    // AdvancedParametersPanel Constructor
    //===========================================================
 
-   protected AdvancedParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector driverList,
-                                     Vector protocolList, Vector subProtocolList, Vector portList)
+   protected AdvancedParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector<String> driverList,
+                                     Vector<String> protocolList, Vector<String> subProtocolList,
+                                     Vector<String> portList)
    {
       // Constructor Instances.
       JLabel driverLabel, protocolLabel, subProtocolLabel, portLabel;
@@ -181,11 +187,12 @@ class AdvancedParametersPanel extends JPanel
       driverJComboBox.setSelectedItem(content);
    }
 
-   protected void setDriver(Vector content)
+   protected void setDriver(Vector<String> content)
    {
       driverJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          driverJComboBox.addItem(contentsIterator.next());
    }
@@ -204,11 +211,12 @@ class AdvancedParametersPanel extends JPanel
       protocolJComboBox.setSelectedItem(content);
    }
 
-   protected void setProtocol(Vector content)
+   protected void setProtocol(Vector<String> content)
    {
       protocolJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          protocolJComboBox.addItem(contentsIterator.next());
    }
@@ -227,11 +235,12 @@ class AdvancedParametersPanel extends JPanel
       subProtocolJComboBox.setSelectedItem(content);
    }
 
-   protected void setSubProtocol(Vector content)
+   protected void setSubProtocol(Vector<String> content)
    {
       subProtocolJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          subProtocolJComboBox.addItem(contentsIterator.next());
    }
@@ -250,11 +259,12 @@ class AdvancedParametersPanel extends JPanel
       portJComboBox.setSelectedItem(content);
    }
 
-   protected void setPort(Vector content)
+   protected void setPort(Vector<String> content)
    {
       portJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          portJComboBox.addItem(contentsIterator.next());
    }
