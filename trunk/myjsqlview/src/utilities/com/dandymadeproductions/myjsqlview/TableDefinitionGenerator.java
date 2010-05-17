@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.7 03/27/2010
+// Version 3.8 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,7 +100,9 @@
 //         3.6 Changed Package to Reflect Dandy Made Productions Code.
 //         3.7 Class Method createOracleTableDefinition() Changed Instances primaryKeys,
 //             uniqueKeys, & foreignKeys to Type StringBuffer. Oranized imports.
-//             
+//         3.8 Parameterized Instance autoIncrementColumnNameHashMap in Class Method 
+//             createOracleTableDefinition() to Bring Code Into Compliance With Java
+//             5.0 API.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -122,7 +124,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 3.7 03/27/2010
+ * @version 3.8 05/16/2010
  */
 
 class TableDefinitionGenerator
@@ -853,7 +855,7 @@ class TableDefinitionGenerator
       String columnName, columnClass, columnType;
       int columnSize, columnDecimalDigits;
       String columnDefault, columnIsNullable;
-      HashMap autoIncrementColumnNameHashMap;
+      HashMap<String, String> autoIncrementColumnNameHashMap;
       String sequenceKeyPresent;
 
       StringBuffer primaryKeys, uniqueKeys, foreignKeys;
@@ -929,7 +931,7 @@ class TableDefinitionGenerator
          tableMetaData = resultSet.getMetaData();
 
          sequenceKeyPresent = "";
-         autoIncrementColumnNameHashMap = new HashMap();
+         autoIncrementColumnNameHashMap = new HashMap <String, String>();
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
