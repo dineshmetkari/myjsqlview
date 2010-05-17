@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.74 04/07/2010
+// Version 4.75 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,10 @@
 //                        and orderString(). Changed ComboBoxes and Texfields Class
 //                        Instances to Arrays.
 //        4.74 04/07/2010 Removed and Commented System.out in Class Method orderString().
+//        4.75 05/16/2010 Parameterized Class Instances columnNamesHashMap, columnTypesHashMap,
+//                        comboBoxColumnNames, and stateComponents, Along With Arguments
+//                        In Constructor to Bring Code Into Compliance with Java 5.0 API.
+//                        Same in Method createSortSearchInterface Instance swapEndCompnents.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -155,6 +159,7 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -167,7 +172,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.74 04/07/2010
+ * @version 4.75 05/16/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -177,8 +182,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
    private String sqlTable;
    private String identifierQuoteString;
-   private HashMap columnNamesHashMap, columnTypesHashMap;
-   private Vector comboBoxColumnNames;
+   private HashMap<String, String> columnNamesHashMap;
+   private HashMap<String, String> columnTypesHashMap;
+   private Vector<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private GridBagLayout gridbag;
@@ -193,7 +199,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private static final int searchFormExpressionNumber = 5;
    private JComboBox[] searchComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] searchTextField;
-   private Vector stateComponents;
+   private Vector<JComponent> stateComponents;
 
    private JButton closeButton, clearButton;
    protected JButton sortButton, searchButton;
@@ -203,8 +209,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    //==============================================================
 
    protected AdvancedSortSearchForm(String table, MyJSQLView_ResourceBundle resourceBundle,
-                                    HashMap columnNamesHashMap, HashMap columnTypesHashMap,
-                                    Vector comboBoxColumnNames)
+                                    HashMap<String, String> columnNamesHashMap,
+                                    HashMap<String, String> columnTypesHashMap,
+                                    Vector<String> comboBoxColumnNames)
    {
       sqlTable = table;
       this.resourceBundle = resourceBundle;
@@ -231,7 +238,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
 
-      stateComponents = new Vector();
+      stateComponents = new Vector <JComponent>();
 
       // Setting up the frame's main panel.
       mainPanel = new JPanel(new BorderLayout());
@@ -484,7 +491,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       String resourceSortBy, resourceThen, resourceSearch;
       
       JLabel[] sortByLabel, sortThenLabel, searchLabel;
-      Object swapEndComponent;
+      JComponent swapEndComponent;
 
       Object[] whereOperators;
       Object[] mysqlWhereOperators = {"LIKE", "LIKE BINARY", "NOT LIKE", "REGEXP", "NOT REGEXP", "IS NULL",
@@ -702,8 +709,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       unionString = "";
       do
       {
-         columnNameString = (String) columnNamesHashMap.get(searchComboBox[i].getSelectedItem());
-         columnTypeString = (String) columnTypesHashMap.get(searchComboBox[i].getSelectedItem());
+         columnNameString = columnNamesHashMap.get(searchComboBox[i].getSelectedItem());
+         columnTypeString = columnTypesHashMap.get(searchComboBox[i].getSelectedItem());
          operatorString = (String) operatorComboBox[i].getSelectedItem();
          searchString = searchTextField[i].getText();
 
@@ -753,7 +760,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // ========================================
       // Adding the sort(s), ORDER BY, option.
       
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox[0].getSelectedItem());
+      columnNameString = columnNamesHashMap.get(sortComboBox[0].getSelectedItem());
       ascDescString = "";
       notFieldSort = true;
 
@@ -765,7 +772,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          notFieldSort = false;
       }
 
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox[1].getSelectedItem());
+      columnNameString = columnNamesHashMap.get(sortComboBox[1].getSelectedItem());
 
       if (columnNameString != null)
       {
@@ -775,7 +782,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          notFieldSort = false;
       }
 
-      columnNameString = (String) columnNamesHashMap.get(sortComboBox[2].getSelectedItem());
+      columnNameString = columnNamesHashMap.get(sortComboBox[2].getSelectedItem());
 
       if (columnNameString != null)
       {
