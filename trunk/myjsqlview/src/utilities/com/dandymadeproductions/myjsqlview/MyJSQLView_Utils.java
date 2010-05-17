@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.1 05/04/2010
+// Version 4.2 05/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,8 @@
 //             convertDecimalToCharMonth(), getAudioClip(), getFileSeparator(),
 //             & getIconsDirectory().
 //         4.1 Added Class Method getPluginsDirectory().
+//         4.2 Parameterized Instance localesData in Class Method processLocaleLanguage()
+//             to Bring Code Into Compliance With Java 5.0 API.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -112,7 +114,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.1 05/04/2010
+ * @version 4.2 05/16/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -570,7 +572,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       FileReader fileReader;
       BufferedReader bufferedReader;
 
-      Vector localesData;
+      Vector<String> localesData;
       JComboBox localeComboBox;
       ImageIcon localeIcon;
       InputDialog localeSelectDialog;
@@ -623,7 +625,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             if (localeFileNames == null)
                return "";
 
-            localesData = new Vector();
+            localesData = new Vector <String>();
 
             for (int i = 0; i < localeFileNames.length; i++)
             {
