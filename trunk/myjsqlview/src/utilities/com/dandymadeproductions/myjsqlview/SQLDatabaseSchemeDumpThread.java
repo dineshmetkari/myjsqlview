@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.4 02/18/2010
+// Version 1.5 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.2 Moved DROP TABLE Statement to TableDefinitionGenerator Class.
 //         1.3 Header Format Changes/Update.
 //         1.4 Changed Package to Reflect Dandy Made Productions Code.
+//         1.5 Organized Imports.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -45,10 +46,11 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 /**
  *    The SQLDatabaseSchemeDumpThread class provides a thread to safely
@@ -57,7 +59,7 @@ import java.util.Date;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 1.4 02/18/2010
+ * @version 1.5 05/18/2010
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable
