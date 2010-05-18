@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 3.6 02/18/2010
+// Version 3.7 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,8 @@
 //             for Oracle. Also Bypassed any Single Line Commented SQL Statements.
 //             Minor Changes to queries to trim() Only Once. All in importSQLFile().
 //         3.6 Changed Package to Reflect Dandy Made Productions Code.
+//         3.7 Parameterized tableFields in Class Method refreshTablePanel() to
+//             Bring Code Into Compliance With Java 5.0 API.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -103,7 +105,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 3.6 02/18/2010
+ * @version 3.7 05/18/2010
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -314,7 +316,7 @@ class SQLDataDumpImportThread implements Runnable
       TableTabPanel currentTableTabPanel = DBTablesPanel.getSelectedTableTabPanel();
       if (currentTableTabPanel != null)
       {
-         Vector tableFields = currentTableTabPanel.getCurrentTableHeadings();
+         Vector<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableFields);
       }
    }
