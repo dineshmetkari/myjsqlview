@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.6 05/16/2010
+// Version 3.7 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,15 +82,17 @@
 //             MyJSQLView_Utils Class.
 //         3.2 Added fileSeparator to iconsDirectory.
 //         3.3 Changed Package to Reflect Dandy Made Productions Code.
-//         3.4 Check for NULL tableTabPaneltoRemove in Class Method loadTable(). Organized
-//             imports.
-//         3.5 Reviewed All Methods and Reassigned as Needed to private or public to Properly
-//             Protect and Allow Access for Plugins. Made Classs Itself public.
+//         3.4 Check for NULL tableTabPaneltoRemove in Class Method loadTable().
+//             Organized imports.
+//         3.5 Reviewed All Methods and Reassigned as Needed to private or public to
+//             Properly Protect and Allow Access for Plugins. Made Classs Itself public.
 //         3.6 Parameterized Class Instances tableCards & tableTabHashMap to Bring Code
-//             Into Compliance With Java 5.0 API. Cleaned Up Code for tableTabHashMap in
-//             Class Methods getTableTabPanel(), getSelectedTableTabPanel() &
+//             Into Compliance With Java 5.0 API. Cleaned Up Code for tableTabHashMap
+//             in Class Methods getTableTabPanel(), getSelectedTableTabPanel() &
 //             setSelectedTableTabPanel().
-//                  
+//         3.7 Parameterized Argument Instances tableNames in Constructor and Class
+//             Method reloadPanel().
+//                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -122,7 +124,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.6 05/16/2010
+ * @version 3.7 05/18/2010
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -150,7 +152,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    // DBTablesPanel Constructor
    //==============================================================
 
-   DBTablesPanel(Connection dbConnection, Vector tableNames)
+   DBTablesPanel(Connection dbConnection, Vector<String> tableNames)
    {  
       // Constructor Instances
       ImageIcon statusIdleIcon, statusWorkingIcon;
@@ -365,7 +367,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    // and table cards then reload tables.
    //==============================================================
    
-   protected static void reloadPanel(Connection dbConnection, Vector tableNames)
+   protected static void reloadPanel(Connection dbConnection, Vector<String> tableNames)
    {
       // Method Instances
       String tableName;
