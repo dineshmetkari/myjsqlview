@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.55 05/17/2010
+// Version 4.56 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -126,6 +126,7 @@
 //        4.54 Added Class Instance serialVersionUID.
 //        4.55 Parameterized All Vector, & HashMap Types to Bring Code Into Compliance With
 //             Java 5.0 API.
+//        4.56 Minor Comment Changes and the Removal of Unecessary Casts for HashMap Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -158,7 +159,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.55 05/17/2010
+ * @version 4.56 05/17/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1465,7 +1466,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
             if (columnEnumHashMap.containsKey(currentColumnName))
             {
-               listStrings = (String) columnEnumHashMap.get(currentColumnName);
+               listStrings = columnEnumHashMap.get(currentColumnName);
 
                // Special case of enum field Boolean single bit.
                if (listStrings.equals("tinyint(1)") || listStrings.equals("bool")
@@ -1473,7 +1474,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                   listStrings = "(\'TRUE\',\'FALSE\')";
             }
             else
-               listStrings = (String) columnSetHashMap.get(currentColumnName);
+               listStrings = columnSetHashMap.get(currentColumnName);
 
             // The format is ('a','b','c'), so just extracting
             // the indiviual elements.
@@ -2190,6 +2191,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       centerPanel.remove(tableScrollPane);
       currentTableHeadings = newHeadingFields;
       sqlTableFieldsString = "";
+      
+      // Reconstitute the table field names.
 
       Iterator headings = currentTableHeadings.iterator();
 
@@ -2228,7 +2231,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       {
          Object currentHeading = headings.next();
          column = listTable.getColumnModel().getColumn(i++);
-         column.setPreferredWidth(((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue());
+         column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
       }
 
       tableScrollPane = new JScrollPane(listTable);
