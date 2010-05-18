@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.8 05/12/2018
+// Version 2.9 05/17/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@
 //         2.7 Set Title via resourceBundle in Constructor.
 //         2.8 Parameterized Instance tableHeadings in Constructor to Bring Code
 //             Into Compliance With Java 5.0 API.
+//         2.9 Parameterized Method Instance databaseTables in actionPerformed(().
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -103,7 +104,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.8 05/12/2010
+ * @version 2.9 05/17/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -381,7 +382,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          {
             if (!searchTextField.getText().equals(""))
             {
-               Vector databaseTables = MyJSQLView_Access.getTableNames();
+               Vector<String> databaseTables = MyJSQLView_Access.getTableNames();
                if (!databaseTables.isEmpty())
                {
                   // Execute query
