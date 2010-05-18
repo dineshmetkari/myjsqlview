@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.7 04/12/2010
+// Version 8.8 05/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,7 +216,11 @@
 //             loadTable().
 //         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted to
 //             UpperCase for Comparisons.
-//             
+//         8.8 Class Method getColumnNames() Changed Instance columnSize From Type Object
+//             to Integer. Class Method loadTable() Changed Instance keyLength From String
+//             to Integer. Removed Unecessary Casts for the HashMaps. Parameterized Argument
+//             newHeadingsFields for Class Method setTableHeadings().
+//
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
 //=================================================================
@@ -248,7 +252,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.7 04/12/2010
+ * @version 8.8 05/17/2010
  */
 
 class TableTabPanel_Oracle extends TableTabPanel
@@ -285,7 +289,7 @@ class TableTabPanel_Oracle extends TableTabPanel
       String schemaName, tableName;
       String colNameString, comboBoxNameString;
       String columnClass, columnType;
-      Object columnSize;
+      Integer columnSize;
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
@@ -361,9 +365,9 @@ class TableTabPanel_Oracle extends TableTabPanel
                {
                   primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
                   columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+                  if (columnSize == null || columnSize.intValue() > 255)
                      columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
                }
             }
          }
@@ -456,14 +460,14 @@ class TableTabPanel_Oracle extends TableTabPanel
 
             // Special Column Fields.
 
-            if (columnClass.indexOf("Boolean") != -1 && ((Integer) columnSize).intValue() == 1)
+            if (columnClass.indexOf("Boolean") != -1 && columnSize.intValue() == 1)
                columnEnumHashMap.put(parseColumnNameField(colNameString), columnType);
 
             if (primaryKeys.contains(colNameString))
             {
                if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
                   columnSize = new Integer("255");
-               keyLengthHashMap.put(colNameString, columnSize.toString());
+               keyLengthHashMap.put(colNameString, columnSize);
             }
          }
          // Clean up the SQL field string for later use.
@@ -530,12 +534,12 @@ class TableTabPanel_Oracle extends TableTabPanel
       String columnSearchString, searchTextString;
       String lobLessFieldsString;
       String columnName, columnClass, columnType;
-      String keyLength;
+      Integer keyLength;
       int columnSize, preferredColumnSize;
       Object currentContentData;
 
       // Obtain search parameters, column names as needed.
-      columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
+      columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
       
       searchQueryString = new StringBuffer();
@@ -553,8 +557,8 @@ class TableTabPanel_Oracle extends TableTabPanel
             
             for (int i = 0; i < tableColumns.length; i++)
             {
-               columnType = (String) columnTypeHashMap.get((parseColumnNameField(tableColumns[i].
-                                                           replaceAll(identifierQuoteString, ""))).trim());
+               columnType = columnTypeHashMap.get((parseColumnNameField(tableColumns[i].
+                                                   replaceAll(identifierQuoteString, ""))).trim());
                
                if (columnType.equals("BFILE") || columnType.equals("LONG"))
                   continue;
@@ -570,7 +574,7 @@ class TableTabPanel_Oracle extends TableTabPanel
          }
          else
          {
-            columnType = (String) columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
             if (columnType.equals("DATE"))
                searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                         + " LIKE TO_DATE('" + searchTextString + "', 'MM-dd-YYYY')");
@@ -708,12 +712,12 @@ class TableTabPanel_Oracle extends TableTabPanel
             Iterator headings = currentTableHeadings.iterator();
             while (headings.hasNext())
             {
-               Object currentHeading = headings.next();
-               columnName = (String) columnNamesHashMap.get(currentHeading);
-               columnClass = (String) columnClassHashMap.get(currentHeading);
-               columnType = (String) columnTypeHashMap.get(currentHeading);
-               columnSize = ((Integer) columnSizeHashMap.get(currentHeading)).intValue();
-               keyLength = (String) keyLengthHashMap.get(columnName);
+               String currentHeading = (String) headings.next();
+               columnName = columnNamesHashMap.get(currentHeading);
+               columnClass = columnClassHashMap.get(currentHeading);
+               columnType = columnTypeHashMap.get(currentHeading);
+               columnSize = (columnSizeHashMap.get(currentHeading)).intValue();
+               keyLength = keyLengthHashMap.get(columnName);
                preferredColumnSize = ((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
@@ -790,8 +794,8 @@ class TableTabPanel_Oracle extends TableTabPanel
                         
                         String content = rs.getString(columnName);
                         
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
                         
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -825,8 +829,8 @@ class TableTabPanel_Oracle extends TableTabPanel
 
                         String content = rs.getString(columnName);
 
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
 
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -946,13 +950,12 @@ class TableTabPanel_Oracle extends TableTabPanel
                else
                {
                   // Escape single quotes.
-                  currentColumnClass = (String) columnClassHashMap
-                        .get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnClass = columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                   // Reformat date keys.
-                  currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -980,9 +983,9 @@ class TableTabPanel_Oracle extends TableTabPanel
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
 
             // Oracle only provides a one time chance to obtain the result
             // set for LONG RAW fields so just collect BLOB & RAW content once.
@@ -1077,7 +1080,7 @@ class TableTabPanel_Oracle extends TableTabPanel
                // VARCHAR2 & LONG
                else if ((currentColumnClass.indexOf("String") != -1 &&
                          !currentColumnType.equals("CHAR") &&
-                        ((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255) ||
+                        (columnSizeHashMap.get(currentColumnName)).intValue() > 255) ||
                         (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
                {
                   if (((String) currentContentData).getBytes().length != 0)
@@ -1161,8 +1164,8 @@ class TableTabPanel_Oracle extends TableTabPanel
       while (textFieldNamesIterator.hasNext())
       {
          currentColumnName = textFieldNamesIterator.next();
-         currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-         currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
+         currentColumnClass = columnClassHashMap.get(currentColumnName);
+         currentColumnType = columnTypeHashMap.get(currentColumnName);
 
          // Auto-Increment Type Field
          if (autoIncrementHashMap.containsKey(currentColumnName))
@@ -1207,7 +1210,7 @@ class TableTabPanel_Oracle extends TableTabPanel
          // VARCHAR, & LONG Type Field
          if ((currentColumnClass.indexOf("String") != -1 &&
              !currentColumnType.equals("CHAR") &&
-             ((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+             (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
              || (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
@@ -1305,13 +1308,12 @@ class TableTabPanel_Oracle extends TableTabPanel
                else
                {
                   // Escape single quotes.
-                  currentColumnClass = (String) columnClassHashMap
-                        .get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnClass = columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                   // Reformat date keys.
-                  currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1338,10 +1340,10 @@ class TableTabPanel_Oracle extends TableTabPanel
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
-            currentColumnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
+            currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
             // Oracle only provides a one time chance to obtain the result
             // set for LONG RAW fields so just collect all BLOB and RAW content.
@@ -1503,11 +1505,8 @@ class TableTabPanel_Oracle extends TableTabPanel
    // Class method to allow classes to set the table heading fields.
    //===============================================================
 
-   public void setTableHeadings(Vector newHeadingFields)
+   public void setTableHeadings(Vector<String> newHeadingFields)
    {
-      // Class Method Instances
-      String columnName;
-
       // Create connection, remove old summary table and
       // reload the center panel.
 
@@ -1526,9 +1525,7 @@ class TableTabPanel_Oracle extends TableTabPanel
 
       while (headings.hasNext())
       {
-         columnName = (String) headings.next();
-
-         sqlTableFieldsString += identifierQuoteString + columnNamesHashMap.get(columnName)
+         sqlTableFieldsString += identifierQuoteString + columnNamesHashMap.get(headings.next())
                                  + identifierQuoteString + ", ";
       }
       // No fields, just load empty table else
@@ -1547,8 +1544,10 @@ class TableTabPanel_Oracle extends TableTabPanel
 
       listTable = new JTable(tableModel);
       listTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-      listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME), TransferHandler.getCopyAction());
-      listTable.getActionMap().put(TransferHandler.getPasteAction().getValue(Action.NAME), TransferHandler.getPasteAction());
+      listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                                   TransferHandler.getCopyAction());
+      listTable.getActionMap().put(TransferHandler.getPasteAction().getValue(Action.NAME),
+                                   TransferHandler.getPasteAction());
       listTable.addMouseListener(summaryTablePopupListener);
 
       // Sizing columns
@@ -1560,7 +1559,7 @@ class TableTabPanel_Oracle extends TableTabPanel
       {
          Object currentHeading = headings.next();
          column = listTable.getColumnModel().getColumn(i++);
-         column.setPreferredWidth(((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue());
+         column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
       }
 
       tableScrollPane = new JScrollPane(listTable);
