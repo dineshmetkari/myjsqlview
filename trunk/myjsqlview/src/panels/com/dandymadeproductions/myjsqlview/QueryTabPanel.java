@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.5 04/15/2010
+// Version 7.6 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,11 @@
 //             AdvancedSortSearchForm Creation.
 //         7.4 Fixed Oracle WHERE & GROUP BY Non-Support in Class Method getColumnNames().
 //         7.5 Removed Class Method displayMyDateString(). Part of MyJSQLView_Utils.
+//         7.6 Parameterized Class Instances fields, comboBoxFields, tableHeadings,
+//             columnNamesHashMap, columnClassHashMap, columnTypeHashMap, columnSizeHashMap,
+//             & preferredColumnSizeHashMap in Order to Bring Code Into Compliance
+//             With Java 5.0 API. Removed Casts Associated With These Instances That
+//             Were Not Needed and Insured Proper Parmeters Were Loaded/Retrieved.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -210,7 +215,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.5 04/15/2010
+ * @version 7.6 05/18/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -232,8 +237,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    private String identifierQuoteString;
    private String primaryKey;
    private String sqlTableFieldsString;
-   private Vector fields, comboBoxFields;
-   private Vector tableHeadings;
+   private Vector<String> fields, comboBoxFields;
+   private Vector<String> tableHeadings;
    private MyJSQLView_ResourceBundle resourceBundle;
    
    private ImageIcon ascUpIcon, ascDownIcon, descUpIcon, descDownIcon;
@@ -261,9 +266,11 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    private TableViewForm tableViewForm;
 
    protected Object[][] tableData;
-   private HashMap columnNamesHashMap, columnClassHashMap;
-   private HashMap columnTypeHashMap, columnSizeHashMap;
-   private HashMap preferredColumnSizeHashMap;
+   private HashMap<String, String> columnNamesHashMap;
+   private HashMap<String, String> columnClassHashMap;
+   private HashMap<String, String> columnTypeHashMap;
+   private HashMap<String, Integer> columnSizeHashMap;
+   private HashMap<String, Integer> preferredColumnSizeHashMap;
 
    private JLabel rowsLabel;
    private JButton previousButton, viewButton, nextButton;
@@ -302,15 +309,15 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Setting up.
       sqlTable = "temptable" + queryNumber;
-      fields = new Vector();
-      comboBoxFields = new Vector();
-      tableHeadings = new Vector();
+      fields = new Vector <String>();
+      comboBoxFields = new Vector <String>();
+      tableHeadings = new Vector <String>();
       primaryKey = "id_" + queryNumber;
-      columnNamesHashMap = new HashMap();
-      columnClassHashMap = new HashMap();
-      columnTypeHashMap = new HashMap();
-      columnSizeHashMap = new HashMap();
-      preferredColumnSizeHashMap = new HashMap();
+      columnNamesHashMap = new HashMap <String, String>();
+      columnClassHashMap = new HashMap <String, String>();
+      columnTypeHashMap = new HashMap <String, String>();
+      columnSizeHashMap = new HashMap <String, Integer>();
+      preferredColumnSizeHashMap = new HashMap <String, Integer>();
       validQuery = false;
       ascDescString = "ASC";
 
@@ -466,9 +473,9 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
             while (headings.hasNext())
             {
-               Object currentHeading = headings.next();
+               String currentHeading = (String) headings.next();
                column = listTable.getColumnModel().getColumn(i++);
-               column.setPreferredWidth(((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue());
+               column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
             }
 
             // Create a scrollpane for the summary table and
@@ -918,7 +925,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       String colNameString, comboBoxNameString;
       String columnClass, columnType;
-      Object columnSize;
+      Integer columnSize;
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
@@ -976,8 +983,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             tableHeadings.add(primaryKey);
          columnClassHashMap.put(primaryKey, "java.lang.Integer");
          columnTypeHashMap.put(primaryKey, "INTEGER");
-         columnSizeHashMap.put(primaryKey, new Integer(10));
-         preferredColumnSizeHashMap.put(primaryKey, new Integer(primaryKey.length() * 9));
+         columnSizeHashMap.put(primaryKey, Integer.valueOf(10));
+         preferredColumnSizeHashMap.put(primaryKey, Integer.valueOf(primaryKey.length() * 9));
 
          // Column Names, Form Fields, ComboBox Text and HashMaps
 
@@ -991,7 +998,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             // Additional Information about each column.
             columnClass = tableMetaData.getColumnClassName(i);
             columnType = tableMetaData.getColumnTypeName(i);
-            columnSize = new Integer(tableMetaData.getColumnDisplaySize(i));
+            columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
             // comboBoxNameString + " " +
@@ -1033,7 +1040,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             columnClassHashMap.put(comboBoxNameString, columnClass);
             columnTypeHashMap.put(comboBoxNameString, columnType.toUpperCase());
             columnSizeHashMap.put(comboBoxNameString, columnSize);
-            preferredColumnSizeHashMap.put(comboBoxNameString, new Integer(comboBoxNameString.length() * 9));
+            preferredColumnSizeHashMap.put(comboBoxNameString,
+                                           Integer.valueOf(comboBoxNameString.length() * 9));
 
             // Create a string with all the table field names for Oracle.
             // Mofify TIMESTAMPLTZ field name because were are not going
@@ -1084,7 +1092,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Obtain the temp table name and search parameters
       // column names as needed.
-      columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
+      columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
 
       if (columnSearchString == null)
@@ -1355,12 +1363,12 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             Iterator headings = tableHeadings.iterator();
             while (headings.hasNext())
             {
-               Object currentHeading = headings.next();
-               columnName = (String) columnNamesHashMap.get(currentHeading);
-               columnClass = (String) columnClassHashMap.get(currentHeading);
-               columnType = (String) columnTypeHashMap.get(currentHeading);
-               columnSize = ((Integer) columnSizeHashMap.get(currentHeading)).intValue();
-               preferredColumnSize = ((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue();
+               String currentHeading = (String) headings.next();
+               columnName = columnNamesHashMap.get(currentHeading);
+               columnClass = columnClassHashMap.get(currentHeading);
+               columnType = columnTypeHashMap.get(currentHeading);
+               columnSize = (columnSizeHashMap.get(currentHeading)).intValue();
+               preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
                // columnName + " " + columnClass + " " +
@@ -1582,7 +1590,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   if (preferredColumnSize > maxPreferredColumnSize)
                      preferredColumnSize = maxPreferredColumnSize;
                }
-               preferredColumnSizeHashMap.put(currentHeading, new Integer(preferredColumnSize));
+               preferredColumnSizeHashMap.put(currentHeading, Integer.valueOf(preferredColumnSize));
             }
             j = 0;
             i++;
@@ -1753,7 +1761,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       ResultSet db_resultSet;
 
       Iterator textFieldNamesIterator;
-      Object key, currentColumnName, currentContentData;
+      String currentColumnName;
+      Object key, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
       int currentColumnSize;
       int keyColumn = 0;
@@ -1787,11 +1796,11 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          while (textFieldNamesIterator.hasNext())
          {
-            currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
-            currentColumnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+            currentColumnName = (String) textFieldNamesIterator.next();
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
+            currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
@@ -1832,7 +1841,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                else if (currentColumnType.equals("TIMESTAMP"))
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
-                  currentColumnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+                  currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
                   if (currentColumnSize == 2)
                      tableViewForm.setFormField(currentColumnName,
@@ -1928,7 +1937,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                // Text, MediumText & LongText Type Fields
                else if (currentColumnClass.indexOf("String") != -1 &&
                         !currentColumnType.equals("CHAR") &&
-                        (((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255))
+                        ((columnSizeHashMap.get(currentColumnName)).intValue() > 255))
                {
                   if (((String) currentContentData).getBytes().length != 0)
                   {
@@ -2053,7 +2062,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // column names that can be viewed in the panel.
    //==============================================================
 
-   protected Vector getTableFields()
+   protected Vector<String> getTableFields()
    {
       return fields;
    }
@@ -2063,7 +2072,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // column names that is presently in the summary table.
    //==============================================================
 
-   protected Vector getTableHeadings()
+   protected Vector<String> getTableHeadings()
    {
       return tableHeadings;
    }
@@ -2091,7 +2100,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // Class method to allow classes to obtain the columnNamesHashMap.
    //==============================================================
 
-   protected HashMap getColumnNamesHashMap()
+   protected HashMap<String, String> getColumnNamesHashMap()
    {
       return columnNamesHashMap;
    }
@@ -2100,7 +2109,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // Class method to allow classes to obtain the columnClassHashMap.
    //==============================================================
 
-   protected HashMap getColumnClassHashMap()
+   protected HashMap<String, String> getColumnClassHashMap()
    {
       return columnClassHashMap;
    }
@@ -2109,7 +2118,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // Class method to allow classes to obtain the columnTypeHashMap.
    //==============================================================
 
-   protected HashMap getColumnTypeHashMap()
+   protected HashMap<String, String> getColumnTypeHashMap()
    {
       return columnTypeHashMap;
    }
@@ -2118,7 +2127,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // Class method to allow classes to obtain the columnSizeHashMap.
    //==============================================================
 
-   protected HashMap getColumnSizeHashMap()
+   protected HashMap<String, Integer> getColumnSizeHashMap()
    {
       return columnSizeHashMap;
    }
