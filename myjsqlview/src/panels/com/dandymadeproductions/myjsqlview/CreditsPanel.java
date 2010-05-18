@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.0 02/18/2010
+// Version 3.1 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,7 @@
 //             End the Thread in the Class.
 //         2.9 Class Instance runThread Changed to volatile.
 //         3.0 Changed Package to Reflect Dandy Made Productions Code.
+//         3.1 Organized Imports.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,17 +66,27 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.awt.geom.*;
-import javax.swing.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.geom.Line2D;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 
 /**
- * The CreditsPanel provides a general container to display the basic
+ *    The CreditsPanel provides a general container to display the basic
  * information about the MyJSQLView application's version, build,
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.0 02/18/2010
+ * @version 3.1 05/18/2010
  */
 
 class CreditsPanel extends JPanel implements Runnable
