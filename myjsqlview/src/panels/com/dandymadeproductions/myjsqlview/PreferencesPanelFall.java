@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,15 +32,15 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 08/24/2008 Initial PreferencesPanelFall Class.
-//         1.1 08/25/2008 Increased frameDelay & leafCount. Added Additional
-//                        Leaf Color Yellow.
+//         1.1 08/25/2008 Increased frameDelay & leafCount. Added Additional Leaf
+//                        Color Yellow.
 //         1.2 10/21/2008 MyJSQLView Project Common Source Code Formatting.
 //         1.3 12/16/2008 Class Methods updateLeafs(), render(), checkImage(),
 //                        and timeStep() Made Private.
 //         1.4 01/05/2009 Updated Some Comments.
 //         1.5 05/25/2009 Check on Constructor Instance fileSeparator.
-//         1.6 06/12/2009 Class Method checkImage() Dimension Conditional For
-//                        Less Than or Equal.
+//         1.6 06/12/2009 Class Method checkImage() Dimension Conditional For Less
+//                        Than or Equal.
 //         1.7 09/04/2009 Implemented Wind Sound in Panel. Added Class Instance
 //                        windSoundClip. Modifications to Constructor to Load,
 //                        run() to Start, Methods setThreadAction() & suspendPanel()
@@ -49,6 +49,8 @@
 //         1.9 10/25/2009 Obtained Constructor Instance fileSeparator From MyJSQLView_Utils
 //                        Class.
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 05/18/2010 Parameterized Class Instance leafs to Bring Code Into
+//                        Compliance With Java 5.0 API. Organized Imports.
 //
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -56,10 +58,16 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Random;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelFall class provides a generic panel used
@@ -67,7 +75,7 @@ import javax.swing.*;
  * the northern hemisphere's fall months, October-November.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 05/18/2010
  */
 
 class PreferencesPanelFall extends PreferencesPanel implements Runnable
@@ -82,7 +90,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
    private static final int leafColors = 5;
    private transient Image[] leafImages = new Image[leafColors];
    private int leafImageWidth, leafImageHeight;
-   private Vector leafs;
+   private Vector<Leaf> leafs;
    
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -121,7 +129,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          leafImages[i] = new ImageIcon("images" + fileSeparator + leafImageName[i]).getImage();
       leafImageWidth = leafImages[0].getWidth(null);
       leafImageHeight = leafImages[0].getHeight(null);
-      leafs = new Vector();
+      leafs = new Vector <Leaf>();
       
       // Run the panel's thread.
       runThread = true;
@@ -196,7 +204,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < leafs.size(); i++)
          {
-            Rectangle testSpaceOccupied = ((Leaf) (leafs.elementAt(i))).getSpaceOccupied();
+            Rectangle testSpaceOccupied = (leafs.elementAt(i)).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -221,7 +229,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < leafs.size(); i++)
       {
-         currentLeaf = (Leaf) leafs.elementAt(i);
+         currentLeaf = leafs.elementAt(i);
          currentLeaf.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -230,8 +238,8 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          if (leafOccupiedIndex >= 0)
          {
             tempSwapPoint = currentLeaf.getNextPosition();
-            currentLeaf.setNextPosition(((Leaf) leafs.elementAt(leafOccupiedIndex)).getNextPosition());
-            ((Leaf) leafs.elementAt(leafOccupiedIndex)).setNextPosition(tempSwapPoint);
+            currentLeaf.setNextPosition((leafs.elementAt(leafOccupiedIndex)).getNextPosition());
+            (leafs.elementAt(leafOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -251,7 +259,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // leaf.
       for (int i = 0; i < leafs.size(); i++)
       {
-         currentLeaf = (Leaf) leafs.elementAt(i);
+         currentLeaf = leafs.elementAt(i);
 
          // Don't need to check itself.
          if (currentLeaf == testLeaf)
@@ -377,9 +385,9 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // Draw Leafs
       for (int i = 0; i < leafs.size(); i++)
       {
-         g.drawImage(((Leaf) leafs.elementAt(i)).getImage(),
-                     ((Leaf) leafs.elementAt(i)).getSpaceOccupied().x,
-                     ((Leaf) leafs.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((leafs.elementAt(i)).getImage(),
+                     (leafs.elementAt(i)).getSpaceOccupied().x,
+                     (leafs.elementAt(i)).getSpaceOccupied().y, this);
       }
    }
 
