@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.8 05/14/2010
+// Version 4.9 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,7 +105,10 @@
 //         4.7 Changed Package to Reflect Dandy Made Productions Code.
 //         4.8 Parameterized Instances primaryKeys, tableFields, & fields in Class Method
 //             importCSVFile() to Bring Code Into Compliance With Java 5.0 API.
-//          
+//         4.9 Parameterized Instance tableHeadings in Class Method refreshTableTabPanel().
+//             Also columnTypeHashMap, & columnClassHashMap in Class Method
+//             importCSVFile().
+//                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
 //=================================================================
@@ -131,7 +134,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 4.8 05/14/2010
+ * @version 4.9 05/17/2010
  */
 
 class CSVDataImportThread implements Runnable
@@ -217,8 +220,8 @@ class CSVDataImportThread implements Runnable
 
       String importTable, schemaTableName;
       Vector<String> primaryKeys, tableFields, fields;
-      HashMap columnTypeHashMap;
-      HashMap columnClassHashMap;
+      HashMap<String, String> columnTypeHashMap;
+      HashMap<String, String> columnClassHashMap;
       String identifierQuoteString;
 
       String currentLine, columnClass, columnType;
@@ -356,8 +359,8 @@ class CSVDataImportThread implements Runnable
                   
                   for (int i = 0; i < lineContent.length; i++)
                   {
-                     columnClass = (String) columnClassHashMap.get(tableFields.get(i));
-                     columnType = (String) columnTypeHashMap.get(tableFields.get(i));
+                     columnClass = columnClassHashMap.get(tableFields.get(i));
+                     columnType = columnTypeHashMap.get(tableFields.get(i));
                      //  System.out.println("ColumnClass: " + columnClass + " " + "ColumnType: " + columnType + " " +
                      //                   lineContent[i]);
 
@@ -721,7 +724,7 @@ class CSVDataImportThread implements Runnable
       TableTabPanel currentTableTabPanel = DBTablesPanel.getSelectedTableTabPanel();
       if (currentTableTabPanel != null)
       {
-         Vector tableHeadings = currentTableTabPanel.getCurrentTableHeadings();
+         Vector<String> tableHeadings = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableHeadings);
       }
    }
