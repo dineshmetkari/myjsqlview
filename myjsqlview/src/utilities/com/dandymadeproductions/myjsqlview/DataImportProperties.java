@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana Proctor
-// Version 1.7 02/18/2010
+// Version 1.8 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             dataImportPreferences, All Static Preferences Identifiers. Changes
 //             to Constructor and Setter Methods. Additional Method savePreference().
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
+//         1.8 Organized Imports.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -48,14 +49,14 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
 /**
  *    The DataImportProperties class provides the structure for
  * data import properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.7 02/18/2010
+ * @version 1.8 05/17/2010
  */
 
 class DataImportProperties
