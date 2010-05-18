@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.18 05/06/2010
+// Version 7.19 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -221,6 +221,10 @@
 //        7.16 Class Instance fileSeperator Obtained From MyJSQLView_Utils Class.
 //        7.17 Changed Package to Reflect Dandy Made Productions Code.
 //        7.18 Implemented MyJSQLView_MenuActionCommands.
+//        7.19 Class Method dataExportActions() Parameteriezed Instances tableHeadings,
+//             tableColumnNamesHashMap, tableColumnClassHashMap, tableColumnTypeHashMap
+//             & tableColumnSizeHashMap So As to Bring Code Into Compliance With
+//             Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -228,17 +232,23 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.event.*;
-import java.awt.print.*;
-import javax.sound.sampled.Clip;
-import javax.swing.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Paper;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Vector;
+import javax.sound.sampled.Clip;
+import javax.swing.*;
 
 /**
  *    The MyJSQLView_JMenuBarActions class provides the means for
@@ -247,7 +257,7 @@ import java.util.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.18 05/06/2010
+ * @version 7.19 05/17/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -827,15 +837,17 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       JFileChooser dataFileChooser;
       String fileName;
       String exportedTable, database;
-      HashMap tableColumnNamesHashMap, tableColumnClassHashMap;
-      HashMap tableColumnTypeHashMap, tableColumnSizeHashMap;
+      HashMap<String, String> tableColumnNamesHashMap;
+      HashMap<String, String> tableColumnClassHashMap;
+      HashMap<String, String> tableColumnTypeHashMap;
+      HashMap<String, Integer> tableColumnSizeHashMap;
       JTable summaryListTable;
 
       // Initializing
-      tableColumnNamesHashMap = new HashMap();
-      tableColumnClassHashMap = new HashMap();
-      tableColumnTypeHashMap = new HashMap();
-      tableColumnSizeHashMap = new HashMap();
+      tableColumnNamesHashMap = new HashMap <String, String>();
+      tableColumnClassHashMap = new HashMap <String, String>();
+      tableColumnTypeHashMap = new HashMap <String, String>();
+      tableColumnSizeHashMap = new HashMap <String, Integer>();
 
       // Setting up a default file name based on the selected
       // database, or table and date.
@@ -891,13 +903,14 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // then outputting the data via the appropriate
             // approach.
             
-            Vector tableHeadings = new Vector();
+            Vector<String> tableHeadings = new Vector <String>();
+            
             if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
-               tableHeadings = new Vector();
+               tableHeadings = new Vector <String>();
                tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
                tableColumnNamesHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnNamesHashMap();
                tableColumnClassHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnClassHashMap();
@@ -934,7 +947,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // Data Export SQL Summary Table
             else if (actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
-               tableHeadings = new Vector();
+               tableHeadings = new Vector <String>();
                tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
 
                new SQLDataDumpThread(tableHeadings, tableColumnNamesHashMap, true,
