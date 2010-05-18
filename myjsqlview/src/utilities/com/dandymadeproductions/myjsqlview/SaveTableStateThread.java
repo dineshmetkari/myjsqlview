@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 02/18/2010
+// Version 1.3 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 //         1.1 Removed the State Condition Collection from the
 //             Thread. Argument to Constructor Now.
 //         1.2 Changed Package to Reflect Dandy Made Productions Code.
+//         1.3 Comment Changes.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -45,7 +46,7 @@ package com.dandymadeproductions.myjsqlview;
  * dump a database table's current state to a local file.   
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/18/2010
+ * @version 1.3 05/17/2010
  */
 
 class SaveTableStateThread implements Runnable
@@ -71,7 +72,10 @@ class SaveTableStateThread implements Runnable
       t.start();
    }
 
+   //==============================================================
    // Class Method for Normal Start of the Thread
+   //==============================================================
+   
    public void run()
    {
       // Dumping the selected tables state.
