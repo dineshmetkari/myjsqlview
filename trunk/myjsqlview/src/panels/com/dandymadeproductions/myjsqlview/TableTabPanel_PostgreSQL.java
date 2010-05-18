@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 11.0 04/12/2010
+// Version 11.1 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -260,6 +260,9 @@
 //             loadTable().
 //        11.0 Class Method getColumnNames() Instance columnType in Some Cases Converted to
 //             UpperCase for Comparisons.
+//        11.1 Class Method getColumnNames() Changed Instance columnSize From Type Object
+//             to Integer. Class Method loadTable() Changed Instance keyLength From String
+//             to Integer. Removed Unecessary Casts for the HashMaps.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -285,7 +288,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.0 04/12/2010
+ * @version 11.1 05/17/2010
  */
 
 class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -321,7 +324,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
       String tableName;
       String colNameString, comboBoxNameString;
       String columnClass, columnType;
-      Object columnSize;
+      Integer columnSize;
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
@@ -392,9 +395,9 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                {
                   primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
                   columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+                  if (columnSize == null || columnSize.intValue() > 255)
                      columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize.toString());
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
                }
             }
          }
@@ -454,7 +457,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
             }
             
             // Special Column Fields.
-            if (columnClass.indexOf("Boolean") != -1 && ((Integer) columnSize).intValue() == 1)
+            if (columnClass.indexOf("Boolean") != -1 && columnSize.intValue() == 1)
                columnEnumHashMap.put(parseColumnNameField(colNameString), columnType);
 
             if (columnType.indexOf("enum") != -1)
@@ -465,9 +468,9 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
 
             if (primaryKeys.contains(colNameString))
             {
-               if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+               if (columnSize == null || columnSize.intValue() > 255)
                   columnSize = new Integer("255");
-               keyLengthHashMap.put(colNameString, columnSize.toString());
+               keyLengthHashMap.put(colNameString, columnSize);
             }
 
             if (tableMetaData.isAutoIncrement(i))
@@ -514,12 +517,12 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
       String columnSearchString, searchTextString;
       String lobLessFieldsString;
       String columnName, columnClass, columnType;
-      String keyLength;
+      Integer keyLength;
       int columnSize, preferredColumnSize;
       Object currentContentData;
 
       // Obtain search parameters column names as needed.
-      columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
+      columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
 
       searchQueryString = new StringBuffer();
@@ -611,13 +614,13 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
             Iterator headings = currentTableHeadings.iterator();
             while (headings.hasNext())
             {
-               Object currentHeading = headings.next();
-               columnName = (String) columnNamesHashMap.get(currentHeading);
-               columnClass = (String) columnClassHashMap.get(currentHeading);
-               columnType = (String) columnTypeHashMap.get(currentHeading);
-               columnSize = ((Integer) columnSizeHashMap.get(currentHeading)).intValue();
-               keyLength = (String) keyLengthHashMap.get(columnName);
-               preferredColumnSize = ((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue();
+               String currentHeading = (String) headings.next();
+               columnName = columnNamesHashMap.get(currentHeading);
+               columnClass = columnClassHashMap.get(currentHeading);
+               columnType = columnTypeHashMap.get(currentHeading);
+               columnSize = (columnSizeHashMap.get(currentHeading)).intValue();
+               keyLength = keyLengthHashMap.get(columnName);
+               preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
                // columnName + " " + columnClass + " " +
@@ -685,8 +688,8 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
 
                         String content = rs.getString(columnName);
 
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
 
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -720,8 +723,8 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
 
                         String content = rs.getString(columnName);
 
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
 
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -852,12 +855,12 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                else
                {
                   // Escape single quotes.
-                  currentColumnClass = (String) columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnClass = columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                   // Reformat date keys.
-                  currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -886,9 +889,9 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
@@ -961,7 +964,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                // Text, Fields
                else if (currentColumnClass.indexOf("String") != -1 &&
                         !currentColumnType.equals("CHAR") &&
-                        ((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+                        (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
                {
                   if (((String) currentContentData).getBytes().length != 0)
                   {
@@ -1091,8 +1094,8 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
       while (textFieldNamesIterator.hasNext())
       {
          currentColumnName = textFieldNamesIterator.next();
-         currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-         currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
+         currentColumnClass = columnClassHashMap.get(currentColumnName);
+         currentColumnType = columnTypeHashMap.get(currentColumnName);
 
          // Auto-Increment Type Field
          if (autoIncrementHashMap.containsKey(currentColumnName))
@@ -1161,7 +1164,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
          // All TEXT, MEDIUMTEXT & LONGTEXT Type Field
          if (currentColumnClass.indexOf("String") != -1 &&
              !currentColumnType.equals("CHAR") &&
-             ((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+             (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
          }
@@ -1266,13 +1269,13 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
                else
                {
                   // Escape single quotes.
-                  currentColumnClass = (String) columnClassHashMap
-                        .get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnClass = columnClassHashMap
+                           .get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                   // Reformat date keys.
-                  currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1300,10 +1303,10 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
-            currentColumnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
+            currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(currentColumnName + " " + currentContentData);

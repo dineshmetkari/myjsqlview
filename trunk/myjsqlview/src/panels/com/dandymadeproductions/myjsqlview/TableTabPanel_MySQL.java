@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.22 04/12/2010
+// Version 11.23 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -435,6 +435,9 @@
 //             getColumnNames() For Collecting LOBs.
 //       11.22 Class Method getColumnNames() Instance columnType in Some Cases Converted to
 //             UpperCase for Comparisons.
+//       11.23 Class Method getColumnNames() Changed Instance columnSize From Type Object
+//             to Integer. Class Method loadTable() Changed Instance keyLength From String
+//             to Integer. Removed Unecessary Casts for the HashMaps.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -459,7 +462,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.22 04/12/2010
+ * @version 11.23 05/17/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -493,7 +496,7 @@ class TableTabPanel_MySQL extends TableTabPanel
 
       String colNameString, comboBoxNameString;
       String columnClass, columnType, columnKey, columnExtra;
-      Object columnSize;
+      Integer columnSize;
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
@@ -602,8 +605,7 @@ class TableTabPanel_MySQL extends TableTabPanel
             //  Collect LOBs.
             if (((columnClass.indexOf("String") == -1 && columnType.toUpperCase().indexOf("BLOB") != -1)
                   || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
-                      && Integer.parseInt(columnSize.toString()) > 65535))
-                  && !primaryKeys.contains(colNameString))
+                      && columnSize.intValue() > 65535)) && !primaryKeys.contains(colNameString))
             {
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
                lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
@@ -612,9 +614,9 @@ class TableTabPanel_MySQL extends TableTabPanel
             // Special Column Fields.
             if (primaryKeys.contains(colNameString))
             {
-               if (columnSize == null || Integer.parseInt(columnSize.toString()) > 255)
+               if (columnSize == null || columnSize.intValue() > 255)
                    columnSize = new Integer("255");
-               keyLengthHashMap.put(colNameString, columnSize.toString());
+               keyLengthHashMap.put(colNameString, columnSize);
             }
          }
          // Clean up the SQL field string for later use.
@@ -657,12 +659,12 @@ class TableTabPanel_MySQL extends TableTabPanel
       String columnSearchString, searchTextString;
       String lobLessFieldsString;
       String columnName, columnClass, columnType;
-      String keyLength;
+      Integer keyLength;
       int columnSize, preferredColumnSize;
       Object currentContentData;
 
       // Obtain search parameters column names as needed.
-      columnSearchString = (String) columnNamesHashMap.get(searchComboBox.getSelectedItem());
+      columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
 
       searchQueryString = new StringBuffer();
@@ -752,13 +754,13 @@ class TableTabPanel_MySQL extends TableTabPanel
             Iterator headings = currentTableHeadings.iterator();
             while (headings.hasNext())
             {
-               Object currentHeading = headings.next();
-               columnName = (String) columnNamesHashMap.get(currentHeading);
-               columnClass = (String) columnClassHashMap.get(currentHeading);
-               columnType = (String) columnTypeHashMap.get(currentHeading);
-               columnSize = ((Integer) columnSizeHashMap.get(currentHeading)).intValue();
-               keyLength = (String) keyLengthHashMap.get(columnName);
-               preferredColumnSize = ((Integer) preferredColumnSizeHashMap.get(currentHeading)).intValue();
+               String currentHeading = (String) headings.next();
+               columnName = columnNamesHashMap.get(currentHeading);
+               columnClass = columnClassHashMap.get(currentHeading);
+               columnType = columnTypeHashMap.get(currentHeading);
+               columnSize = (columnSizeHashMap.get(currentHeading)).intValue();
+               keyLength = keyLengthHashMap.get(columnName);
+               preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
                // columnName + " " + columnClass + " " +
@@ -866,8 +868,8 @@ class TableTabPanel_MySQL extends TableTabPanel
 
                         String content = rs.getString(columnName);
 
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
 
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -935,8 +937,8 @@ class TableTabPanel_MySQL extends TableTabPanel
 
                         String content = rs.getString(columnName);
 
-                        if (content.length() > Integer.parseInt(keyLength))
-                           content = content.substring(0, Integer.parseInt(keyLength));
+                        if (content.length() > keyLength.intValue())
+                           content = content.substring(0, keyLength.intValue());
 
                         currentBlobElement.setContent(content);
                         tableData[i][j++] = currentBlobElement;
@@ -1047,7 +1049,7 @@ class TableTabPanel_MySQL extends TableTabPanel
                   currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                // Reformat date keys.
-               currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+               currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                if (currentColumnType.equals("DATE"))
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1076,10 +1078,10 @@ class TableTabPanel_MySQL extends TableTabPanel
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
-            columnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
+            columnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
@@ -1259,8 +1261,8 @@ class TableTabPanel_MySQL extends TableTabPanel
       while (textFieldNamesIterator.hasNext())
       {
          currentColumnName = textFieldNamesIterator.next();
-         currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-         currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
+         currentColumnClass = columnClassHashMap.get(currentColumnName);
+         currentColumnType = columnTypeHashMap.get(currentColumnName);
 
          // Auto-Increment Type Field
          if (autoIncrementHashMap.containsKey(currentColumnName))
@@ -1312,7 +1314,7 @@ class TableTabPanel_MySQL extends TableTabPanel
 
          // All TEXT, MEDIUMTEXT & LONGTEXT Type Field
          if (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
-             && (((Integer) columnSizeHashMap.get(currentColumnName)).intValue() > 255))
+             && ((columnSizeHashMap.get(currentColumnName)).intValue() > 255))
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
          }
@@ -1320,8 +1322,7 @@ class TableTabPanel_MySQL extends TableTabPanel
          // YEAR Type Field
          if (currentColumnType.equals("YEAR"))
          {
-            String size = columnSizeHashMap.get(currentColumnName) + "";
-            if (size.equals("2"))
+            if (columnSizeHashMap.get(currentColumnName).intValue() == 2)
                currentContentData = "YY";
             else
                currentContentData = "YYYY";
@@ -1409,13 +1410,13 @@ class TableTabPanel_MySQL extends TableTabPanel
             else
             {
                // Escape single quotes.
-               currentColumnClass = (String) columnClassHashMap
+               currentColumnClass = columnClassHashMap
                      .get(parseColumnNameField(currentDB_ColumnName));
                if (currentColumnClass.indexOf("String") != -1)
                   currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                // Reformat date keys.
-               currentColumnType = (String) columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+               currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                if (currentColumnType.equals("DATE"))
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1441,10 +1442,10 @@ class TableTabPanel_MySQL extends TableTabPanel
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
-            currentDB_ColumnName = (String) columnNamesHashMap.get(currentColumnName);
-            currentColumnClass = (String) columnClassHashMap.get(currentColumnName);
-            currentColumnType = (String) columnTypeHashMap.get(currentColumnName);
-            currentColumnSize = ((Integer) columnSizeHashMap.get(currentColumnName)).intValue();
+            currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
+            currentColumnClass = columnClassHashMap.get(currentColumnName);
+            currentColumnType = columnTypeHashMap.get(currentColumnName);
+            currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(currentColumnName + " " + currentContentData);
