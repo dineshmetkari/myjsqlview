@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.8 05/14/2010
+// Version 1.2 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,9 @@
 //=================================================================
 // Version 1.0 Initial PluginModuleInterface Class.
 //         1.1 Comment Changes to Description of Class.
+//         1.2 Parameterized Argument tables In Interface Method setDBTables()
+//             to Bring Code Into Compliance With Java 5.0 API. Minor Comment
+//             Changes.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -51,13 +54,8 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.8 05/14/2010
+ * @version 1.2 05/17/2010
  */
-
-//=================================================================
-// Class method to return the required panel that will be added
-// to the MyJSQLView's mainTabsPane in the MyJSQLView_Frame class.
-//=================================================================
 
 public interface PluginModuleInterface
 {  
@@ -109,5 +107,5 @@ public interface PluginModuleInterface
    // Class method to allow the setting the database tables.
    //==============================================================
 
-   void setDBTables(Vector tables);
+   void setDBTables(Vector<String> tables);
 }
