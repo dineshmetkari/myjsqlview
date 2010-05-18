@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.5 05/18/2010
+// Version 6.6 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -164,6 +164,9 @@
 //             tableColumnTypeHashMap, & columnNamesFields. Also Method Instances
 //             Class Methods insertReplaceStatementData() & explicitStatementData().
 //             Brings Code Into Compliance With Java 5.0 API.
+//         6.6 Removal of Instance currentIndex Which Created a New Integer() in Class
+//             Method insertReplaceStatementData() and Applied Directly in Context by
+//             Integer.valueOf().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -195,7 +198,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.5 05/18/2010
+ * @version 6.6 05/18/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -541,8 +544,7 @@ class SQLDatabaseDumpThread implements Runnable
              (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
              (columnType.indexOf("RAW") != -1))
          {
-            Integer currentIndex = new Integer(columnsCount + 1);
-            blobFieldIndexes.add(currentIndex);
+            blobFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of bit entries.
