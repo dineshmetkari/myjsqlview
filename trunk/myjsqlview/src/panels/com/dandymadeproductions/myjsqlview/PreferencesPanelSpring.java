@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //         1.9 10/25/2009 Obtained Constructor Instance fileSeparator From MyJSQLView_Utils
 //                        Class.
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 05/18/2010 Organized Imports.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,10 +54,13 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.*;
-import javax.swing.*;
+import java.util.Random;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelSpring class provides a generic panel used
@@ -64,7 +68,7 @@ import javax.swing.*;
  * the northern hemisphere's spring months, May-June.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 05/18/2010
  */
 
 class PreferencesPanelSpring extends PreferencesPanel implements Runnable
