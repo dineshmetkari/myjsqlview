@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.1 05/06/2010
+// Version 1.2 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 //=================================================================
 // Version 1.0 Original Default_JMenuBar Class.
 //         1.1 Implemented MyJSQLView_MenuActionCommands.
+//         1.2 Minor Format Changes.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -40,7 +41,6 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Font;
-
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -50,11 +50,11 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 /**
- *  The Default_JMenuBar class is used to construct a menubar that
+ *    The Default_JMenuBar class is used to construct a menubar that
  * contains essentially only the MyJSQLView File|Exit & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.1 05/06/2010
+ * @version 1.2 05/17/2010
  */
 
 class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
