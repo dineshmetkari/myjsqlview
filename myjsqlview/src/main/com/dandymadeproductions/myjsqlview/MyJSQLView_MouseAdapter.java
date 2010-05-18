@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2010 Dana M. Proctor
-// Version 1.6 02/18/2010
+// Version 1.7 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //         1.4 Additional Standardation to Comments.
 //         1.5 Header Format Changes/Update.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
+//         1.7 Organized Imports.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,18 +48,19 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import javax.swing.JPopupMenu;
 
 /**
- * The MyJSQLView_MouseAdapter class provides an extension of the Mouse
+ *    The MyJSQLView_MouseAdapter class provides an extension of the Mouse
  * Adapter so that specfic mouse listener interfaces can be implemented
  * for various panels in the MyJSQLView application. Mouse events for
  * MyJSQLView that relate to a right mouse press/release popup menu are
  * executed here.
  * 
  * @author Dana M. Proctor
- * @version 1.6 02/18/2010
+ * @version 1.7 05/18/2010
  */
 
 class MyJSQLView_MouseAdapter extends MouseAdapter
