@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.5 05/07/2010
+// Version 6.6 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,9 @@
 //         6.5 Restored Class Back to a Prior State After Modification to Test
 //             the Passing of the Class Instance mainFrame Through the Method
 //             menuItem(). Removed static From Both of These Items.
+//         6.6 Parameterized Constructor Instance schemas and Argument to Class
+//             Method createSchemasMenu() in Order to Bring Code Into Compliance
+//             With Java 5.0 API.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +137,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.5 05/07/2010
+ * @version 6.6 05/17/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -155,6 +158,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
 
       // Constructor Instances.
       String iconsDirectory, resource;
+      Vector<String> schemas;
 
       // Setting up a icons directory instance.
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
@@ -170,7 +174,8 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       createToolsMenu();
       
       // Schemas Menu
-      Vector schemas = MyJSQLView_Access.getSchemas();
+      schemas = MyJSQLView_Access.getSchemas();
+      
       if (!schemas.isEmpty() && schemas.size() > 1)
       {
          createSchemasMenu(schemas);
@@ -480,7 +485,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
    // Helper Method to create the Schemas Menu.
    //==============================================================
 
-   private void createSchemasMenu(Vector schemas)
+   private void createSchemasMenu(Vector<String> schemas)
    {
       // Method Instances.
       JMenu schemasMenu;
@@ -522,7 +527,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       Iterator schemasIterator = schemas.iterator();
       while (schemasIterator.hasNext())
       {
-         String schemasName = (String)schemasIterator.next();
+         String schemasName = (String) schemasIterator.next();
          
          if (radioButtonCount == 0)
             radioButtonMenuItem = new JRadioButtonMenuItem(schemasName, true);
