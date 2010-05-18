@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 05/08/2010
+// Version 1.8 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //         1.7 Changed to an Abstract Class That Implements PluginModuleInterface.
 //             Removed Class Method setParentFrame() and Commented initPlugin()
 //             With New Argument MyJSQLView_Frame So That Plugins Must Implement.
+//         1.8 Parameterized Argument tableNames in Class Method setDBTables()
+//             in Order For Code to Be in Compliance With Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +64,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/08/2010
+ * @version 1.8 05/17/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -153,7 +155,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Interface requirement.
    //==============================================================
 
-   public void setDBTables(Vector tableNames)
+   public void setDBTables(Vector<String> tableNames)
    {
       // Do what you will if you need database table names.
    }
