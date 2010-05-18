@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.1 05/16/2010
+// Version 2.2 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,7 @@
 //                        Compliance With Java 5.0 API. Cleaned Up Code With Regard
 //                        to Same Instance In Class Methods getEmptyPosition(), paint(),
 //                        and updateRainDrops().
+//         2.2 05/18/2010 Organized Imports.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,10 +62,16 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Random;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelEarlySpring class provides a generic panel
@@ -72,7 +79,7 @@ import javax.swing.*;
  * during the northern hemisphere's early spring months, March-Arpil.
  * 
  * @author Dana M. Proctor
- * @version 2.1 05/16/2010
+ * @version 2.2 05/18/2010
  */
 
 class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
