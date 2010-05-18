@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.2 02/18/2010
+// Version 1.3 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 // Version 1.0 Original LoadTableStateThread Class.
 //         1.1 Class Method importFile() Changed to loadState().
 //         1.2 Changed Package to Reflect Dandy Made Productions Code.
+//         1.3 Parameterized Instance tableFields in Class Method
+//             refreshTableTabPanel() to Bring Code Into Compliance
+//             With Java 5.0 API.
 //          
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -51,7 +54,7 @@ import javax.swing.JOptionPane;
  * a summary table configuration state.
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/18/2010
+ * @version 1.3 025/17/2010
  */
 
 class LoadTableStateThread implements Runnable
@@ -164,9 +167,10 @@ class LoadTableStateThread implements Runnable
    private void refreshTableTabPanel()
    {
       TableTabPanel currentTableTabPanel = DBTablesPanel.getSelectedTableTabPanel();
+      
       if (currentTableTabPanel != null)
       {
-         Vector tableFields = currentTableTabPanel.getCurrentTableHeadings();
+         Vector<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableFields);
       }
    }
