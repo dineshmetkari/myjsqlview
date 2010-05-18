@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.8 03/30/2010
+// Version 1.9 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         1.8 Class Method createColumnsSQLQuery() Excluded NOT RAW, But LONG Types
 //             Which Are Both Oracle Data Types. Modified in Same the Ability to
 //             Properly Search DATE Data Types for Oracle. Organized imports.
+//         1.9 Parameterized Class Instance databaseTables and Same in Argument for
+//             Constructor to Bring Code Into Compliance With Java 5.0 API.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -61,7 +63,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Vector;
-
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
@@ -70,14 +71,14 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 1.8 03/30/2010
+ * @version 1.9 05/17/2010
  */
 
 class SearchDatabaseThread implements Runnable
 {
    // Class Instances
    Thread searchThread;
-   private Vector databaseTables;
+   private Vector<String> databaseTables;
    private String searchQueryString;
    private JProgressBar searchProgressBar;
    private JButton searchCompleteButton;
@@ -91,7 +92,7 @@ class SearchDatabaseThread implements Runnable
    // SearchDatabaseThread Constructor
    //==============================================================
 
-   SearchDatabaseThread(Vector databaseTables, String searchString,
+   SearchDatabaseThread(Vector<String> databaseTables, String searchString,
                         JProgressBar progressBar, JButton searchCompleteButton)
    {
       this.databaseTables = databaseTables;
@@ -153,7 +154,7 @@ class SearchDatabaseThread implements Runnable
          // Properly format the string used in the query
          // for the table.
 
-         sqlTable = databaseTables.get(index).toString();
+         sqlTable = databaseTables.get(index);
 
          if (sqlTable.indexOf(".") != -1)
          {
