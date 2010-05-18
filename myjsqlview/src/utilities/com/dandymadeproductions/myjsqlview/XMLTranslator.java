@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Nil_lin, Dana Proctor
-// Version 4.4 05/16/2010
+// Version 4.5 05/18/2010
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,8 +103,9 @@
 //                        to passwordString and Check for Empty String.
 //         4.2 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         4.3 04/07/2010 Corrections in Class Method textConversion().
-//         4.4 05/16.2010 Parameterized Instance sites in Class Method getSites() and Argument
+//         4.4 05/16/2010 Parameterized Instance sites in Class Method getSites() and Argument
 //                        to setSites() to Bring Code Into Compliance With Java 5.0 API.
+//         4.5 05/18/2010 Minor Format Changes.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -130,7 +131,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.4 05/16/2010
+ * @version 4.5 05/18/2010
  */
 
 class XMLTranslator
@@ -356,7 +357,7 @@ class XMLTranslator
    protected Hashtable<String, SiteParameters> getSites()
    {
       // Class Method Instance.
-	  Hashtable<String, SiteParameters> sites;
+      Hashtable<String, SiteParameters> sites;
       SiteParameters currentSiteParameter;
       NodeList siteElements;
       Node currentSite;
