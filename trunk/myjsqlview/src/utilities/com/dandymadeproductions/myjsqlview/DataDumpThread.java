@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.2 04/25/2010
+// Version 5.3 05/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,9 @@
 //             Circuit &&. Organized imports.
 //         5.1 Removed Class Method displayMyDateString(). Part of MyJSQLView_Utils.
 //         5.2 Minor Comment Changes.
+//         5.3 Parameterized Class Instances tableColumnNamesHashMap, columnNamesFields,
+//             tableColumnTypeHashMap, & tableColumnSizeHashmap in Order to
+//             Bring Code Into Compliance With Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -118,28 +121,30 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.2 04/25/2010
+ * @version 5.3 05/17/2010
  */
 
 class DataDumpThread implements Runnable
 {
    // Class Instances
    Thread t;
-   private Vector columnNameFields;
-   private HashMap tableColumnNamesHashMap;
-   private HashMap tableColumnClassHashMap;
-   private HashMap tableColumnTypeHashMap;
-   private HashMap tableColumnSizeHashMap;
+   private Vector<String> columnNameFields;
+   private HashMap<String, String> tableColumnNamesHashMap;
+   private HashMap<String, String> tableColumnClassHashMap;
+   private HashMap<String, String> tableColumnTypeHashMap;
+   private HashMap<String, Integer> tableColumnSizeHashMap;
    private String exportedTable, fileName;
 
    //==============================================================
    // DataDumpThread Constructor.
    //==============================================================
 
-   DataDumpThread(Vector columnNameFields, HashMap tableColumnNamesHashMap,
-                  HashMap tableColumnClassHashMap, HashMap tableColumnTypeHashMap,
-                  HashMap tableColumnSizeHashMap, String exportedTable,
-                  String fileName)
+   DataDumpThread(Vector<String> columnNameFields,
+                  HashMap<String, String> tableColumnNamesHashMap,
+                  HashMap<String, String> tableColumnClassHashMap,
+                  HashMap<String, String> tableColumnTypeHashMap,
+                  HashMap<String, Integer> tableColumnSizeHashMap,
+                  String exportedTable, String fileName)
    {
       this.columnNameFields = columnNameFields;
       this.tableColumnNamesHashMap = tableColumnNamesHashMap;
@@ -228,7 +233,7 @@ class DataDumpThread implements Runnable
             // need to SET SESSION.
 
             if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
-                && ((String) tableColumnTypeHashMap.get(columnNameString)).equals("TIMESTAMPLTZ"))
+                && (tableColumnTypeHashMap.get(columnNameString)).equals("TIMESTAMPLTZ"))
             {
                columnNames_String.append("TO_CHAR(" + identifierQuoteString
                                      + tableColumnNamesHashMap.get(columnNameString) 
@@ -277,10 +282,10 @@ class DataDumpThread implements Runnable
             while (columnNamesIterator.hasNext())
             {
                // Filtering out blob & text data as needed.
-               Object currentHeading = columnNamesIterator.next();
-               columnClass = (String) tableColumnClassHashMap.get(currentHeading);
-               columnType = (String) tableColumnTypeHashMap.get(currentHeading);
-               columnSize = ((Integer) tableColumnSizeHashMap.get(currentHeading)).intValue();
+               String currentHeading = (String) columnNamesIterator.next();
+               columnClass = tableColumnClassHashMap.get(currentHeading);
+               columnType = tableColumnTypeHashMap.get(currentHeading);
+               columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
 
                fieldContent = dbResultSet.getString(i);
 
