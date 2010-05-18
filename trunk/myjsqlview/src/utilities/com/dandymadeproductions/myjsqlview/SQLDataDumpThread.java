@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.78 03/27/2010
+// Version 6.79 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -240,6 +240,10 @@
 //        6.77 Changed Package to Reflect Dandy Made Productions Code.
 //        6.78 Class Method explicitStatementData() Instance keyStringStatement
 //             Changed to Type StringBuffer. Organized imports.
+//        6.79 Parameterized Class Instances tableColumnNames, tableColumnClassHashMap,
+//             tableColumnTypeHashMap, & columnNamesFields. Also Method Instances
+//             Class Methods insertReplaceStatementData() & explicitStatementData().
+//             Brings Code Into Compliance With Java 5.0 API.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -272,7 +276,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.78 03/27/2010
+ * @version 6.79 05/18/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -282,9 +286,9 @@ class SQLDataDumpThread implements Runnable
    private Object dumpData;
    private String exportedTable;
    private Vector columnNameFields;
-   private HashMap tableColumnNames;
-   private HashMap tableColumnClassHashMap;
-   private HashMap tableColumnTypeHashMap;
+   private HashMap<String, String> tableColumnNames;
+   private HashMap<String, String> tableColumnClassHashMap;
+   private HashMap<String, String> tableColumnTypeHashMap;
    private String fileName;
    private String schemaName, tableName;
    private String dbSchemaTableName, schemaTableName;
@@ -314,9 +318,9 @@ class SQLDataDumpThread implements Runnable
    // SQLDataDumpThread Constructor.
    //==============================================================
 
-   SQLDataDumpThread(Vector columnNameFields, HashMap tableColumnNames,
-                     boolean limits, HashMap tableColumnClassHashMap,
-                     HashMap tableColumnTypeHashMap, String exportedTable,
+   SQLDataDumpThread(Vector columnNameFields, HashMap<String, String> tableColumnNames,
+                     boolean limits, HashMap<String, String> tableColumnClassHashMap,
+                     HashMap<String, String> tableColumnTypeHashMap, String exportedTable,
                      String fileName, String[] myJSQLView_Version)
    {
       this.columnNameFields = columnNameFields;
@@ -524,15 +528,15 @@ class SQLDataDumpThread implements Runnable
    {
       // Class Method Instances
       Iterator columnNamesIterator;
-      HashMap autoIncrementFieldIndexes;
-      Vector blobFieldIndexes;
-      Vector bitFieldIndexes;
-      Vector timeStampIndexes;
-      Vector oracleTimeStamp_TZIndexes;
-      Vector oracleTimeStamp_LTZIndexes;
-      Vector dateIndexes;
-      Vector yearIndexes;
-      Vector arrayIndexes;
+      HashMap<Integer, String> autoIncrementFieldIndexes;
+      Vector<Integer> blobFieldIndexes;
+      Vector<Integer> bitFieldIndexes;
+      Vector<Integer> timeStampIndexes;
+      Vector<Integer> oracleTimeStamp_TZIndexes;
+      Vector<Integer> oracleTimeStamp_LTZIndexes;
+      Vector<Integer> dateIndexes;
+      Vector<Integer> yearIndexes;
+      Vector<Integer> arrayIndexes;
       String field, columnClass, columnType;
       String sqlFieldValuesString;
       String expressionType;
@@ -563,33 +567,32 @@ class SQLDataDumpThread implements Runnable
       columnsCount = 0;
       sqlStatementString = "SELECT ";
       columnNamesIterator = columnNameFields.iterator();
-      autoIncrementFieldIndexes = new HashMap();
-      blobFieldIndexes = new Vector();
-      bitFieldIndexes = new Vector();
-      timeStampIndexes = new Vector();
-      oracleTimeStamp_TZIndexes = new Vector();
-      oracleTimeStamp_LTZIndexes = new Vector();
-      dateIndexes = new Vector();
-      yearIndexes = new Vector();
-      arrayIndexes = new Vector();
+      autoIncrementFieldIndexes = new HashMap <Integer, String>();
+      blobFieldIndexes = new Vector <Integer>();
+      bitFieldIndexes = new Vector <Integer>();
+      timeStampIndexes = new Vector <Integer>();
+      oracleTimeStamp_TZIndexes = new Vector <Integer>();
+      oracleTimeStamp_LTZIndexes = new Vector <Integer>();
+      dateIndexes = new Vector <Integer>();
+      yearIndexes = new Vector <Integer>();
+      arrayIndexes = new Vector <Integer>();
 
       while (columnNamesIterator.hasNext())
       {
          field = (String) columnNamesIterator.next();
-         columnClass = (String) tableColumnClassHashMap.get(field);
-         columnType = (String) tableColumnTypeHashMap.get(field);
+         columnClass = tableColumnClassHashMap.get(field);
+         columnType = tableColumnTypeHashMap.get(field);
          // System.out.println("field:" + field + " class:" + columnClass + "
          // type:" + columnType);
 
          // Save the index of autoIncrement entries.
          if (DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().containsKey(field))
          {
-            String currentIndex = columnsCount + 1 + "";
             if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-               autoIncrementFieldIndexes.put(currentIndex,
+               autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1),
                                              DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field));
             else
-               autoIncrementFieldIndexes.put(currentIndex, tableColumnNames.get(field));
+               autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1), tableColumnNames.get(field));
          }
 
          // Save the index of blob/bytea/binary entries.
@@ -598,59 +601,51 @@ class SQLDataDumpThread implements Runnable
              (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
              (columnType.indexOf("RAW") != -1))
          {
-            String currentIndex = columnsCount + 1 + "";
-            blobFieldIndexes.add(currentIndex);
+            blobFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of bit entries.
          if (columnType.indexOf("BIT") != -1)
          {
-            String currentIndex = columnsCount + 1 + "";
-            bitFieldIndexes.add(currentIndex);
+            bitFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of TimeStamp Fields.
          if (columnType.indexOf("TIMESTAMP") != -1)
          {
-            String currentIndex = columnsCount + 1 + "";
-            timeStampIndexes.add(currentIndex);
+            timeStampIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of Oracle TimeStamp(TZ) Fields.
          if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
              (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")))
          {
-            String currentIndex = columnsCount + 1 + "";
-            oracleTimeStamp_TZIndexes.add(currentIndex);
+            oracleTimeStamp_TZIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of Oracle TimeStamp(TZ) Fields.
          if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
              columnType.equals("TIMESTAMPLTZ"))
          {
-            String currentIndex = columnsCount + 1 + "";
-            oracleTimeStamp_LTZIndexes.add(currentIndex);
+            oracleTimeStamp_LTZIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of date entries.
          if (columnType.equals("DATE"))
          {
-            String currentIndex = columnsCount + 1 + "";
-            dateIndexes.add(currentIndex);
+            dateIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of year entries.
          if (columnType.indexOf("YEAR") != -1)
          {
-            String currentIndex = columnsCount + 1 + "";
-            yearIndexes.add(currentIndex);
+            yearIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of array entries.
          if (columnType.indexOf("_") != -1)
          {
-            String currentIndex = columnsCount + 1 + "";
-            arrayIndexes.add(currentIndex);
+            arrayIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Modify Statement as needed for Oracle TIMESTAMPLTZ Fields.
@@ -946,7 +941,7 @@ class SQLDataDumpThread implements Runnable
       Iterator columnNamesIterator;
       String field, columnClass, columnType;
       
-      Vector keys;
+      Vector<String> keys;
       StringBuffer keyStringStatement;
       int rowsCount, currentRow;
 
@@ -956,7 +951,7 @@ class SQLDataDumpThread implements Runnable
 
       // Setting up for possible update dump.
 
-      keys = new Vector();
+      keys = new Vector <String>();
       updateDump = false;
       keyStringStatement = new StringBuffer();
       keyStringStatement.append(" WHERE ");
@@ -992,7 +987,7 @@ class SQLDataDumpThread implements Runnable
          field = (String) columnNamesIterator.next();
 
          if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
-             && ((String) tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
+             && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
          {
             columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
                                   + dbIdentifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
@@ -1045,20 +1040,20 @@ class SQLDataDumpThread implements Runnable
             while (columnNamesIterator.hasNext())
             {
                field = (String) columnNamesIterator.next();
-               columnClass = (String) tableColumnClassHashMap.get(field);
-               columnType = (String) tableColumnTypeHashMap.get(field);
+               columnClass = tableColumnClassHashMap.get(field);
+               columnType = tableColumnTypeHashMap.get(field);
                // System.out.println("field:" + field + " class:" + columnClass
                // + " type:" + columnType);
 
                // Setting up WHERE Statement for Update Dump.
                if (keys.contains(tableColumnNames.get(field)) && updateDump)
                {
-                  keyStringStatement.append(identifierQuoteString + ((String) tableColumnNames.get(field)) 
+                  keyStringStatement.append(identifierQuoteString + tableColumnNames.get(field) 
                                             + identifierQuoteString + "=");
 
-                  if (rs.getString((String) tableColumnNames.get(field)) != null)
+                  if (rs.getString(tableColumnNames.get(field)) != null)
                   {
-                     keyStringStatement.append("'" + rs.getString((String) tableColumnNames.get(field)) 
+                     keyStringStatement.append("'" + rs.getString(tableColumnNames.get(field)) 
                                                + "' AND ");
                   }
                   else
@@ -1067,7 +1062,7 @@ class SQLDataDumpThread implements Runnable
                else
                {
                   dumpData = dumpData + identifierQuoteString 
-                             + ((String) tableColumnNames.get(field))
+                             + (tableColumnNames.get(field))
                              + identifierQuoteString + "=";
 
                   // Blob/Bytea/Binary data adding
@@ -1076,7 +1071,7 @@ class SQLDataDumpThread implements Runnable
                       (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
                       (columnType.indexOf("RAW") != -1))
                   {
-                     byte[] theBytes = rs.getBytes((String) tableColumnNames.get(field));
+                     byte[] theBytes = rs.getBytes(tableColumnNames.get(field));
 
                      if (theBytes != null)
                      {
@@ -1147,9 +1142,9 @@ class SQLDataDumpThread implements Runnable
                               MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
                               !sqlDataExportOptions.getTimeStamp())
                      {
-                        if (rs.getTimestamp((String) tableColumnNames.get(field)) != null)
+                        if (rs.getTimestamp(tableColumnNames.get(field)) != null)
                         {
-                           Object currentData = rs.getTimestamp((String) tableColumnNames.get(field));
+                           Object currentData = rs.getTimestamp(tableColumnNames.get(field));
                            dumpData = dumpData + "TO_TIMESTAMP('" + currentData
                                       + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
                         }
@@ -1160,15 +1155,15 @@ class SQLDataDumpThread implements Runnable
                      // Setting Date Fields
                      else if (columnType.equals("DATE"))
                      {
-                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        if (rs.getString(tableColumnNames.get(field)) != null)
                         {
                            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                               dumpData = dumpData + "TO_DATE('"
-                                         + rs.getDate((String) tableColumnNames.get(field))
+                                         + rs.getDate(tableColumnNames.get(field))
                                          + "', 'YYYY-MM-DD'), ";
                            else
                               dumpData = dumpData + "'"
-                                         + addEscapes(rs.getString((String) tableColumnNames.get(field)))
+                                         + addEscapes(rs.getString(tableColumnNames.get(field)))
                                          + "', ";
                         }
                         else
@@ -1181,16 +1176,16 @@ class SQLDataDumpThread implements Runnable
                      // mysql console.
                      else if (columnType.equals("YEAR"))
                      {
-                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        if (rs.getString(tableColumnNames.get(field)) != null)
                         {
-                           if (rs.getString((String) tableColumnNames.get(field)).length() > 4)
+                           if (rs.getString(tableColumnNames.get(field)).length() > 4)
                               dumpData = dumpData
                                          + "'"
-                                         + addEscapes(rs.getString((String) tableColumnNames.get(field))
+                                         + addEscapes(rs.getString(tableColumnNames.get(field))
                                                .substring(0, 4)) + "', ";
                            else
                               dumpData = dumpData + "'"
-                                         + addEscapes(rs.getString((String) tableColumnNames.get(field)))
+                                         + addEscapes(rs.getString(tableColumnNames.get(field)))
                                          + "', ";
                         }
                         else
@@ -1200,16 +1195,16 @@ class SQLDataDumpThread implements Runnable
                      // Setting Bit Fields
                      else if (columnType.indexOf("BIT") != -1)
                      {
-                        if (rs.getString((String) tableColumnNames.get(field)) != null)
+                        if (rs.getString(tableColumnNames.get(field)) != null)
                         {
                            if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
                            {
                               if (columnType.indexOf("_") != -1)
                                  dumpData = dumpData + "'"
-                                            + rs.getString((String) tableColumnNames.get(field)) + "', ";
+                                            + rs.getString(tableColumnNames.get(field)) + "', ";
                               else
                                  dumpData = dumpData + "B'"
-                                            + rs.getString((String) tableColumnNames.get(field)) + "', ";
+                                            + rs.getString(tableColumnNames.get(field)) + "', ";
                            }
                            else
                            {
@@ -1218,7 +1213,7 @@ class SQLDataDumpThread implements Runnable
                                  dumpData = dumpData
                                             + "B'"
                                             + Integer.toBinaryString(Integer.parseInt(rs
-                                                  .getString((String) tableColumnNames.get(field)))) + "', ";
+                                                  .getString(tableColumnNames.get(field)))) + "', ";
                               }
                               catch (NumberFormatException e)
                               {
@@ -1239,7 +1234,7 @@ class SQLDataDumpThread implements Runnable
                         // but what the hell maybe someone will use to export
                         // from Oracle to import into a MySQL database.
 
-                        String contentString = rs.getString((String) tableColumnNames.get(field));
+                        String contentString = rs.getString(tableColumnNames.get(field));
 
                         if (contentString != null)
                         {
