@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.3 02/18/2010
+// Version 1.4 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 //         1.1 MyJSQLView Project Common Source Code Formatting.
 //         1.2 Header Format Changes/Update.
 //         1.3 Changed Package to Reflect Dandy Made Productions Code.
+//         1.4 Organized Imports.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -41,7 +42,10 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  *    This class provides a thread to operate in the background to
@@ -49,7 +53,7 @@ import java.sql.*;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.3 02/18/2010
+ * @version 1.4 05/18/2010
  */
 
 class TableClearingThread implements Runnable
