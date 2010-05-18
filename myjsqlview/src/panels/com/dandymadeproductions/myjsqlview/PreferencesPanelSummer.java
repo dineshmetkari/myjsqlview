@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.7 02/18/2010
+// Version 2.8 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,8 @@
 //         2.6 10/25/2009 Obtained Constructor Instance fileSeparator From MyJSQLView_Utils
 //                        Class.
 //         2.7 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.8 05/18/2010 Parameterized Class Instance fireFlies to Bring Code Into
+//                        Compliance With Java 5.0 API. Organized Imports.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -67,10 +69,16 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Random;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  * The PreferencesPanelSummer class provides a generic panel used in the
@@ -92,7 +100,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
    private static final int fireFlyColors = 6;
    private transient Image[] fireFlyImages = new Image[fireFlyColors];
    private int fireFlyImageWidth, fireFlyImageHeight;
-   private Vector fireFlies;
+   private Vector<FireFly> fireFlies;
 
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -131,7 +139,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          fireFlyImages[i] = new ImageIcon("images" + fileSeparator + fireFlyImageName[i]).getImage();
       fireFlyImageWidth = fireFlyImages[0].getWidth(null);
       fireFlyImageHeight = fireFlyImages[0].getHeight(null);
-      fireFlies = new Vector();
+      fireFlies = new Vector <FireFly>();
 
       // Run the panel's thread.
       runThread = true;
@@ -206,7 +214,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < fireFlies.size(); i++)
          {
-            Rectangle testSpaceOccupied = ((FireFly) (fireFlies.elementAt(i))).getSpaceOccupied();
+            Rectangle testSpaceOccupied = (fireFlies.elementAt(i)).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -231,7 +239,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         currentFireFly = (FireFly) fireFlies.elementAt(i);
+         currentFireFly = fireFlies.elementAt(i);
          currentFireFly.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -240,9 +248,8 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          if (fireFlyOccupiedIndex >= 0)
          {
             tempSwapPoint = currentFireFly.getNextPosition();
-            currentFireFly.setNextPosition(((FireFly) fireFlies.elementAt(fireFlyOccupiedIndex))
-                  .getNextPosition());
-            ((FireFly) fireFlies.elementAt(fireFlyOccupiedIndex)).setNextPosition(tempSwapPoint);
+            currentFireFly.setNextPosition((fireFlies.elementAt(fireFlyOccupiedIndex)).getNextPosition());
+            (fireFlies.elementAt(fireFlyOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -262,7 +269,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // firefly.
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         currentFireFly = (FireFly) fireFlies.elementAt(i);
+         currentFireFly = fireFlies.elementAt(i);
 
          // Don't need to check itself.
          if (currentFireFly == testFireFly)
@@ -387,8 +394,9 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // Draw Fireflies
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         g.drawImage(((FireFly) fireFlies.elementAt(i)).getImage(), ((FireFly) fireFlies.elementAt(i))
-               .getSpaceOccupied().x, ((FireFly) fireFlies.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((fireFlies.elementAt(i)).getImage(),
+                     (fireFlies.elementAt(i)).getSpaceOccupied().x,
+                     (fireFlies.elementAt(i)).getSpaceOccupied().y, this);
       }
    }
 
