@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.1 02/18/2010
+// Version 2.2 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,8 @@
 //         2.0 10/25/2009 Obtained Constructor Instance fileSeparator From MyJSQLView_Utils
 //                        Class.
 //         2.1 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.2 05/18/2010 Parameterized Class Instance snowFlakes to Bring Code Into
+//                        Compliance With Java 5.0 API. Organized Imports.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,10 +61,16 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
-import java.util.*;
-import javax.swing.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.util.Random;
+import java.util.Vector;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelWinter class provides a generic panel used
@@ -70,7 +78,7 @@ import javax.swing.*;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.1 02/18/2010
+ * @version 2.2 05/18/2010
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable
@@ -84,7 +92,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
 
    private transient Image snowFlakeImage;
    private int snowFlakeImageWidth, snowFlakeImageHeight;
-   private Vector snowFlakes;
+   private Vector<SnowFlake> snowFlakes;
    
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -123,7 +131,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       snowFlakeImageWidth = snowFlakeImage.getWidth(null);
       snowFlakeImageHeight = snowFlakeImage.getHeight(null);
       
-      snowFlakes = new Vector();
+      snowFlakes = new Vector <SnowFlake>();
 
       // Run the panel's thread.
       runThread = true;
@@ -199,7 +207,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < snowFlakes.size(); i++)
          {
-            Rectangle testSpaceOccupied = ((SnowFlake) (snowFlakes.elementAt(i))).getSpaceOccupied();
+            Rectangle testSpaceOccupied = ((snowFlakes.elementAt(i))).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -224,7 +232,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         currentSnowFlake = (SnowFlake) snowFlakes.elementAt(i);
+         currentSnowFlake = snowFlakes.elementAt(i);
          currentSnowFlake.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -234,8 +242,8 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
          {
             tempSwapPoint = currentSnowFlake.getNextPosition();
             currentSnowFlake.setNextPosition(
-               ((SnowFlake) snowFlakes.elementAt(snowFlakeOccupiedIndex)).getNextPosition());
-            ((SnowFlake) snowFlakes.elementAt(snowFlakeOccupiedIndex)).setNextPosition(tempSwapPoint);
+               (snowFlakes.elementAt(snowFlakeOccupiedIndex)).getNextPosition());
+            (snowFlakes.elementAt(snowFlakeOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -255,7 +263,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // snowflake.
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         currentSnowFlake = (SnowFlake) snowFlakes.elementAt(i);
+         currentSnowFlake = snowFlakes.elementAt(i);
 
          // Don't need to check itself.
          if (currentSnowFlake == testSnowFlake)
@@ -382,9 +390,9 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // Draw SnowFlakes
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         g.drawImage(((SnowFlake) snowFlakes.elementAt(i)).getImage(),
-                     ((SnowFlake) snowFlakes.elementAt(i)).getSpaceOccupied().x,
-                     ((SnowFlake) snowFlakes.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((snowFlakes.elementAt(i)).getImage(),
+                     (snowFlakes.elementAt(i)).getSpaceOccupied().x,
+                     (snowFlakes.elementAt(i)).getSpaceOccupied().y, this);
       }
    }
 
