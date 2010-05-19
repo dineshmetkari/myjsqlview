@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.1 03/08/2010
+// Version 3.2 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,8 @@
 //         3.0 Changed Package to Reflect Dandy Made Productions Code.
 //         3.1 Implementation of Internationalization via Class Instance resourceBundle.
 //             Argument Added to Constructor and Constructor Instance resource.
+//         3.2 Class Methods actionPerformed() & loadRowSize() Instance rowSizeSpinner
+//             Assigned via Integer.valueOf() Instead of new Integer().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +86,7 @@ import javax.swing.event.ChangeListener;
  * in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 3.1 03/08/2010
+ * @version 3.2 05/18/2010
  */
 
 class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -200,7 +202,7 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
          // Restore Defaults Button Action
          if (panelSource == restoreDefaultsButton)
          {
-            rowSizeSpinner.setValue(new Integer(defaultRowSize));
+            rowSizeSpinner.setValue(Integer.valueOf(defaultRowSize));
             applyButton.setEnabled(true);
          }
 
@@ -261,7 +263,7 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
       else
          rowSize = defaultRowSize;
       
-      rowSizeSpinner.setValue(new Integer(rowSize));
+      rowSizeSpinner.setValue(Integer.valueOf(rowSize));
    }
 
    //==============================================================
