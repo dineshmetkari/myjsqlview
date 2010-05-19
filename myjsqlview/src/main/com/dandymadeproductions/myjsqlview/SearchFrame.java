@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.9 05/17/2018
+// Version 3.0 05/18/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,8 @@
 //         2.8 Parameterized Instance tableHeadings in Constructor to Bring Code
 //             Into Compliance With Java 5.0 API.
 //         2.9 Parameterized Method Instance databaseTables in actionPerformed(().
+//         3.0 Constructor Changed the Assignment of defaultTableData From new
+//             Integer to Integer.valueOf().
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -104,7 +106,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.9 05/17/2010
+ * @version 3.0 05/18/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -271,7 +273,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       while (tableNamesIterator.hasNext())
       {
          defaultTableData[i][0] = "   " + tableNamesIterator.next();
-         defaultTableData[i++][1] = new Integer(0);
+         defaultTableData[i++][1] = Integer.valueOf(0);
       }
       tableModel = new MyJSQLView_TableModel(tableHeadings, defaultTableData);
 
