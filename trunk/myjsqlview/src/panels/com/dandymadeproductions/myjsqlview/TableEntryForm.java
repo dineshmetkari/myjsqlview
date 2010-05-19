@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.69 04/06/2010
+// Version 8.70 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -300,6 +300,9 @@
 //                        Oracle Only, to the Place it is Being Used for Key Processing in the
 //                        addUpdateTableEntry() Method. Consolidated There For Later Date Processing
 //                        Modification. User Controls the Date Format Displayed.
+//        8.70 05/19/2010 Parameterized All HashMap and Vector Instances in Order to Bring Code
+//                        Into Compliance With Java 5.0 API. Reviewed All Assignments to These
+//                        Objects to Insure Proper Configuration.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -307,7 +310,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-
+import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -334,7 +337,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.69 04/06/2010
+ * @version 8.70 05/19/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -344,23 +347,30 @@ class TableEntryForm extends JFrame implements ActionListener
 
    private int selectedRow;
    private TableTabPanel selectedTableTabPanel;
-   private HashMap fieldHashMap, columnNamesHashMap;
-   private HashMap columnClassHashMap, columnTypeHashMap;
-   private HashMap columnSizeHashMap, columnEnumHashMap;
-   private HashMap blobBytesHashMap, blobRemoveCheckBoxesHashMap;
-   private HashMap calendarButtonHashMap, setButtonHashMap, functionButtonHashMap;
-   private HashMap setFieldsHashMap, functionsHashMap;
+   private HashMap<String, JComponent> fieldHashMap;
+   private HashMap<String, String> columnNamesHashMap;
+   private HashMap<String, String> columnClassHashMap;
+   private HashMap<String, String> columnTypeHashMap;
+   private HashMap<String, Integer> columnSizeHashMap;
+   private HashMap<String, String> columnEnumHashMap;
+   private HashMap<JButton, Object> blobBytesHashMap;
+   private HashMap<String, JCheckBox> blobRemoveCheckBoxesHashMap;
+   private HashMap<JButton, String> calendarButtonHashMap;
+   private HashMap<JButton, String> setButtonHashMap;
+   private HashMap<JButton, String> functionButtonHashMap;
+   private HashMap<Object, Vector> setFieldsHashMap;
+   private HashMap<Object, String> functionsHashMap;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private String sqlTable;
    private String iconsDirectory;
    private String identifierQuoteString;
    private String resourceInvalidInput, resourceType, resourceAlert;
-   private Vector primaryKeys;
-   private HashMap autoIncrementHashMap;
-   private Vector formFields;
+   private Vector<String> primaryKeys;
+   private HashMap<String, String> autoIncrementHashMap;
+   private Vector<String> formFields;
    private TableViewForm tableViewForm;
-   private Vector componentFocusSequence;;
+   private Vector<Component> componentFocusSequence;;
    private JCheckBox limitCheckBox;
    private JTextField limitTextField;
    private boolean addItem;
@@ -376,12 +386,15 @@ class TableEntryForm extends JFrame implements ActionListener
    //==============================================================
 
    protected TableEntryForm(String title, boolean addItem, String sqlTable, int selectedRow,
-                            TableTabPanel selectedTableTabPanel, Vector primaryKeys,
-                            HashMap autoIncrementHashMap, Object id, Vector formFields,
-                            TableViewForm tableViewForm, HashMap columnNamesHashMap,
-                            HashMap columnClassHashMap, HashMap columnTypeHashMap,
-                            HashMap columnSizeHashMap, HashMap columnEnumHashMap,
-                            HashMap columnSetHashMap)
+                            TableTabPanel selectedTableTabPanel, Vector<String> primaryKeys,
+                            HashMap<String, String> autoIncrementHashMap, Object id,
+                            Vector<String> formFields, TableViewForm tableViewForm,
+                            HashMap<String, String> columnNamesHashMap,
+                            HashMap<String, String> columnClassHashMap,
+                            HashMap<String, String> columnTypeHashMap,
+                            HashMap<String, Integer> columnSizeHashMap,
+                            HashMap<String, String> columnEnumHashMap,
+                            HashMap<String, String> columnSetHashMap)
    {
       this.sqlTable = sqlTable;
       this.selectedRow = selectedRow;
@@ -409,15 +422,15 @@ class TableEntryForm extends JFrame implements ActionListener
       String columnName, columnClass, columnType;
       Object currentField;
 
-      fieldHashMap = new HashMap();
-      blobBytesHashMap = new HashMap();
-      blobRemoveCheckBoxesHashMap = new HashMap();
-      calendarButtonHashMap = new HashMap();
-      setButtonHashMap = new HashMap();
-      functionButtonHashMap = new HashMap();
-      setFieldsHashMap = new HashMap();
-      functionsHashMap = new HashMap();
-      componentFocusSequence = new Vector();
+      fieldHashMap = new HashMap <String, JComponent>();
+      blobBytesHashMap = new HashMap <JButton, Object>();
+      blobRemoveCheckBoxesHashMap = new HashMap <String, JCheckBox>();
+      calendarButtonHashMap = new HashMap <JButton, String>();
+      setButtonHashMap = new HashMap <JButton, String>();
+      functionButtonHashMap = new HashMap <JButton, String>();
+      setFieldsHashMap = new HashMap <Object, Vector>();
+      functionsHashMap = new HashMap <Object, String>();
+      componentFocusSequence = new Vector <Component>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
 
       // Setting up a icons directory identifier quote character,
@@ -509,7 +522,7 @@ class TableEntryForm extends JFrame implements ActionListener
          currentField = new JButton(functionIcon);
          ((JButton) currentField).setBounds(x + 120, y, 20, 20);
          ((JButton) currentField).addActionListener(this);
-         functionButtonHashMap.put(currentField, columnName);
+         functionButtonHashMap.put((JButton) currentField, columnName);
          formPanel.add((JButton) currentField);
 
          // ===============================
@@ -541,7 +554,7 @@ class TableEntryForm extends JFrame implements ActionListener
             currentField = new JButton(setIcon);
             ((JButton) currentField).setBounds(x + 345, y, 20, 20);
             ((JButton) currentField).addActionListener(this);
-            setButtonHashMap.put(currentField, columnName);
+            setButtonHashMap.put((JButton) currentField, columnName);
             formPanel.add((JButton) currentField);
 
             currentField = new JTextField();
@@ -588,7 +601,7 @@ class TableEntryForm extends JFrame implements ActionListener
                currentField = new JCheckBox(removeUpIcon, false);
                ((JCheckBox) currentField).setSelectedIcon(removeDownIcon);
                ((JCheckBox) currentField).setBounds(x + 345, y, 20, 20);
-               blobRemoveCheckBoxesHashMap.put(columnName, currentField);
+               blobRemoveCheckBoxesHashMap.put(columnName, (JCheckBox) currentField);
                formPanel.add((JCheckBox) currentField);
             }
 
@@ -616,7 +629,7 @@ class TableEntryForm extends JFrame implements ActionListener
                currentField = new JCheckBox(removeUpIcon, false);
                ((JCheckBox) currentField).setSelectedIcon(removeDownIcon);
                ((JCheckBox) currentField).setBounds(x + 345, y, 20, 20);
-               blobRemoveCheckBoxesHashMap.put(columnName, currentField);
+               blobRemoveCheckBoxesHashMap.put(columnName, (JCheckBox) currentField);
                formPanel.add((JCheckBox) currentField);
             }
 
@@ -642,7 +655,7 @@ class TableEntryForm extends JFrame implements ActionListener
                currentField = new JCheckBox(removeUpIcon, false);
                ((JCheckBox) currentField).setSelectedIcon(removeDownIcon);
                ((JCheckBox) currentField).setBounds(x + 345, y, 20, 20);
-               blobRemoveCheckBoxesHashMap.put(columnName, currentField);
+               blobRemoveCheckBoxesHashMap.put(columnName, (JCheckBox) currentField);
                formPanel.add((JCheckBox) currentField);
             }
 
@@ -678,7 +691,7 @@ class TableEntryForm extends JFrame implements ActionListener
                currentField = new JButton(calendarIcon);
                ((JButton) currentField).setBounds(x + 345, y, 20, 20);
                ((JButton) currentField).addActionListener(this);
-               calendarButtonHashMap.put(currentField, columnName);
+               calendarButtonHashMap.put((JButton) currentField, columnName);
                formPanel.add((JButton) currentField);
             }
 
@@ -693,7 +706,7 @@ class TableEntryForm extends JFrame implements ActionListener
          }
 
          // Build a list and moving to next object's position.
-         fieldHashMap.put(columnName, currentField);
+         fieldHashMap.put(columnName, (JComponent) currentField);
          if (y > (((formFields.size() + 1) / 2) * 28) - 20)
          {
             x = 395;
@@ -815,16 +828,16 @@ class TableEntryForm extends JFrame implements ActionListener
          if (functionButtonHashMap.containsKey((JButton) formSource))
          {
             // Collect the function operator.
-            Object columnName = functionButtonHashMap.get((JButton) formSource);
+            String columnName = functionButtonHashMap.get((JButton) formSource);
 
             // 2.76 Blob Function Warning.
-            if ((((String) columnClassHashMap.get(columnName)).indexOf("String") == -1 && ((String) columnTypeHashMap
+            if (((columnClassHashMap.get(columnName)).indexOf("String") == -1 && (columnTypeHashMap
                   .get(columnName)).indexOf("BLOB") != -1)
-                || (((String) columnClassHashMap.get(columnName)).indexOf("BLOB") != -1 && ((String) columnTypeHashMap
+                || ((columnClassHashMap.get(columnName)).indexOf("BLOB") != -1 && (columnTypeHashMap
                       .get(columnName)).indexOf("BLOB") != -1)
-                || (((String) columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
-                || (((String) columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
-                || (((String) columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
+                || ((columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
+                || ((columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
+                || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
             {
                String resource, message;
 
@@ -922,7 +935,7 @@ class TableEntryForm extends JFrame implements ActionListener
          {
             // Collect the info needed to pass to the DateFieldCalendar class.
             Object columnName = calendarButtonHashMap.get((JButton) formSource);
-            String columnType = (String) columnTypeHashMap.get(columnName);
+            String columnType = columnTypeHashMap.get(columnName);
 
             // Date selection frame.
             dateCalendar = new DateFieldCalendar(this, columnName, columnType);
@@ -939,7 +952,7 @@ class TableEntryForm extends JFrame implements ActionListener
             Object columnName = setButtonHashMap.get((JButton) formSource);
 
             // Set list selection frame.
-            setDialog = new SetListDialog(this, columnName, (Vector) setFieldsHashMap.get(columnName));
+            setDialog = new SetListDialog(this, columnName, setFieldsHashMap.get(columnName));
             setDialog.setSize(new Dimension(325, 200));
             setDialog.center();
             setDialog.setVisible(true);
@@ -1170,9 +1183,9 @@ class TableEntryForm extends JFrame implements ActionListener
                // and easier.
 
                columnName = (String) columnNamesIterator.next();
-               columnClass = (String) columnClassHashMap.get(columnName);
-               columnType = (String) columnTypeHashMap.get(columnName);
-               columnSize = ((Integer) columnSizeHashMap.get(columnName)).intValue();
+               columnClass = columnClassHashMap.get(columnName);
+               columnType = columnTypeHashMap.get(columnName);
+               columnSize = (columnSizeHashMap.get(columnName)).intValue();
                isTextField = (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                               && columnSize > 255)
                               || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
@@ -1337,8 +1350,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            // Finally check to see if its an update and if so
                            // then is
                            // data to be updated or removed.
-                           JCheckBox currentRemoveBlobCheckBox = (JCheckBox) blobRemoveCheckBoxesHashMap
-                                 .get(columnName);
+                           JCheckBox currentRemoveBlobCheckBox = blobRemoveCheckBoxesHashMap.get(columnName);
                            if (currentRemoveBlobCheckBox != null)
                            {
                               if (currentRemoveBlobCheckBox.isSelected())
@@ -1398,9 +1410,9 @@ class TableEntryForm extends JFrame implements ActionListener
                // and easier.
 
                columnName = (String) columnNamesIterator.next();
-               columnClass = (String) columnClassHashMap.get(columnName);
-               columnType = (String) columnTypeHashMap.get(columnName);
-               columnSize = ((Integer) columnSizeHashMap.get(columnName)).intValue();
+               columnClass = columnClassHashMap.get(columnName);
+               columnType = columnTypeHashMap.get(columnName);
+               columnSize = (columnSizeHashMap.get(columnName)).intValue();
                isTextField = (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") && columnSize > 255)
                              || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
                              || (columnType.indexOf("CLOB") != -1);
@@ -1529,8 +1541,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            // Finally check to see if its an update and if so
                            // then is
                            // data to be updated or removed.
-                           JCheckBox currentRemoveBlobCheckBox = (JCheckBox) blobRemoveCheckBoxesHashMap
-                                 .get(columnName);
+                           JCheckBox currentRemoveBlobCheckBox = blobRemoveCheckBoxesHashMap.get(columnName);
                            if (currentRemoveBlobCheckBox != null)
                            {
                               if (currentRemoveBlobCheckBox.isSelected())
@@ -1590,7 +1601,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                for (int i = 0; i < selectedTableTabPanel.getListTable().getColumnCount(); i++)
                {
-                  currentDB_ColumnName = (String) columnNamesHashMap.get(selectedTableTabPanel.getListTable()
+                  currentDB_ColumnName = columnNamesHashMap.get(selectedTableTabPanel.getListTable()
                         .getColumnName(i));
                   if (currentDB_ColumnName.equals(currentKey_ColumnName))
                      keyColumn = i;
@@ -1612,12 +1623,12 @@ class TableEntryForm extends JFrame implements ActionListener
                else
                {
                   // Escape single quotes.
-                  columnClass = (String) columnClassHashMap.get(selectedTableTabPanel
+                  columnClass = columnClassHashMap.get(selectedTableTabPanel
                         .parseColumnNameField(currentKey_ColumnName));
                   if (columnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
-                  columnType = (String) columnTypeHashMap.get(selectedTableTabPanel
+                  columnType = columnTypeHashMap.get(selectedTableTabPanel
                         .parseColumnNameField(currentKey_ColumnName));
                   if (columnType.indexOf("DATE") != -1)
                   {
@@ -1692,9 +1703,9 @@ class TableEntryForm extends JFrame implements ActionListener
             // and easier.
 
             columnName = (String) columnNamesIterator.next();
-            columnClass = (String) columnClassHashMap.get(columnName);
-            columnType = (String) columnTypeHashMap.get(columnName);
-            columnSize = ((Integer) columnSizeHashMap.get(columnName)).intValue();
+            columnClass = columnClassHashMap.get(columnName);
+            columnType = columnTypeHashMap.get(columnName);
+            columnSize = (columnSizeHashMap.get(columnName)).intValue();
             isTextField = (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") && columnSize > 255)
                           || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
                           || (columnType.indexOf("CLOB") != -1);
@@ -1997,8 +2008,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      // Finally check to see if its an update and if so then is
                      // data to be updated or removed.
-                     JCheckBox currentRemoveBlobCheckBox = (JCheckBox) blobRemoveCheckBoxesHashMap
-                           .get(columnName);
+                     JCheckBox currentRemoveBlobCheckBox = blobRemoveCheckBoxesHashMap.get(columnName);
                      if (currentRemoveBlobCheckBox != null)
                      {
                         if (currentRemoveBlobCheckBox.isSelected())
@@ -2098,7 +2108,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      // Finally check to see if its an update and if so then is
                      // data to be updated or removed.
-                     JCheckBox currentRemoveBlobCheckBox = (JCheckBox) blobRemoveCheckBoxesHashMap
+                     JCheckBox currentRemoveBlobCheckBox = blobRemoveCheckBoxesHashMap
                            .get(columnName);
                      if (currentRemoveBlobCheckBox != null)
                      {
@@ -2174,7 +2184,7 @@ class TableEntryForm extends JFrame implements ActionListener
       File functionsFile;
       FileReader fileReader;
       BufferedReader bufferedReader;
-      Vector functions;
+      Vector<String> functions;
 
       InputDialog functionSelectDialog;
       JComboBox functionsComboBox;
@@ -2230,7 +2240,7 @@ class TableEntryForm extends JFrame implements ActionListener
          fileReader = new FileReader(myjsqlviewFunctionsFileString);
          bufferedReader = new BufferedReader(fileReader);
 
-         functions = new Vector();
+         functions = new Vector <String>();
 
          while ((currentFunction = bufferedReader.readLine()) != null)
             functions.addElement(currentFunction);
@@ -2288,7 +2298,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // removes function operator.
       if (functionSelectDialog.isActionResult())
       {
-         functionsHashMap.put(columnName, functionsComboBox.getSelectedItem());
+         functionsHashMap.put(columnName, (String) functionsComboBox.getSelectedItem());
          // System.out.println(columnName + " " +
          // functionsComboBox.getSelectedItem());
       }
@@ -2315,12 +2325,12 @@ class TableEntryForm extends JFrame implements ActionListener
       // Get correct form data, TEXT, Blob, or Normal entry.
       // Take into account a possible no argument for the function.
 
-      if ((((String) columnClassHashMap.get(columnName)).indexOf("String") != -1
-           && !((String) columnTypeHashMap.get(columnName)).equals("CHAR") && (((Integer) columnSizeHashMap
-            .get(columnName)).intValue() > 255))
-          || (((String) columnClassHashMap.get(columnName)).indexOf("String") != -1 && ((String) columnTypeHashMap
+      if (((columnClassHashMap.get(columnName)).indexOf("String") != -1
+           && !(columnTypeHashMap.get(columnName)).equals("CHAR")
+           && ((columnSizeHashMap.get(columnName)).intValue() > 255))
+          || ((columnClassHashMap.get(columnName)).indexOf("String") != -1 && (columnTypeHashMap
                 .get(columnName)).equals("LONG"))
-          || (((String) columnTypeHashMap.get(columnName)).indexOf("CLOB") != -1))
+          || ((columnTypeHashMap.get(columnName)).indexOf("CLOB") != -1))
       {
          if (getFormFieldText(columnName) == null || getFormFieldText(columnName).length() == 0)
             sqlStatementString.append("(), ");
@@ -2333,13 +2343,13 @@ class TableEntryForm extends JFrame implements ActionListener
       // of characters, but what operation would be performed? The current 1.4
       // API
       // kept here just returns a pointer to the object. Broken.
-      else if ((((String) columnClassHashMap.get(columnName)).indexOf("String") == -1 && ((String) columnTypeHashMap
+      else if (((columnClassHashMap.get(columnName)).indexOf("String") == -1 && (columnTypeHashMap
             .get(columnName)).indexOf("BLOB") != -1)
-               || (((String) columnClassHashMap.get(columnName)).indexOf("BLOB") != -1 && ((String) columnTypeHashMap
+               || ((columnClassHashMap.get(columnName)).indexOf("BLOB") != -1 && (columnTypeHashMap
                      .get(columnName)).indexOf("BLOB") != -1)
-               || (((String) columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
-               || (((String) columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
-               || (((String) columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
+               || ((columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
+               || ((columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
+               || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
       {
          if (getFormField(columnName) == null || getFormFieldBlob(columnName).length == 0)
             sqlStatementString.append("(), ");
@@ -2513,8 +2523,8 @@ class TableEntryForm extends JFrame implements ActionListener
 
       if (fieldHashMap.get(columnName) != null)
       {
-         columnClass = (String) columnClassHashMap.get(columnName);
-         columnType = ((String) columnTypeHashMap.get(columnName));
+         columnClass = columnClassHashMap.get(columnName);
+         columnType = columnTypeHashMap.get(columnName);
 
          // Blob/Bytea Button
          if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
@@ -2525,7 +2535,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
          // Text Button
          else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
-                   && ((Integer) columnSizeHashMap.get(columnName)).intValue() > 255)
+                   && (columnSizeHashMap.get(columnName)).intValue() > 255)
                   || (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
             ((JButton) fieldHashMap.get(columnName)).setText((String) content);
 
@@ -2603,13 +2613,14 @@ class TableEntryForm extends JFrame implements ActionListener
    // type fields and fill a vector with the complete set contents.
    //==============================================================
 
-   protected void setSetFields(Object columnName, Vector content, Object data)
+   protected void setSetFields(Object columnName, Vector<String> content, Object data)
    {
-      Vector setFields = new Vector();
+      // Method Instances.
+      Vector<String> setFields = new Vector <String>();
       Iterator contentsIterator = content.iterator();
 
       while (contentsIterator.hasNext())
-         setFields.add(contentsIterator.next());
+         setFields.add((String) contentsIterator.next());
       setFieldsHashMap.put(columnName, setFields);
 
       if (data != null)
