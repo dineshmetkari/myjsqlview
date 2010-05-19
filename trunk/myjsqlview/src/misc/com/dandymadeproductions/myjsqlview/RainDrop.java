@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.5 02/18/2010
+// Version 1.6 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.3 Additional Standardation to Comments.
 //         1.4 Updated Header Information.
 //         1.5 Changed Package to Reflect Dandy Made Productions Code.
+//         1.6 Organized Imports.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -44,7 +45,10 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  *    The RainDrop class provides the characteristics of a rain drop
@@ -52,7 +56,7 @@ import java.awt.*;
  * panel winter.
  * 
  * @author Dana M. Proctor
- * @version 1.5 02/18/2010
+ * @version 1.6 05/18/2010
  */
 
 class RainDrop extends Sprite

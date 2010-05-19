@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.9 02/18/2010
+// Version 2.0 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //         1.7 Additional Standardation to Comments.
 //         1.8 Updated Header Information.
 //         1.9 Changed Package to Reflect Dandy Made Productions Code.
+//         2.0 Organized Imports.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -51,14 +52,17 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * The FireFly class provides the characteristics of a firefly object
  * that is used in the preferences frame, Preferences panel summer.
  * 
  * @author Dana M. Proctor
- * @version 1.9 02/18/2010
+ * @version 2.0 05/18/2010
  */
 
 class FireFly extends Sprite
