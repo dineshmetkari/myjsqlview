@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.56 05/17/2010
+// Version 4.57 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,12 +121,15 @@
 //        4.50 Class Method createAdvancedSortSearchFrame() Added Instance columnTypeHashMap
 //             to AdvancedSortSeaarchForm Creation.
 //        4.51 Added Class Instances lob_sqlTableFieldsString & lobDataTypesHashMap.
-//        4.52 Moved Actions in displayMyDateString() Method to MyJSQLView_Utils Class.
+//        4.52 Moved Actions in displayMyDateString() Method to MyJSQLView_Utils
+//             Class.
 //        4.53 Made Class public to Allow Plugin Classes Access.
 //        4.54 Added Class Instance serialVersionUID.
-//        4.55 Parameterized All Vector, & HashMap Types to Bring Code Into Compliance With
-//             Java 5.0 API.
-//        4.56 Minor Comment Changes and the Removal of Unecessary Casts for HashMap Types.
+//        4.55 Parameterized All Vector, & HashMap Types to Bring Code Into
+//             Compliance With Java 5.0 API.
+//        4.56 Minor Comment Changes and the Removal of Unecessary Casts for
+//             HashMap Types.
+//        4.57 Minor Format Changes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -159,7 +162,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.56 05/17/2010
+ * @version 4.57 05/19/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -223,7 +226,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected HashMap<String, String> columnClassHashMap;
    protected HashMap<String, String> columnTypeHashMap;
    protected HashMap<String, Integer> columnSizeHashMap;
-   protected HashMap<String, Integer>preferredColumnSizeHashMap;
+   protected HashMap<String, Integer> preferredColumnSizeHashMap;
    
    protected HashMap<String, String> lobDataTypesHashMap;
    protected HashMap<String, String> autoIncrementHashMap;
