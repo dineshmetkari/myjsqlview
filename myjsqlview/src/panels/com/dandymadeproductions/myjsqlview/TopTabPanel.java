@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 03/26/2010
+// Version 1.2 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 //         1.1 03/26/2010 Changed Class Instances imageIconSize & moveIncrement
 //                        to static. Class Method paint() Changed Fixed int, 10,
 //                        to 10.0.
+//         1.2 05/18/2010 Class Method paint() Instance stringWidth Created
+//                        by Cast Instead of new Double(d).intValue().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import java.util.Random;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.1 03/26/2010
+ * @version 1.2 05/18/2010
  */
 
 class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -462,8 +464,8 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
          g2D.setPaint(fontGradient);
          g2D.setFont(drawingFont);
          
-         stringWidth = new Double(drawingFont.getStringBounds("Dandy Made Productions",
-                                  g2D.getFontRenderContext()).getWidth()).intValue();
+         stringWidth = (int) drawingFont.getStringBounds("Dandy Made Productions",
+                                  g2D.getFontRenderContext()).getWidth();
          
          g2D.drawString("Dandy Made Productions",
                         ((panelWidth - stringWidth)) / 2,
