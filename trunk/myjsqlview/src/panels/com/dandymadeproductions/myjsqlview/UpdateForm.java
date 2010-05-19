@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.9 04/06/2010
+// Version 3.0 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,11 @@
 //         2.8 04/06/2010 Class Method updateTable() Addition of TO_DATE() and TO_TIMESTAMP()
 //                        Processing for Oracle Database.
 //         2.9 04/06/2010 Commented System.out in UpdateTable().
+//         3.0 05/18/2010 Parameterized Class Instances columnNamesHashMap, columnTypeHashMap,
+//                        columnSizeHashMap, comboBoxColumnNames & stateComponents in Order to
+//                        Bring Code Into Compliance With Java 5.0 API. Also the Same With
+//                        Constructor Arguments. Changed Method swapEndComponent From Object
+//                        to JComponent in createUpdateWhereInterface(). 
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -91,7 +96,11 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -100,7 +109,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 import javax.swing.*;
 
 /**
@@ -108,7 +120,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 2.9 04/06/2010
+ * @version 3.0 05/18/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -118,9 +130,11 @@ class UpdateForm extends JFrame implements ActionListener
 
    private String sqlTable;
    private String identifierQuoteString;
-   private HashMap columnNamesHashMap, columnClassHashMap;
-   private HashMap columnTypeHashMap, columnSizeHashMap;
-   private Vector comboBoxColumnNames;
+   private HashMap<String, String> columnNamesHashMap;
+   private HashMap<String, String> columnClassHashMap;
+   private HashMap<String, String> columnTypeHashMap;
+   private HashMap<String, Integer> columnSizeHashMap;
+   private Vector<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private GridBagLayout gridbag;
@@ -140,7 +154,7 @@ class UpdateForm extends JFrame implements ActionListener
    private static final int updateFormExpressionNumber = 5;
    private JComboBox[] whereComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] whereTextField;
-   private Vector stateComponents;
+   private Vector<JComponent> stateComponents;
 
    private JButton updateButton, closeButton, clearButton;
    protected JButton findButton, disposeButton;
@@ -151,9 +165,12 @@ class UpdateForm extends JFrame implements ActionListener
    // UpdateForm Constructor
    //==============================================================
 
-   protected UpdateForm(String table, MyJSQLView_ResourceBundle resourceBundle, HashMap columnNamesHashMap,
-                        HashMap columnClassHashMap, HashMap columnTypeHashMap, HashMap columnSizeHashMap,
-                        Vector comboBoxColumnNames)
+   protected UpdateForm(String table, MyJSQLView_ResourceBundle resourceBundle,
+                        HashMap<String, String> columnNamesHashMap,
+                        HashMap<String, String> columnClassHashMap,
+                        HashMap<String, String> columnTypeHashMap,
+                        HashMap<String, Integer> columnSizeHashMap,
+                        Vector<String> comboBoxColumnNames)
    {
       sqlTable = table;
       this.columnNamesHashMap = columnNamesHashMap;
@@ -192,7 +209,7 @@ class UpdateForm extends JFrame implements ActionListener
       andOrComboBox = new JComboBox[whereComboBox.length - 1];
       whereTextField = new JTextField[updateFormExpressionNumber];
       
-      stateComponents = new Vector();
+      stateComponents = new Vector <JComponent>();
 
       // Setting up the frame's main panel.
       mainPanel = new JPanel(new BorderLayout());
@@ -507,6 +524,7 @@ class UpdateForm extends JFrame implements ActionListener
       JLabel setLabel, withLabel;
       JLabel[] whereLabel;
       //JLabel whereLabel1, whereLabel2, whereLabel3, whereLabel4, whereLabel5;
+      JComponent swapEndComponent;
 
       Object[] whereOperators;
       Object[] mysqlWhereOperators = {"LIKE", "LIKE BINARY", "NOT LIKE", "REGEXP", "NOT REGEXP", "IS NULL",
@@ -554,7 +572,7 @@ class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(setLabel, constraints);
       updatePanel.add(setLabel);
 
-      updateColumnComboBox = new JComboBox(new Vector(comboBoxColumnNames));
+      updateColumnComboBox = new JComboBox(comboBoxColumnNames);
       updateColumnComboBox.removeItemAt(0);
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
@@ -679,7 +697,6 @@ class UpdateForm extends JFrame implements ActionListener
       // minus one andOrComboBoxes, so the last parameter assigned will be a text
       // field. So swap the last two entries, to get text:text:combobox.
       
-      Object swapEndComponent;
       swapEndComponent = stateComponents.get(stateComponents.size() - 1);
       stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
       stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
@@ -792,9 +809,9 @@ class UpdateForm extends JFrame implements ActionListener
                // Setup some instances needed for processing.
                updateTextString = updateColumnToTextField.getText();
                columnName = (String) updateColumnComboBox.getSelectedItem();
-               columnClass = (String) columnClassHashMap.get(columnName);
-               columnType = (String) columnTypeHashMap.get(columnName);
-               columnSize = ((Integer) columnSizeHashMap.get(columnName)).intValue();
+               columnClass = columnClassHashMap.get(columnName);
+               columnType = columnTypeHashMap.get(columnName);
+               columnSize = (columnSizeHashMap.get(columnName)).intValue();
                //System.out.println(updateTextString + " " + columnName + " " + columnClass + " " + columnType
                //                   + " " + columnSize);
 
@@ -1059,8 +1076,8 @@ class UpdateForm extends JFrame implements ActionListener
       unionString = "";
       do
       {
-         columnNameString = (String) columnNamesHashMap.get(whereComboBox[i].getSelectedItem());
-         columnTypeString = (String) columnTypeHashMap.get(whereComboBox[i].getSelectedItem());
+         columnNameString = columnNamesHashMap.get(whereComboBox[i].getSelectedItem());
+         columnTypeString = columnTypeHashMap.get(whereComboBox[i].getSelectedItem());
          operatorString = (String) operatorComboBox[i].getSelectedItem();
          tempSearchString = whereTextField[i].getText();
 
