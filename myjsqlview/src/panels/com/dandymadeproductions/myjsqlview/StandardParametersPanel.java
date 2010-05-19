@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 2.3 05/17/2010
+// Version 2.4 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             & userList to Bring Code Into Compliance With Java 5.0 API.
 //             Also the Same for Argument content in Class Methods setHost(),
 //             setDatabase(), and setUser().
+//         2.4 Minor Format Changes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +75,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/17/2010
+ * @version 2.4 05/18/2010
  */
 
 class StandardParametersPanel extends JPanel
@@ -193,6 +194,7 @@ class StandardParametersPanel extends JPanel
       hostJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          hostJComboBox.addItem(contentsIterator.next());
    }
@@ -216,6 +218,7 @@ class StandardParametersPanel extends JPanel
       dbJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          dbJComboBox.addItem(contentsIterator.next());
    }
@@ -239,6 +242,7 @@ class StandardParametersPanel extends JPanel
       userJComboBox.removeAllItems();
 
       Iterator contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          userJComboBox.addItem(contentsIterator.next());
    }
