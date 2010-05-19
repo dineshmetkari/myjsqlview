@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.9 05/17/2010
+// Version 2.0 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@
 //             Properly Search DATE Data Types for Oracle. Organized imports.
 //         1.9 Parameterized Class Instance databaseTables and Same in Argument for
 //             Constructor to Bring Code Into Compliance With Java 5.0 API.
+//         2.0 Method run() Changed resultData Assignment to Integer.valueOf() 
+//             Instead of new Integer().
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -71,7 +73,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 1.9 05/17/2010
+ * @version 2.0 05/18/2010
  */
 
 class SearchDatabaseThread implements Runnable
@@ -252,7 +254,7 @@ class SearchDatabaseThread implements Runnable
          if (tableSearchResultCounts[j] != 0)
          {
             resultData[k][0] = databaseTables.get(j);
-            resultData[k++][1] = new Integer(tableSearchResultCounts[j]);
+            resultData[k++][1] = Integer.valueOf(tableSearchResultCounts[j]);
          }
          j++;
       }
