@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.4 04/28/2010
+// Version 5.5 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,7 +131,10 @@
 //         5.3 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         5.4 04/28/2010 Added Class Instance resourceBundle and Implementation of
 //                        Iternationlization. Class Methods actionPerformed() &
-//                        createEditMenu()
+//                        createEditMenu().
+//         5.5 05/19/2010 Parameterized Class Instances fieldHashMap, blobBytesHashMap,
+//                        fieldTypeHashMap, fieldClassHashMap, & fieldSizeHashMap In
+//                        Order to Bring The Code Into Compiance With Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -140,13 +143,17 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+import javax.swing.*;
 import javax.swing.text.DefaultEditorKit;
 
 /**
@@ -155,7 +162,7 @@ import javax.swing.text.DefaultEditorKit;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.4 04/28/2010
+ * @version 5.5 05/19/2010
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -163,11 +170,11 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
    // Class Instances.
    private static final long serialVersionUID = 6369040292909526934L;
 
-   private HashMap fieldHashMap;
-   private HashMap blobBytesHashMap;
-   private HashMap fieldTypeHashMap;
-   private HashMap fieldClassHashMap;
-   private HashMap fieldSizeHashMap;
+   private HashMap<String, JComponent> fieldHashMap;
+   private HashMap<JButton, Object> blobBytesHashMap;
+   private HashMap<String, String> fieldTypeHashMap;
+   private HashMap<String, String> fieldClassHashMap;
+   private HashMap<String, Integer> fieldSizeHashMap;
    private JButton previousViewButton, closeViewButton, nextViewButton;
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -175,8 +182,10 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
    // TableViewForm Constructor
    //==============================================================
 
-   protected TableViewForm(Vector tableColumnNames, HashMap tableColumnClass,
-                           HashMap tableColumnType, HashMap tableColumnSize,
+   protected TableViewForm(Vector<String> tableColumnNames,
+                           HashMap<String, String> tableColumnClass,
+                           HashMap<String, String> tableColumnType,
+                           HashMap<String, Integer> tableColumnSize,
                            JButton previousViewButton, JButton closeViewButton,
                            JButton nextViewButton)
    {
@@ -192,8 +201,8 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       GridBagConstraints constraints;
 
       Iterator columnNamesIterator;
-      fieldHashMap = new HashMap();
-      blobBytesHashMap = new HashMap();
+      fieldHashMap = new HashMap <String, JComponent>();
+      blobBytesHashMap = new HashMap <JButton, Object>();
       String itemName, columnClass, columnType;
       Object currentField;
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
@@ -221,8 +230,8 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       while (columnNamesIterator.hasNext())
       {
          itemName = (String) columnNamesIterator.next();
-         columnClass = (String) fieldClassHashMap.get(itemName);
-         columnType = (String) fieldTypeHashMap.get(itemName);
+         columnClass = fieldClassHashMap.get(itemName);
+         columnType = fieldTypeHashMap.get(itemName);
          // System.out.println(x + " " + y + " " + itemName + " " + columnClass + " " + columnType);
 
          // =================================
@@ -256,7 +265,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
 
          else if ((columnClass.indexOf("String") != -1 &&
                   !columnType.equals("CHAR") &&
-                  ((Integer) fieldSizeHashMap.get(itemName)).intValue() > 255) ||
+                  (fieldSizeHashMap.get(itemName)).intValue() > 255) ||
                    (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
          {
             currentField = new JButton();
@@ -281,7 +290,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
          gridbag.setConstraints((Component)currentField, constraints);
          formPanel.add((JComponent) currentField);
          
-         fieldHashMap.put(itemName, currentField);
+         fieldHashMap.put(itemName, (JComponent) currentField);
 
          // Prepping for next position in the panel.
          if (y > (tableColumnNames.size() / 2) - 1)
@@ -543,7 +552,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
    
    protected void clearBlobBytesHashMap()
    {
-      blobBytesHashMap = new HashMap();
+      blobBytesHashMap = new HashMap <JButton, Object>();
    }
    
    //==============================================================
@@ -612,8 +621,8 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       // Method Instances.
       String columnClass, columnType;
 
-      columnClass = (String) fieldClassHashMap.get(itemName);
-      columnType = ((String) fieldTypeHashMap.get(itemName));
+      columnClass = fieldClassHashMap.get(itemName);
+      columnType = fieldTypeHashMap.get(itemName);
 
       // Binary Button, Note all data with buttons processed
       // the same just grouping for clarity.
@@ -626,7 +635,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
 
       // Text Button, TEXT, MEDIUMTEXT, & LONGTEXT
       else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
-                ((Integer) fieldSizeHashMap.get(itemName)).intValue() > 255) ||
+                (fieldSizeHashMap.get(itemName)).intValue() > 255) ||
                (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
          ((JButton) fieldHashMap.get(itemName)).setText((String) content);
 
