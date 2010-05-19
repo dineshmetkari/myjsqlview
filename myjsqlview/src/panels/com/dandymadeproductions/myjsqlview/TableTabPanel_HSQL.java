@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.9 05/17/2010
+// Version 9.0 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -189,8 +189,8 @@
 //         8.3 Correction in Class Method getColumnNames() To Handle Possible Event of No
 //             Fields in the Table. Detected Because 6.2 Exclused Blob and key_tables Has
 //             table key_table3 With One Field and It is Blob.
-//         8.4 Class Methods viewSelectedItem() and editSelectedItem() Changed Method Instance
-//             sqlStatementString to a StringBuffer.
+//         8.4 Class Methods viewSelectedItem() and editSelectedItem() Changed Method
+//             Instance sqlStatementString to a StringBuffer.
 //         8.5 Removed the Exclusion of Binary Types in Initial Loading, Class Method
 //             getColumnNames().
 //         8.6 Implemented Fix For the Performance Issue That was Temporary Corrected in
@@ -198,13 +198,16 @@
 //             Unless They Are Identified As Keys. Class Methods Effected getColumnNames()
 //             & loadTable(). Added Instance lobLessSQLStatementString to Class Method
 //             loadTable().
-//         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted to
-//             UpperCase for Comparisons.
+//         8.7 Class Method getColumnNames() Instance columnType in Some Cases Converted
+//             to UpperCase for Comparisons.
 //         8.8 Removed Statement Termination on Conditional in Class Method getColumnNames()
 //             for Additional Indexes Check.
-//         8.9 Class Method getColumnNames() Changed Instance columnSize From Type Object
-//             to Integer. Class Method loadTable() Changed Instance keyLength From String
-//             to Integer. Removed Unecessary Casts for the HashMaps.
+//         8.9 Class Method getColumnNames() Changed Instance columnSize From Type
+//             Object to Integer. Class Method loadTable() Changed Instance keyLength
+//             From String to Integer. Removed Unecessary Casts for the HashMaps.
+//         9.0 Class Methods getColumnNames() and loadTable() Assigned Integer via
+//             valueOf() Instead of new Integer for Instances columnSize &
+//             preferredColumnSizeHashMap.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -230,7 +233,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8,9 05/17/2010
+ * @version 9.0 05/19/2010
  */
 
 class TableTabPanel_HSQL extends TableTabPanel
@@ -357,7 +360,7 @@ class TableTabPanel_HSQL extends TableTabPanel
             comboBoxNameString = parseColumnNameField(colNameString);
             columnClass = tableMetaData.getColumnClassName(i);
             columnType = tableMetaData.getColumnTypeName(i);
-            columnSize = new Integer(tableMetaData.getColumnDisplaySize(i));
+            columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
             // comboBoxNameString + " " +
@@ -378,7 +381,8 @@ class TableTabPanel_HSQL extends TableTabPanel
             columnClassHashMap.put(comboBoxNameString, columnClass);
             columnTypeHashMap.put(comboBoxNameString, columnType.toUpperCase());
             columnSizeHashMap.put(comboBoxNameString, columnSize);
-            preferredColumnSizeHashMap.put(comboBoxNameString, new Integer(comboBoxNameString.length() * 9));
+            preferredColumnSizeHashMap.put(comboBoxNameString,
+                                           Integer.valueOf(comboBoxNameString.length() * 9));
 
             fields.addElement(colNameString);
             viewFormFields.addElement(comboBoxNameString);
@@ -713,7 +717,8 @@ class TableTabPanel_HSQL extends TableTabPanel
                   if (preferredColumnSize > maxPreferredColumnSize)
                      preferredColumnSize = maxPreferredColumnSize;
                }
-               preferredColumnSizeHashMap.put(currentHeading, new Integer(preferredColumnSize));
+               preferredColumnSizeHashMap.put(currentHeading,
+                                              Integer.valueOf(preferredColumnSize));
             }
             j = 0;
             i++;
