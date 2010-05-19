@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 3.6 03/26/2010
+// Version 3.7 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,50 +32,50 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial SitesTreePanel Class.
-//         1.1 Class Methods createSiteTree(), and All 
-//             addSite().
-//         1.2 Implemented TreeLSelectionListener Interface
-//             in Class Method valueChanged(). Class Instance
-//             connectionManager, Constructor Argument, parent.
-//         1.3 Modified Class Method removeCurrentNode to Properly
-//             Handle the Removal of Sites and Database Leafs
-//             Along With Removing Said in the sites Hashtable.
-//         1.4 Added Class Method addSite() No Argument. Basic
-//             Functionality in Place.
-//         1.5 Fixed Adding Site, So No Duplicates. Also Insured
-//             Site Addition Does Not Take Place At Leaf.
-//         1.6 Added Class Method updateSiteNode, for Updating
-//             an Existed Site Node Database.
-//         1.7 Began Cleaning Out for Finalizing. Removed Two
-//             Unused addSite() Class Methods.
+//         1.1 Class Methods createSiteTree(), and All addSite().
+//         1.2 Implemented TreeLSelectionListener Interface in Class Method
+//             valueChanged(). Class Instance connectionManager, Constructor
+//             Argument, parent.
+//         1.3 Modified Class Method removeCurrentNode to Properly Handle
+//             the Removal of Sites and Database Leafs Along With Removing
+//             Said in the sites Hashtable.
+//         1.4 Added Class Method addSite() No Argument. Basic Functionality
+//             in Place.
+//         1.5 Fixed Adding Site, So No Duplicates. Also Insured Site
+//             Addition Does Not Take Place At Leaf.
+//         1.6 Added Class Method updateSiteNode, for Updating an Existed
+//             Site Node Database.
+//         1.7 Began Cleaning Out for Finalizing. Removed Two Unused addSite()
+//             Class Methods.
 //         1.8 Added Class Method renameSite().
-//         1.9 Commented System.out Statements and General
-//             Cleanout. Finalized.
-//         2.0 Allowed the Site Node Host to be Changed Along
-//             With Site Node Name in Class Method renameSite().
+//         1.9 Commented System.out Statements and General Cleanout. Finalized.
+//         2.0 Allowed the Site Node Host to be Changed Along With Site Node
+//             Name in Class Method renameSite().
 //         2.1 Password Changes.
 //         2.2 LeafIcon to Sites Tree.
 //         2.3 InputDialog String Argument "cancel".
 //         2.4 Code Cleanup. Commented Out Unused Interfaces Methods.
-//         2.5 Used System.getProperty("file.separator") for All
-//             File System Resources Accesses Through Instance
-//             fileSeparator.
-//         2.6 Removed Instantiation of Instance oldSiteParameter
-//             in Class Method renameSite().
+//         2.5 Used System.getProperty("file.separator") for All File System
+//             Resources Accesses Through Instance fileSeparator.
+//         2.6 Removed Instantiation of Instance oldSiteParameter in Class
+//             Method renameSite().
 //         2.7 Header Update.
-//         2.8 Added Class Instance serialVersionUID. Removed Class
-//             Instance toolkit.
+//         2.8 Added Class Instance serialVersionUID. Removed Class Instance
+//             toolkit.
 //         2.9 MyJSQLView Project Common Source Code Formatting.
 //         3.0 Add Constructor Instance iconsDirectory.
 //         3.1 Class Name Change SiteParameter to SiteParameters.
 //         3.2 Header Format Changes/Update.
 //         3.3 Removded Constructor Instance fileSeparator. Obtained
-//             iconsDirectory From MyJSQLView_Utils Class."
+//             iconsDirectory From MyJSQLView_Utils Class.
 //         3.4 Added fileSeparator to iconsDirectory.
 //         3.5 Changed Package to Reflect Dandy Made Productions Code.
 //         3.6 Conditional Checks in Method addSite() & renameSite() From
-//             Non-Short-Circut to Short-Circuit &&. Organized Imports
-//             SomeWhat.
+//             Non-Short-Circut to Short-Circuit &&. Organized Imports SomeWhat.
+//         3.7 Parameterized Class Instances siteNameCollection, & sites In
+//             Order to Bring Code Into Compliance With Java 5.0 API. Same for
+//             Argument sites in Constructor and Method Instance sitesTreeSet
+//             in createSitesTree().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -108,7 +108,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 3.6 03/26/2010
+ * @version 3.7 05/18/2010
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -120,8 +120,8 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    private DefaultMutableTreeNode sitesNode;
    private DefaultTreeModel treeModel;
    private JTree sitesTree;
-   private Vector siteNameCollection;
-   private Hashtable sites;
+   private Vector<String> siteNameCollection;
+   private Hashtable<String, SiteParameters> sites;
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
@@ -130,7 +130,8 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    // SitesTreePanel Constructor
    //==============================================================
 
-   protected SitesTreePanel(ConnectionManager parent, Hashtable sites,
+   protected SitesTreePanel(ConnectionManager parent,
+                            Hashtable <String, SiteParameters> sites,
                             StandardParametersPanel standardParametersPanel,
                             AdvancedParametersPanel advancedParametersPanel)
    {
@@ -186,15 +187,15 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       // Class Method Instances.
       DefaultMutableTreeNode currentSiteNode;
       String siteKey, siteName, databaseName;
-      Hashtable siteNodes;
-      TreeSet sitesTreeSet;
+      Hashtable<String, DefaultMutableTreeNode> siteNodes;
+      TreeSet<String> sitesTreeSet;
 
       Enumeration siteNames;
       Iterator sitesTreeIterator;
 
       // Create a collection of site names.
 
-      siteNameCollection = new Vector();
+      siteNameCollection = new Vector <String>();
       siteNames = sites.keys();
 
       while (siteNames.hasMoreElements())
@@ -212,9 +213,10 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
 
       // Provide a natural order of the site names
       // and adding to the JTree.
-
-      sitesTreeSet = new TreeSet(siteNameCollection);
-      siteNodes = new Hashtable();
+ 
+      sitesTreeSet = new TreeSet <String>(siteNameCollection);
+      
+      siteNodes = new Hashtable <String, DefaultMutableTreeNode>();
       sitesTreeIterator = sitesTreeSet.iterator();
 
       while (sitesTreeIterator.hasNext())
@@ -237,7 +239,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
          {
             siteName = siteKey.substring(0, siteKey.indexOf('#'));
             databaseName = siteKey.substring(siteKey.indexOf('#') + 1);
-            addSite((DefaultMutableTreeNode) siteNodes.get(siteName), databaseName, false);
+            addSite(siteNodes.get(siteName), databaseName, false);
          }
       }
    }
@@ -310,7 +312,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                            + node.getUserObject().toString();
          // System.out.println(siteName);
 
-         SiteParameters selectedSite = (SiteParameters) sites.get(siteName);
+         SiteParameters selectedSite = sites.get(siteName);
          connectionManager.setSelectedSite(selectedSite);
       }
    }
@@ -409,7 +411,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       else
       {
          String childString = parentNode.getChildAt(0).toString();
-         String hostString = ((SiteParameters) sites.get(parentNode.toString() 
+         String hostString = (sites.get(parentNode.toString() 
                              + "#" + childString)).getHost();
          newSiteParameters.setHost(hostString);
       }
@@ -478,7 +480,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             siteName = parentNode + "#" + currentNode;
 
             newSiteParameters.setSiteName(siteName);
-            newSiteParameters.setHost(((SiteParameters) sites.get(siteName)).getHost());
+            newSiteParameters.setHost((sites.get(siteName)).getHost());
             newSiteParameters.setDatabase(standardParametersPanel.getDataBase());
             newSiteParameters.setUser(standardParametersPanel.getUser());
             newSiteParameters.setPassword(standardParametersPanel.getPassword());
@@ -582,7 +584,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                      SiteParameters newSiteParameter = new SiteParameters();
 
                      siteName = oldSiteName + "#" + selectedNode.getChildAt(i).toString();
-                     oldSiteParameter = (SiteParameters) sites.get(siteName);
+                     oldSiteParameter = sites.get(siteName);
                      currentNewSite = newSite + "#" + oldSiteParameter.getDatabase();
 
                      newSiteParameter.setSiteName(currentNewSite);
