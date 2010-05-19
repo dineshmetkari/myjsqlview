@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.6 02/18/2010
+// Version 1.7 05/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //         1.4 Additional Standardation to Comments.
 //         1.5 Updated Header Information.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
+//         1.7 Organized Imports.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -46,7 +47,10 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * The SnowFlake class provides the characteristics of a snow flake
@@ -54,7 +58,7 @@ import java.awt.*;
  * winter.
  * 
  * @author Dana M. Proctor
- * @version 1.6 02/18/2010
+ * @version 1.7 05/18/2010
  */
 
 class SnowFlake extends Sprite
