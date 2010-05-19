@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.2 05/17/2010
+// Version 8.3 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -190,6 +190,8 @@
 //         8.2 Class Method getColumnNames() Changed Instance columnSize From Type Object
 //             to Integer. Class Method loadTable() Changed Instance keyLength From String
 //             to Integer. Removed Unecessary Casts for the HashMaps.
+//         8.3 Class Methods getColumnNames() and loadTable() Assigned Integer via valueOf()
+//             Instead of new Integer for Instances columnSize & preferredColumnSizeHashMap.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -215,7 +217,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.2 05/17/2010
+ * @version 8.3 05/18/2010
  */
 
 class TableTabPanel_Generic extends TableTabPanel
@@ -343,7 +345,7 @@ class TableTabPanel_Generic extends TableTabPanel
             comboBoxNameString = parseColumnNameField(colNameString);
             columnClass = tableMetaData.getColumnClassName(i);
             columnType = tableMetaData.getColumnTypeName(i);
-            columnSize = new Integer(tableMetaData.getColumnDisplaySize(i));
+            columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
             // comboBoxNameString + " " +
@@ -364,7 +366,8 @@ class TableTabPanel_Generic extends TableTabPanel
             columnClassHashMap.put(comboBoxNameString, columnClass);
             columnTypeHashMap.put(comboBoxNameString, columnType.toUpperCase());
             columnSizeHashMap.put(comboBoxNameString, columnSize);
-            preferredColumnSizeHashMap.put(comboBoxNameString, new Integer(comboBoxNameString.length() * 9));
+            preferredColumnSizeHashMap.put(comboBoxNameString,
+                                           Integer.valueOf(comboBoxNameString.length() * 9));
 
             fields.addElement(colNameString);
             viewFormFields.addElement(comboBoxNameString);
@@ -703,7 +706,7 @@ class TableTabPanel_Generic extends TableTabPanel
                   if (preferredColumnSize > maxPreferredColumnSize)
                      preferredColumnSize = maxPreferredColumnSize;
                }
-               preferredColumnSizeHashMap.put(currentHeading, new Integer(preferredColumnSize));
+               preferredColumnSizeHashMap.put(currentHeading, Integer.valueOf(preferredColumnSize));
             }
             j = 0;
             i++;
