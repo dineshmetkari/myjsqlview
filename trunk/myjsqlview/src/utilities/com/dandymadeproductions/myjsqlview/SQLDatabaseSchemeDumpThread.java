@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.5 05/18/2010
+// Version 1.6 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //         1.3 Header Format Changes/Update.
 //         1.4 Changed Package to Reflect Dandy Made Productions Code.
 //         1.5 Organized Imports.
+//         1.6 Parameterized Instance tableNamesIterator in run().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -59,7 +60,7 @@ import java.util.Iterator;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 1.5 05/18/2010
+ * @version 1.6 05/20/2010
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable
@@ -94,7 +95,7 @@ class SQLDatabaseSchemeDumpThread implements Runnable
    public void run()
    {
       // Class Method Instances.
-      Iterator tableNamesIterator;
+      Iterator<String> tableNamesIterator;
       String exportedTable, dbIdentifierQuoteString;
       Object dumpData;
 
@@ -130,7 +131,7 @@ class SQLDatabaseSchemeDumpThread implements Runnable
 
          // Properly construct the schema.table.
 
-         exportedTable = (String) tableNamesIterator.next();
+         exportedTable = tableNamesIterator.next();
          if (exportedTable.indexOf(".") != -1)
          {
             exportedTable = dbIdentifierQuoteString + exportedTable.substring(0, exportedTable.indexOf("."))
