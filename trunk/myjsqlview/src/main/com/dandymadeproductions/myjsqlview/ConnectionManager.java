@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.3 05/17/2010
+// Version 4.4 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@
 //         4.3 Parameterized Class Instance sitesClone and Return Type of Same for
 //             Class Method getSites() In Order to Properly Comply with Java
 //             5.0 API.
+//         4.4 Parameterized Constructor Instance siteKeys.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -115,7 +116,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 4.3 05/17/2010
+ * @version 4.4 05/20/2010
  */
 
 class ConnectionManager extends JFrame implements ActionListener
@@ -160,7 +161,7 @@ class ConnectionManager extends JFrame implements ActionListener
       
       // Constructor Instances
       String iconsDirectory;
-      Enumeration sitesKeys;
+      Enumeration<String> sitesKeys;
       JPanel mainPanel, centerPanel, actionPanel;
       
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
@@ -169,7 +170,7 @@ class ConnectionManager extends JFrame implements ActionListener
       sitesClone = new Hashtable <String, SiteParameters>();
       while (sitesKeys.hasMoreElements())
       {
-         String currentKey = (String) sitesKeys.nextElement();
+         String currentKey = sitesKeys.nextElement();
          sitesClone.put(currentKey, sites.get(currentKey));
          // System.out.println(currentKey);
       }
