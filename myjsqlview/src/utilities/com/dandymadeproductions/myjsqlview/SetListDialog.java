@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.9 03/03/2010
+// Version 2.0 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //         1.8 Internationalization Through Class Instance resourceBundle.
 //         1.9 Correction in Constructor to Include resource for okButton, &
 //             cancelButton.
+//         2.0 Parameterized Class Instance listElements and Likewise Argument
+//             in Constructor.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -65,7 +67,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 1.9 03/03/2010
+ * @version 2.0 05/20/2010
  */
 
 class SetListDialog extends JFrame implements ActionListener
@@ -80,7 +82,7 @@ class SetListDialog extends JFrame implements ActionListener
    private TableEntryForm callingForm;
    private Object columnName;
    private JList setList;
-   private Vector listElements;
+   private Vector<String> listElements;
 
    private JButton okButton, cancelButton;
 
@@ -88,7 +90,7 @@ class SetListDialog extends JFrame implements ActionListener
    // SetListDialog Constructor
    //==============================================================
 
-   SetListDialog(TableEntryForm callingForm, Object columnName, Vector listElements)
+   SetListDialog(TableEntryForm callingForm, Object columnName, Vector<String> listElements)
    {
       this.callingForm = callingForm;
       this.columnName = columnName;
@@ -219,7 +221,7 @@ class SetListDialog extends JFrame implements ActionListener
                for (int i = minIndex; i <= maxIndex; i++)
                {
                   if (listModel.isSelectedIndex(i))
-                     setSelection = setSelection + ((String) listElements.get(i) + ",");
+                     setSelection = setSelection + (listElements.get(i) + ",");
                }
                setSelection = ((String) setSelection).substring(0, ((String) setSelection).length() - 1);
             }
