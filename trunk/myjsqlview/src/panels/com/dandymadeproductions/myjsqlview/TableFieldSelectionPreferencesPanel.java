@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.9 05/18/2010
+// Version 4.0 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,9 +79,11 @@
 //         3.8 Implementation of Internationalization via Class Instance resourceBundle.
 //             Added Argument to Constructor, & Constructor Instance resource.
 //         3.9 Parameterized Class Instances checkBoxesHashMap, columnNamesHashMap,
-//             & primaryKeys in Order to Bring Code Into Compliance With Java 5.0 API.
-//             Also Constructor Argument checkBoxFields, Method Instances tableHeadings,
-//             & newFields in loadPreferences() & updatePreferences().
+//             & primaryKeys in Order to Bring Code Into Compliance With Java
+//             5.0 API. Also Constructor Argument checkBoxFields, Method Instances
+//             tableHeadings, & newFields in loadPreferences() & updatePreferences().
+//         4.0 Parameterized tableColumnNamesIterator in Constructor and
+//             currentFieldIterator in Class Method loadPreferences().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -110,7 +112,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 3.9 05/18/2010
+ * @version 4.0 05/19/2010
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -159,7 +161,7 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       itemSelections = new JPanel(new GridLayout(rowNumber, 4, 0, 0));
       itemSelections.setBorder(BorderFactory.createLoweredBevelBorder());
 
-      Iterator tableColumnNamesIterator = checkBoxFields.iterator();
+      Iterator<String> tableColumnNamesIterator = checkBoxFields.iterator();
       columnNamesCheckBoxes = new JCheckBox[checkBoxFields.size()];
 
       columnNamesHashMap = DBTablesPanel.getTableTabPanel(tableName).getColumnNamesHashMap();
@@ -288,7 +290,7 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    {
       // Method Instances
       Vector<String> tableHeadings;
-      Iterator currentFieldIterator;
+      Iterator<String> currentFieldIterator;
       String currentElementName;
       JCheckBox currentCheckBox;
 
