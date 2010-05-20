@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.79 05/18/2010
+// Version 6.80 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -244,6 +244,9 @@
 //             tableColumnTypeHashMap, & columnNamesFields. Also Method Instances
 //             Class Methods insertReplaceStatementData() & explicitStatementData().
 //             Brings Code Into Compliance With Java 5.0 API.
+//        6.80 Parameterized Class Instance columnNamesIterator, and in Constructor.
+//             Also columnNamesIterator in Class Methods insertReplaceStatementData()
+//             & explicitStatementData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -276,7 +279,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.79 05/18/2010
+ * @version 6.80 05/20/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -285,7 +288,7 @@ class SQLDataDumpThread implements Runnable
    Thread dumpThread;
    private Object dumpData;
    private String exportedTable;
-   private Vector columnNameFields;
+   private Vector<String> columnNameFields;
    private HashMap<String, String> tableColumnNames;
    private HashMap<String, String> tableColumnClassHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
@@ -318,7 +321,7 @@ class SQLDataDumpThread implements Runnable
    // SQLDataDumpThread Constructor.
    //==============================================================
 
-   SQLDataDumpThread(Vector columnNameFields, HashMap<String, String> tableColumnNames,
+   SQLDataDumpThread(Vector<String> columnNameFields, HashMap<String, String> tableColumnNames,
                      boolean limits, HashMap<String, String> tableColumnClassHashMap,
                      HashMap<String, String> tableColumnTypeHashMap, String exportedTable,
                      String fileName, String[] myJSQLView_Version)
@@ -527,7 +530,7 @@ class SQLDataDumpThread implements Runnable
    private void insertReplaceStatementData(Connection dbConnection)
    {
       // Class Method Instances
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       HashMap<Integer, String> autoIncrementFieldIndexes;
       Vector<Integer> blobFieldIndexes;
       Vector<Integer> bitFieldIndexes;
@@ -938,7 +941,7 @@ class SQLDataDumpThread implements Runnable
    {
       // Class Method Instances
       StringBuffer columnNamesString;
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       String field, columnClass, columnType;
       
       Vector<String> keys;
