@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Nil_lin, Dana Proctor
-// Version 4.5 05/18/2010
+// Version 4.6 05/20/2010
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -106,6 +106,7 @@
 //         4.4 05/16/2010 Parameterized Instance sites in Class Method getSites() and Argument
 //                        to setSites() to Bring Code Into Compliance With Java 5.0 API.
 //         4.5 05/18/2010 Minor Format Changes.
+//         4.6 05/20/2010 Parameterized siteKeys in Class Method setSites().
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -131,7 +132,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.5 05/18/2010
+ * @version 4.6 05/20/2010
  */
 
 class XMLTranslator
@@ -524,11 +525,11 @@ class XMLTranslator
 
             // Cycle through the new sites list and adding
             // to the Sites node.
-            Enumeration sitesKeys = sites.keys();
+            Enumeration<String> sitesKeys = sites.keys();
 
             while (sitesKeys.hasMoreElements())
             {
-               String currentKey = (String) sitesKeys.nextElement();
+               String currentKey = sitesKeys.nextElement();
                SiteParameters currentParameter = sites.get(currentKey);
 
                Element currentSiteElement = xmlDocument.createElement("Site");
