@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 3.7 05/18/2010
+// Version 3.8 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,6 +76,8 @@
 //             Order to Bring Code Into Compliance With Java 5.0 API. Same for
 //             Argument sites in Constructor and Method Instance sitesTreeSet
 //             in createSitesTree().
+//         3.8 Parameterized Instances siteNames & sitesTreeIterator in Class
+//             Method createSitesTree().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -108,7 +110,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 3.7 05/18/2010
+ * @version 3.8 05/19/2010
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -190,8 +192,8 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       Hashtable<String, DefaultMutableTreeNode> siteNodes;
       TreeSet<String> sitesTreeSet;
 
-      Enumeration siteNames;
-      Iterator sitesTreeIterator;
+      Enumeration<String> siteNames;
+      Iterator<String> sitesTreeIterator;
 
       // Create a collection of site names.
 
@@ -200,7 +202,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
 
       while (siteNames.hasMoreElements())
       {
-         siteKey = (String) siteNames.nextElement();
+         siteKey = siteNames.nextElement();
 
          if (!siteKey.equals("Last Site") && siteKey.indexOf('#') != -1)
          {
@@ -221,7 +223,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
 
       while (sitesTreeIterator.hasNext())
       {
-         siteName = (String) sitesTreeIterator.next();
+         siteName = sitesTreeIterator.next();
          currentSiteNode = addSite(null, siteName, false);
          siteNodes.put(siteName, currentSiteNode);
       }
