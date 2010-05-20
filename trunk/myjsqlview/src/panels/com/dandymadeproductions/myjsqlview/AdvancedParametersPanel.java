@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.9 05/17/2010
+// Version 2.0 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,8 @@
 //             With Java 5.0 API. Also the Same for Argument content in
 //             Class Methods setDriver(), setProtocol(), setSubProtocol(),
 //             and setPort().
+//         2.0 Parameterized Instance contentsIterator in Class Methods
+//             setDriver(), setProtocol(), setSubProtocol(), & setPort().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +71,7 @@ import javax.swing.JPanel;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 1.8 05/17/2010
+ * @version 2.0 05/19/2010
  */
 
 class AdvancedParametersPanel extends JPanel
@@ -191,7 +193,7 @@ class AdvancedParametersPanel extends JPanel
    {
       driverJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          driverJComboBox.addItem(contentsIterator.next());
@@ -215,7 +217,7 @@ class AdvancedParametersPanel extends JPanel
    {
       protocolJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          protocolJComboBox.addItem(contentsIterator.next());
@@ -239,7 +241,7 @@ class AdvancedParametersPanel extends JPanel
    {
       subProtocolJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          subProtocolJComboBox.addItem(contentsIterator.next());
@@ -263,7 +265,7 @@ class AdvancedParametersPanel extends JPanel
    {
       portJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          portJComboBox.addItem(contentsIterator.next());
