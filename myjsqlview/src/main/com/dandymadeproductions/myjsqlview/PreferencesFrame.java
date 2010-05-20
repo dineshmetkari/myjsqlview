@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.3 05/17/2018
+// Version 7.4 05/20/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -149,6 +149,7 @@
 //         7.3 Parameterized Class Instances tableFieldCards, tableFieldPanelsHashtable,
 //             tableRowsCards, & tableRowPanelsHashtable in Order for Code to Comply
 //             With Java 5.0 API.
+//         7.4 Parameterized cardsIterator in Class Method actionPerformed().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -178,7 +179,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a pereferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.3 05/17/2010
+ * @version 7.4 05/20/2010
  */
 
 //=================================================================
@@ -540,7 +541,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       Object frameSource = evt.getSource();
 
       // Class Instances
-      Iterator cardsIterator;
+      Iterator<String> cardsIterator;
       TableTabPanel currentTableTabPanel;
       TableFieldSelectionPreferencesPanel tableFieldPreferences;
       TableRowSelectionPreferencesPanel tableRowPreferences;
@@ -556,6 +557,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
             while (cardsIterator.hasNext())
                (tableFieldPanelsHashtable.get(cardsIterator.next())).updatePreferences();
+           
             cardsIterator = tableRowCards.iterator();
 
             while (cardsIterator.hasNext())
