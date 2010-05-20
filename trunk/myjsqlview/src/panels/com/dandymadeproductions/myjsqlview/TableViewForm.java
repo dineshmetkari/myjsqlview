@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.5 05/19/2010
+// Version 5.6 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +135,7 @@
 //         5.5 05/19/2010 Parameterized Class Instances fieldHashMap, blobBytesHashMap,
 //                        fieldTypeHashMap, fieldClassHashMap, & fieldSizeHashMap In
 //                        Order to Bring The Code Into Compiance With Java 5.0 API.
+//         5.6 05/19/2010 Parameterized columnNamesIterator in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -162,7 +163,7 @@ import javax.swing.text.DefaultEditorKit;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.5 05/19/2010
+ * @version 5.6 05/19/2010
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -200,7 +201,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       GridBagLayout gridbag;
       GridBagConstraints constraints;
 
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       fieldHashMap = new HashMap <String, JComponent>();
       blobBytesHashMap = new HashMap <JButton, Object>();
       String itemName, columnClass, columnType;
@@ -229,7 +230,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
 
       while (columnNamesIterator.hasNext())
       {
-         itemName = (String) columnNamesIterator.next();
+         itemName = columnNamesIterator.next();
          columnClass = fieldClassHashMap.get(itemName);
          columnType = fieldTypeHashMap.get(itemName);
          // System.out.println(x + " " + y + " " + itemName + " " + columnClass + " " + columnType);
