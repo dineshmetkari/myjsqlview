@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.6 05/17/2010
+// Version 6.7 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -110,6 +110,7 @@
 //         6.6 Parameterized Constructor Instance schemas and Argument to Class
 //             Method createSchemasMenu() in Order to Bring Code Into Compliance
 //             With Java 5.0 API.
+//         6.7 Parameterized schemasIterator in Class Method createSchemasMenu().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -137,7 +138,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.6 05/17/2010
+ * @version 6.7 05/20/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -524,10 +525,11 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       }
       
       // Create elements of schemas menu items.
-      Iterator schemasIterator = schemas.iterator();
+      Iterator<String> schemasIterator = schemas.iterator();
+      
       while (schemasIterator.hasNext())
       {
-         String schemasName = (String) schemasIterator.next();
+         String schemasName = schemasIterator.next();
          
          if (radioButtonCount == 0)
             radioButtonMenuItem = new JRadioButtonMenuItem(schemasName, true);
