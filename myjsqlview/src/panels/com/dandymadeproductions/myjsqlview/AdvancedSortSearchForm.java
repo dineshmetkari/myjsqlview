@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.75 05/16/2010
+// Version 4.76 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,6 +143,8 @@
 //                        comboBoxColumnNames, and stateComponents, Along With Arguments
 //                        In Constructor to Bring Code Into Compliance with Java 5.0 API.
 //                        Same in Method createSortSearchInterface Instance swapEndCompnents.
+//        4.76 05/19/2010 Parameterized Instance keyComponentIterator in Class Methods
+//                        getKeyComponentsState() & setKeyComponentsState().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -172,7 +174,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.75 05/16/2010
+ * @version 4.76 05/19/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -850,7 +852,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Method Instances
       StringBuffer stateString;
       String delimiter;
-      Iterator keyComponentIterator;
+      Iterator<JComponent> keyComponentIterator;
       Object currentComponent;
 
       // Initialize and obtain key components state.
@@ -894,7 +896,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Method Instances
       String delimiter;
       String[] keyComponentSettings;
-      Iterator keyComponentIterator;
+      Iterator<JComponent> keyComponentIterator;
       Object currentComponent;
       int comboBoxItemCount, stateIndex;
       boolean failedToLoadForm;
