@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 05/16/2010
+// Version 1.7 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //         1.6 Organized Imports and Parameterized Class Instance
 //             componentSequence and Argument to Constructor components
 //             to Bring Code Into Compliance With Java 5.0 API,
+//         1.7 Parameterized componentsIterator in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import java.util.Vector;
  * focus sequence for themselves.
  * 
  * @author Dana M. Proctor
- * @version 1.6 05/16/2010
+ * @version 1.7 05/20/2010
  */
 
 class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy
@@ -75,12 +76,11 @@ class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy
 
    protected MyJSQLView_FocusTraversalPolicy(Vector<Component> components)
    {
-      Iterator componentsIterator = components.iterator();
+      Iterator<Component> componentsIterator = components.iterator();
 
       while (componentsIterator.hasNext())
       {
-         Component x = (Component) componentsIterator.next();
-         componentSequence.add(x);
+         componentSequence.add(componentsIterator.next());
       }
    }
 
