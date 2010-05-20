@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 2.4 05/18/2010
+// Version 2.5 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,8 @@
 //             Also the Same for Argument content in Class Methods setHost(),
 //             setDatabase(), and setUser().
 //         2.4 Minor Format Changes.
+//         2.5 Parameterized Instance contentsIterator in CLass Methods
+//             setHost(), setDatabaseItem(), & setUser().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +77,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.4 05/18/2010
+ * @version 2.5 05/19/2010
  */
 
 class StandardParametersPanel extends JPanel
@@ -193,7 +195,7 @@ class StandardParametersPanel extends JPanel
    {
       hostJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          hostJComboBox.addItem(contentsIterator.next());
@@ -217,7 +219,7 @@ class StandardParametersPanel extends JPanel
    {
       dbJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          dbJComboBox.addItem(contentsIterator.next());
@@ -241,7 +243,7 @@ class StandardParametersPanel extends JPanel
    {
       userJComboBox.removeAllItems();
 
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
          userJComboBox.addItem(contentsIterator.next());
