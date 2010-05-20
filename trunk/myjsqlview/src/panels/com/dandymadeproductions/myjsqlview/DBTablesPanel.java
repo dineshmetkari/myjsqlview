@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.7 05/18/2010
+// Version 3.8 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -92,6 +92,8 @@
 //             setSelectedTableTabPanel().
 //         3.7 Parameterized Argument Instances tableNames in Constructor and Class
 //             Method reloadPanel().
+//         3.8 Parameterized Instance tableNamesIterator in Constructor and Method
+//             reloadPanel().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -124,7 +126,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.7 05/18/2010
+ * @version 3.8 05/19/2010
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -215,7 +217,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
       {
          //tableSelectionComboBox.setEnabled(false);
          
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator<String> tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
             tableSelectionComboBox.addItem(tableNamesIterator.next());
          
@@ -387,7 +389,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // Try reloading tables.
       if (!tableNames.isEmpty())
       {
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator<String> tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
             tableSelectionComboBox.addItem(tableNamesIterator.next());
          
