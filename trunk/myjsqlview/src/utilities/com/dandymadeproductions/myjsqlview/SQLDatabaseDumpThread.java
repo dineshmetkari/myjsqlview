@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.6 05/18/2010
+// Version 6.7 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -167,6 +167,8 @@
 //         6.6 Removal of Instance currentIndex Which Created a New Integer() in Class
 //             Method insertReplaceStatementData() and Applied Directly in Context by
 //             Integer.valueOf().
+//         6.7 Parameterized tablesIterator in run(), and columnNamesIterator in Class
+//             Methods insertReplaceStatementData() & explicitStatementData().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -198,7 +200,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.6 05/18/2010
+ * @version 6.7 05/20/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -245,7 +247,7 @@ class SQLDatabaseDumpThread implements Runnable
    public void run()
    {
       // Class Method Instances.
-      Iterator tablesIterator;
+      Iterator<String> tablesIterator;
       String exportedTable;
       FileOutputStream fileStream;
       int i, tableCount;
@@ -310,7 +312,7 @@ class SQLDatabaseDumpThread implements Runnable
             {
                databaseDumpProgressBar.setDatabaseDumpCurrentValue(i + 1);
                
-               exportedTable = (String) tablesIterator.next();
+               exportedTable = tablesIterator.next();
                
                // MySQL
                if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
@@ -471,7 +473,7 @@ class SQLDatabaseDumpThread implements Runnable
    private void insertReplaceStatementData(Connection dbConnection)
    {
       // Class Method Instances
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       HashMap<Integer, String> autoIncrementFieldIndexes;
       Vector<Integer> blobFieldIndexes;
       Vector<Integer> bitFieldIndexes;
@@ -522,7 +524,7 @@ class SQLDatabaseDumpThread implements Runnable
 
       while (columnNamesIterator.hasNext())
       {
-         field = (String) columnNamesIterator.next();
+         field = columnNamesIterator.next();
          columnClass = tableColumnClassHashMap.get(field);
          columnType = tableColumnTypeHashMap.get(field);
          //System.out.println("field:" + field + " class:" + columnClass
@@ -872,7 +874,7 @@ class SQLDatabaseDumpThread implements Runnable
    {
       // Class Method Instances
       StringBuffer columnNamesString;
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       String field, columnClass, columnType;
       
       Vector<String> keys;
@@ -919,7 +921,7 @@ class SQLDatabaseDumpThread implements Runnable
 
       while (columnNamesIterator.hasNext())
       {
-         field = (String) columnNamesIterator.next();
+         field = columnNamesIterator.next();
 
          if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
              && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
