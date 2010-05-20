@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.57 05/19/2010
+// Version 4.58 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,8 @@
 //        4.56 Minor Comment Changes and the Removal of Unecessary Casts for
 //             HashMap Types.
 //        4.57 Minor Format Changes.
+//        4.58 Parameteriezed headings in Constructor, keyIterator in deleteSelectedItem(),
+//             headingsIterator in getState(), and headings in setTableHeadings().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -162,7 +164,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.57 05/19/2010
+ * @version 4.58 05/19/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -468,15 +470,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       listTable.addMouseListener(summaryTablePopupListener);
 
       // Sizing columns
-      Iterator headings = currentTableHeadings.iterator();
+      Iterator<String> headings = currentTableHeadings.iterator();
       TableColumn column = null;
       int i = 0;
 
       while (headings.hasNext())
       {
-         Object currentHeading = headings.next();
          column = listTable.getColumnModel().getColumn(i++);
-         column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
+         column.setPreferredWidth((preferredColumnSizeHashMap.get(headings.next())).intValue());
       }
 
       // Create a scrollpane for the summary table and
@@ -1580,14 +1581,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                   // Don't process empty rows.
                   if (listTable.getValueAt(selectedRows[i], 0) != null)
                   {
-                     Iterator keyIterator = primaryKeys.iterator();
+                     Iterator<String> keyIterator = primaryKeys.iterator();
 
                      // Find the key column, in clase it has been moved
                      // in the summary table, then obtain entry content.
 
                      while (keyIterator.hasNext())
                      {
-                        currentDB_ColumnName = (String) keyIterator.next();
+                        currentDB_ColumnName = keyIterator.next();
                         for (int j = 0; j < listTable.getColumnCount(); j++)
                            if (listTable.getColumnName(j).equals(parseColumnNameField(currentDB_ColumnName)))
                               keyColumn = j;
@@ -2115,7 +2116,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // Method Instances
       StringBuffer currentState;
       String delimiter;
-      Iterator headingsIterator;
+      Iterator<String> headingsIterator;
 
       // Setting up and beginning getting the state.
       currentState = new StringBuffer();
@@ -2197,7 +2198,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       // Reconstitute the table field names.
 
-      Iterator headings = currentTableHeadings.iterator();
+      Iterator<String> headings = currentTableHeadings.iterator();
 
       while (headings.hasNext())
       {
