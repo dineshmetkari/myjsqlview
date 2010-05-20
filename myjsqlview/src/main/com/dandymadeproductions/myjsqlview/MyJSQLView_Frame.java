@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.4 05/08/2010
+// Version 4.5 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,10 @@
 //                        createGUI().
 //         4.4 05/08/2010 Changed pluginModule.initPlugin() To Have Argument this in Class Method
 //                        createGUI(). Removed setParentFrame() is Same.
+//         4.5 05/19/2010 Parameterized Class Instances loadedPluginModules, & loadedMenuBars
+//                        in Order to Bring Code Into Compliance With Java 5.0 API. Also
+//                        Same for tableNames in Method reloadDBTables() & pluginsHashMap
+//                        in createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -140,7 +144,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.4 05/08/2010
+ * @version 4.5 05/19/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -163,8 +167,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
    
-   private static Vector loadedPluginModules = new Vector();
-   private static Vector loadedMenuBars = new Vector();
+   private static Vector<MyJSQLView_PluginModule> loadedPluginModules = 
+                                                  new Vector <MyJSQLView_PluginModule>();
+   private static Vector<JMenuBar> loadedMenuBars = new Vector <JMenuBar>();
    
    //==============================================================
    // MyJSQLView_Frame Constructor
@@ -194,7 +199,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       String iconsDirectory;
       ImageIcon mainTabIcon;
       PluginLoader pluginLoader;
-      HashMap pluginsHashMap;
+      HashMap<String, String> pluginsHashMap;
       String currentModuleName;
       JPanel currentModuleMainPanel;
       ImageIcon currentModuleIcon;
@@ -299,9 +304,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             try
             {
                final File jarFile = new File((String) pluginEntry.getKey());
-               ClassLoader classLoader = (ClassLoader) AccessController.doPrivileged(new PrivilegedAction()
+               ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction <ClassLoader>()
                {
-                  public Object run()
+                  public ClassLoader run()
                   {
                      try
                      {
@@ -424,7 +429,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          if (selectedIndex > (loadedMenuBars.size() - 1))
             selectedMenuBar = null;
          else
-            selectedMenuBar = (JMenuBar) loadedMenuBars.get(selectedIndex);
+            selectedMenuBar = loadedMenuBars.get(selectedIndex);
          
          if (selectedMenuBar != null)
             setJMenuBar(selectedMenuBar);
@@ -447,7 +452,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       Connection dbConnection;
       String currentSelectedTable;
       Iterator pluginModulesIterator;
-      Vector tableNames;
+      Vector<String> tableNames;
       
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
