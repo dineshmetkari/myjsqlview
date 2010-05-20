@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.66 05/17/2010
+// Version 6.67 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -225,6 +225,8 @@
 //             in Class Methods loadDBTables() and fillSiteDataStructures(). Also
 //             Parameterized Return Types for Class Methods getSchemas() &
 //             getTableNames().
+//        6.67 Parameterized siteNames and sitesTreeIterator in Class Method
+//             fillSiteDataStructure(). Also tablesIterator in loadDBTables().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -260,7 +262,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.66 05/17/2010
+ * @version 6.67 05/20/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -749,8 +751,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
    private void fillSiteDataStructures(JMenu siteSelectMenu)
    {
       // Class Method Instances
-      Enumeration siteNames;
-      Iterator sitesTreeIterator;
+      Enumeration<String> siteNames;
+      Iterator<String> sitesTreeIterator;
 
       TreeSet<String> sitesTreeSet;
       Hashtable<String, JMenu> sitesJMenus;
@@ -767,7 +769,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
 
       while (siteNames.hasMoreElements())
       {
-         siteName = (String) siteNames.nextElement();
+         siteName = siteNames.nextElement();
 
          if (!siteName.equals("Last Site") && siteName.indexOf('#') != -1)
             siteName = siteName.substring(0, siteName.indexOf('#'));
@@ -1518,10 +1520,11 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          // ============================
          // Obtain the databases schemas.
          
-         Iterator tablesIterator = tables.iterator();
+         Iterator<String> tablesIterator = tables.iterator();
+         
          while (tablesIterator.hasNext())
          {
-            String tableName = (String)tablesIterator.next();
+            String tableName = tablesIterator.next();
             
             if (tableName.indexOf(".") != -1)
             {
