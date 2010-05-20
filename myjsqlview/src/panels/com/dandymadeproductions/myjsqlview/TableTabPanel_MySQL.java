@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.24 05/19/2010
+// Version 11.25 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -440,6 +440,9 @@
 //             to Integer. Removed Unecessary Casts for the HashMaps.
 //       11.24 Class Methods getColumnNames() and loadTable() Assigned Integer via valueOf()
 //             Instead of new Integer for Instances columnSize & preferredColumnSizeHashMap.
+//       11.25 Parameterized headings in Method loadTable(), keyIterator & textFieldIterator
+//             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
+//             addItem().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -464,7 +467,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.24 05/19/2010
+ * @version 11.25 05/19/2010
  */
 
 class TableTabPanel_MySQL extends TableTabPanel
@@ -754,10 +757,10 @@ class TableTabPanel_MySQL extends TableTabPanel
 
          while (rs.next())
          {
-            Iterator headings = currentTableHeadings.iterator();
+            Iterator<String> headings = currentTableHeadings.iterator();
             while (headings.hasNext())
             {
-               String currentHeading = (String) headings.next();
+               String currentHeading = headings.next();
                columnName = columnNamesHashMap.get(currentHeading);
                columnClass = columnClassHashMap.get(currentHeading);
                columnType = columnTypeHashMap.get(currentHeading);
@@ -1001,7 +1004,7 @@ class TableTabPanel_MySQL extends TableTabPanel
       Statement sqlStatement;
       ResultSet db_resultSet;
 
-      Iterator keyIterator, textFieldNamesIterator;
+      Iterator<String> keyIterator, textFieldNamesIterator;
       Object currentColumnName, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
       int columnSize;
@@ -1023,7 +1026,7 @@ class TableTabPanel_MySQL extends TableTabPanel
 
          while (keyIterator.hasNext())
          {
-            currentDB_ColumnName = (String) keyIterator.next();
+            currentDB_ColumnName = keyIterator.next();
 
             for (int i = 0; i < listTable.getColumnCount(); i++)
                if (listTable.getColumnName(i).equals(parseColumnNameField(currentDB_ColumnName)))
@@ -1224,7 +1227,7 @@ class TableTabPanel_MySQL extends TableTabPanel
 
    public void addItem(Connection dbConnection)
    {
-      Iterator textFieldNamesIterator;
+      Iterator<String> textFieldNamesIterator;
       Object currentColumnName, currentContentData;
       String currentColumnClass, currentColumnType;
 
@@ -1345,7 +1348,7 @@ class TableTabPanel_MySQL extends TableTabPanel
       Statement sqlStatement;
       ResultSet db_resultSet;
 
-      Iterator keyIterator, textFieldNamesIterator;
+      Iterator<String> keyIterator, textFieldNamesIterator;
       Object currentColumnName, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
       int currentColumnSize;
@@ -1390,7 +1393,7 @@ class TableTabPanel_MySQL extends TableTabPanel
 
          while (keyIterator.hasNext())
          {
-            currentDB_ColumnName = (String) keyIterator.next();
+            currentDB_ColumnName = keyIterator.next();
 
             for (int i = 0; i < listTable.getColumnCount(); i++)
                if (listTable.getColumnName(i).equals(parseColumnNameField(currentDB_ColumnName)))
