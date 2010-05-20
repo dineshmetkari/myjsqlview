@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.0 05/18/2010
+// Version 3.1 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,7 +87,8 @@
 //                        columnSizeHashMap, comboBoxColumnNames & stateComponents in Order to
 //                        Bring Code Into Compliance With Java 5.0 API. Also the Same With
 //                        Constructor Arguments. Changed Method swapEndComponent From Object
-//                        to JComponent in createUpdateWhereInterface(). 
+//                        to JComponent in createUpdateWhereInterface().
+//         3.1 05/19/2010 Parameterized keyComponentIterator in Class Method getKeyComponentsState().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +121,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.0 05/18/2010
+ * @version 3.1 05/19/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -1139,7 +1140,7 @@ class UpdateForm extends JFrame implements ActionListener
       // Method Instances
       StringBuffer stateString;
       String delimiter;
-      Iterator keyComponentIterator;
+      Iterator<JComponent> keyComponentIterator;
       Object currentComponent;
 
       // Initialize and obtain key components state.
