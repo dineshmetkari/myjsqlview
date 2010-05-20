@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.6 05/18/2010
+// Version 7.7 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -184,6 +184,8 @@
 //             & preferredColumnSizeHashMap in Order to Bring Code Into Compliance
 //             With Java 5.0 API. Removed Casts Associated With These Instances That
 //             Were Not Needed and Insured Proper Parmeters Were Loaded/Retrieved.
+//         7.7 Parameterized Instance headings in Constructor & Method loadtTable().
+//             Also Instance tableFieldIterator in Class Method viewSelectedItem().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -215,7 +217,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.6 05/18/2010
+ * @version 7.7 05/19/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -462,20 +464,20 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
             listTable = new JTable(tableModel);
             listTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-            listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME), TransferHandler.getCopyAction());
+            listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                                         TransferHandler.getCopyAction());
             createListTablePopupMenu();
             listTable.addMouseListener(summaryTablePopupListener);
 
             // Sizing columns
-            Iterator headings = tableHeadings.iterator();
+            Iterator<String> headings = tableHeadings.iterator();
             TableColumn column = null;
             int i = 0;
 
             while (headings.hasNext())
             {
-               String currentHeading = (String) headings.next();
                column = listTable.getColumnModel().getColumn(i++);
-               column.setPreferredWidth((preferredColumnSizeHashMap.get(currentHeading)).intValue());
+               column.setPreferredWidth((preferredColumnSizeHashMap.get(headings.next())).intValue());
             }
 
             // Create a scrollpane for the summary table and
@@ -1360,10 +1362,10 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          while (rs.next())
          {
-            Iterator headings = tableHeadings.iterator();
+            Iterator<String> headings = tableHeadings.iterator();
             while (headings.hasNext())
             {
-               String currentHeading = (String) headings.next();
+               String currentHeading = headings.next();
                columnName = columnNamesHashMap.get(currentHeading);
                columnClass = columnClassHashMap.get(currentHeading);
                columnType = columnTypeHashMap.get(currentHeading);
@@ -1760,7 +1762,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       Statement sqlStatement;
       ResultSet db_resultSet;
 
-      Iterator textFieldNamesIterator;
+      Iterator<String> textFieldNamesIterator;
       String currentColumnName;
       Object key, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
@@ -1796,7 +1798,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          while (textFieldNamesIterator.hasNext())
          {
-            currentColumnName = (String) textFieldNamesIterator.next();
+            currentColumnName = textFieldNamesIterator.next();
             currentDB_ColumnName = columnNamesHashMap.get(currentColumnName);
             currentColumnClass = columnClassHashMap.get(currentColumnName);
             currentColumnType = columnTypeHashMap.get(currentColumnName);
