@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.70 05/19/2010
+// Version 8.71 05/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -303,6 +303,9 @@
 //        8.70 05/19/2010 Parameterized All HashMap and Vector Instances in Order to Bring Code
 //                        Into Compliance With Java 5.0 API. Reviewed All Assignments to These
 //                        Objects to Insure Proper Configuration.
+//        8.71 05/19/2010 Parameterized columnNamesIterator in Constructor, columnNamesIterator &
+//                        keyIterator in addUpdateTableEntry(), and contentsIterator in setSetFields(),
+//                        & setComboBoxField().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -337,7 +340,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.70 05/19/2010
+ * @version 8.71 05/19/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -358,7 +361,7 @@ class TableEntryForm extends JFrame implements ActionListener
    private HashMap<JButton, String> calendarButtonHashMap;
    private HashMap<JButton, String> setButtonHashMap;
    private HashMap<JButton, String> functionButtonHashMap;
-   private HashMap<Object, Vector> setFieldsHashMap;
+   private HashMap<Object, Vector<String>> setFieldsHashMap;
    private HashMap<Object, String> functionsHashMap;
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -414,7 +417,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // Class Instances
 
       MyJSQLView_FocusTraversalPolicy focusSequence;
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       ImageIcon removeUpIcon, removeDownIcon;
       ImageIcon functionIcon, calendarIcon, setIcon;
       validEntry = false;
@@ -428,7 +431,7 @@ class TableEntryForm extends JFrame implements ActionListener
       calendarButtonHashMap = new HashMap <JButton, String>();
       setButtonHashMap = new HashMap <JButton, String>();
       functionButtonHashMap = new HashMap <JButton, String>();
-      setFieldsHashMap = new HashMap <Object, Vector>();
+      setFieldsHashMap = new HashMap <Object, Vector<String>>();
       functionsHashMap = new HashMap <Object, String>();
       componentFocusSequence = new Vector <Component>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
@@ -1134,7 +1137,7 @@ class TableEntryForm extends JFrame implements ActionListener
       String sqlFieldNamesString, sqlValuesString;
       Statement sqlStatement;
       PreparedStatement prepared_sqlStatement;
-      Iterator keyIterator, columnNamesIterator;
+      Iterator<String> keyIterator, columnNamesIterator;
 
       String currentKey_ColumnName, currentDB_ColumnName;
       Object currentContentData;
@@ -1182,7 +1185,7 @@ class TableEntryForm extends JFrame implements ActionListener
                // Prepping some instances for making things more clear
                // and easier.
 
-               columnName = (String) columnNamesIterator.next();
+               columnName = columnNamesIterator.next();
                columnClass = columnClassHashMap.get(columnName);
                columnType = columnTypeHashMap.get(columnName);
                columnSize = (columnSizeHashMap.get(columnName)).intValue();
@@ -1409,7 +1412,7 @@ class TableEntryForm extends JFrame implements ActionListener
                // Prepping some instances for making things more clear
                // and easier.
 
-               columnName = (String) columnNamesIterator.next();
+               columnName = columnNamesIterator.next();
                columnClass = columnClassHashMap.get(columnName);
                columnType = columnTypeHashMap.get(columnName);
                columnSize = (columnSizeHashMap.get(columnName)).intValue();
@@ -1597,7 +1600,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
             while (keyIterator.hasNext())
             {
-               currentKey_ColumnName = (String) keyIterator.next();
+               currentKey_ColumnName = keyIterator.next();
 
                for (int i = 0; i < selectedTableTabPanel.getListTable().getColumnCount(); i++)
                {
@@ -1702,7 +1705,7 @@ class TableEntryForm extends JFrame implements ActionListener
             // Prepping some instances for making things more clear
             // and easier.
 
-            columnName = (String) columnNamesIterator.next();
+            columnName = columnNamesIterator.next();
             columnClass = columnClassHashMap.get(columnName);
             columnType = columnTypeHashMap.get(columnName);
             columnSize = (columnSizeHashMap.get(columnName)).intValue();
@@ -2596,9 +2599,10 @@ class TableEntryForm extends JFrame implements ActionListener
    // JComboBox.
    //==============================================================
 
-   protected void setComboBoxField(Object columnName, Vector content, Object data)
+   protected void setComboBoxField(Object columnName, Vector<String> content, Object data)
    {
-      Iterator contentsIterator = content.iterator();
+      Iterator<String> contentsIterator = content.iterator();
+      
       while (contentsIterator.hasNext())
          ((JComboBox) fieldHashMap.get(columnName)).addItem(contentsIterator.next());
 
@@ -2617,10 +2621,11 @@ class TableEntryForm extends JFrame implements ActionListener
    {
       // Method Instances.
       Vector<String> setFields = new Vector <String>();
-      Iterator contentsIterator = content.iterator();
+      
+      Iterator<String> contentsIterator = content.iterator();
 
       while (contentsIterator.hasNext())
-         setFields.add((String) contentsIterator.next());
+         setFields.add(contentsIterator.next());
       setFieldsHashMap.put(columnName, setFields);
 
       if (data != null)
