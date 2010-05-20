@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.0 05/18/2018
+// Version 3.1 05/20/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //         2.9 Parameterized Method Instance databaseTables in actionPerformed(().
 //         3.0 Constructor Changed the Assignment of defaultTableData From new
 //             Integer to Integer.valueOf().
+//         3.1 Parameterized Constructor Instance tableNamesIterator.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -106,7 +107,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.0 05/18/2010
+ * @version 3.1 05/20/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -267,7 +268,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       // Fill the result table with default data.
       defaultTableData = new Object[DBTablesPanel.getTableCount()][2];
 
-      Iterator tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
+      Iterator<String> tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
       int i = 0;
 
       while (tableNamesIterator.hasNext())
