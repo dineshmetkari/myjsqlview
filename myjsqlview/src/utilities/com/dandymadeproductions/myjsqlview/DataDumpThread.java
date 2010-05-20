@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.3 05/17/2010
+// Version 5.4 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,7 @@
 //         5.3 Parameterized Class Instances tableColumnNamesHashMap, columnNamesFields,
 //             tableColumnTypeHashMap, & tableColumnSizeHashmap in Order to
 //             Bring Code Into Compliance With Java 5.0 API.
+//         5.4 Parameterized columnNamesIterator in Constructor.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -121,7 +122,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.3 05/17/2010
+ * @version 5.4 05/20/2010
  */
 
 class DataDumpThread implements Runnable
@@ -170,7 +171,7 @@ class DataDumpThread implements Runnable
       // Class Method Instances
       Object dumpData;
       MyJSQLView_ProgressBar dumpProgressBar;
-      Iterator columnNamesIterator;
+      Iterator<String> columnNamesIterator;
       StringBuffer columnNames_String;
       String schemaTableName;
       String columnClass, columnType, dataDelimiter;
@@ -227,7 +228,7 @@ class DataDumpThread implements Runnable
          
          while (columnNamesIterator.hasNext())
          {
-            Object columnNameString = columnNamesIterator.next();
+            String columnNameString = columnNamesIterator.next();
 
             // Oracle TIMESTAMPLTZ handled differently to remove the
             // need to SET SESSION.
@@ -282,7 +283,7 @@ class DataDumpThread implements Runnable
             while (columnNamesIterator.hasNext())
             {
                // Filtering out blob & text data as needed.
-               String currentHeading = (String) columnNamesIterator.next();
+               String currentHeading = columnNamesIterator.next();
                columnClass = tableColumnClassHashMap.get(currentHeading);
                columnType = tableColumnTypeHashMap.get(currentHeading);
                columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
