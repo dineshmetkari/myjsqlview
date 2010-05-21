@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.71 05/19/2010
+// Version 8.72 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -306,6 +306,8 @@
 //        8.71 05/19/2010 Parameterized columnNamesIterator in Constructor, columnNamesIterator &
 //                        keyIterator in addUpdateTableEntry(), and contentsIterator in setSetFields(),
 //                        & setComboBoxField().
+//        8.72 05/20/2010 Class Method createFunctionSQLStatement() Converted byte[] Array to String
+//                        via Arrays.toString(getFormFieldBlob(columnName).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -329,6 +331,7 @@ import java.math.BigDecimal;
 import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
@@ -340,7 +343,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.71 05/19/2010
+ * @version 8.72 05/20/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -2357,12 +2360,7 @@ class TableEntryForm extends JFrame implements ActionListener
          if (getFormField(columnName) == null || getFormFieldBlob(columnName).length == 0)
             sqlStatementString.append("(), ");
          else
-         {
-            // This is a Java 6.0 API
-            // sqlStatementString.append("('" +
-            // Arrays.toString(getFormFieldBlob(columnName)) + "'), ");
-            sqlStatementString.append("('" + getFormFieldBlob(columnName).toString() + "'), ");
-         }
+            sqlStatementString.append("('" + Arrays.toString(getFormFieldBlob(columnName)) + "'), ");
       }
       else
       {
