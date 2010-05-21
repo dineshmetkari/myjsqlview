@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 02/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@
 //                        getColumnCount() For Returning Zero When data null.
 //         1.9 05/27/2009 Header Format Changes/Update.
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 05/20/2010 Parmeterized Class Instance headings and Same in 
+//                        Constructor Argument.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +70,7 @@ import javax.swing.table.AbstractTableModel;
  * actions are generated.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 02/20/2010
  */
 
 class MyJSQLView_TableModel extends AbstractTableModel
@@ -77,7 +79,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
 
    private static final long serialVersionUID = 3515206651333774517L;
 
-   private Vector headings;
+   private Vector<String> headings;
    private Object[][] data;
    private boolean[] editableColumns;
 
@@ -85,7 +87,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
    // MyJSQLView_TableModel Constructor.
    //==============================================================
 
-   MyJSQLView_TableModel(Vector headings, Object[][] tableData)
+   MyJSQLView_TableModel(Vector<String> headings, Object[][] tableData)
    {
       this.headings = headings;
       data = tableData;
@@ -123,14 +125,14 @@ class MyJSQLView_TableModel extends AbstractTableModel
 
    public String getColumnName(int column)
    {
-      return (String) headings.elementAt(column);
+      return headings.elementAt(column);
    }
 
    //==============================================================
    // Class method to insure default renderer/editor for each cell.
    //==============================================================
 
-   public Class getColumnClass(int col)
+   public Class<?> getColumnClass(int col)
    {
       if (getValueAt(0, col) != null)
          return getValueAt(0, col).getClass();
