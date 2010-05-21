@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 05/16/2010
+// Version 1.4 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.2 05/07/2010 Changed validPluginModuleName to PluginModule.class.
 //         1.3 05/16/2010 Parameterized Class Instance pluginModulesHashMap to
 //                        Bring Code Into Compliance With Java 5.0 API.
+//         1.4 05/20/2010 Parameterized entries in Class Method loadPluginModules().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +59,7 @@ import java.util.zip.ZipFile;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.3 05/16/2010
+ * @version 1.4 05/20/2010
  */
 
 class PluginLoader
@@ -116,7 +117,7 @@ class PluginLoader
          {
             jarFile = new ZipFile(pluginDirectoryString + jarFileNames[i]);
             
-            for(Enumeration entries = jarFile.entries(); entries.hasMoreElements();)
+            for(Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
             {
                currentFileName = ((ZipEntry)entries.nextElement()).getName();
                
