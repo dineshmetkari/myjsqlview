@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.5 05/19/2010
+// Version 4.6 05/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,26 +89,32 @@
 //                        Added to Class Method reloadDBTables() To Allow Plugins to Be
 //                        Updated. Completed Initial Plugin Framework Loading Process in
 //                        Class Method createGUI().
-//         3.7 04/28/2010 Added Class Instance defaultMenuBar, and Its Instantiation in
-//                        Method createGUI() Along With loadedMenuBars. Control of MyJSQLView_Frame's
-//                        MenuBar via the stateChanged() Method. Additional Aspect Collection
-//                        of Each Plugin & Initialization in Class Method createGUI().
-//         3.8 04/29/2010 Implemented Module ToolBars and Selection Of Tab Icon for Modules.
-//                        Added Class Instances toolBarPanel, toolBarCardLayout, & defaultToolBar.
-//                        Class Methods Effected createGUI() and stateChanged().
+//         3.7 04/28/2010 Added Class Instance defaultMenuBar, and Its Instantiation
+//                        in Method createGUI() Along With loadedMenuBars. Control of
+//                        MyJSQLView_Frame's MenuBar via the stateChanged() Method.
+//                        Additional Aspect Collection of Each Plugin & Initialization
+//                        in Class Method createGUI().
+//         3.8 04/29/2010 Implemented Module ToolBars and Selection Of Tab Icon for
+//                        Modules. Added Class Instances toolBarPanel, toolBarCardLayout,
+//                        & defaultToolBar. Class Methods Effected createGUI() and
+//                        stateChanged().
 //         3.9 04/29/2010 Reorganized Slightly, Class Method createGUI().
-//         4.0 05/03/2010 Made the Class Public So That Plugins Gain Access to the ActionListener.
+//         4.0 05/03/2010 Made the Class Public So That Plugins Gain Access to the
+//                        ActionListener.
 //         4.1 05/04/2010 Backed Out 4.0.
-//         4.2 05/06/2010 What Else Put 4.0 Back In, Made Class Public and Passed this to the Plugins
-//                        via pluginModule.setParentFrame() in Class Method createGUI().
-//         4.3 05/07/2010 Changed pluginModule.run() to pluginModule.initPlugin() in Class Method
-//                        createGUI().
-//         4.4 05/08/2010 Changed pluginModule.initPlugin() To Have Argument this in Class Method
-//                        createGUI(). Removed setParentFrame() is Same.
-//         4.5 05/19/2010 Parameterized Class Instances loadedPluginModules, & loadedMenuBars
-//                        in Order to Bring Code Into Compliance With Java 5.0 API. Also
-//                        Same for tableNames in Method reloadDBTables() & pluginsHashMap
-//                        in createGUI().
+//         4.2 05/06/2010 What Else Put 4.0 Back In, Made Class Public and Passed this
+//                        to the Plugins via pluginModule.setParentFrame() in Class
+//                        Method createGUI().
+//         4.3 05/07/2010 Changed pluginModule.run() to pluginModule.initPlugin() in
+//                        Class Method createGUI().
+//         4.4 05/08/2010 Changed pluginModule.initPlugin() To Have Argument this in
+//                        Class Method createGUI(). Removed setParentFrame() is Same.
+//         4.5 05/19/2010 Parameterized Class Instances loadedPluginModules, &
+//                        loadedMenuBars in Order to Bring Code Into Compliance With
+//                        Java 5.0 API. Also Same for tableNames in Method reloadDBTables()
+//                        & pluginsHashMap in createGUI().
+//         4.6 05/20/2010 Parameterized pluginModulesIterator in reloadDBTable(). Also
+//                        keySet, pluginIterator, & pluginEntry in Method createGUI().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,7 +150,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.5 05/19/2010
+ * @version 4.6 05/20/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -295,12 +301,12 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       
       if (pluginsHashMap != null && !pluginsHashMap.isEmpty())
       {
-         Set keySet = pluginsHashMap.entrySet();
-         Iterator pluginIterator = keySet.iterator();
+         Set<Map.Entry<String, String>> keySet = pluginsHashMap.entrySet();
+         Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
          
          while (pluginIterator.hasNext())
          {
-            Map.Entry pluginEntry = (Map.Entry) pluginIterator.next();
+            Map.Entry<String, String> pluginEntry = pluginIterator.next();
             try
             {
                final File jarFile = new File((String) pluginEntry.getKey());
@@ -328,7 +334,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
                if (classLoader != null)
                {
                   // Create the instance.
-                  Class module = Class.forName((String) pluginEntry.getValue(), true, classLoader);
+                  Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                   MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
                   pluginModule.initPlugin(this);
                   
@@ -451,7 +457,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Method Instances
       Connection dbConnection;
       String currentSelectedTable;
-      Iterator pluginModulesIterator;
+      Iterator<MyJSQLView_PluginModule> pluginModulesIterator;
       Vector<String> tableNames;
       
       // Create a connection, load the database tables again
@@ -483,7 +489,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          pluginModulesIterator = loadedPluginModules.iterator();
          while (pluginModulesIterator.hasNext())
          {
-            MyJSQLView_PluginModule currentPlugin = (MyJSQLView_PluginModule) pluginModulesIterator.next();
+            MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
             currentPlugin.setDBTables(tableNames);
          }
          
