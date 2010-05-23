@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.6 05/20/2010
+// Version 4.7 05/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -115,6 +115,10 @@
 //                        & pluginsHashMap in createGUI().
 //         4.6 05/20/2010 Parameterized pluginModulesIterator in reloadDBTable(). Also
 //                        keySet, pluginIterator, & pluginEntry in Method createGUI().
+//         4.7 05/23/2010 Insured in Class Method createGUI That dbTablesPanel is
+//                        Loaded Into mainTabsPane at Index 1 by Inserting A Tempoary
+//                        Dummy JLabel Component. Then Loaded Aspect of That Tab in
+//                        the databaseTablesThread.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -150,7 +154,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.6 05/20/2010
+ * @version 4.7 05/23/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -263,6 +267,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       myJSQLViewToolBar = new MyJSQLView_JToolBar(this, "MyJSQLView ToolBar");
       toolBarPanel.add("1", myJSQLViewToolBar);
       
+      // Insure DBTablesPanel to be at index 1.
+      mainTabsPane.add(new JLabel(""), 1);
+      
       Thread databaseTablesThread = new Thread(new Runnable()
       {
          public void run()
@@ -281,9 +288,17 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             
             resource = resourceBundle.getResource("MyJSQLView_Frame.tab.DatabaseTables");
             if (resource.equals(""))
-               mainTabsPane.addTab(null, databaseTablesIcon, dbTablesPanel, "Database Tables");
+            {
+               mainTabsPane.setIconAt(1, databaseTablesIcon);
+               mainTabsPane.setComponentAt(1, dbTablesPanel);
+               mainTabsPane.setToolTipTextAt(1, "Database Tables");
+            }
             else
-               mainTabsPane.addTab(null, databaseTablesIcon, dbTablesPanel, resource);
+            {
+               mainTabsPane.setIconAt(1, databaseTablesIcon);
+               mainTabsPane.setComponentAt(1, dbTablesPanel);
+               mainTabsPane.setToolTipTextAt(1, resource);
+            }
             
             // Closing the database connection that is used
             // during the inital setup of the application.
