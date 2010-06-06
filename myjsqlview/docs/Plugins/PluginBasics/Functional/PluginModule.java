@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.1 05/29/2010
+// Version 1.2 06/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
