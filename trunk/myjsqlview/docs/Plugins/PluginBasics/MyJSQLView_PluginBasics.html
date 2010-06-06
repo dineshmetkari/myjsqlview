@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>June 1, 2010</b></center></div>
+	<div style="font-size:16px"><center><b>June 5, 2010</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -319,7 +319,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.1 05/29/2010
+// Version 1.3 06/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -343,6 +343,9 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 // Version 1.0 Original MyPlugin MyJSQLView_PluginModule.
 //         1.1 Removed Some Comments and the Class Methods getTabIcon(),
 //             getMenuBar(), &#038; getToolBar().
+//         1.2 Parameterized Argument tableNames in Class Method setDBTables()
+//             to Bring Code Into Compliance With Java 5.0 API.
+//         1.3 Removed Delay in Class Method initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -361,7 +364,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.0 05/29/2010
+ * @version 1.3 06/05/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -385,18 +388,6 @@ public class PluginModule extends MyJSQLView_PluginModule
    public void initPlugin(MyJSQLView_Frame parentFrame)
    {
       myPluginPanel = new JPanel();
-
-      // Need a delay because of a bug with
-      // 3.17 for a simple plugin like this.
-      // Fixed already for next version.
-      try
-      {
-         Thread.sleep(8000);
-      }
-      catch (InterruptedException e)
-      {
-         System.out.println("Process Interrupted.");
-      }
    }
 
    //==============================================================
@@ -425,7 +416,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector tableNames)
+   public void setDBTables(Vector&#060;String&#062; tableNames)
    {
       myPluginPanel.repaint();
    }
@@ -474,7 +465,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.1 05/29/2010
+// Version 1.2 06/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -497,6 +488,10 @@ public class PluginModule extends MyJSQLView_PluginModule
 //=================================================================
 // Version 1.0 Original TableRecordCount MyJSQLView_PluginModule.
 //         1.1 Formatted and Added Delay in Class Method initPlugin().
+//         1.2 Removed Class Methods getTabIcon(), getMenuBar(), &#038; getToolBar().
+//             Removed Delay in initPlugin() Class Method. Parameterized Argument
+//             tableNames in Class Method setDBTables() to Bring Code Into
+//             Compliance With Java 5.0 API.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -505,9 +500,6 @@ public class PluginModule extends MyJSQLView_PluginModule
 package com.dandymadeproductions.tablerecordcount;
 
 import javax.swing.JPanel;
-import javax.swing.JMenuBar;
-import javax.swing.JToolBar;
-import javax.swing.ImageIcon;
 import java.util.Vector;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
@@ -519,7 +511,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.1 05/29/2010
+ * @version 1.2 06/05/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -543,18 +535,6 @@ public class PluginModule extends MyJSQLView_PluginModule
    public void initPlugin(MyJSQLView_Frame parentFrame)
    {
       tableRecordCountPanel = new TableRecordCountPanel(MyJSQLView_Access.getTableNames());
-      
-      // Need a delay because of a bug with
-      // 3.17 for a simple plugin like this.
-      // Fixed already for next version.
-      try
-      {
-         Thread.sleep(8000);
-      }
-      catch (InterruptedException e)
-      {
-         System.out.println("Process Interrupted.");
-      }
    }
 
    //==============================================================
@@ -583,7 +563,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector tableNames)
+   public void setDBTables(Vector&#060;String&#062; tableNames)
    {
       tableRecordCountPanel.reloadPanel(tableNames);
       tableRecordCountPanel.repaint();
@@ -644,6 +624,11 @@ public class PluginModule extends MyJSQLView_PluginModule
 ~
 ~
 //=================================================================
+// Revision History
+// Changes to the code should be documented here and reflected
+// in the present version number. Author information should
+// also be included with the original copyright author.
+//=================================================================
 // Version 1.0 Initial TableFieldChartsPanel Class.
 //         1.1 Cleaned Up Some &#038; Implemented reloadPanel().
 //         1.2 Formatted and Moved the Delay in The Constructor Needed to
@@ -652,6 +637,9 @@ public class PluginModule extends MyJSQLView_PluginModule
 //             Processing From That Method to New Method executreRecordCount().
 //         1.4 Comment Changes for executeRecordCount() Method and disableActions
 //             During Processing of a Record Count in Same Method.
+//         1.5 Parameterized Argument tableNames in Constructor and Class
+//             Method reloadPanel() Along With Iterator Instance 
+//             tableNamesIterator.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -680,7 +668,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.4 05/31/2010
+ * @version 1.5 06/05/2010
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
@@ -695,7 +683,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // TableRecordCountPanel Constructor
    //==============================================================
 
-   TableRecordCountPanel(Vector tableNames)
+   TableRecordCountPanel(Vector&#060;String&#062; tableNames)
    {
       // Method Instances.
       JLabel tableNameLabel;
@@ -710,7 +698,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
       if (!tableNames.isEmpty())
       {
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator&#060;String&#062; tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
             tableSelectionComboBox.addItem(tableNamesIterator.next());
 
@@ -791,8 +779,8 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    }
 
    //==============================================================
-   // Class Method to execute the required processing of the
-   // selected database table to determine the record count.
+   // Class Method to execute the required processing the selected
+   // database table to determine the record count.
    //==============================================================
 
    private void executeRecordCount()
@@ -923,7 +911,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // if MyJSQLView is called to reload the database tables.
    //==============================================================
 
-   protected void reloadPanel(Vector tableNames)
+   protected void reloadPanel(Vector&#060;String&#062; tableNames)
    {
       // Insure no actions are taken during reload.
 
@@ -938,7 +926,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       // Try reloading tables.
       if (!tableNames.isEmpty())
       {
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator&#060;String&#062; tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
          {
             tableSelectionComboBox.addItem(tableNamesIterator.next());
