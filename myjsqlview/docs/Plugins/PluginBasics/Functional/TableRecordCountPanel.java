@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.4 05/31/2010
+// Version 1.2 05/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,10 +34,9 @@
 //         1.1 Cleaned Up Some & Implemented reloadPanel().
 //         1.2 Formatted and Moved the Delay in The Constructor Needed to
 //             Fix the Problem in v3.17 Code to PluginModule initPlugin().
-//         1.3 Added Thread to actionPerformed() Method and Moved All 
-//             Processing From That Method to New Method executreRecordCount().
-//         1.4 Comment Changes for executeRecordCount() Method and disableActions
-//             During Processing of a Record Count in Same Method.
+//         1.3 Parameterized Argument tableNames in Constructor and Class
+//             Method reloadPanel() Along With Iterator Instance 
+//             tableNamesIterator.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +65,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.4 05/31/2010
+ * @version 1.3 06/05/2010
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
@@ -81,7 +80,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // TableRecordCountPanel Constructor
    //==============================================================
 
-   TableRecordCountPanel(Vector tableNames)
+   TableRecordCountPanel(Vector<String> tableNames)
    {
       // Method Instances.
       JLabel tableNameLabel;
@@ -96,7 +95,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
       if (!tableNames.isEmpty())
       {
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator<String> tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
             tableSelectionComboBox.addItem(tableNamesIterator.next());
 
@@ -126,106 +125,79 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
       if (panelSource instanceof JComboBox && !disableActions)
       {
-         Thread actionThread = new Thread(new Runnable()
+         // Setup Instances.
+         Connection dbConnection;
+         String tableName;
+         String identifierQuoteString;
+         String schemaTableName;
+
+         String sqlStatementString;
+         Statement sqlStatement;
+         ResultSet rs;
+
+         int rowCount = 0;
+
+         // Get Connection to Database.
+
+         dbConnection = MyJSQLView_Access.getConnection("TableRecordCountPanel actionPerformed()");
+
+         try
          {
-            public void run()
+            // Create a statement object to be used with the connection.
+
+            sqlStatement = dbConnection.createStatement();
+
+            // Collect the selected table from the combobox.
+
+            tableName = (String) tableSelectionComboBox.getSelectedItem();
+            // System.out.println(tableName);
+
+            // Collect the table name as referenced in the database.
+            TableTabPanel selectedTablePanel = DBTablesPanel.getTableTabPanel(tableName);
+
+            if (selectedTablePanel == null)
+               return;
+
+            tableName = selectedTablePanel.getTableName();
+            // System.out.println(tableName);
+
+            // Collect the schema table name if required. Future versions of
+            // MyJSQLView will handle this or can be obtained from
+            // MyJSQLView_Utils.
+
+            identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+
+            if (tableName.indexOf(".") != -1)
             {
-               executeRecordCount();
+               schemaTableName = identifierQuoteString + tableName.substring(0, tableName.indexOf("."))
+                                 + identifierQuoteString + "." + identifierQuoteString
+                                 + tableName.substring(tableName.indexOf(".") + 1) + identifierQuoteString;
             }
-         }, "TableRecordCountPanel.actionThread");
-         actionThread.start();
-      }
-   }
-   
-   //==============================================================
-   // Class Method to execute the required processing the selected
-   // database table to determine the record count.
-   //==============================================================
+            else
+               schemaTableName = identifierQuoteString + tableName + identifierQuoteString;
+            // System.out.println(schemaTableName);
 
-   private void executeRecordCount()
-   {
-      // Setup Instances.
-      Connection dbConnection;
-      String tableName;
-      String identifierQuoteString;
-      String schemaTableName;
+            // Setup the statement string and execute the database query.
 
-      String sqlStatementString;
-      Statement sqlStatement;
-      ResultSet rs;
+            sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
+            rs = sqlStatement.executeQuery(sqlStatementString);
+            rs.next();
+            rowCount = rs.getInt(1);
 
-      int rowCount = 0;
-      tableSelectionComboBox.setEnabled(false);
-      disableActions = true;
+            // Set the record count label to reflect the results
+            // and close out.
 
-      // Get Connection to Database.
+            recordCountLabel.setText(Integer.toString(rowCount));
 
-      dbConnection = MyJSQLView_Access.getConnection("TableRecordCountPanel executeRecordCount()");
-
-      try
-      {
-         // Create a statement object to be used with the connection.
-
-         sqlStatement = dbConnection.createStatement();
-
-         // Collect the selected table from the combobox.
-
-         tableName = (String) tableSelectionComboBox.getSelectedItem();
-         // System.out.println(tableName);
-
-         // Collect the table name as referenced in the database.
-         TableTabPanel selectedTablePanel = DBTablesPanel.getTableTabPanel(tableName);
-
-         if (selectedTablePanel == null)
-            return;
-
-         tableName = selectedTablePanel.getTableName();
-         // System.out.println(tableName);
-
-         // Collect the schema table name if required. Future versions of
-         // MyJSQLView will handle this or can be obtained from
-         // MyJSQLView_Utils.
-
-         identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
-
-         if (tableName.indexOf(".") != -1)
-         {
-            schemaTableName = identifierQuoteString + tableName.substring(0, tableName.indexOf("."))
-                              + identifierQuoteString + "." + identifierQuoteString
-                              + tableName.substring(tableName.indexOf(".") + 1) + identifierQuoteString;
+            rs.close();
+            sqlStatement.close();
          }
-         else
-            schemaTableName = identifierQuoteString + tableName + identifierQuoteString;
-         // System.out.println(schemaTableName);
-
-         // Setup the statement string and execute the database query.
-
-         sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
-         rs = sqlStatement.executeQuery(sqlStatementString);
-         rs.next();
-         rowCount = rs.getInt(1);
-
-         // Set the record count label to reflect the results
-         // and close out.
-
-         recordCountLabel.setText(Integer.toString(rowCount));
-
-         rs.close();
-         sqlStatement.close();
+         catch (SQLException e)
+         {
+            MyJSQLView_Access.displaySQLErrors(e, "TableRecordCountPanel actionPerformed()");
+            recordCountLabel.setText("0");
+         }
       }
-      catch (SQLException e)
-      {
-         MyJSQLView_Access.displaySQLErrors(e, "TableRecordCountPanel executeRecordCount()");
-         recordCountLabel.setText("0");
-         tableSelectionComboBox.setEnabled(true);
-         disableActions = false;
-      }
-      
-      // Close connection to database.
-      
-      MyJSQLView_Access.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
-      tableSelectionComboBox.setEnabled(true);
-      disableActions = false;
    }
 
    //==============================================================
@@ -233,7 +205,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // if MyJSQLView is called to reload the database tables.
    //==============================================================
 
-   protected void reloadPanel(Vector tableNames)
+   protected void reloadPanel(Vector<String> tableNames)
    {
       // Insure no actions are taken during reload.
 
@@ -248,7 +220,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       // Try reloading tables.
       if (!tableNames.isEmpty())
       {
-         Iterator tableNamesIterator = tableNames.iterator();
+         Iterator<String> tableNamesIterator = tableNames.iterator();
          while (tableNamesIterator.hasNext())
          {
             tableSelectionComboBox.addItem(tableNamesIterator.next());
