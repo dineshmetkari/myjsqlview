@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.2 06/05/2010
+// Version 1.3 06/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 //             getMenuBar(), & getToolBar().
 //         1.2 Parameterized Argument tableNames in Class Method setDBTables()
 //             to Bring Code Into Compliance With Java 5.0 API.
+//         1.3 Removed Delay in Class Method initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.2 06/05/2010
+ * @version 1.3 06/05/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -77,18 +78,6 @@ public class PluginModule extends MyJSQLView_PluginModule
    public void initPlugin(MyJSQLView_Frame parentFrame)
    {
       myPluginPanel = new JPanel();
-      
-      // Need a delay because of a bug with
-      // 3.17 for a simple plugin like this.
-      // Fixed already for next version.
-      try
-      {
-         Thread.sleep(8000);
-      }
-      catch (InterruptedException e)
-      {
-         System.out.println("Process Interrupted.");
-      }
    }
 
    //==============================================================
