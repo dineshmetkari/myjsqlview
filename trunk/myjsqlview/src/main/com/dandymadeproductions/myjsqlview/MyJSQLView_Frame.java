@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.7 05/23/2010
+// Version 4.8 06/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,11 @@
 //                        Loaded Into mainTabsPane at Index 1 by Inserting A Tempoary
 //                        Dummy JLabel Component. Then Loaded Aspect of That Tab in
 //                        the databaseTablesThread.
+//         4.8 06/06/2010 Removed Class Method loadedMenuBars & pluginIcon. Also Removed
+//                        Method Instances in createGUI() currentModule/Name/Panel/Icon.
+//                        ReOrganized Instances and Moved Plugin Loading Completely to
+//                        PluginLoader Class. Changes in actionPerformed() to Handle the
+//                        Storage of All Plugin Characteristics in PluginModule Classes.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -130,19 +135,10 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Image;
-import java.io.File;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
-import java.security.*;
-import java.net.MalformedURLException;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -154,7 +150,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.7 05/23/2010
+ * @version 4.8 06/06/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -164,22 +160,18 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
 
    private String[] myJSQLView_Version;
    private String webSiteString;
-   private static ImageIcon databaseTablesIcon, pluginIcon;
-   private String fileSeparator;
-   
+   private static ImageIcon databaseTablesIcon;
    private Default_JMenuBar defaultMenuBar;
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
    private JPanel toolBarPanel;
    private CardLayout toolBarCardLayout;
-   private Default_JToolBar defaultToolBar;
-   private MyJSQLView_JToolBar myJSQLViewToolBar;
+   
    private TopTabPanel mainTabPanel;
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
    
    private static Vector<MyJSQLView_PluginModule> loadedPluginModules = 
                                                   new Vector <MyJSQLView_PluginModule>();
-   private static Vector<JMenuBar> loadedMenuBars = new Vector <JMenuBar>();
    
    //==============================================================
    // MyJSQLView_Frame Constructor
@@ -205,14 +197,11 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    {
       // Class Instances
       JPanel mainPanel;
-      
-      String iconsDirectory;
+      String fileSeparator, iconsDirectory;
       ImageIcon mainTabIcon;
-      PluginLoader pluginLoader;
-      HashMap<String, String> pluginsHashMap;
-      String currentModuleName;
-      JPanel currentModuleMainPanel;
-      ImageIcon currentModuleIcon;
+      Default_JToolBar defaultToolBar;
+      MyJSQLView_JToolBar myJSQLViewToolBar;
+      Iterator<MyJSQLView_PluginModule> pluginModulesIterator;
       
       // Setting up Various Instances.
       
@@ -223,12 +212,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       
       mainTabIcon = new ImageIcon(iconsDirectory + "mainTabIcon.png");
       databaseTablesIcon = new ImageIcon(iconsDirectory + "databasetablesIcon.png");
-      pluginIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
       
       // Setup the menu bar for the frame.
       
       defaultMenuBar = new Default_JMenuBar(this);
-      loadedMenuBars.add(defaultMenuBar);
       setJMenuBar(defaultMenuBar);
       
       // ===============================================
@@ -262,7 +249,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Standard Database Tables Tab
       
       myJSQLViewMenuBar = new MyJSQLView_JMenuBar(this);
-      loadedMenuBars.add(myJSQLViewMenuBar);
       
       myJSQLViewToolBar = new MyJSQLView_JToolBar(this, "MyJSQLView ToolBar");
       toolBarPanel.add("1", myJSQLViewToolBar);
@@ -311,91 +297,16 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       //=========================================
       // Plugins' Tabs.
       
-      pluginLoader = new PluginLoader();
-      pluginsHashMap = pluginLoader.getPluginsHashMap();
+      new PluginLoader(this, loadedPluginModules);
       
-      if (pluginsHashMap != null && !pluginsHashMap.isEmpty())
+      pluginModulesIterator = loadedPluginModules.iterator();
+      while (pluginModulesIterator.hasNext())
       {
-         Set<Map.Entry<String, String>> keySet = pluginsHashMap.entrySet();
-         Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
+         MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
          
-         while (pluginIterator.hasNext())
-         {
-            Map.Entry<String, String> pluginEntry = pluginIterator.next();
-            try
-            {
-               final File jarFile = new File((String) pluginEntry.getKey());
-               ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction <ClassLoader>()
-               {
-                  public ClassLoader run()
-                  {
-                     try
-                     {
-                        return new URLClassLoader(new URL[] {jarFile.toURI().toURL()},
-                                                  ClassLoader.getSystemClassLoader());
-                     }
-                     catch (MalformedURLException me)
-                     {
-                        if (MyJSQLView.getDebug())
-                           System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n"
-                                               + me.toString());
-                        return null;
-                     }
-                  }
-               });
-               
-               // If looks like a good plugin load it.
-               
-               if (classLoader != null)
-               {
-                  // Create the instance.
-                  Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
-                  MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-                  pluginModule.initPlugin(this);
-                  
-                  // Collect the required information needed
-                  // by MyJSQLView and add to tabbed pane.
-                  
-                  // Name
-                  currentModuleName = pluginModule.getName();
-                  if (currentModuleName == null)
-                     currentModuleName = "";
-                  else if (currentModuleName.length() > 50)
-                     currentModuleName = currentModuleName.substring(0, 49);
-                  
-                  // Main Panel
-                  currentModuleMainPanel = pluginModule.getPanel();
-                  if (currentModuleMainPanel == null)
-                     currentModuleMainPanel = new JPanel();
-                  
-                  // Tab Icon
-                  currentModuleIcon = pluginModule.getTabIcon();
-                  if (currentModuleIcon == null)
-                     currentModuleIcon = pluginIcon;
-                  else
-                     currentModuleIcon = new ImageIcon(currentModuleIcon.getImage().getScaledInstance(12,
-                                                                         12, Image.SCALE_FAST));
-                  
-                  mainTabsPane.addTab(null, currentModuleIcon, currentModuleMainPanel, currentModuleName);
-                  
-                  // Store plugin's aspects.
-                  loadedPluginModules.add(pluginModule);
-                  loadedMenuBars.add(pluginModule.getMenuBar());
-                  
-                  if (pluginModule.getToolBar() == null)
-                     toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)),
-                                       new Default_JToolBar(""));
-                  else
-                     toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)),
-                                       pluginModule.getToolBar());  
-               }
-            }
-            catch (Exception e)
-            {
-               if (MyJSQLView.getDebug())
-                  System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
-            }
-         }  
+         mainTabsPane.addTab(null, currentPlugin.getTabIcon(), currentPlugin.getPanel(),
+                             currentPlugin.getName());
+         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), currentPlugin.getToolBar());
       }
       
       mainTabsPane.addChangeListener(this);
@@ -424,7 +335,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    {
       // Method Instances.
       int selectedIndex;
-      JMenuBar selectedMenuBar;
       
       Object changeSource = evt.getSource();
       
@@ -445,17 +355,19 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          else
             mainTabPanel.setThreadAction(true);
          
-         // Set the menubar & toolbar required by the tab.
+         // Set the MenuBar required by the tab.
          
-         if (selectedIndex > (loadedMenuBars.size() - 1))
-            selectedMenuBar = null;
-         else
-            selectedMenuBar = loadedMenuBars.get(selectedIndex);
-         
-         if (selectedMenuBar != null)
-            setJMenuBar(selectedMenuBar);
-         else
+         // Top Panel
+         if (selectedIndex == 0)
             setJMenuBar(defaultMenuBar);
+         // DBTables Panel
+         else if (selectedIndex == 1)
+            setJMenuBar(myJSQLViewMenuBar);
+         // Plugin Panel
+         else
+            setJMenuBar((loadedPluginModules.get(selectedIndex - 2)).getMenuBar());
+         
+         // Set the ToolBar required by the tab.
          
          toolBarCardLayout.show(toolBarPanel, Integer.toString(selectedIndex));
       }
