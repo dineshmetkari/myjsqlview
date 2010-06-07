@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.5 06/06/2010
+// Version 1.6 06/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@
 //         1.4 05/20/2010 Parameterized entries in Class Method loadPluginModules().
 //         1.5 06/06/2010 Rebuilt Class To Handle Complete Loading of Plugin Modules.
 //                        Added Class Method loadPluginEntries().
+//         1.6 06/07/2010 Changed the Way Plugin Data is Stored for Later Retrieval
+//                        By Setting the Plugin's Instances. Changed Occured in
+//                        Class Method loadPluginModules(). Formatted.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,7 +76,7 @@ import javax.swing.JPanel;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.5 06/06/2010
+ * @version 1.6 06/07/2010
  */
 
 class PluginLoader
@@ -84,7 +87,7 @@ class PluginLoader
    private String pluginDirectoryString;
    private static final String validPluginModuleName = "PluginModule.class";
    private HashMap<String, String> pluginEntriesHashMap;
-   
+
    //==============================================================
    // PluginLoader Constructor
    //==============================================================
@@ -96,14 +99,14 @@ class PluginLoader
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       pluginDirectoryString = System.getProperty("user.dir") + fileSeparator + "lib" + fileSeparator
                               + "plugins" + fileSeparator;
-      
-      pluginEntriesHashMap = new HashMap <String, String>();
-      
+
+      pluginEntriesHashMap = new HashMap<String, String>();
+
       // Obtain the Plugin Modules.
       loadPluginEntries();
       loadPluginModules(pluginModules);
    }
-   
+
    //==============================================================
    // Class Method for reviewing the JAR files in the lib/plugin/
    // directory in search of a MyJSQLView_PluginModule to be then
@@ -114,53 +117,54 @@ class PluginLoader
    {
       // Method Instances
       File filePluginsDirectory;
-      String[] jarFileNames; 
+      String[] jarFileNames;
       String pathKey, currentFileName;
       ZipFile jarFile;
-      
+
       // Create the file for the plugin directory & load
       // directory contents.
-      
+
       filePluginsDirectory = new File(pluginDirectoryString);
       jarFileNames = filePluginsDirectory.list();
-      
+
       // Cycle through the files in search of plugins.
-      for (int i=0; i<jarFileNames.length; i++)
+      for (int i = 0; i < jarFileNames.length; i++)
       {
          if (!jarFileNames[i].toLowerCase().endsWith(".jar"))
             continue;
-         
+
          try
          {
             jarFile = new ZipFile(pluginDirectoryString + jarFileNames[i]);
-            
-            for(Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
+
+            for (Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
             {
-               currentFileName = ((ZipEntry)entries.nextElement()).getName();
-               
+               currentFileName = ((ZipEntry) entries.nextElement()).getName();
+
                // Plugin Qualifier
-               if (currentFileName.endsWith(".class") && currentFileName.indexOf("$")==-1
+               if (currentFileName.endsWith(".class") && currentFileName.indexOf("$") == -1
                    && currentFileName.indexOf(validPluginModuleName) != -1)
                {
                   pathKey = pluginDirectoryString + jarFileNames[i];
                   currentFileName = currentFileName.replaceAll("/", ".");
                   currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
-                  
+
                   pluginEntriesHashMap.put(pathKey, currentFileName);
-                  // System.out.println("Located:" + pathKey + " " + currentFileName);
+                  // System.out.println("Located:" + pathKey + " " +
+                  // currentFileName);
                }
             }
             jarFile.close();
          }
-         catch(Exception e)
+         catch (Exception e)
          {
-            String errorString = "PluginLoader loadPluginModule() Exception: " + jarFileNames[i]
-                                 + "\n" + e.toString();
+            String errorString = "PluginLoader loadPluginModule() Exception: " + jarFileNames[i] + "\n"
+                                 + e.toString();
             displayErrors(errorString);
          }
-      }   
+      }
    }
-   
+
    //==============================================================
    // Class Method for loading the actual plugin module class
    // instances
@@ -169,85 +173,97 @@ class PluginLoader
    private void loadPluginModules(Vector<MyJSQLView_PluginModule> pluginModules)
    {
       // Method Instances.
-      String iconsDirectory, currentModuleName;
-      ImageIcon defaultModuleIcon, currentModuleIcon;
-      
+      String iconsDirectory;
+      ImageIcon defaultModuleIcon;
+
       // Obtain & create default Image Icons.
-      
-      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;;
+
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
+      ;
       defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
-      
+
       // Check to see if there are any modules
       // to even load.
-      
+
       if (pluginEntriesHashMap != null && !pluginEntriesHashMap.isEmpty())
       {
          Set<Map.Entry<String, String>> keySet = pluginEntriesHashMap.entrySet();
          Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
-         
+
          while (pluginIterator.hasNext())
          {
             Map.Entry<String, String> pluginEntry = pluginIterator.next();
             try
             {
                final File jarFile = new File((String) pluginEntry.getKey());
-               ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction <ClassLoader>()
+               ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
                {
                   public ClassLoader run()
                   {
                      try
                      {
-                        return new URLClassLoader(new URL[] {jarFile.toURI().toURL()},
-                                                  ClassLoader.getSystemClassLoader());
+                        return new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader
+                              .getSystemClassLoader());
                      }
                      catch (MalformedURLException me)
                      {
                         if (MyJSQLView.getDebug())
                            System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n"
-                                               + me.toString());
+                                              + me.toString());
                         return null;
                      }
                   }
                });
-               
+
                // If looks like a good plugin load it.
-               
+
                if (classLoader != null)
                {
                   // Create the instance.
                   Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                   MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
                   pluginModule.initPlugin(parentFrame);
-                  
+
                   // Check all the main aspects needed by MyJSQLView
-                  // in the loaded plugin module.
-                  
+                  // in the loaded plugin module and isolate the
+                  // application from deviants
+
                   // Name
-                  currentModuleName = pluginModule.getName();
-                  if (currentModuleName == null)
-                     pluginModule.setName("");
-                  else if (currentModuleName.length() > 50)
-                     pluginModule.setName(currentModuleName.substring(0, 49));
-                  
+                  if (pluginModule.getName() == null)
+                     pluginModule.name = "";
+                  else
+                  {
+                     if ((pluginModule.getName()).length() > 50)
+                        pluginModule.name = ((pluginModule.getName()).substring(0, 49));
+                     else
+                        pluginModule.name = pluginModule.getName();
+                  }
+
                   // Main Panel
                   if (pluginModule.getPanel() == null)
-                     pluginModule.setPanel(new JPanel());
-                  
-                  // Tab Icon
-                  currentModuleIcon = pluginModule.getTabIcon();
-                  if (currentModuleIcon == null)
-                     pluginModule.setTabIcon(defaultModuleIcon);
+                     pluginModule.panel = (new JPanel());
                   else
-                     pluginModule.setTabIcon(new ImageIcon(currentModuleIcon.getImage().getScaledInstance(12,
-                                                           12, Image.SCALE_FAST)));
+                     pluginModule.panel = pluginModule.getPanel();
+
+                  // Tab Icon
+                  if (pluginModule.getTabIcon() == null)
+                     pluginModule.tabIcon = defaultModuleIcon;
+                  else
+                     pluginModule.tabIcon = new ImageIcon((pluginModule.getTabIcon()).getImage()
+                           .getScaledInstance(12, 12, Image.SCALE_FAST));
+
                   // MenuBar
                   if (pluginModule.getMenuBar() == null)
-                     pluginModule.setMenuBar(new Default_JMenuBar(parentFrame));
-                  
+                     pluginModule.menuBar = new Default_JMenuBar(parentFrame);
+                  else
+                     pluginModule.menuBar = pluginModule.getMenuBar();
+
                   // ToolBar
                   if (pluginModule.getToolBar() == null)
-                     pluginModule.setToolBar(new Default_JToolBar(""));
-                  
+                     pluginModule.toolBar = new Default_JToolBar("");
+                  else
+                     pluginModule.toolBar = pluginModule.getToolBar();
+
                   // Store Plugin
                   pluginModules.add(pluginModule);
                }
@@ -257,10 +273,10 @@ class PluginLoader
                if (MyJSQLView.getDebug())
                   System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
             }
-         }  
+         }
       }
    }
-   
+
    //==============================================================
    // Class method to display an error to the standard output if
    // the debug option is active.
