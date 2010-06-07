@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.9 06/06/2010
+// Version 2.0 06/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,8 @@
 //             & pluginPanel. Set All to Null in Constructor. Created Setter Methods
 //             to Accompany Getter Methods. Returned Newly Created Instances in
 //             Getter Methods.
+//         2.0 Removed the Setter Methods. Made Class Instances From 1.9 Protected and
+//             Reverted Back to the Default Instances Returned by the Getters to Null.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,18 +70,18 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.9 06/06/2010
+ * @version 2.0 06/07/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 {
    // Class Instances.
    //protected MyJSQLView_Frame parent;
-   private String pluginName;
-   private ImageIcon pluginIcon;
-   private JMenuBar pluginMenuBar;
-   private JToolBar pluginToolBar;
-   private JPanel pluginPanel;
+   protected String name;
+   protected ImageIcon tabIcon;
+   protected JMenuBar menuBar;
+   protected JToolBar toolBar;
+   protected JPanel panel;
 
    //===========================================================
    // MyJSQLView_PluginModule Constructor
@@ -89,11 +91,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       // Just Initialize to a NULL condition.
       
-      pluginName = null;
-      pluginIcon = null;
-      pluginMenuBar = null;
-      pluginToolBar = null;
-      pluginPanel = null;
+      name = null;
+      tabIcon = null;
+      menuBar = null;
+      toolBar = null;
+      panel = null;
    }
    
    //==============================================================
@@ -110,85 +112,59 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    */
    
    //==============================================================
-   // Class methods to obtain/store the plugin's name.
+   // Class methods to obtain the plugin's name.
    // Interface requirement.
    //==============================================================
 
    public String getName()
    {
-      return pluginName;
-   }
-   
-   protected void setName(String name)
-   {
-      pluginName = name;
+      return null;
    }
 
    //==============================================================
-   // Class methods to allow the collection/storage of a image icon
-   // that will be used as an identifier in the MyJSQLView tab
-   // structure. NOTE: The tab icon should be no larger than 12 x 12.
+   // Class methods to allow the collection of a image icon that
+   // will be used as an identifier in the MyJSQLView tab structure.
+   // NOTE: The tab icon should be no larger than 12 x 12.
    // Interface requirement.
    //==============================================================
 
    public ImageIcon getTabIcon()
    {
-      return pluginIcon;
-   }
-   
-   protected void setTabIcon(ImageIcon icon)
-   {
-      pluginIcon = icon;
+      return null;
    }
 
    //==============================================================
-   // Class methods to obtain/store the plugin's JMenuBar that can
-   // be used to control various aspects of the modules functionality.
+   // Class methods to obtain the plugin's JMenuBar that can be
+   // used to control various aspects of the modules functionality.
    // Interface requirement.
    //==============================================================
 
    public JMenuBar getMenuBar()
    {
-      return pluginMenuBar;
+      return null;
    }
    
-   protected void setMenuBar(JMenuBar menuBar)
-   {
-      pluginMenuBar = menuBar;
-   }
-
    //==============================================================
-   // Class methods to allow the collection/storage of a JToolBar
-   // to be used with the plugin module.
+   // Class methods to allow the collection of a JToolBar to be
+   // used with the plugin module.
    // Interface requirement.
    //==============================================================
 
    public JToolBar getToolBar()
    {
-      return pluginToolBar;
+      return null;
    }
    
-   protected void setToolBar(JToolBar toolBar)
-   {
-      pluginToolBar = toolBar;
-   }
-
    //==============================================================
-   // Class methods for returning/storing a JPanel for inclusion
-   // in the MyJSQLView application's main tab.
-   // Interface requirement.
+   // Class methods for returning a JPanel for inclusion in the
+   // MyJSQLView application's main tab. Interface requirement.
    //==============================================================
 
    public JPanel getPanel()
    {
-      return pluginPanel;
+      return null;
    }
    
-   protected void setPanel(JPanel panel)
-   {
-      pluginPanel = panel;
-   }
-
    //==============================================================
    // Class method for being able to set the database tables, occurs
    // if the database is reloaded.
