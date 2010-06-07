@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.8 06/06/2010
+// Version 4.9 06/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,8 @@
 //                        ReOrganized Instances and Moved Plugin Loading Completely to
 //                        PluginLoader Class. Changes in actionPerformed() to Handle the
 //                        Storage of All Plugin Characteristics in PluginModule Classes.
+//         4.9 06/07/2010 Class Method createGUI() Changed the Way Plugin Module Aspects
+//                        Are Stored, by Instance Instead of Getter Method.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -150,7 +152,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.8 06/06/2010
+ * @version 4.9 06/07/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -304,9 +306,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       {
          MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
          
-         mainTabsPane.addTab(null, currentPlugin.getTabIcon(), currentPlugin.getPanel(),
-                             currentPlugin.getName());
-         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), currentPlugin.getToolBar());
+         mainTabsPane.addTab(null, currentPlugin.tabIcon, currentPlugin.panel,
+                             currentPlugin.name);
+         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), currentPlugin.toolBar);
       }
       
       mainTabsPane.addChangeListener(this);
@@ -365,7 +367,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             setJMenuBar(myJSQLViewMenuBar);
          // Plugin Panel
          else
-            setJMenuBar((loadedPluginModules.get(selectedIndex - 2)).getMenuBar());
+            setJMenuBar((loadedPluginModules.get(selectedIndex - 2)).menuBar);
          
          // Set the ToolBar required by the tab.
          
