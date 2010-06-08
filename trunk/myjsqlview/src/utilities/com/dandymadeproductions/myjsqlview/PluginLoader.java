@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 06/07/2010
+// Version 1.7 06/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,10 @@
 //         1.6 06/07/2010 Changed the Way Plugin Data is Stored for Later Retrieval
 //                        By Setting the Plugin's Instances. Changed Occured in
 //                        Class Method loadPluginModules(). Formatted.
+//         1.7 06/07/2010 Implemented Runnable. Class Methods loadePluginEntries()
+//                        & loadPluginModules to run() Method. Removed Vector Argument
+//                        From Constructor. Class Method loadPluginModules Stored
+//                        Each Loaded Plugin via MyJSQLView_Frame.addTab().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,25 +67,25 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
- *    The PluginLoader class is used to cycle through the jar/zip files
- * located in the plugin directory under MyJSQLView's installation directory
- * lib to find Plugin Modules. Only classes that match the interface
- * PluginModule will be loaded.
+ *    The PluginLoader class is used to cycle through the jar/zip
+ * files located in the plugin directory under MyJSQLView's installation
+ * directory lib to find Plugin Modules. Only classes that match the
+ * interface PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.6 06/07/2010
+ * @version 1.7 06/07/2010
  */
 
-class PluginLoader
+class PluginLoader implements Runnable
 {
    // Class Instances.
+   Thread pluginLoaderThread;
    private MyJSQLView_Frame parentFrame;
    private String fileSeparator;
    private String pluginDirectoryString;
@@ -92,7 +96,7 @@ class PluginLoader
    // PluginLoader Constructor
    //==============================================================
 
-   protected PluginLoader(MyJSQLView_Frame parent, Vector<MyJSQLView_PluginModule> pluginModules)
+   protected PluginLoader(MyJSQLView_Frame parent)
    {
       // Setup various needing instances.
       parentFrame = parent;
@@ -102,9 +106,24 @@ class PluginLoader
 
       pluginEntriesHashMap = new HashMap<String, String>();
 
+      // Create and start the class thread.
+      pluginLoaderThread = new Thread(this, "PluginLoader Thread");
+      // System.out.println("PluginLoader Thread");
+
+      pluginLoaderThread.start();
+   }
+
+   //==============================================================
+   // Class method for normal start of the thread
+   //==============================================================
+
+   public void run()
+   {
       // Obtain the Plugin Modules.
       loadPluginEntries();
-      loadPluginModules(pluginModules);
+
+      if (pluginEntriesHashMap != null && !pluginEntriesHashMap.isEmpty())
+         loadPluginModules();
    }
 
    //==============================================================
@@ -170,7 +189,7 @@ class PluginLoader
    // instances
    //==============================================================
 
-   private void loadPluginModules(Vector<MyJSQLView_PluginModule> pluginModules)
+   private void loadPluginModules()
    {
       // Method Instances.
       String iconsDirectory;
@@ -179,100 +198,94 @@ class PluginLoader
       // Obtain & create default Image Icons.
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
-      ;
       defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
 
-      // Check to see if there are any modules
-      // to even load.
+      // Iterator through the found plugins and load.
 
-      if (pluginEntriesHashMap != null && !pluginEntriesHashMap.isEmpty())
+      Set<Map.Entry<String, String>> keySet = pluginEntriesHashMap.entrySet();
+      Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
+
+      while (pluginIterator.hasNext())
       {
-         Set<Map.Entry<String, String>> keySet = pluginEntriesHashMap.entrySet();
-         Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
-
-         while (pluginIterator.hasNext())
+         Map.Entry<String, String> pluginEntry = pluginIterator.next();
+         try
          {
-            Map.Entry<String, String> pluginEntry = pluginIterator.next();
-            try
+            final File jarFile = new File((String) pluginEntry.getKey());
+            ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
             {
-               final File jarFile = new File((String) pluginEntry.getKey());
-               ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+               public ClassLoader run()
                {
-                  public ClassLoader run()
+                  try
                   {
-                     try
-                     {
-                        return new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader
-                              .getSystemClassLoader());
-                     }
-                     catch (MalformedURLException me)
-                     {
-                        if (MyJSQLView.getDebug())
-                           System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n"
-                                              + me.toString());
-                        return null;
-                     }
+                     return new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader
+                           .getSystemClassLoader());
                   }
-               });
-
-               // If looks like a good plugin load it.
-
-               if (classLoader != null)
-               {
-                  // Create the instance.
-                  Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
-                  MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-                  pluginModule.initPlugin(parentFrame);
-
-                  // Check all the main aspects needed by MyJSQLView
-                  // in the loaded plugin module and isolate the
-                  // application from deviants
-
-                  // Name
-                  if (pluginModule.getName() == null)
-                     pluginModule.name = "";
-                  else
+                  catch (MalformedURLException me)
                   {
-                     if ((pluginModule.getName()).length() > 50)
-                        pluginModule.name = ((pluginModule.getName()).substring(0, 49));
-                     else
-                        pluginModule.name = pluginModule.getName();
+                     if (MyJSQLView.getDebug())
+                        System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n" + me.toString());
+                     return null;
                   }
-
-                  // Main Panel
-                  if (pluginModule.getPanel() == null)
-                     pluginModule.panel = (new JPanel());
-                  else
-                     pluginModule.panel = pluginModule.getPanel();
-
-                  // Tab Icon
-                  if (pluginModule.getTabIcon() == null)
-                     pluginModule.tabIcon = defaultModuleIcon;
-                  else
-                     pluginModule.tabIcon = new ImageIcon((pluginModule.getTabIcon()).getImage()
-                           .getScaledInstance(12, 12, Image.SCALE_FAST));
-
-                  // MenuBar
-                  if (pluginModule.getMenuBar() == null)
-                     pluginModule.menuBar = new Default_JMenuBar(parentFrame);
-                  else
-                     pluginModule.menuBar = pluginModule.getMenuBar();
-
-                  // ToolBar
-                  if (pluginModule.getToolBar() == null)
-                     pluginModule.toolBar = new Default_JToolBar("");
-                  else
-                     pluginModule.toolBar = pluginModule.getToolBar();
-
-                  // Store Plugin
-                  pluginModules.add(pluginModule);
                }
-            }
-            catch (Exception e)
+            });
+
+            // If looks like a good plugin load it.
+
+            if (classLoader != null)
             {
-               if (MyJSQLView.getDebug())
-                  System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
+               // Create the instance.
+               Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
+               MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+               pluginModule.initPlugin(parentFrame);
+
+               // Check all the main aspects needed by MyJSQLView
+               // in the loaded plugin module and isolate the
+               // application from deviants
+
+               // Name
+               if (pluginModule.getName() == null)
+                  pluginModule.name = "";
+               else
+               {
+                  if ((pluginModule.getName()).length() > 50)
+                     pluginModule.name = ((pluginModule.getName()).substring(0, 49));
+                  else
+                     pluginModule.name = pluginModule.getName();
+               }
+
+               // Main Panel
+               if (pluginModule.getPanel() == null)
+                  pluginModule.panel = (new JPanel());
+               else
+                  pluginModule.panel = pluginModule.getPanel();
+
+               // Tab Icon
+               if (pluginModule.getTabIcon() == null)
+                  pluginModule.tabIcon = defaultModuleIcon;
+               else
+                  pluginModule.tabIcon = new ImageIcon((pluginModule.getTabIcon()).getImage()
+                        .getScaledInstance(12, 12, Image.SCALE_FAST));
+
+               // MenuBar
+               if (pluginModule.getMenuBar() == null)
+                  pluginModule.menuBar = new Default_JMenuBar(parentFrame);
+               else
+                  pluginModule.menuBar = pluginModule.getMenuBar();
+
+               // ToolBar
+               if (pluginModule.getToolBar() == null)
+                  pluginModule.toolBar = new Default_JToolBar("");
+               else
+                  pluginModule.toolBar = pluginModule.getToolBar();
+
+               // Store/Add Plugin
+               MyJSQLView_Frame.addTab(pluginModule);
             }
+         }
+         catch (Exception e)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
          }
       }
    }
