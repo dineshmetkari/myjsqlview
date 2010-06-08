@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.9 06/07/2010
+// Version 5.0 06/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -126,6 +126,9 @@
 //                        Storage of All Plugin Characteristics in PluginModule Classes.
 //         4.9 06/07/2010 Class Method createGUI() Changed the Way Plugin Module Aspects
 //                        Are Stored, by Instance Instead of Getter Method.
+//         5.0 06/07/2010 Added Class Method addTab(). Made Class Instance toolBarPanel
+//                        static. Removed Instance pluginModulesIterator From Class
+//                        Method createGUI() Thereby Moving Plugin Additions to addTab().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -152,7 +155,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 4.9 06/07/2010
+ * @version 5.0 06/07/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -165,7 +168,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private static ImageIcon databaseTablesIcon;
    private Default_JMenuBar defaultMenuBar;
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
-   private JPanel toolBarPanel;
+   private static JPanel toolBarPanel;
    private CardLayout toolBarCardLayout;
    
    private TopTabPanel mainTabPanel;
@@ -203,7 +206,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       ImageIcon mainTabIcon;
       Default_JToolBar defaultToolBar;
       MyJSQLView_JToolBar myJSQLViewToolBar;
-      Iterator<MyJSQLView_PluginModule> pluginModulesIterator;
       
       // Setting up Various Instances.
       
@@ -299,17 +301,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       //=========================================
       // Plugins' Tabs.
       
-      new PluginLoader(this, loadedPluginModules);
+      new PluginLoader(this);
       
-      pluginModulesIterator = loadedPluginModules.iterator();
-      while (pluginModulesIterator.hasNext())
-      {
-         MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
-         
-         mainTabsPane.addTab(null, currentPlugin.tabIcon, currentPlugin.panel,
-                             currentPlugin.name);
-         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), currentPlugin.toolBar);
-      }
+      //=========================================
+      // Finishing up.
       
       mainTabsPane.addChangeListener(this);
       mainPanel.add(mainTabsPane, BorderLayout.CENTER);
@@ -373,6 +368,20 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          
          toolBarCardLayout.show(toolBarPanel, Integer.toString(selectedIndex));
       }
+   }
+   
+   //==============================================================
+   // Class Method to add a new plugin tab to the frame interface.
+   //==============================================================
+   
+   protected static synchronized void addTab(MyJSQLView_PluginModule plugin)
+   {
+      if (plugin != null)
+      {
+         loadedPluginModules.add(plugin);
+         mainTabsPane.addTab(null, plugin.tabIcon, plugin.panel, plugin.name);
+         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), plugin.toolBar);
+      } 
    }
    
    //==============================================================
