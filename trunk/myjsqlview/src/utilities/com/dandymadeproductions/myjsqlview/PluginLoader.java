@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 06/07/2010
+// Version 1.8 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,9 @@
 //                        & loadPluginModules to run() Method. Removed Vector Argument
 //                        From Constructor. Class Method loadPluginModules Stored
 //                        Each Loaded Plugin via MyJSQLView_Frame.addTab().
+//         1.8 06/09/2010 Offloaded the Adding of a Plugin Module to the MyJSQlView's
+//                        Main Frame to the New PluginThread Class in Method
+//                        loadPluginModule().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +58,6 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.Image;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -70,16 +72,15 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 
 /**
- *    The PluginLoader class is used to cycle through the jar/zip
- * files located in the plugin directory under MyJSQLView's installation
- * directory lib to find Plugin Modules. Only classes that match the
- * interface PluginModule will be loaded.
+ *    The PluginLoader class is used to cycle through the jar/zip files
+ * located in the plugin directory under MyJSQLView's installation directory
+ * lib to find Plugin Modules. Only classes that match the interface
+ * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.7 06/07/2010
+ * @version 1.8 06/09/2010
  */
 
 class PluginLoader implements Runnable
@@ -208,84 +209,43 @@ class PluginLoader implements Runnable
       while (pluginIterator.hasNext())
       {
          Map.Entry<String, String> pluginEntry = pluginIterator.next();
-         try
+
+         final File jarFile = new File(pluginEntry.getKey());
+         ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
          {
-            final File jarFile = new File((String) pluginEntry.getKey());
-            ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
+            public ClassLoader run()
             {
-               public ClassLoader run()
+               try
                {
-                  try
-                  {
-                     return new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader
-                           .getSystemClassLoader());
-                  }
-                  catch (MalformedURLException me)
-                  {
-                     if (MyJSQLView.getDebug())
-                        System.out.println("MyJSQLView_Frame createGUI() URLClassLoader: \n" + me.toString());
-                     return null;
-                  }
+                  return new URLClassLoader(new URL[] {jarFile.toURI().toURL()}, ClassLoader
+                        .getSystemClassLoader());
                }
-            });
+               catch (MalformedURLException me)
+               {
+                  String errorString = "MyJSQLView_Frame createGUI() URLClassLoader: \n" + me.toString();
+                  displayErrors(errorString);
+                  return null;
+               }
+            }
+         });
 
-            // If looks like a good plugin load it.
+         // If looks like a good plugin try to load it.
 
-            if (classLoader != null)
+         if (classLoader != null)
+         {
+            // Create the instance and add to MyJSQLView.
+            try
             {
-               // Create the instance.
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.initPlugin(parentFrame);
 
-               // Check all the main aspects needed by MyJSQLView
-               // in the loaded plugin module and isolate the
-               // application from deviants
-
-               // Name
-               if (pluginModule.getName() == null)
-                  pluginModule.name = "";
-               else
-               {
-                  if ((pluginModule.getName()).length() > 50)
-                     pluginModule.name = ((pluginModule.getName()).substring(0, 49));
-                  else
-                     pluginModule.name = pluginModule.getName();
-               }
-
-               // Main Panel
-               if (pluginModule.getPanel() == null)
-                  pluginModule.panel = (new JPanel());
-               else
-                  pluginModule.panel = pluginModule.getPanel();
-
-               // Tab Icon
-               if (pluginModule.getTabIcon() == null)
-                  pluginModule.tabIcon = defaultModuleIcon;
-               else
-                  pluginModule.tabIcon = new ImageIcon((pluginModule.getTabIcon()).getImage()
-                        .getScaledInstance(12, 12, Image.SCALE_FAST));
-
-               // MenuBar
-               if (pluginModule.getMenuBar() == null)
-                  pluginModule.menuBar = new Default_JMenuBar(parentFrame);
-               else
-                  pluginModule.menuBar = pluginModule.getMenuBar();
-
-               // ToolBar
-               if (pluginModule.getToolBar() == null)
-                  pluginModule.toolBar = new Default_JToolBar("");
-               else
-                  pluginModule.toolBar = pluginModule.getToolBar();
-
-               // Store/Add Plugin
-               MyJSQLView_Frame.addTab(pluginModule);
+               new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
-         }
-         catch (Exception e)
-         {
-            if (MyJSQLView.getDebug())
-               System.out.println("MyJSQLView_Frame createGUI() Exception: \n" + e.toString());
+            catch (Exception e)
+            {
+               String errorString = "PluginLoader loadPluginModule() Exception: \n" + e.toString();
+               displayErrors(errorString);
+            }
          }
       }
    }
