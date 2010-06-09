@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.0 06/07/2010
+// Version 5.1 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,7 @@
 //         5.0 06/07/2010 Added Class Method addTab(). Made Class Instance toolBarPanel
 //                        static. Removed Instance pluginModulesIterator From Class
 //                        Method createGUI() Thereby Moving Plugin Additions to addTab().
+//         5.1 06/09/2010 Removed Instance tableNames in Class Method reloadDBTables().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -155,7 +156,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.0 06/07/2010
+ * @version 5.1 06/08/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -396,7 +397,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       Connection dbConnection;
       String currentSelectedTable;
       Iterator<MyJSQLView_PluginModule> pluginModulesIterator;
-      Vector<String> tableNames;
       
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
@@ -418,7 +418,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          
          // Reload Database Tables.
          MyJSQLView_Access.loadDBTables(dbConnection);
-         tableNames = MyJSQLView_Access.getTableNames();
          
          DBTablesPanel.reloadPanel(dbConnection, MyJSQLView_Access.getTableNames());
          dbTablesPanel.repaint();
@@ -428,7 +427,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          while (pluginModulesIterator.hasNext())
          {
             MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
-            currentPlugin.setDBTables(tableNames);
+            currentPlugin.setDBTables(MyJSQLView_Access.getTableNames());
          }
          
          // Try set the table showing before the reload.
