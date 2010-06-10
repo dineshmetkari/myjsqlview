@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.0 06/09/2010
+// Version 1.1 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original PluginThread Class.
+//         1.1 Added the Processing of the Storage of Version Information
+//             for the Plugin in Class Method run().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -47,7 +49,7 @@ import javax.swing.JPanel;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.0 06/09/2010
+ * @version 1.1 06/10/2010
  */
 
 class PluginThread implements Runnable
@@ -126,6 +128,12 @@ class PluginThread implements Runnable
          pluginModule.toolBar = new Default_JToolBar("");
       else
          pluginModule.toolBar = pluginModule.getToolBar();
+      
+      // Version
+      if (pluginModule.getVersion() == null)
+         pluginModule.version = "";
+      else
+         pluginModule.version = pluginModule.getVersion();
 
       // Store/Add Plugin
       MyJSQLView_Frame.addTab(pluginModule);
