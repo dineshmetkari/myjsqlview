@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.9 05/17/2010
+// Version 5.0 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -108,6 +108,8 @@
 //         4.9 Parameterized Instance tableHeadings in Class Method refreshTableTabPanel().
 //             Also columnTypeHashMap, & columnClassHashMap in Class Method
 //             importCSVFile().
+//         5.0 Collected Class Istance schemaTableName in importCSVFile() From MyJSQLView_Utils
+//             Method getSchemaTableName().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -134,7 +136,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 4.9 05/17/2010
+ * @version 5.0 06/09/2010
  */
 
 class CSVDataImportThread implements Runnable
@@ -245,6 +247,8 @@ class CSVDataImportThread implements Runnable
       csvImportProgressBar = new MyJSQLView_ProgressBar("CSV Import To: " + importTable);
 
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
+      
       if (importTable.indexOf(".") != -1)
       {
          schemaTableName = identifierQuoteString + importTable.substring(0, importTable.indexOf("."))
