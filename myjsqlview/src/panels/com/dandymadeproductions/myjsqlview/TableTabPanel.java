@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.58 05/19/2010
+// Version 4.59 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,8 @@
 //        4.57 Minor Format Changes.
 //        4.58 Parameteriezed headings in Constructor, keyIterator in deleteSelectedItem(),
 //             headingsIterator in getState(), and headings in setTableHeadings().
+//        4.59 Collected Class Instance schemaTableName in Constructor From MyJSQLView_Utils
+//             Method getSchemaTableName().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,7 +166,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.58 05/19/2010
+ * @version 4.59 06/09/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -264,6 +266,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      schemaTableName = MyJSQLView_Utils.getSchemaTableName(sqlTable);
 
       if (sqlTable.indexOf(".") != -1)
       {
