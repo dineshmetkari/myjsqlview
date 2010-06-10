@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.2 05/16/2010
+// Version 4.3 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,7 @@
 //         4.1 Added Class Method getPluginsDirectory().
 //         4.2 Parameterized Instance localesData in Class Method processLocaleLanguage()
 //             to Bring Code Into Compliance With Java 5.0 API.
+//         4.3 Added Class Method getSchemaTableName().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -114,7 +115,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.2 05/16/2010
+ * @version 4.3 06/09/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -777,6 +778,35 @@ public class MyJSQLView_Utils extends MyJSQLView
          // System.out.println("IO Exception in InputStream.\n" + e);
          return null;
       }
+   }
+   
+   //==============================================================
+   // Class method to return the properly format SQL database table
+   // name to be used in query statement. The argumnet must be a
+   // valid table name for the current database that MyJSQLView is
+   // connected to.
+   //==============================================================
+
+   public static String getSchemaTableName(String sqlTable)
+   {
+      String schemaTableName;
+      String identifierQuoteString;
+      
+      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      
+      if (sqlTable.indexOf(".") != -1)
+      {
+         schemaTableName = identifierQuoteString
+                           + sqlTable.substring(0, sqlTable.indexOf("."))
+                           + identifierQuoteString + "." + identifierQuoteString
+                           + sqlTable.substring(sqlTable.indexOf(".") + 1)
+                           + identifierQuoteString;
+      }
+      else
+         schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
+      //System.out.println(schemaTableName);
+      
+      return schemaTableName;
    }
 
    //==============================================================
