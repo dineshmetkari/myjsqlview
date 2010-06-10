@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.0 05/18/2010
+// Version 2.1 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,8 @@
 //             Constructor to Bring Code Into Compliance With Java 5.0 API.
 //         2.0 Method run() Changed resultData Assignment to Integer.valueOf() 
 //             Instead of new Integer().
+//         2.1 Collected Class Istance schemaTableName in run() From MyJSQLView_Utils
+//             Method getSchemaTableName().
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -73,7 +75,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.0 05/18/2010
+ * @version 2.1 06/09/2010
  */
 
 class SearchDatabaseThread implements Runnable
@@ -157,18 +159,7 @@ class SearchDatabaseThread implements Runnable
          // for the table.
 
          sqlTable = databaseTables.get(index);
-
-         if (sqlTable.indexOf(".") != -1)
-         {
-            schemaTableName = identifierQuoteString
-                              + sqlTable.substring(0, sqlTable.indexOf("."))
-                              + identifierQuoteString + "." + identifierQuoteString
-                              + sqlTable.substring(sqlTable.indexOf(".") + 1)
-                              + identifierQuoteString;
-         }
-         else
-            schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
-         //System.out.println(schemaTableName);
+         schemaTableName = MyJSQLView_Utils.getSchemaTableName(sqlTable);
 
          // Create the search query.
          columnsSQLQuery = createColumnsSQLQuery(dbConnection, schemaTableName,
