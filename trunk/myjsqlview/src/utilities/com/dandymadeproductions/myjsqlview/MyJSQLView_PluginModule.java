@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.0 06/07/2010
+// Version 2.1 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@
 //             Getter Methods.
 //         2.0 Removed the Setter Methods. Made Class Instances From 1.9 Protected and
 //             Reverted Back to the Default Instances Returned by the Getters to Null.
+//         2.1 Added Interface Method getVersion() and Class Instance version.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,14 +71,14 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.0 06/07/2010
+ * @version 2.1 06/10/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 {
    // Class Instances.
    //protected MyJSQLView_Frame parent;
-   protected String name;
+   protected String name, version;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
    protected JToolBar toolBar;
@@ -96,6 +97,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       menuBar = null;
       toolBar = null;
       panel = null;
+      version = null;
    }
    
    //==============================================================
@@ -161,6 +163,16 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
 
    public JPanel getPanel()
+   {
+      return null;
+   }
+   
+   //==============================================================
+   // Class methods to obtain the plugin's version number.
+   // Interface requirement.
+   //==============================================================
+
+   public String getVersion()
    {
       return null;
    }
