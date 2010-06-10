@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.4 05/20/2010
+// Version 5.5 06/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,8 @@
 //             tableColumnTypeHashMap, & tableColumnSizeHashmap in Order to
 //             Bring Code Into Compliance With Java 5.0 API.
 //         5.4 Parameterized columnNamesIterator in Constructor.
+//         5.5 Collected Class Istance schemaTableName in run() From MyJSQLView_Utils
+//             Method getSchemaTableName().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -122,7 +124,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.4 05/20/2010
+ * @version 5.5 06/09/2010
  */
 
 class DataDumpThread implements Runnable
@@ -187,18 +189,7 @@ class DataDumpThread implements Runnable
       rowNumber = 0;
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
-
-      if (exportedTable.indexOf(".") != -1)
-      {
-         schemaTableName = identifierQuoteString 
-                           + exportedTable.substring(0, exportedTable.indexOf("."))
-                           + identifierQuoteString + "." + identifierQuoteString
-                           + exportedTable.substring(exportedTable.indexOf(".") + 1)
-                           + identifierQuoteString;
-      }
-      else
-         schemaTableName = identifierQuoteString + exportedTable + identifierQuoteString;
-
+      schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
       // Get Connection to Database.
