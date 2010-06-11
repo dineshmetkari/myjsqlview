@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.4 05/16/2010
+// Version 2.5 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,8 @@
 //         2.4 Parameterized Class Instances tableColumnNamesHashMap and
 //             tableColumnTypeHashMap in Addition to Arguments to Bring
 //             Code Into Compliance With Java 5.0 API.
+//         2.5 Thread Identifier String Changes in Constructor and Minor 
+//             Changes in run().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -77,7 +79,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.4 05/16/2010
+ * @version 2.5 06/10/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -104,8 +106,8 @@ class DataTableDumpThread implements Runnable
       this.fileName = fileName;
 
       // Create and start the class thread.
-      t = new Thread(this, "DataDumpThread");
-      // System.out.println("Data Dumb Thread");
+      t = new Thread(this, "DataTableDumpThread");
+      // System.out.println("Data Table Dumb Thread");
 
       t.start();
    }
@@ -167,7 +169,7 @@ class DataTableDumpThread implements Runnable
                currentString = currentString.replaceAll("\r", "");
                
                // Format Date & Timestamp Fields as Needed.
-               currentType = (String)summaryListTableNameTypes.get(j + "");
+               currentType = summaryListTableNameTypes.get(Integer.toString(j));
                
                if ((currentType != null) && (currentType.equals("DATE") ||
                                              currentType.equals("DATETIME") ||
