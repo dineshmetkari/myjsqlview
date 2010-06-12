@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.19 05/17/2010
+// Version 7.20 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -225,6 +225,8 @@
 //             tableColumnNamesHashMap, tableColumnClassHashMap, tableColumnTypeHashMap
 //             & tableColumnSizeHashMap So As to Bring Code Into Compliance With
 //             Java 5.0 API.
+//        7.20 Added Action Processing for Data | Export | PDF Format | Summary Table
+//             in Class Method dataExportAction().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -257,7 +259,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.19 05/17/2010
+ * @version 7.20 06/10/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -379,8 +381,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       }
 
       // Data Export
-      if ((actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DESQL") != -1)
-          && DBTablesPanel.getTableCount() != 0)
+      if ((actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DEPDF") != -1
+           || actionCommand.indexOf("DESQL") != -1)
+           && DBTablesPanel.getTableCount() != 0)
       {
          dataExportAction(parent, actionCommand, myJSQLView_Version);
          return;
@@ -879,6 +882,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
       if (actionCommand.indexOf("DECSV") != -1)
          fileName += ".txt";
+      else if (actionCommand.indexOf("DEPDF") != -1)
+         fileName += ".pdf";
       else
          fileName += ".sql";
 
@@ -907,6 +912,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             
             if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE)
+                || actionCommand.equals(ACTION_EXPORT_PDF_SUMMARY_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
@@ -934,6 +940,15 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                if (summaryListTable != null)
                   new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
                                           tableColumnTypeHashMap, exportedTable, fileName);
+            }
+            
+            // Data Export PDF Summary Table
+            else if (actionCommand.equals(ACTION_EXPORT_PDF_SUMMARY_TABLE))
+            {
+               summaryListTable = (DBTablesPanel.getSelectedTableTabPanel()).getListTable();
+               if (summaryListTable != null)
+                  new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
+                                             exportedTable, fileName);  
             }
 
             // Data Export SQL Table
