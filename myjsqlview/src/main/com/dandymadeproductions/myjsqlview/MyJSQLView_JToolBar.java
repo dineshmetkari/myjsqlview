@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.0 05/06/2010
+// Version 2.1 06/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //             of Internationalization.
 //         1.9 Changed Description.
 //         2.0 Implemented MyJSQLView_MenuActionCommands.
+//         2.1 Added Data Export PDF Summary Table ToolBar Button.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,7 +64,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/06/2010
+ * @version 2.1 06/11/2010
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
@@ -89,6 +90,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       ImageIcon printIcon, pageFormatIcon, exitIcon;
       ImageIcon preferencesIcon, sqlImportIcon, csvImportIcon;
       ImageIcon csvExportTableIcon, csvExportTabSummaryTableIcon;
+      ImageIcon pdfExportTabSummaryTableIcon;
       ImageIcon sqlExportTableIcon, sqlExportTabSummaryTableIcon;
       ImageIcon sqlExportDatabaseIcon, sqlExportDatabaseSchemeIcon;
       ImageIcon queryFrameIcon, reloadDatabaseIcon, searchDatabaseIcon; 
@@ -203,6 +205,20 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       else
          buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, ACTION_EXPORT_CSV_SUMMARY_TABLE);
       add(buttonItem);
+      
+      addSeparator();
+      
+      // Export PDF Tab Summary Table
+      pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
+      resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.ExportPDFSummaryTable");
+      if (resource.equals(""))
+         buttonItem = buttonItem("Export PDF Summary Table", pdfExportTabSummaryTableIcon,
+                                 ACTION_EXPORT_PDF_SUMMARY_TABLE);
+      else
+         buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, ACTION_EXPORT_PDF_SUMMARY_TABLE);
+      add(buttonItem);
+      
+      addSeparator();
       
       // Export CSV Table
       csvExportTableIcon = new ImageIcon(iconsDirectory + "csvExportTableIcon.png");
