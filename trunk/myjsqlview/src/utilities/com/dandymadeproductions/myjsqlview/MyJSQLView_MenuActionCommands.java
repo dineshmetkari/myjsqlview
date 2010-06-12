@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.0 05/06/2010
+// Version 1.1 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original MyJSQLView_MenuActionCommnds Class.
+//         1.1 Added Interface Instance ACTION_EXPORT_PDF_SUMMARY_TABLE.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,7 +45,7 @@ package com.dandymadeproductions.myjsqlview;
  * menu system.  
  * 
  * @author Dana M. Proctor
- * @version 1.0 05/06/2010
+ * @version 1.1 06/10/2010
  */
 
 public interface MyJSQLView_MenuActionCommands
@@ -80,6 +81,7 @@ public interface MyJSQLView_MenuActionCommands
    // Export
    public static final String ACTION_EXPORT_CSV_TABLE = "DECSVT";
    public static final String ACTION_EXPORT_CSV_SUMMARY_TABLE = "DECSVST";
+   public static final String ACTION_EXPORT_PDF_SUMMARY_TABLE = "DEPDFST";
    public static final String ACTION_EXPORT_SQL_TABLE = "DESQLT";
    public static final String ACTION_EXPORT_SQL_SUMMARY_TABLE = "DESQLST";
    public static final String ACTION_EXPORT_SQL_DATABASE = "DESQLD";
