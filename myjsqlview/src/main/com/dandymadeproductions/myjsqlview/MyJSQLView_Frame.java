@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.2 06/11/2010
+// Version 5.3 06/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,9 @@
 //         5.1 06/09/2010 Removed Instance tableNames in Class Method reloadDBTables().
 //         5.2 06/11/2010 Check in stateChanged() to Insure the selectedIndex Derived is Not
 //                        Larger Than the Existing Tab Count.
+//         5.3 06/11/2010 Changed the Derivation of the selectedIndex From mainTabsPane to
+//                        changeSource to Again Try to Correct the ArrayIndex Out of Range
+//                        Errors. 
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -158,7 +161,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.2 06/11/2010
+ * @version 5.3 06/11/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -342,10 +345,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       {
          // Collect some parameters to be used.
          
-         selectedIndex = mainTabsPane.getSelectedIndex();
-         
-         if (selectedIndex > mainTabsPane.getTabCount())
-            return;
+         selectedIndex = ((JTabbedPane) changeSource).getSelectedIndex();
          
          // The top mainTabPanel is a runnable thread so
          // control the animation.
@@ -368,7 +368,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             setJMenuBar(myJSQLViewMenuBar);
          // Plugin Panel
          else
-            setJMenuBar((loadedPluginModules.get(selectedIndex - 2)).menuBar);
+         {
+            if ((selectedIndex - 2) <= loadedPluginModules.size())
+               setJMenuBar((loadedPluginModules.get(selectedIndex - 2)).menuBar);
+         }
          
          // Set the ToolBar required by the tab.
          
