@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.1 06/11/2010
+// Version 2.2 06/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.9 Changed Description.
 //         2.0 Implemented MyJSQLView_MenuActionCommands.
 //         2.1 Added Data Export PDF Summary Table ToolBar Button.
+//         2.2 Corrected the Arrangement of the Data Export PDF Summary Table
+//             ToolBar Button.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +66,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.1 06/11/2010
+ * @version 2.2 06/11/2010
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
@@ -206,6 +208,15 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
          buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, ACTION_EXPORT_CSV_SUMMARY_TABLE);
       add(buttonItem);
       
+      // Export CSV Table
+      csvExportTableIcon = new ImageIcon(iconsDirectory + "csvExportTableIcon.png");
+      resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.ExportCSVTable");
+      if (resource.equals(""))
+         buttonItem = buttonItem("Export CSV Table", csvExportTableIcon, ACTION_EXPORT_CSV_TABLE);
+      else
+         buttonItem = buttonItem(resource, csvExportTableIcon, ACTION_EXPORT_CSV_TABLE);
+      add(buttonItem);
+      
       addSeparator();
       
       // Export PDF Tab Summary Table
@@ -216,17 +227,6 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
                                  ACTION_EXPORT_PDF_SUMMARY_TABLE);
       else
          buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, ACTION_EXPORT_PDF_SUMMARY_TABLE);
-      add(buttonItem);
-      
-      addSeparator();
-      
-      // Export CSV Table
-      csvExportTableIcon = new ImageIcon(iconsDirectory + "csvExportTableIcon.png");
-      resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.ExportCSVTable");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Export CSV Table", csvExportTableIcon, ACTION_EXPORT_CSV_TABLE);
-      else
-         buttonItem = buttonItem(resource, csvExportTableIcon, ACTION_EXPORT_CSV_TABLE);
       add(buttonItem);
       
       addSeparator();
