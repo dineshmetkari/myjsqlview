@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.3 06/11/2010
+// Version 5.4 06/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -134,7 +134,11 @@
 //                        Larger Than the Existing Tab Count.
 //         5.3 06/11/2010 Changed the Derivation of the selectedIndex From mainTabsPane to
 //                        changeSource to Again Try to Correct the ArrayIndex Out of Range
-//                        Errors. 
+//                        Errors.
+//         5.4 06/12/2010 Still Getting "AWT-EventQueue-0" ArrayIndexOutOfBoundsException:
+//                        On Occasion With the Tabbed Pane. Conditional Check in stateChange()
+//                        of selectedIndex Less Than Total Tab Count. Changed the Way the
+//                        DBTablesPanel is Added to the mainTabPane in run().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -161,7 +165,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.3 06/11/2010
+ * @version 5.4 06/12/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -264,7 +268,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       toolBarPanel.add("1", myJSQLViewToolBar);
       
       // Insure DBTablesPanel to be at index 1.
-      mainTabsPane.add(new JLabel(""), 1);
+      mainTabsPane.add(new JPanel(), databaseTablesIcon, 1);
       
       Thread databaseTablesThread = new Thread(new Runnable()
       {
@@ -285,13 +289,14 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             resource = resourceBundle.getResource("MyJSQLView_Frame.tab.DatabaseTables");
             if (resource.equals(""))
             {
-               mainTabsPane.setIconAt(1, databaseTablesIcon);
+               JPanel dummyPanel = (JPanel)mainTabsPane.getComponentAt(1);
+               mainTabsPane.remove(dummyPanel);
                mainTabsPane.setComponentAt(1, dbTablesPanel);
                mainTabsPane.setToolTipTextAt(1, "Database Tables");
             }
             else
             {
-               mainTabsPane.setIconAt(1, databaseTablesIcon);
+               //mainTabsPane.setIconAt(1, databaseTablesIcon);
                mainTabsPane.setComponentAt(1, dbTablesPanel);
                mainTabsPane.setToolTipTextAt(1, resource);
             }
@@ -346,6 +351,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          // Collect some parameters to be used.
          
          selectedIndex = ((JTabbedPane) changeSource).getSelectedIndex();
+         
+         if (selectedIndex > mainTabsPane.getTabCount())
+            return;
          
          // The top mainTabPanel is a runnable thread so
          // control the animation.
