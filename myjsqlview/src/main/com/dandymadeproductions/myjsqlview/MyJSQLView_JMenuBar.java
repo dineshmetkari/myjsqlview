@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 6.8 06/10/2010
+// Version 6.9 06/12/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,7 @@
 //         6.7 Parameterized schemasIterator in Class Method createSchemasMenu().
 //         6.8 Added Data | Export | PDF Format | Summary Table in Class Method
 //             createDataMenu().
+//         6.9 Changed Data | Export | CSV/PDF/SQL Format to Just CSV/PDF/SQL.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -140,7 +141,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 6.8 06/10/2010
+ * @version 6.9 06/12/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -394,9 +395,9 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
          exportMenu = new JMenu(resource);
       
       // Export CSV
-      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportCSVFormat");
+      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportCSV");
       if (resource.equals(""))
-        exportCSVMenu = new JMenu("CSV Format");
+        exportCSVMenu = new JMenu("CSV");
       else
          exportCSVMenu = new JMenu(resource);
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportCSVTable");
@@ -412,9 +413,9 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       exportMenu.add(exportCSVMenu);
       
       // Export PDF
-      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportPDFFormat");
+      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportPDF");
       if (resource.equals(""))
-         exportPDFMenu = new JMenu("PDF Format");
+         exportPDFMenu = new JMenu("PDF");
       else
          exportPDFMenu = new JMenu(resource);
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportPDFSummaryTable");
@@ -425,9 +426,9 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       exportMenu.add(exportPDFMenu);
        
       // Export SQL
-      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLFormat");
+      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQL");
       if (resource.equals(""))
-         exportSQLMenu = new JMenu("SQL Format");
+         exportSQLMenu = new JMenu("SQL");
       else
          exportSQLMenu = new JMenu(resource);
       resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.ExportSQLTable");
