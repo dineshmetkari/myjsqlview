@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.0 06/10/2010
+// Version 1.1 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original PDFDataTableDumpThread Class.
+//         1.1 Finalized By Implementing Basic Control of Options Through
+//             the DataExportProperties Class.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -44,6 +46,7 @@ import javax.swing.JTable;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
@@ -58,11 +61,11 @@ import com.itextpdf.text.pdf.PdfWriter;
 import com.itextpdf.text.pdf.PdfPageEvent;
 
 /**
- *    The DataTableDumpThread class provides a thread to safely
+ *    The PDFDataTableDumpThread class provides a thread to safely
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.0 06/10/2010
+ * @version 1.1 06/13/2010
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -72,11 +75,12 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
    private JTable summaryListTable;
    private HashMap<String, String> tableColumnTypeHashMap;
    private String exportedTable, fileName;
+   private DataExportProperties pdfDataExportOptions;
    private PdfTemplate pdfTemplate;
 
-   private static final Font ROW_HEADER_FONT = new Font(Font.FontFamily.UNDEFINED, (float) 12, Font.BOLD);
+   private Font titleFont, rowHeaderFont;
+   private BaseFont rowHeaderBaseFont;
    private static final Font FONT = new Font();
-   private static final BaseFont ROW_HEADER_BASE_FONT = ROW_HEADER_FONT.getCalculatedBaseFont(false);
    private static final BaseFont BASE_FONT = FONT.getCalculatedBaseFont(false);
 
    //==============================================================
@@ -93,7 +97,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
 
       // Create and start the class thread.
       t = new Thread(this, "PDFDataTableDumpThread");
-      // System.out.println("Data Dumb Thread");
+      // System.out.println("PDF Data Dumb Thread");
 
       t.start();
    }
@@ -105,7 +109,9 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
    public void run()
    {
       // Class Method Instances
+      String title;
       PdfPTable pdfTable;
+      PdfPCell titleCell, rowHeaderCell, bodyCell;
       Document pdfDocument;
       PdfWriter pdfWriter;
       ByteArrayOutputStream byteArrayOutputStream;
@@ -128,8 +134,18 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       pdfTable = new PdfPTable(columnCount);
       pdfTable.setWidthPercentage(100);
       pdfTable.getDefaultCell().setPaddingBottom(4);
+      pdfTable.getDefaultCell().setBorderWidth(1);
 
       summaryListTableNameTypes = new HashMap<String, String>();
+      pdfDataExportOptions = DBTablesPanel.getDataExportProperties();
+      
+      titleFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getTitleFont(),
+                           Font.BOLD);
+      titleFont.setColor(new BaseColor(pdfDataExportOptions.getTitleColor()));
+      rowHeaderFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getHeaderFont(),
+                               Font.BOLD);
+      rowHeaderFont.setColor(new BaseColor(pdfDataExportOptions.getHeaderColor()));
+      rowHeaderBaseFont = rowHeaderFont.getCalculatedBaseFont(false);
 
       // Constructing progress bar.
       rowNumber = summaryListTable.getRowCount();
@@ -138,22 +154,41 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       dumpProgressBar.pack();
       dumpProgressBar.center();
       dumpProgressBar.setVisible(true);
-
-      // Create Row Header
-      pdfTable.getDefaultCell().setBorderWidth(2);
-
+      
+      // Create a Title if Optioned.
+      title = pdfDataExportOptions.getTitle();
+      
+      if (!title.equals(""))
+      {
+         if (title.equals("EXPORTED TABLE"))
+            title = exportedTable;
+         
+         titleCell = new PdfPCell(new Phrase(title, titleFont));
+         titleCell.setBorder(0);
+         titleCell.setPadding(10);
+         titleCell.setColspan(summaryListTable.getColumnCount());
+         titleCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+         
+         pdfTable.addCell(titleCell);
+         pdfTable.setHeaderRows(2);
+      }
+      else
+         pdfTable.setHeaderRows(1);
+         
+      // Create Row Header.
       for (int i = 0; i < columnCount; i++)
       {
          currentTableFieldName = summaryListTable.getColumnName(i);
-         pdfTable.addCell(new Phrase(currentTableFieldName, ROW_HEADER_FONT));
+         rowHeaderCell = new PdfPCell(new Phrase(currentTableFieldName, rowHeaderFont));
+         rowHeaderCell.setBorderWidth(pdfDataExportOptions.getHeaderBorder());
+         rowHeaderCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
+         rowHeaderCell.setBorderColor(new BaseColor(pdfDataExportOptions.getHeaderBorderColor()));
+         pdfTable.addCell(rowHeaderCell);
          columnWidths[i] = Math.min(50000, Math.max(columnWidths[i],
-                                    ROW_HEADER_BASE_FONT.getWidth(currentTableFieldName + " ")));
+                                    rowHeaderBaseFont.getWidth(currentTableFieldName + " ")));
          summaryListTableNameTypes.put(Integer.toString(i),
                                        tableColumnTypeHashMap.get(currentTableFieldName));
       }
-
-      pdfTable.getDefaultCell().setBorderWidth(1);
-      pdfTable.setHeaderRows(1);
 
       // Create the Body of Data.
       int i = 0;
@@ -171,18 +206,18 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                currentString = summaryListTable.getValueAt(i, j) + "";
                currentString = currentString.replaceAll("\n", "");
                currentString = currentString.replaceAll("\r", "");
-
-               // Format Date & Timestamp Fields as Needed.
                currentType = summaryListTableNameTypes.get(Integer.toString(j));
 
+               // Format Date & Timestamp Fields as Needed.
+               
                if ((currentType != null)
-                   && (currentType.equals("DATE") || currentType.equals("DATETIME") || currentType
-                         .indexOf("TIMESTAMP") != -1))
+                   && (currentType.equals("DATE") || currentType.equals("DATETIME")
+                       || currentType.indexOf("TIMESTAMP") != -1))
                {
                   if (!currentString.toLowerCase().equals("null"))
                   {
-                     if (currentType.equals("Date"))
-                        currentString = MyJSQLView_Utils.formatCSVExportDateString(currentString);
+                     if (currentType.equals("DATE"))
+                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "PDF");
                      else
                      {
                         int firstSpace;
@@ -200,19 +235,30 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                         else
                            time = "";
 
-                        currentString = MyJSQLView_Utils.formatCSVExportDateString(currentString) + time;
+                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "PDF") + time;
                      }
                   }
                }
-               PdfPCell cell = new PdfPCell(new Phrase(currentString));
-               cell.setPaddingBottom(4);
-               // if (o instanceof Number)
-               // {
-               // cell.setHorizontalAlignment(Cell.ALIGN_RIGHT);
-               // }
-               pdfTable.addCell(cell);
+               bodyCell = new PdfPCell(new Phrase(currentString));
+               bodyCell.setPaddingBottom(4);
+               
+               // Set Numeric Fields Alignment.
+               if (currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
+                   || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
+                   || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
+                   || currentType.equals("REAL") || currentType.equals("DECIMAL"))
+               {
+                  bodyCell.setHorizontalAlignment(pdfDataExportOptions.getNumberAlignment());
+                  bodyCell.setPaddingRight(4);
+               }
+               // Set Date/Time Field Alignment.
+               if (currentType.indexOf("DATE") != -1 || currentType.indexOf("TIME") != -1
+                   || currentType.indexOf("YEAR") != -1)
+                  bodyCell.setHorizontalAlignment(pdfDataExportOptions.getDateAlignment());
+              
+               pdfTable.addCell(bodyCell);
                columnWidths[j] = Math.min(50000, Math.max(columnWidths[j],
-                                          BASE_FONT.getWidth(currentString)));
+                                          BASE_FONT.getWidth(currentString + " ")));
             }
          }
          i++;
@@ -226,7 +272,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
          return;
       
       // Create a document of the PDF formatted data
-      // to be saved to the given input file.
+      // to be saved to the given output file.
       
       try
       {
@@ -257,7 +303,11 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       }
       catch (DocumentException de)
       {
-
+         if (MyJSQLView.getDebug())
+         {
+            System.out.println("Failed to Create Document Needed to Output Data. \n"
+                                + de.toString());
+         }
       }
    }
    
