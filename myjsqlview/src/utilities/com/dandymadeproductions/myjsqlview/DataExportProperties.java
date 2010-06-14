@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana Proctor
-// Version 3.1 02/18/2010
+// Version 3.2 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //             be Exported With the Incorrect Identifier Quote. This Causes More
 //             Confusion Than it is Worth in Saving. Removed IDENTIFIERQUOTESTRING.
 //         3.1 Changed Package to Reflect Dandy Made Productions Code.
+//         3.2 Implemenation of PDF Export Properties.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,6 +76,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.awt.Color;
 import java.util.prefs.Preferences;
 
 /**
@@ -82,12 +84,14 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.1 02/18/2010
+ * @version 3.2 06/13/2010
  */
 
 class DataExportProperties
 {
    // Class Instances.
+   
+   // SQL
    private boolean tableStructure;
    private boolean tableData;
    private boolean insertLock;
@@ -106,13 +110,27 @@ class DataExportProperties
    private String updateTypeSetting;
    private String identifierQuoteString;
 
+   // CSV
    private boolean textInclusion;
    private int textCharsNumber;
    private String dataDelimiter;
-   private String dateFormat;
+   private String csvDateFormat;
+   
+   // PDF
+   private String title;
+   private int titleFont;
+   private int titleColor;
+   private int headerFont;
+   private int headerColor;
+   private int headerBorder;
+   private int headerBorderColor;
+   private int numberAlignment;
+   private int dateAlignment;
+   private String pdfDateFormat;
    
    private Preferences dataExportPreferences;
    
+   // SQL
    private static final String TABLESTRUCTURE = "TableStructure";
    private static final String  TABLEDATA = "TableData";
    private static final String INSERTLOCK = "InsertLock";
@@ -130,10 +148,24 @@ class DataExportProperties
    private static final String REPLACETYPESETTING = "ReplaceTypeSetting";
    private static final String UPDATETYPESETTING = "UpdateTypeSetting";
 
+   // CSV
    private static final String TEXTINCLUSION = "TextInclusion";
    private static final String TEXTCHARSNUMBER = "TextCharsNumber";
    private static final String DATADELIMITER = "ExportDataDelimiter";
-   private static final String DATEFORMAT = "ExportDateFormat";
+   private static final String CSVDATEFORMAT = "ExportCSVDateFormat";
+   
+   // PDF
+   private static final String TITLE = "Title";
+   private static final String TITLEFONT = "TitleFont";
+   private static final String TITLECOLOR = "TitleColor";
+   private static final String HEADERFONT = "HeaderFont";
+   private static final String HEADERCOLOR = "HeaderColor";
+   private static final String HEADERBORDER = "HeaderBorder";
+   private static final String HEADERBORDERCOLOR = "HeaderBorderColor";
+   private static final String NUMBERALIGNMENT = "NumberAlignment";
+   private static final String DATEALIGNMENT = "DateAlignment";
+   private static final String PDFDATEFORMAT = "ExportPDFDateFormat";
+   
 
    //==============================================================
    // DataExportProperties Constructor
@@ -142,6 +174,8 @@ class DataExportProperties
    protected DataExportProperties()
    {
       // Set Default State.
+      
+      // SQL
       tableStructure = false;
       tableData = true;
       insertLock = true;
@@ -160,10 +194,23 @@ class DataExportProperties
       updateTypeSetting = "Low_Priority";
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
 
+      // CSV
       textInclusion = false;
       textCharsNumber = 50;
       dataDelimiter = ",";
-      dateFormat = "MM-dd-YYYY";
+      csvDateFormat = "MM-dd-YYYY";
+      
+      // PDF
+      title = "";
+      titleFont = 14;
+      titleColor = Color.BLACK.getRGB();
+      headerFont = 12;
+      headerColor = Color.BLACK.getRGB();
+      headerBorder = 1;
+      headerBorderColor = Color.BLACK.getRGB();
+      numberAlignment = 2;
+      dateAlignment = 1;
+      csvDateFormat = "MM-dd-YYYY";
       
       // Try to retrieve state from Preferences.
       try
@@ -174,6 +221,7 @@ class DataExportProperties
       
       try
       {
+         // SQL
          tableStructure = dataExportPreferences.getBoolean(TABLESTRUCTURE, false);
          tableData = dataExportPreferences.getBoolean(TABLEDATA, true);
          insertLock = dataExportPreferences.getBoolean(INSERTLOCK, true);
@@ -191,10 +239,23 @@ class DataExportProperties
          replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, "Low_Priority");
          updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, "Low_Priority");
          
+         // CSV
          textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, false);
          textCharsNumber = dataExportPreferences.getInt(TEXTCHARSNUMBER, 50);
          dataDelimiter = dataExportPreferences.get(DATADELIMITER, ",");
-         dateFormat = dataExportPreferences.get(DATEFORMAT, "MM-DD-YYYY"); 
+         csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, "MM-DD-YYYY");
+         
+         // PDF
+         title = dataExportPreferences.get(TITLE, "");
+         titleFont = dataExportPreferences.getInt(TITLEFONT, 14);
+         titleColor = dataExportPreferences.getInt(TITLECOLOR, Color.BLACK.getRGB());
+         headerFont = dataExportPreferences.getInt(HEADERFONT, 12);
+         headerColor = dataExportPreferences.getInt(HEADERCOLOR, Color.BLACK.getRGB());
+         headerBorder = dataExportPreferences.getInt(HEADERBORDER, 1);
+         headerBorderColor = dataExportPreferences.getInt(HEADERBORDERCOLOR, Color.BLACK.getRGB());
+         numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, 2);
+         dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, 1);
+         pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, "MM-dd-YYYY");
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -205,6 +266,9 @@ class DataExportProperties
    // object components.
    //==============================================================
 
+   //===========
+   // SQL
+   
    protected boolean getTableStructure()
    {
       return tableStructure;
@@ -342,6 +406,9 @@ class DataExportProperties
    {
       return identifierQuoteString;
    }
+   
+   //==========
+   // CSV
 
    protected boolean getTextInclusion()
    {
@@ -358,16 +425,72 @@ class DataExportProperties
       return dataDelimiter;
    }
    
-   protected String getDateFormat()
+   protected String getCSVDateFormat()
    {
-      return dateFormat;
+      return csvDateFormat;
+   }
+   
+   //==========
+   // PDF
+   
+   protected String getTitle()
+   {
+      return title;
    }
 
+   protected int getTitleFont()
+   {
+      return titleFont;
+   }
+
+   protected Color getTitleColor()
+   {
+      return new Color(titleColor);
+   }
+   
+   protected int getHeaderFont()
+   {
+      return headerFont;
+   }
+   
+   protected Color getHeaderColor()
+   {
+      return new Color(headerColor);
+   }
+
+   protected int getHeaderBorder()
+   {
+      return headerBorder;
+   }
+
+   protected Color getHeaderBorderColor()
+   {
+      return new Color(headerBorderColor);
+   }
+   
+   protected int getNumberAlignment()
+   {
+      return numberAlignment;
+   }
+   
+   protected int getDateAlignment()
+   {
+      return dateAlignment;
+   }
+   
+   protected String getPDFDateFormat()
+   {
+      return pdfDateFormat;
+   }
+   
    //==============================================================
    // Class methods to allow classes to set the data export
    // object components.
    //==============================================================
 
+   //===========
+   // SQL
+   
    protected void setTableStructure(boolean value)
    {
       tableStructure = value;
@@ -468,6 +591,9 @@ class DataExportProperties
    {
       identifierQuoteString = content;
    }
+   
+   //===========
+   // CSV
 
    protected void setTextInclusion(boolean value)
    {
@@ -487,10 +613,63 @@ class DataExportProperties
       savePreference(DATADELIMITER, content);
    }
    
-   protected void setDateFormat(String content)
+   protected void setCSVDateFormat(String content)
    {
-      dateFormat = content;
-      savePreference(DATEFORMAT, content);
+      csvDateFormat = content;
+      savePreference(CSVDATEFORMAT, content);
+   }
+   
+   //===========
+   // PDF
+   
+   protected void setTitle(String content)
+   {
+      title = content;
+   }
+
+   protected void setTitleFont(int value)
+   {
+      titleFont = value;
+   }
+
+   protected void setTitleColor(Color color)
+   {
+      titleColor = color.getRGB();
+   }
+   
+   protected void setHeaderFont(int value)
+   {
+      headerFont = value;
+   }
+   
+   protected void setHeaderColor(Color color)
+   {
+      headerColor = color.getRGB();
+   }
+
+   protected void setHeaderBorder(int value)
+   {
+      headerBorder = value;
+   }
+
+   protected void setHeaderBorderColor(Color color)
+   {
+      headerBorderColor = color.getRGB();
+   }
+   
+   protected void setNumberAlignment(int value)
+   {
+      numberAlignment = value;
+   }
+   
+   protected void setDateAlignment(int value)
+   {
+      dateAlignment = value;
+   }
+   
+   protected void setPDFDateFormat(String content)
+   {
+      pdfDateFormat = content;
    }
    
    //==============================================================
@@ -538,6 +717,9 @@ class DataExportProperties
    public String toString()
    {
       StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
+      
+      // SQL
+      
       parameters.append("[tableStructure = " + tableStructure + "]");
       parameters.append("[tableData = " + tableData + "]");
       parameters.append("[insertLock = " + insertLock + "]");
@@ -554,10 +736,26 @@ class DataExportProperties
       parameters.append("[insertTypeSetting = " + insertTypeSetting + "]");
       parameters.append("[replaceTypeSetting = " + replaceTypeSetting + "]");
       parameters.append("[updateTypeSetting = " + updateTypeSetting + "]");
+      
+      // CSV
+      
       parameters.append("[textInclusion = " + textInclusion + "]");
       parameters.append("[textCharsNumber = " + textCharsNumber + "]");
       parameters.append("[dataDelimiter = " + dataDelimiter + "]");
-      parameters.append("[dataFormat = " + dateFormat + "]");
+      parameters.append("[csvDataFormat = " + csvDateFormat + "]");
+      
+      // PDF
+      
+      parameters.append("[title = " + title + "]");
+      parameters.append("[titleFont = " + titleFont + "]");
+      parameters.append("[titleColor = " + titleColor + "]");
+      parameters.append("[headerFont = " + headerFont + "]");
+      parameters.append("[headerColor = " + headerColor + "]");
+      parameters.append("[headerBorder = " + headerBorder + "]");
+      parameters.append("[headerBorderColor = " + headerBorderColor + "]");
+      parameters.append("[numberAlignment = " + numberAlignment + "]");
+      parameters.append("[dateAlignment = " + dateAlignment + "]");
+      parameters.append("[pdfDateFormat = " + pdfDateFormat + "]");
 
       return parameters.toString();
    }
