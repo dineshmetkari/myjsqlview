@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.3 06/09/2010
+// Version 4.4 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,7 @@
 //         4.2 Parameterized Instance localesData in Class Method processLocaleLanguage()
 //             to Bring Code Into Compliance With Java 5.0 API.
 //         4.3 Added Class Method getSchemaTableName().
+//         4.4 Class Method formatExportDateString() Added Argument exportType.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -115,7 +116,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.3 06/09/2010
+ * @version 4.4 06/13/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -267,16 +268,19 @@ public class MyJSQLView_Utils extends MyJSQLView
    // Input Date to be of the format MM-dd-YYYY.
    //==============================================================
 
-   protected static String formatCSVExportDateString(String inputDateString)
+   protected static String formatExportDateString(String inputDateString, String exportType)
    {
       // Method Instances
       DataExportProperties dataExportProperties;
       String dateFormat, year, month, day;
       int firstDashIndex, lastDashIndex;
 
-      // Get the current Date import option.
+      // Get the current Date import option, CSV or PDF.
       dataExportProperties = DBTablesPanel.getDataExportProperties();
-      dateFormat = dataExportProperties.getDateFormat();
+      if (exportType.equals("CSV"))
+         dateFormat = dataExportProperties.getCSVDateFormat();
+      else
+         dateFormat = dataExportProperties.getPDFDateFormat();
 
       if (inputDateString != null && !inputDateString.equals(""))
       {
