@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.6 06/11/2010
+// Version 2.7 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //         2.5 Thread Identifier String Changes in Constructor and Minor 
 //             Changes in run().
 //         2.6 Corrected Conditional Check for currentType Date to UpperCase.
+//         2.7 Class Method run() Change in MyJSQLView_Utils.formatCSVExportDateString()
+//             to formatExportDateString().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -80,7 +82,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.6 06/11/2010
+ * @version 2.7 06/13/2010
  */
 
 class DataTableDumpThread implements Runnable
@@ -179,7 +181,7 @@ class DataTableDumpThread implements Runnable
                   if (!currentString.toLowerCase().equals("null"))
                   {
                      if (currentType.equals("DATE"))
-                        currentString = MyJSQLView_Utils.formatCSVExportDateString(currentString);
+                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "CSV");
                      else
                      {
                         int firstSpace;
@@ -197,7 +199,7 @@ class DataTableDumpThread implements Runnable
                         else
                            time = "";
                         
-                        currentString = MyJSQLView_Utils.formatCSVExportDateString(currentString) + time;
+                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "CSV") + time;
                      }
                   }
                }
