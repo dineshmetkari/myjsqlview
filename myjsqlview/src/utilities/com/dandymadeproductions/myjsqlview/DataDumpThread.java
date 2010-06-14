@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.5 06/09/2010
+// Version 5.6 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,8 @@
 //         5.4 Parameterized columnNamesIterator in Constructor.
 //         5.5 Collected Class Istance schemaTableName in run() From MyJSQLView_Utils
 //             Method getSchemaTableName().
+//         5.6 Class Method run() Change in MyJSQLView_Utils.formatCSVExportDateString()
+//             to formatExportDateString().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -124,7 +126,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.5 06/09/2010
+ * @version 5.6 06/13/2010
  */
 
 class DataDumpThread implements Runnable
@@ -355,7 +357,7 @@ class DataDumpThread implements Runnable
                      if (columnType.equals("DATE"))
                      {
                         fieldContent = MyJSQLView_Utils.displayMyDateString(dbResultSet.getDate(i) + "");
-                        fieldContent = MyJSQLView_Utils.formatCSVExportDateString(fieldContent);
+                        fieldContent = MyJSQLView_Utils.formatExportDateString(fieldContent, "CSV");
                      }
                      else
                      {  
@@ -391,7 +393,7 @@ class DataDumpThread implements Runnable
                         else
                            time = "";
                         
-                        fieldContent = MyJSQLView_Utils.formatCSVExportDateString(fieldContent) + time;
+                        fieldContent = MyJSQLView_Utils.formatExportDateString(fieldContent, "CSV") + time;
                      }
                      dumpData = dumpData + fieldContent + dataDelimiter;  
                   }
