@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.6 05/18/2010
+// Version 4.7 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,7 +91,10 @@
 //                        to Method createTextOptionPanel() & createDelimiterPanel().
 //         4.6 05/18/2010 Class Method actionPerformed() & setCSVExportProperites() 
 //                        textMaxCharsSpinner Set Value via valueOf() Instead of
-//                        Creating a new Double(). 
+//                        Creating a new Double().
+//         4.7 06/13/2010 DataExportPropertes Class Change of get/setDataFormat() Method
+//                        to get/setCSVDataFormat(). Affected Methods getCSVExportOptions()
+//                        & setCSVExportProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -115,7 +118,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.6 05/18/2010
+ * @version 4.7 06/13/2010
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -537,7 +540,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
          newDataProperties.setDataDelimiter(otherTextField.getText());
       
       // Date Format
-      newDataProperties.setDateFormat((String)dateFormatComboBox.getSelectedItem());
+      newDataProperties.setCSVDateFormat((String)dateFormatComboBox.getSelectedItem());
 
       return newDataProperties;
    }
@@ -572,6 +575,6 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       }
       
       // Date Format
-      dateFormatComboBox.setSelectedItem(dataProperties.getDateFormat());
+      dateFormatComboBox.setSelectedItem(dataProperties.getCSVDateFormat());
    }
 }
