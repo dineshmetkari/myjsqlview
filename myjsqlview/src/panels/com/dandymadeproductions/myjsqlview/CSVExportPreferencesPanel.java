@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.7 06/13/2010
+// Version 4.8 06/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,7 @@
 //         4.7 06/13/2010 DataExportPropertes Class Change of get/setDataFormat() Method
 //                        to get/setCSVDataFormat(). Affected Methods getCSVExportOptions()
 //                        & setCSVExportProperties().
+//         4.8 06/13/2010 Minor Comment Changes to Methods Information.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +119,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.7 06/13/2010
+ * @version 4.8 06/13/2010
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -316,7 +317,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
    }
 
    //================================================================
-   // Class Method to create the Update Options Panel.
+   // Class Method to create the Text Options Components.
    //================================================================
 
    private void createTextOptionsPanel(JPanel textOptionsPanel,
@@ -375,7 +376,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
    }
 
    //================================================================
-   // Class Method to create the Update Options Panel.
+   // Class Method to create the Delimiter Options Components.
    //================================================================
 
    private void createDelimiterPanel(JPanel delimiterPanel,
@@ -383,9 +384,8 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
                                      MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Method Instances
-      JPanel checkBoxPanel;
+      JPanel delimiterSelectionPanel;
       JLabel delimiterLabel;
-      
       String resource;
 
       // Delimiter Label & Radio Buttons
@@ -402,8 +402,8 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(delimiterLabel, constraints);
       delimiterPanel.add(delimiterLabel);
 
-      checkBoxPanel = new JPanel(gridbag);
-      checkBoxPanel.setBorder(BorderFactory.createCompoundBorder(
+      delimiterSelectionPanel = new JPanel(gridbag);
+      delimiterSelectionPanel.setBorder(BorderFactory.createCompoundBorder(
                               BorderFactory.createEmptyBorder(0, 0, 0, 0),
                               BorderFactory.createLoweredBevelBorder()));
 
@@ -422,7 +422,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(tabRadioButton, constraints);
-      checkBoxPanel.add(tabRadioButton);
+      delimiterSelectionPanel.add(tabRadioButton);
 
       resource = resourceBundle.getResource("CSVExportPreferencesPanel.radiobutton.Semicolon");
       if (resource.equals(""))
@@ -437,7 +437,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(semicolonRadioButton, constraints);
-      checkBoxPanel.add(semicolonRadioButton);
+      delimiterSelectionPanel.add(semicolonRadioButton);
 
       resource = resourceBundle.getResource("CSVExportPreferencesPanel.radiobutton.Comma");
       if (resource.equals(""))
@@ -452,7 +452,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(commaRadioButton, constraints);
-      checkBoxPanel.add(commaRadioButton);
+      delimiterSelectionPanel.add(commaRadioButton);
 
       resource = resourceBundle.getResource("CSVExportPreferencesPanel.radiobutton.Space");
       if (resource.equals(""))
@@ -467,7 +467,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(spaceRadioButton, constraints);
-      checkBoxPanel.add(spaceRadioButton);
+      delimiterSelectionPanel.add(spaceRadioButton);
 
       resource = resourceBundle.getResource("CSVExportPreferencesPanel.radiobutton.Other");
       if (resource.equals(""))
@@ -482,7 +482,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(otherRadioButton, constraints);
-      checkBoxPanel.add(otherRadioButton);
+      delimiterSelectionPanel.add(otherRadioButton);
 
       otherTextField = new JTextField(10);
       otherTextField.setEnabled(false);
@@ -491,13 +491,13 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(otherTextField, constraints);
-      checkBoxPanel.add(otherTextField);
+      delimiterSelectionPanel.add(otherTextField);
 
       buildConstraints(constraints, 1, 0, 1, 1, 70, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(checkBoxPanel, constraints);
-      delimiterPanel.add(checkBoxPanel);
+      gridbag.setConstraints(delimiterSelectionPanel, constraints);
+      delimiterPanel.add(delimiterSelectionPanel);
    }
 
    //================================================================
