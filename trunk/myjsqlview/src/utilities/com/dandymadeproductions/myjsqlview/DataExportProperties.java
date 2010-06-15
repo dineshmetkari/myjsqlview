@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana Proctor
-// Version 3.2 06/13/2010
+// Version 3.3 06/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,9 @@
 //             Confusion Than it is Worth in Saving. Removed IDENTIFIERQUOTESTRING.
 //         3.1 Changed Package to Reflect Dandy Made Productions Code.
 //         3.2 Implemenation of PDF Export Properties.
+//         3.3 Changed titleFont, headerFont, & headerBorder to titleFontSize,
+//             headerFontSize, & headerBorderSize. Correction to getter/setter
+//             Methods and Final Instances to Corespond.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +87,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.2 06/13/2010
+ * @version 3.3 06/14/2010
  */
 
 class DataExportProperties
@@ -118,11 +121,11 @@ class DataExportProperties
    
    // PDF
    private String title;
-   private int titleFont;
+   private int titleFontSize;
    private int titleColor;
-   private int headerFont;
+   private int headerFontSize;
    private int headerColor;
-   private int headerBorder;
+   private int headerBorderSize;
    private int headerBorderColor;
    private int numberAlignment;
    private int dateAlignment;
@@ -156,11 +159,11 @@ class DataExportProperties
    
    // PDF
    private static final String TITLE = "Title";
-   private static final String TITLEFONT = "TitleFont";
+   private static final String TITLEFONTSIZE = "TitleFontSize";
    private static final String TITLECOLOR = "TitleColor";
-   private static final String HEADERFONT = "HeaderFont";
+   private static final String HEADERFONTSIZE = "HeaderFontSize";
    private static final String HEADERCOLOR = "HeaderColor";
-   private static final String HEADERBORDER = "HeaderBorder";
+   private static final String HEADERBORDERSIZE = "HeaderBorderSize";
    private static final String HEADERBORDERCOLOR = "HeaderBorderColor";
    private static final String NUMBERALIGNMENT = "NumberAlignment";
    private static final String DATEALIGNMENT = "DateAlignment";
@@ -202,11 +205,11 @@ class DataExportProperties
       
       // PDF
       title = "";
-      titleFont = 14;
+      titleFontSize = 14;
       titleColor = Color.BLACK.getRGB();
-      headerFont = 12;
+      headerFontSize = 12;
       headerColor = Color.BLACK.getRGB();
-      headerBorder = 1;
+      headerBorderSize = 1;
       headerBorderColor = Color.BLACK.getRGB();
       numberAlignment = 2;
       dateAlignment = 1;
@@ -247,11 +250,11 @@ class DataExportProperties
          
          // PDF
          title = dataExportPreferences.get(TITLE, "");
-         titleFont = dataExportPreferences.getInt(TITLEFONT, 14);
+         titleFontSize = dataExportPreferences.getInt(TITLEFONTSIZE, 14);
          titleColor = dataExportPreferences.getInt(TITLECOLOR, Color.BLACK.getRGB());
-         headerFont = dataExportPreferences.getInt(HEADERFONT, 12);
+         headerFontSize = dataExportPreferences.getInt(HEADERFONTSIZE, 12);
          headerColor = dataExportPreferences.getInt(HEADERCOLOR, Color.BLACK.getRGB());
-         headerBorder = dataExportPreferences.getInt(HEADERBORDER, 1);
+         headerBorderSize = dataExportPreferences.getInt(HEADERBORDERSIZE, 1);
          headerBorderColor = dataExportPreferences.getInt(HEADERBORDERCOLOR, Color.BLACK.getRGB());
          numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, 2);
          dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, 1);
@@ -438,9 +441,9 @@ class DataExportProperties
       return title;
    }
 
-   protected int getTitleFont()
+   protected int getTitleFontSize()
    {
-      return titleFont;
+      return titleFontSize;
    }
 
    protected Color getTitleColor()
@@ -448,9 +451,9 @@ class DataExportProperties
       return new Color(titleColor);
    }
    
-   protected int getHeaderFont()
+   protected int getHeaderFontSize()
    {
-      return headerFont;
+      return headerFontSize;
    }
    
    protected Color getHeaderColor()
@@ -458,9 +461,9 @@ class DataExportProperties
       return new Color(headerColor);
    }
 
-   protected int getHeaderBorder()
+   protected int getHeaderBorderSize()
    {
-      return headerBorder;
+      return headerBorderSize;
    }
 
    protected Color getHeaderBorderColor()
@@ -473,14 +476,14 @@ class DataExportProperties
       return numberAlignment;
    }
    
-   protected int getDateAlignment()
-   {
-      return dateAlignment;
-   }
-   
    protected String getPDFDateFormat()
    {
       return pdfDateFormat;
+   }
+   
+   protected int getDateAlignment()
+   {
+      return dateAlignment;
    }
    
    //==============================================================
@@ -627,9 +630,9 @@ class DataExportProperties
       title = content;
    }
 
-   protected void setTitleFont(int value)
+   protected void setTitleFontSize(int value)
    {
-      titleFont = value;
+      titleFontSize = value;
    }
 
    protected void setTitleColor(Color color)
@@ -637,9 +640,9 @@ class DataExportProperties
       titleColor = color.getRGB();
    }
    
-   protected void setHeaderFont(int value)
+   protected void setHeaderFontSize(int value)
    {
-      headerFont = value;
+      headerFontSize = value;
    }
    
    protected void setHeaderColor(Color color)
@@ -647,9 +650,9 @@ class DataExportProperties
       headerColor = color.getRGB();
    }
 
-   protected void setHeaderBorder(int value)
+   protected void setHeaderBorderSize(int value)
    {
-      headerBorder = value;
+      headerBorderSize = value;
    }
 
    protected void setHeaderBorderColor(Color color)
@@ -662,14 +665,14 @@ class DataExportProperties
       numberAlignment = value;
    }
    
-   protected void setDateAlignment(int value)
-   {
-      dateAlignment = value;
-   }
-   
    protected void setPDFDateFormat(String content)
    {
       pdfDateFormat = content;
+   }
+   
+   protected void setDateAlignment(int value)
+   {
+      dateAlignment = value;
    }
    
    //==============================================================
@@ -747,15 +750,15 @@ class DataExportProperties
       // PDF
       
       parameters.append("[title = " + title + "]");
-      parameters.append("[titleFont = " + titleFont + "]");
+      parameters.append("[titleFontSize = " + titleFontSize + "]");
       parameters.append("[titleColor = " + titleColor + "]");
-      parameters.append("[headerFont = " + headerFont + "]");
+      parameters.append("[headerFontSize = " + headerFontSize + "]");
       parameters.append("[headerColor = " + headerColor + "]");
-      parameters.append("[headerBorder = " + headerBorder + "]");
+      parameters.append("[headerBorderSize = " + headerBorderSize + "]");
       parameters.append("[headerBorderColor = " + headerBorderColor + "]");
       parameters.append("[numberAlignment = " + numberAlignment + "]");
-      parameters.append("[dateAlignment = " + dateAlignment + "]");
       parameters.append("[pdfDateFormat = " + pdfDateFormat + "]");
+      parameters.append("[dateAlignment = " + dateAlignment + "]");
 
       return parameters.toString();
    }
