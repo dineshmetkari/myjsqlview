@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.4 05/20/2018
+// Version 7.5 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -150,6 +150,9 @@
 //             tableRowsCards, & tableRowPanelsHashtable in Order for Code to Comply
 //             With Java 5.0 API.
 //         7.4 Parameterized cardsIterator in Class Method actionPerformed().
+//         7.5 Addition of the PDFExportPreferencesPanel to Control PDF Export Options.
+//             New Class Instance pdfExportPanel, Changes in Constructor, actionPerformed(),
+//             & createTreeNodes(DefaultMutableTreeNode()
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -179,7 +182,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a pereferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.4 05/20/2010
+ * @version 7.5 06/15/2010
  */
 
 //=================================================================
@@ -204,6 +207,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private TableRowSelectionPreferencesPanel tableRowPreferences;
    private CSVImportPreferencesPanel csvImportPanel;
    private CSVExportPreferencesPanel csvExportPanel;
+   private PDFExportPreferencesPanel pdfExportPanel;
    private SQLExportPreferencesPanel sqlExportPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourcePreferences;
@@ -416,6 +420,11 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Data CSV Export Option Panel
       csvExportPanel = new CSVExportPreferencesPanel(resourceBundle);
       optionsPanel.add("CSV " + resourceExport, csvExportPanel);
+      
+      // ***************************************
+      // Data PDF Export Option Panel
+      pdfExportPanel = new PDFExportPreferencesPanel(resourceBundle);
+      optionsPanel.add("PDF " + resourceExport, pdfExportPanel);
 
       // ***************************************
       // Data SQL Export Options Panel
@@ -565,6 +574,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
+            DBTablesPanel.setDataExportProperties(pdfExportPanel.getPDFExportOptions());
             DBTablesPanel.setDataExportProperties(sqlExportPanel.getSQLExportOptions());
 
             MyJSQLView_JMenuBarActions.setPreferencesNotVisisble();
@@ -807,7 +817,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Class Method Instances.
       DefaultMutableTreeNode summaryTableNode, tableFieldsNode, tableRowsNode;
       DefaultMutableTreeNode dataImportNode, csvImportNode;
-      DefaultMutableTreeNode dataExportNode, csvExportNode, sqlExportNode;
+      DefaultMutableTreeNode dataExportNode, csvExportNode, pdfExportNode, sqlExportNode;
 
       // Summary Table View Node
       summaryTableNode = null;
@@ -838,6 +848,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Data Export Option Nodes
       csvExportNode = new DefaultMutableTreeNode("CSV");
       dataExportNode.add(csvExportNode);
+      
+      pdfExportNode = new DefaultMutableTreeNode("PDF");
+      dataExportNode.add(pdfExportNode);
 
       sqlExportNode = new DefaultMutableTreeNode("SQL");
       dataExportNode.add(sqlExportNode);
