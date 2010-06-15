@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 06/13/2010
+// Version 1.1 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 06/13/2010 Original PDFExportPreferencesPanel Class.
+//         1.1 06/15/2010 Class Method fillHeaderPanel() Changed headerFontLabel
+//                        & headerBorderLabel Text.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +57,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.0 06/13/2010
+ * @version 1.1 06/15/2010
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -498,9 +500,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Font Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderFontSizeColor");
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderFont");
       if (resource.equals(""))
-         headerFontLabel = new JLabel("Font Size/Color");
+         headerFontLabel = new JLabel("Font");
       else
          headerFontLabel = new JLabel(resource);
       headerFontLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
@@ -539,9 +541,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Border Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.BorderSizeColor");
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.Border");
       if (resource.equals(""))
-         headerBorderLabel = new JLabel("Border Size/Color");
+         headerBorderLabel = new JLabel("Border");
       else
          headerBorderLabel = new JLabel(resource);
       headerBorderLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
