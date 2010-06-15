@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 06/15/2010
+// Version 1.2 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 // Version 1.0 06/13/2010 Original PDFExportPreferencesPanel Class.
 //         1.1 06/15/2010 Class Method fillHeaderPanel() Changed headerFontLabel
 //                        & headerBorderLabel Text.
+//         1.2 06/15/2010 Minor Changes in Positioning of Label in fillTitlePanel()
+//                        & fillHeaderPanel() Class Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +59,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.1 06/15/2010
+ * @version 1.2 06/15/2010
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -421,7 +423,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
          titleFontSizeLabel = new JLabel("Font Size");
       else
          titleFontSizeLabel = new JLabel(resource);
-      titleFontSizeLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 10, 0));
+      titleFontSizeLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 8, 0));
 
       buildConstraints(constraints, 0, 2, 1, 1, 12, 33);
       constraints.fill = GridBagConstraints.NONE;
@@ -447,7 +449,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
          titleColorLabel = new JLabel("Font Color");
       else
          titleColorLabel = new JLabel(resource);
-      titleColorLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 10, 0));
+      titleColorLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 8, 0));
 
       buildConstraints(constraints, 2, 2, 1, 1, 12, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -505,7 +507,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
          headerFontLabel = new JLabel("Font");
       else
          headerFontLabel = new JLabel(resource);
-      headerFontLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+      headerFontLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
 
       buildConstraints(constraints, 0, 1, 1, 1, 18, 50);
       constraints.fill = GridBagConstraints.NONE;
@@ -546,7 +548,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
          headerBorderLabel = new JLabel("Border");
       else
          headerBorderLabel = new JLabel(resource);
-      headerBorderLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+      headerBorderLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
 
       buildConstraints(constraints, 3, 1, 1, 1, 18, 100);
       constraints.fill = GridBagConstraints.NONE;
