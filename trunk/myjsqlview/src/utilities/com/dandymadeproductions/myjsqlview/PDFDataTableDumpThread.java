@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.2 06/14/2010
+// Version 1.3 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 //             the DataExportProperties Class.
 //         1.2 Class Instance pdfDataExportOptions Correction to Accomodate
 //             getTitleFontSize(), getHeaderFontSize(), & getHeaderBorderSize().
+//         1.3 Correction in run() to Check currentType for Null in Numeric
+//             Fields Alignment.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.2 06/14/2010
+ * @version 1.3 06/15/2010
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -245,10 +247,11 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                bodyCell.setPaddingBottom(4);
                
                // Set Numeric Fields Alignment.
-               if (currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
-                   || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
-                   || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
-                   || currentType.equals("REAL") || currentType.equals("DECIMAL"))
+               if ((currentType != null)
+                    && currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
+                    || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
+                    || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
+                    || currentType.equals("REAL") || currentType.equals("DECIMAL"))
                {
                   bodyCell.setHorizontalAlignment(pdfDataExportOptions.getNumberAlignment());
                   bodyCell.setPaddingRight(4);
