@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.1 06/13/2010
+// Version 1.2 06/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 // Version 1.0 Original PDFDataTableDumpThread Class.
 //         1.1 Finalized By Implementing Basic Control of Options Through
 //             the DataExportProperties Class.
+//         1.2 Class Instance pdfDataExportOptions Correction to Accomodate
+//             getTitleFontSize(), getHeaderFontSize(), & getHeaderBorderSize().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -65,7 +67,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.1 06/13/2010
+ * @version 1.2 06/14/2010
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -139,10 +141,10 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       summaryListTableNameTypes = new HashMap<String, String>();
       pdfDataExportOptions = DBTablesPanel.getDataExportProperties();
       
-      titleFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getTitleFont(),
+      titleFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getTitleFontSize(),
                            Font.BOLD);
       titleFont.setColor(new BaseColor(pdfDataExportOptions.getTitleColor()));
-      rowHeaderFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getHeaderFont(),
+      rowHeaderFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getHeaderFontSize(),
                                Font.BOLD);
       rowHeaderFont.setColor(new BaseColor(pdfDataExportOptions.getHeaderColor()));
       rowHeaderBaseFont = rowHeaderFont.getCalculatedBaseFont(false);
@@ -180,7 +182,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       {
          currentTableFieldName = summaryListTable.getColumnName(i);
          rowHeaderCell = new PdfPCell(new Phrase(currentTableFieldName, rowHeaderFont));
-         rowHeaderCell.setBorderWidth(pdfDataExportOptions.getHeaderBorder());
+         rowHeaderCell.setBorderWidth(pdfDataExportOptions.getHeaderBorderSize());
          rowHeaderCell.setHorizontalAlignment(PdfPCell.ALIGN_CENTER);
          rowHeaderCell.setBorderColor(new BaseColor(pdfDataExportOptions.getHeaderBorderColor()));
          pdfTable.addCell(rowHeaderCell);
