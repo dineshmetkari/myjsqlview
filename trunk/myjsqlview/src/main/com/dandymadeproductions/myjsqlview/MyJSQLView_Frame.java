@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.4 06/12/2010
+// Version 5.5 06/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,10 @@
 //                        On Occasion With the Tabbed Pane. Conditional Check in stateChange()
 //                        of selectedIndex Less Than Total Tab Count. Changed the Way the
 //                        DBTablesPanel is Added to the mainTabPane in run().
+//         5.5 06/16/2010 Class Method addTab() Added Argument MyJSQLView_Frame and Then Removed
+//                        mainTabsPane ChangeListener During the Adding of a Tab. Still Trying
+//                        to Fix the ArrayIndexOutOfBoundsException. It Appears That a MouseOver
+//                        Event for the Tab is Trying to Change Aspects of the Tabs.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -165,7 +169,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.4 06/12/2010
+ * @version 5.5 06/16/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -391,13 +395,17 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    // Class Method to add a new plugin tab to the frame interface.
    //==============================================================
    
-   protected static synchronized void addTab(MyJSQLView_PluginModule plugin)
+   protected static synchronized void addTab(MyJSQLView_PluginModule plugin, MyJSQLView_Frame parent)
    {
       if (plugin != null)
-      {
+      {  
+         mainTabsPane.removeChangeListener(parent);
+         
          loadedPluginModules.add(plugin);
          mainTabsPane.addTab(null, plugin.tabIcon, plugin.panel, plugin.name);
          toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), plugin.toolBar);
+         
+         mainTabsPane.addChangeListener(parent);
       } 
    }
    
