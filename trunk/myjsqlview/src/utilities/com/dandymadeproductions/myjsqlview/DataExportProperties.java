@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana Proctor
-// Version 3.3 06/14/2010
+// Version 3.4 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,6 +72,8 @@
 //         3.3 Changed titleFont, headerFont, & headerBorder to titleFontSize,
 //             headerFontSize, & headerBorderSize. Correction to getter/setter
 //             Methods and Final Instances to Corespond.
+//         3.4 Cleanup and Correction to savePreference() in Setter Methods for PDF
+//             Export Options.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +89,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.3 06/14/2010
+ * @version 3.4 06/15/2010
  */
 
 class DataExportProperties
@@ -135,7 +137,7 @@ class DataExportProperties
    
    // SQL
    private static final String TABLESTRUCTURE = "TableStructure";
-   private static final String  TABLEDATA = "TableData";
+   private static final String TABLEDATA = "TableData";
    private static final String INSERTLOCK = "InsertLock";
    private static final String REPLACELOCK = "replaceLock";
    private static final String UPDATELOCK = "UpdateLock";
@@ -169,7 +171,6 @@ class DataExportProperties
    private static final String DATEALIGNMENT = "DateAlignment";
    private static final String PDFDATEFORMAT = "ExportPDFDateFormat";
    
-
    //==============================================================
    // DataExportProperties Constructor
    //==============================================================
@@ -628,51 +629,61 @@ class DataExportProperties
    protected void setTitle(String content)
    {
       title = content;
+      savePreference(TITLE, content);
    }
 
    protected void setTitleFontSize(int value)
    {
       titleFontSize = value;
+      savePreference(TITLEFONTSIZE, value);
    }
 
    protected void setTitleColor(Color color)
    {
       titleColor = color.getRGB();
+      savePreference(TITLECOLOR, color.getRGB());
    }
    
    protected void setHeaderFontSize(int value)
    {
       headerFontSize = value;
+      savePreference(HEADERFONTSIZE, value);
    }
    
    protected void setHeaderColor(Color color)
    {
       headerColor = color.getRGB();
+      savePreference(HEADERCOLOR, color.getRGB());
    }
 
    protected void setHeaderBorderSize(int value)
    {
       headerBorderSize = value;
+      savePreference(HEADERBORDERSIZE, value);
    }
 
    protected void setHeaderBorderColor(Color color)
    {
       headerBorderColor = color.getRGB();
+      savePreference(HEADERBORDERCOLOR, color.getRGB());
    }
    
    protected void setNumberAlignment(int value)
    {
       numberAlignment = value;
+      savePreference(NUMBERALIGNMENT, value);
    }
    
    protected void setPDFDateFormat(String content)
    {
       pdfDateFormat = content;
+      savePreference(PDFDATEFORMAT, content);
    }
    
    protected void setDateAlignment(int value)
    {
       dateAlignment = value;
+      savePreference(DATEALIGNMENT, value);
    }
    
    //==============================================================
