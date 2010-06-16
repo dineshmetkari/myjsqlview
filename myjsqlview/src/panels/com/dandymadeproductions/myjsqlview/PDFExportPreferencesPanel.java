@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 06/15/2010
+// Version 1.3 06/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,9 @@
 //                        & headerBorderLabel Text.
 //         1.2 06/15/2010 Minor Changes in Positioning of Label in fillTitlePanel()
 //                        & fillHeaderPanel() Class Methods.
+//         1.3 06/15/2010 Changed Class Instance titleTableNameRadioButton to
+//                        titleDefaultRadioButton. Class Methods Effected fillHeaderPanel(),
+//                        getPDFExportOptions(), & setPDFExportOptions().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,7 +62,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.2 06/15/2010
+ * @version 1.3 06/15/2010
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -70,7 +73,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
    private GridBagLayout gridbag;
    private GridBagConstraints constraints;
 
-   private JRadioButton titleNoneRadioButton, titleTableNameRadioButton, titleCustomRadioButton;
+   private JRadioButton titleNoneRadioButton, titleDefaultRadioButton, titleCustomRadioButton;
    private JTextField customTitleTextField;
    private JSpinner titleFontSizeSpinner;
    private JButton titleColorButton;
@@ -373,18 +376,18 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.TableName");
       if (resource.equals(""))
-         titleTableNameRadioButton = new JRadioButton("Table Name", false);
+         titleDefaultRadioButton = new JRadioButton("Default", false);
       else
-         titleTableNameRadioButton = new JRadioButton(resource, false);
-      titleTableNameRadioButton.setFocusPainted(false);
-      titleTableNameRadioButton.addActionListener(this);
-      titleButtonGroup.add(titleTableNameRadioButton);
+         titleDefaultRadioButton = new JRadioButton(resource, false);
+      titleDefaultRadioButton.setFocusPainted(false);
+      titleDefaultRadioButton.addActionListener(this);
+      titleButtonGroup.add(titleDefaultRadioButton);
 
       buildConstraints(constraints, 1, 0, 1, 1, 12, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(titleTableNameRadioButton, constraints);
-      titleSelectionPanel.add(titleTableNameRadioButton);
+      gridbag.setConstraints(titleDefaultRadioButton, constraints);
+      titleSelectionPanel.add(titleDefaultRadioButton);
 
       resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.Custom");
       if (resource.equals(""))
@@ -543,7 +546,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Border Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.Border");
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderBorder");
       if (resource.equals(""))
          headerBorderLabel = new JLabel("Border");
       else
@@ -739,7 +742,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       if (titleNoneRadioButton.isSelected())
          newDataProperties.setTitle("");
-      else if (titleTableNameRadioButton.isSelected())
+      else if (titleDefaultRadioButton.isSelected())
          newDataProperties.setTitle("EXPORTED TABLE");
       else
          newDataProperties.setTitle(customTitleTextField.getText());
@@ -777,7 +780,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       if (dataProperties.getTitle().equals(""))
          titleNoneRadioButton.setSelected(true);
       else if (dataProperties.getTitle().equals("EXPORTED TABLE"))
-         titleTableNameRadioButton.setSelected(true);
+         titleDefaultRadioButton.setSelected(true);
       else
       {
          titleCustomRadioButton.setSelected(true);
