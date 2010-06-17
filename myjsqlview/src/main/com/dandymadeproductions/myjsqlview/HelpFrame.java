@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2010 Dana M. Proctor
-// Version 2.0 02/18/2010
+// Version 2.1 06/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@
 //         1.8 Additional Standardation to Comments.
 //         1.9 Header Format Changes/Update.
 //         2.0 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 Added Class Instance failedToLoadContents. Made the Catching
+//             of Content Loading a Little More Robust With OptionPanes to
+//             Display Error Information. 
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +72,7 @@ import java.io.IOException;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 06/17/2010
  */
 
 class HelpFrame extends JFrame
@@ -80,6 +83,7 @@ class HelpFrame extends JFrame
    private JEditorPane helpHTMLPane;
    private JScrollPane helpHTMLScrollPane;
    private JButton closeButton;
+   protected boolean failedToLoadContents;
 
    //==============================================================
    // HelpFrame Constructor.
@@ -91,6 +95,7 @@ class HelpFrame extends JFrame
       super(frameTitle);
 
       this.closeButton = closeButton;
+      failedToLoadContents = false;
 
       // Setting up a scrollable html type editor pane.
 
@@ -109,14 +114,19 @@ class HelpFrame extends JFrame
          {
             helpHTMLPane.setPage(helpURL);
          }
-         catch (IOException e)
+         catch (IOException ioe)
          {
-            System.err.println("Unable to read URL - " + helpURL);
+            String optionPaneStringErrors = "Unable to to SetPage - " + helpURL + "\n" + "IOException: "
+                                             + ioe.toString();
+            JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
+            failedToLoadContents = true;
          }
       }
       else
       {
-         System.err.println("Unable to read URL - " + htmlFile);
+         String optionPaneStringErrors = "Unable to read URL - " + htmlFile;
+         JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
+         failedToLoadContents = true;
       }
 
       // Adding HyperLink Listener
@@ -132,9 +142,10 @@ class HelpFrame extends JFrame
                   helpHTMLPane.setPage(ev.getURL());
                }
             }
-            catch (IOException ex)
+            catch (IOException ioe)
             {
-               System.out.println(ex);
+               String optionPaneStringErrors = "Unable to Load HyperLink";
+               JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
             }
          }
       });
@@ -142,11 +153,15 @@ class HelpFrame extends JFrame
       // Adding scrollbars to the editor pane and placing
       // in the frame.
 
-      helpHTMLScrollPane = new JScrollPane(helpHTMLPane);
-      helpHTMLScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-      helpHTMLScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      if (!failedToLoadContents)
+      {
+         helpHTMLScrollPane = new JScrollPane(helpHTMLPane);
+         helpHTMLScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+         helpHTMLScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-      getContentPane().add(helpHTMLScrollPane, "Center");
+         getContentPane().add(helpHTMLScrollPane, "Center");
+      }
+      
       this.addWindowListener(helpFrameListener);
    }
 
