@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.3 06/15/2010
+// Version 1.4 06/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,9 @@
 //             getTitleFontSize(), getHeaderFontSize(), & getHeaderBorderSize().
 //         1.3 Correction in run() to Check currentType for Null in Numeric
 //             Fields Alignment.
+//         1.4 Consolidation of Numeric, Date, Time, Year Fields Format/Alignment
+//             Under One Conditional to Check for currentType != Null. Effected
+//             Class Method run().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -69,7 +72,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/15/2010
+ * @version 1.4 06/17/2010
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -246,20 +249,22 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                bodyCell = new PdfPCell(new Phrase(currentString));
                bodyCell.setPaddingBottom(4);
                
-               // Set Numeric Fields Alignment.
-               if ((currentType != null)
-                    && currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
-                    || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
-                    || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
-                    || currentType.equals("REAL") || currentType.equals("DECIMAL"))
+               if (currentType != null)
                {
-                  bodyCell.setHorizontalAlignment(pdfDataExportOptions.getNumberAlignment());
-                  bodyCell.setPaddingRight(4);
+                  // Set Numeric Fields Alignment.
+                  if (currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
+                      || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
+                      || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
+                      || currentType.equals("REAL") || currentType.equals("DECIMAL"))
+                  {
+                     bodyCell.setHorizontalAlignment(pdfDataExportOptions.getNumberAlignment());
+                     bodyCell.setPaddingRight(4);
+                  }
+                  // Set Date/Time Field Alignment.
+                  if (currentType.indexOf("DATE") != -1 || currentType.indexOf("TIME") != -1
+                      || currentType.indexOf("YEAR") != -1)
+                     bodyCell.setHorizontalAlignment(pdfDataExportOptions.getDateAlignment());
                }
-               // Set Date/Time Field Alignment.
-               if (currentType.indexOf("DATE") != -1 || currentType.indexOf("TIME") != -1
-                   || currentType.indexOf("YEAR") != -1)
-                  bodyCell.setHorizontalAlignment(pdfDataExportOptions.getDateAlignment());
               
                pdfTable.addCell(bodyCell);
                columnWidths[j] = Math.min(50000, Math.max(columnWidths[j],
