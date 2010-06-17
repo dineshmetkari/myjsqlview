@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 05/16/2010
+// Version 1.4 06/16/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,9 @@
 //                        the IOException and Additional Output Information.
 //         1.3 05/16/2010 Parameterized Class Instance localeListData to Bring Code
 //                        Into Compliance With Java 5.0 API.
+//         1.4 06/16/2010 Conversion of Using a FileReader to Using FileInputStream
+//                        and a InputStreamReader With Specification of UTF-16 For
+//                        CharsetName.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,7 +49,8 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
@@ -56,7 +60,7 @@ import java.util.Hashtable;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.3 05/16/2010
+ * @version 1.4 06/16/2010
  */
 
 class MyJSQLView_ResourceBundle
@@ -77,7 +81,8 @@ class MyJSQLView_ResourceBundle
       String currentEntry;
       String key, resource;
 
-      FileReader fileReader;
+      FileInputStream fileInputStream;
+      InputStreamReader inputStreamReader;
       BufferedReader bufferedReader;
 
       // Setup to process.
@@ -94,13 +99,13 @@ class MyJSQLView_ResourceBundle
       // of the key, resource pairs.
 
       localeListData = new Hashtable <String, String>();
-
+      
       try
       {
-
-         fileReader = new FileReader(localeFileName);
-         bufferedReader = new BufferedReader(fileReader);
-
+         fileInputStream = new FileInputStream(localeFileName);
+         inputStreamReader = new InputStreamReader(fileInputStream, "UTF-16");
+         bufferedReader = new BufferedReader(inputStreamReader);
+         
          while ((currentEntry = bufferedReader.readLine()) != null)
          {
             currentEntry = currentEntry.trim();
@@ -115,7 +120,9 @@ class MyJSQLView_ResourceBundle
             }
          }
          bufferedReader.close();
-         fileReader.close();
+         inputStreamReader.close();
+         fileInputStream.close();
+         //fileReader.close();
       }
       catch (IOException ioe)
       {
