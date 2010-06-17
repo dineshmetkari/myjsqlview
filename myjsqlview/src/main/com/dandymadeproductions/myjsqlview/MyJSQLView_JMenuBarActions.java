@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.20 06/10/2010
+// Version 7.21 06/17/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -227,6 +227,9 @@
 //             Java 5.0 API.
 //        7.20 Added Action Processing for Data | Export | PDF Format | Summary Table
 //             in Class Method dataExportAction().
+//        7.21 Threaded HelpFrame Instances for Manual, Legal, & Readme Actions. Also
+//             Added a Check Through failedToLoadContents to dispose Frame. Class
+//             Method actionSelection().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -259,7 +262,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.20 06/10/2010
+ * @version 7.21 06/17/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -476,33 +479,69 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Manual
       if (actionCommand.equals(ACTION_MANUAL))
       {
-         HelpFrame manualContents = new HelpFrame("MyJSQLView Manual",
-                                                  "/docs/Manual/MyJSQLView_Manual.html",
-                                                  null);
-         manualContents.setSize(640, 500);
-         manualContents.setVisible(true);
+         Thread helpFrameManualThread = new Thread(new Runnable()
+         {
+            public void run()
+            {
+               HelpFrame manualContents = new HelpFrame("MyJSQLView Manual",
+                                                        "/docs/Manual/MyJSQLView_Manual.html",
+                                                        null);
+               if (manualContents.failedToLoadContents)
+                  manualContents.dispose();
+               else
+               {
+                  manualContents.setSize(640, 500);
+                  manualContents.setVisible(true);
+               }
+            }
+         }, "MyJSQLView_JMenuBarActions.helpFrameManualThread");
+         helpFrameManualThread.start();
          return;
       }
       
       // Legal
       if (actionCommand.equals(ACTION_LEGAL))
       {
-         HelpFrame webSiteContents = new HelpFrame("MyJSQLView Legal",
-                                                   "/docs/Release/legal.html",
-                                                   null);
-         webSiteContents.setSize(600, 400);
-         webSiteContents.setVisible(true);
+         Thread helpFrameLegalThread = new Thread(new Runnable()
+         {
+            public void run()
+            {
+               HelpFrame legalContents = new HelpFrame("MyJSQLView Legal",
+                                                       "/docs/Release/legal.html",
+                                                       null);
+               if (legalContents.failedToLoadContents)
+                  legalContents.dispose();
+               else
+               {
+                  legalContents.setSize(600, 400);
+                  legalContents.setVisible(true);
+               }
+            }
+         }, "MyJSQLView_JMenuBarActions.helpFrameLegalThread");
+         helpFrameLegalThread.start();
          return;
       }
 
       // Release Notes (Readme)
       if (actionCommand.equals(ACTION_RELEASE_NOTES))
       {
-         HelpFrame webSiteContents = new HelpFrame("MyJSQLView Readme",
-                                                   "/docs/Release/readme.html",
-                                                   null);
-         webSiteContents.setSize(640, 500);
-         webSiteContents.setVisible(true);
+         Thread helpFrameReadMeThread = new Thread(new Runnable()
+         {
+            public void run()
+            {
+               HelpFrame readmeContents = new HelpFrame("MyJSQLView Readme",
+                                                        "/docs/Release/readme.html",
+                                                        null);
+               if (readmeContents.failedToLoadContents)
+                  readmeContents.dispose();
+               else
+               {
+                  readmeContents.setSize(640, 500);
+                  readmeContents.setVisible(true);
+               }
+            }
+         }, "MyJSQLView_JMenuBarActions.HelpFrameReadMeThread");
+         helpFrameReadMeThread.start();
          return;
       }
       
