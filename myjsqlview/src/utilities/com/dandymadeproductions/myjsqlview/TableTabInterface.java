@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.7 05/17/2010
+// Version 2.8 06/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,11 +43,11 @@
 //         1.7 Added Abstract Methods getValidDataRows(), setSearchTextField(),
 //             & getTableSQLStatement().
 //         1.8 Header Format Changes/Update.
-//         1.9 Added Abstract Methods get/setSaveFileName().
-//         2.0 Added Abstract Methods get/setState().
-//         2.1 Added Abstract Method createAdvancedSortSearchFrame().
-//         2.2 Added Abstract Method createUpdateFrame().
-//         2.3 Added The Commented Out Abstract Method pasteClipboard() Contents.
+//         1.9 Added Interface Methods get/setSaveFileName().
+//         2.0 Added Interface Methods get/setState().
+//         2.1 Added Interface Method createAdvancedSortSearchFrame().
+//         2.2 Added Interface Method createUpdateFrame().
+//         2.3 Added The Commented Out Interface Method pasteClipboard() Contents.
 //         2.4 Integration of TableTabPanels. Updated Interfaces to Include
 //             getColumnNames(), loadTable(), viewSelectedItem(), editSelectedItem(),
 //             deleteSelectedItem(), deleteAllItems(), pastClipboardContents().
@@ -55,6 +55,7 @@
 //         2.6 Minor Comment Changes.
 //         2.7 Configured Interface Methods With Vector and HashMap Types to be
 //             Parameterized So That the Code Will be Compliant to Java 5.0 API.
+//         2.8 Aded Interface Method setActionButtonVisible().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -75,7 +76,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 2.7 05/17/2010
+ * @version 2.8 06/20/2010
  */
 
 interface TableTabInterface
@@ -266,6 +267,13 @@ interface TableTabInterface
 
    String getState();
 
+   //==============================================================
+   // Class method to allow classes to Render the Action Buttons,
+   // View, Add, Edit, and Delete Visible or Not.
+   //==============================================================
+
+   void setActionButtonsVisible(boolean visible);
+   
    //==============================================================
    // Class method to allow classes to set the table heading fields.
    //==============================================================
