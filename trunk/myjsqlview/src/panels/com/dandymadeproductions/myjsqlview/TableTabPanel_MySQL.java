@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.25 05/19/2010
+// Version 11.26 06/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -443,6 +443,7 @@
 //       11.25 Parameterized headings in Method loadTable(), keyIterator & textFieldIterator
 //             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
 //             addItem().
+//       11.26 Made the Class and Constructor Public.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -467,10 +468,10 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.25 05/19/2010
+ * @version 11.26 06/19/2010
  */
 
-class TableTabPanel_MySQL extends TableTabPanel
+public class TableTabPanel_MySQL extends TableTabPanel
 {
    // Class Instances.
    private static final long serialVersionUID = -3305846942741359241L;
@@ -479,7 +480,7 @@ class TableTabPanel_MySQL extends TableTabPanel
    // TableTabPanel Constructor
    //==============================================================
 
-   protected TableTabPanel_MySQL(String table, Connection setup_dbConnection)
+   public TableTabPanel_MySQL(String table, Connection setup_dbConnection)
    {
       super(table, setup_dbConnection);
    }
