@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.59 06/09/2010
+// Version 4.60 06/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -134,6 +134,7 @@
 //             headingsIterator in getState(), and headings in setTableHeadings().
 //        4.59 Collected Class Instance schemaTableName in Constructor From MyJSQLView_Utils
 //             Method getSchemaTableName().
+//        4.60 Added TableTabInterface Method setActionButtonsVisible().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -166,7 +167,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.59 06/09/2010
+ * @version 4.60 06/20/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -537,7 +538,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // manupulate table entries.
 
       actionButtonPanel = new JPanel();
-
+      
       // No key then kind of hard to manipulate.
       // Fix for 2.81++?
       if (!primaryKeys.isEmpty())
@@ -2179,6 +2180,23 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected static String getStateDelimiter()
    {
       return "%;%";
+   }
+   
+   //==============================================================
+   // Class method to allow classes to Render the Action Buttons,
+   // View, Add, Edit, and Delete Visible or Not.
+   //==============================================================
+
+   public void setActionButtonsVisible(boolean visible)
+   {
+      if (!primaryKeys.isEmpty())
+      {
+         viewButton.setVisible(visible);
+         addButton.setVisible(visible);
+         editButton.setVisible(visible);
+         deleteButton.setVisible(visible);
+         deleteAllButton.setEnabled(visible);
+      }
    }
 
    //==============================================================
