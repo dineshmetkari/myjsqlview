@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 9.0 05/19/2010
+// Version 9.1 06/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -226,6 +226,7 @@
 //         9.0 Parameterized headings in Method loadTable(), keyIterator & textFieldIterator
 //             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
 //             addItem().
+//         9.1 Made the Class and Constructor Public.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -258,10 +259,10 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.0 05/19/2010
+ * @version 9.1 06/19/2010
  */
 
-class TableTabPanel_Oracle extends TableTabPanel
+public class TableTabPanel_Oracle extends TableTabPanel
 {
    // Class Instances Defined in Parent.
    private static final long serialVersionUID = 5747390393178685731L;
@@ -271,7 +272,7 @@ class TableTabPanel_Oracle extends TableTabPanel
    // TableTabPanel Constructor
    //===========================================================
 
-   protected TableTabPanel_Oracle(String table, Connection setup_dbConnection)
+   public TableTabPanel_Oracle(String table, Connection setup_dbConnection)
    {
       super(table, setup_dbConnection);
    }

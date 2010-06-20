@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 11.3 05/19/2010
+// Version 11.4 06/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -269,6 +269,7 @@
 //        11.3 Parameterized headings in Method loadTable(), keyIterator & textFieldIterator
 //             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
 //             addItem().
+//        11.6 Made the Class and Constructor Public.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -294,10 +295,10 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.3 05/19/2010
+ * @version 11.6 06/19/2010
  */
 
-class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
+public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
 {
    // Class Instances Defined in Parent.
    private static final long serialVersionUID = -4332220243504350038L;
@@ -306,7 +307,7 @@ class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
    // TableTabPanel Constructor
    //===========================================================
 
-   protected TableTabPanel_PostgreSQL(String table, Connection setup_dbConnection)
+   public TableTabPanel_PostgreSQL(String table, Connection setup_dbConnection)
    {
       super(table, setup_dbConnection);
    }
