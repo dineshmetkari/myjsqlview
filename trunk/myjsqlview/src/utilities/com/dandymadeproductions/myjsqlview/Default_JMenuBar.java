@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.2 05/17/2010
+// Version 1.3 06/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 // Version 1.0 Original Default_JMenuBar Class.
 //         1.1 Implemented MyJSQLView_MenuActionCommands.
 //         1.2 Minor Format Changes.
+//         1.3 Correction to Resource MyJSQLView_JMenuBar Name.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,7 +55,7 @@ import javax.swing.JMenuItem;
  * contains essentially only the MyJSQLView File|Exit & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.2 05/17/2010
+ * @version 1.3 06/20/2010
  */
 
 class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -113,7 +114,7 @@ class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
       //===========
       // File Menu
       
-      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.File");
+      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.File");
       if (resource.equals(""))
          fileMenu = new JMenu("File");
       else
@@ -121,7 +122,7 @@ class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Exit
-      resource = resourceBundle.getResource("MyJSQLView_JMenBar.menu.Exit");
+      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Exit");
       if (resource.equals(""))
          fileMenu.add(menuItem("Exit", ACTION_EXIT));
       else
