@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.60 06/20/2010
+// Version 4.61 06/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +135,7 @@
 //        4.59 Collected Class Instance schemaTableName in Constructor From MyJSQLView_Utils
 //             Method getSchemaTableName().
 //        4.60 Added TableTabInterface Method setActionButtonsVisible().
+//        4.61 Constructor Instance listTable Set Header Font Bold.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -167,7 +168,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.60 06/20/2010
+ * @version 4.61 06/21/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -470,6 +471,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                                    TransferHandler.getCopyAction());
       listTable.getActionMap().put(TransferHandler.getPasteAction().getValue(Action.NAME),
                                    TransferHandler.getPasteAction());
+      listTable.getTableHeader().setFont(new Font(this.getFont().getName(), Font.BOLD,
+                                                  this.getFont().getSize()));
+      
       createListTablePopupMenu();
       listTable.addMouseListener(summaryTablePopupListener);
 
