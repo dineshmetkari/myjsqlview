@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.61 06/21/2010
+// Version 4.62 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -136,6 +136,8 @@
 //             Method getSchemaTableName().
 //        4.60 Added TableTabInterface Method setActionButtonsVisible().
 //        4.61 Constructor Instance listTable Set Header Font Bold.
+//        4.62 Added Class Instance viewOnly and Argument boolean viewOnlyTable to Constructor.
+//             Removed Class Method setActionButtonVisible().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -168,7 +170,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.61 06/21/2010
+ * @version 4.62 06/23/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -183,6 +185,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    private Object panelSource;
    private boolean busyProcessing = false;
    private boolean settingState;
+   private boolean viewOnly;
    
    protected static final int maxPreferredColumnSize = 350;
 
@@ -250,9 +253,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // TableTabPanel Constructor
    //==============================================================
 
-   TableTabPanel(String table, Connection setup_dbConnection)
+   TableTabPanel(String table, Connection setup_dbConnection, boolean viewOnlyTable)
    {
       sqlTable = table;
+      viewOnly = viewOnlyTable;
       
       // Constructor Instances.
       String iconsDirectory, resource;
@@ -557,43 +561,46 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          viewButton.addActionListener(this);
          actionButtonPanel.add(viewButton);
 
-         // Add Button
-         resource = resourceBundle.getResource("TableTabPanel.button.Add");
-         if (resource.equals(""))
-            addButton = new JButton("Add");
-         else
-            addButton = new JButton(resource);
-         addButton.setMnemonic(KeyEvent.VK_A);
-         addButton.addActionListener(this);
-         actionButtonPanel.add(addButton);
+         if (!viewOnly)
+         {
+            // Add Button
+            resource = resourceBundle.getResource("TableTabPanel.button.Add");
+            if (resource.equals(""))
+               addButton = new JButton("Add");
+            else
+               addButton = new JButton(resource);
+            addButton.setMnemonic(KeyEvent.VK_A);
+            addButton.addActionListener(this);
+            actionButtonPanel.add(addButton);
 
-         // Edit Button
-         resource = resourceBundle.getResource("TableTabPanel.button.Edit");
-         if (resource.equals(""))
-            editButton = new JButton("Edit");
-         else
-            editButton = new JButton(resource);
-         editButton.setMnemonic(KeyEvent.VK_E);
-         editButton.addActionListener(this);
-         actionButtonPanel.add(editButton);
+            // Edit Button
+            resource = resourceBundle.getResource("TableTabPanel.button.Edit");
+            if (resource.equals(""))
+               editButton = new JButton("Edit");
+            else
+               editButton = new JButton(resource);
+            editButton.setMnemonic(KeyEvent.VK_E);
+            editButton.addActionListener(this);
+            actionButtonPanel.add(editButton);
 
-         // Delete Button
-         resource = resourceBundle.getResource("TableTabPanel.button.Delete");
-         if (resource.equals(""))
-            deleteButton = new JButton("Delete");
-         else
-            deleteButton = new JButton(resource);
-         deleteButton.setMnemonic(KeyEvent.VK_D);
-         deleteButton.addActionListener(this);
-         actionButtonPanel.add(deleteButton);
+            // Delete Button
+            resource = resourceBundle.getResource("TableTabPanel.button.Delete");
+            if (resource.equals(""))
+               deleteButton = new JButton("Delete");
+            else
+               deleteButton = new JButton(resource);
+            deleteButton.setMnemonic(KeyEvent.VK_D);
+            deleteButton.addActionListener(this);
+            actionButtonPanel.add(deleteButton);
 
-         // Delete All Button
-         resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
-         if (resource.equals(""))
-            deleteAllButton = new JButton("Delete All");
-         else
-            deleteAllButton = new JButton(resource);
-         deleteAllButton.addActionListener(this);
+            // Delete All Button
+            resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
+            if (resource.equals(""))
+               deleteAllButton = new JButton("Delete All");
+            else
+               deleteAllButton = new JButton(resource);
+            deleteAllButton.addActionListener(this);
+         }
       }
 
       buildConstraints(constraints, 0, 0, 1, 1, 98, 100);
@@ -1179,36 +1186,38 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             menuItem = menuItem(resource, "View");
          summaryTablePopupMenu.add(menuItem);
 
-         resource = resourceBundle.getResource("TableTabPanel.button.Add");
-         if (resource.equals(""))
-            menuItem = menuItem("Add", "Add");
-         else
-            menuItem = menuItem(resource, "Add");
-         summaryTablePopupMenu.add(menuItem);
+         if (!viewOnly)
+         {
+            resource = resourceBundle.getResource("TableTabPanel.button.Add");
+            if (resource.equals(""))
+               menuItem = menuItem("Add", "Add");
+            else
+               menuItem = menuItem(resource, "Add");
+            summaryTablePopupMenu.add(menuItem);
 
-         resource = resourceBundle.getResource("TableTabPanel.button.Edit");
-         if (resource.equals(""))
-            menuItem = menuItem("Edit", "Edit");
-         else
-            menuItem = menuItem(resource, "Edit");
-         summaryTablePopupMenu.add(menuItem);
+            resource = resourceBundle.getResource("TableTabPanel.button.Edit");
+            if (resource.equals(""))
+               menuItem = menuItem("Edit", "Edit");
+            else
+               menuItem = menuItem(resource, "Edit");
+            summaryTablePopupMenu.add(menuItem);
 
-         resource = resourceBundle.getResource("TableTabPanel.button.Delete");
-         if (resource.equals(""))
-            menuItem = menuItem("Delete", "Delete");
-         else
-            menuItem = menuItem(resource, "Delete");
-         summaryTablePopupMenu.add(menuItem);
+            resource = resourceBundle.getResource("TableTabPanel.button.Delete");
+            if (resource.equals(""))
+               menuItem = menuItem("Delete", "Delete");
+            else
+               menuItem = menuItem(resource, "Delete");
+            summaryTablePopupMenu.add(menuItem);
 
-         summaryTablePopupMenu.addSeparator();
+            summaryTablePopupMenu.addSeparator();
 
-         resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
-         if (resource.equals(""))
-            menuItem = menuItem("Delete All", "Delete All");
-         else
-            menuItem = menuItem(resource, "Delete All");
-         summaryTablePopupMenu.add(menuItem);
-
+            resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
+            if (resource.equals(""))
+               menuItem = menuItem("Delete All", "Delete All");
+            else
+               menuItem = menuItem(resource, "Delete All");
+            summaryTablePopupMenu.add(menuItem);
+         }
          summaryTablePopupMenu.addSeparator();
       }
 
@@ -1244,7 +1253,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       summaryTablePopupMenu.add(menuItem);
 
       // No keys then cannot perform paste.
-      if (!primaryKeys.isEmpty())
+      if (!primaryKeys.isEmpty() && !viewOnly)
       {
          resource = resourceBundle.getResource("TableTabPanel.popup.Paste");
          if (resource.equals(""))
@@ -2186,23 +2195,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       return "%;%";
    }
    
-   //==============================================================
-   // Class method to allow classes to Render the Action Buttons,
-   // View, Add, Edit, and Delete Visible or Not.
-   //==============================================================
-
-   public void setActionButtonsVisible(boolean visible)
-   {
-      if (!primaryKeys.isEmpty())
-      {
-         viewButton.setVisible(visible);
-         addButton.setVisible(visible);
-         editButton.setVisible(visible);
-         deleteButton.setVisible(visible);
-         deleteAllButton.setEnabled(visible);
-      }
-   }
-
    //==============================================================
    // Class method to allow classes to set the table heading fields.
    //==============================================================
