@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.8 06/20/2010
+// Version 2.9 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //         2.7 Configured Interface Methods With Vector and HashMap Types to be
 //             Parameterized So That the Code Will be Compliant to Java 5.0 API.
 //         2.8 Aded Interface Method setActionButtonVisible().
+//         2.9 Removed Interface Method setActionButtonVisible().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -76,7 +77,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 2.8 06/20/2010
+ * @version 2.9 06/23/2010
  */
 
 interface TableTabInterface
@@ -266,13 +267,6 @@ interface TableTabInterface
    //==============================================================
 
    String getState();
-
-   //==============================================================
-   // Class method to allow classes to Render the Action Buttons,
-   // View, Add, Edit, and Delete Visible or Not.
-   //==============================================================
-
-   void setActionButtonsVisible(boolean visible);
    
    //==============================================================
    // Class method to allow classes to set the table heading fields.
