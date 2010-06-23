@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 9.1 06/19/2010
+// Version 9.2 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -227,6 +227,7 @@
 //             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
 //             addItem().
 //         9.1 Made the Class and Constructor Public.
+//         9.2 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -259,7 +260,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.1 06/19/2010
+ * @version 9.2 06/23/2010
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -272,9 +273,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
    // TableTabPanel Constructor
    //===========================================================
 
-   public TableTabPanel_Oracle(String table, Connection setup_dbConnection)
+   public TableTabPanel_Oracle(String table, Connection setup_dbConnection, boolean viewOnlyTable)
    {
-      super(table, setup_dbConnection);
+      super(table, setup_dbConnection, viewOnlyTable);
    }
 
    //==============================================================
