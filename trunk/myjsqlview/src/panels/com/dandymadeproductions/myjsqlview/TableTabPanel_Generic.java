@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.5 06/19/2010
+// Version 8.6 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -196,6 +196,7 @@
 //             in viewSelectedItem() & editSelectedItem(), and textFieldNamesIterator in
 //             addItem().
 //         8.5 Made the Class and Constructor Public.
+//         8.6 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -221,7 +222,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.5 06/19/2010
+ * @version 8.6 06/23/2010
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -233,9 +234,9 @@ public class TableTabPanel_Generic extends TableTabPanel
    // TableTabPanel Constructor
    //===========================================================
 
-   public TableTabPanel_Generic(String table, Connection setup_dbConnection)
+   public TableTabPanel_Generic(String table, Connection setup_dbConnection, boolean viewOnlyTable)
    {
-      super(table, setup_dbConnection);
+      super(table, setup_dbConnection, viewOnlyTable);
    }
    
    //==============================================================
