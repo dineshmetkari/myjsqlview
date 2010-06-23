@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.7 05/20/2010
+// Version 6.8 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -169,6 +169,8 @@
 //             Integer.valueOf().
 //         6.7 Parameterized tablesIterator in run(), and columnNamesIterator in Class
 //             Methods insertReplaceStatementData() & explicitStatementData().
+//         6.8 Modification to Instance Creation for TableTabPanels to Include Argument
+//             viewOnlyTable, true, in run().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -200,7 +202,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.7 05/20/2010
+ * @version 6.8 06/23/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -316,19 +318,19 @@ class SQLDatabaseDumpThread implements Runnable
                
                // MySQL
                if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
-                  currentTableTabPanel = new TableTabPanel_MySQL(exportedTable, dbConnection);
+                  currentTableTabPanel = new TableTabPanel_MySQL(exportedTable, dbConnection, true);
                // PostgreSQL
                else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
-                  currentTableTabPanel = new TableTabPanel_PostgreSQL(exportedTable, dbConnection);
+                  currentTableTabPanel = new TableTabPanel_PostgreSQL(exportedTable, dbConnection, true);
                // HSQL
                else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
-                  currentTableTabPanel = new TableTabPanel_HSQL(exportedTable, dbConnection);
+                  currentTableTabPanel = new TableTabPanel_HSQL(exportedTable, dbConnection, true);
                // Oracle
                else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-                  currentTableTabPanel = new TableTabPanel_Oracle(exportedTable, dbConnection);
+                  currentTableTabPanel = new TableTabPanel_Oracle(exportedTable, dbConnection, true);
                // Generic
                else
-                  currentTableTabPanel = new TableTabPanel_Generic(exportedTable, dbConnection);
+                  currentTableTabPanel = new TableTabPanel_Generic(exportedTable, dbConnection, true);
                
                // Create the appropriate SQL table name qualifier.
                if (exportedTable.indexOf(".") != -1)
