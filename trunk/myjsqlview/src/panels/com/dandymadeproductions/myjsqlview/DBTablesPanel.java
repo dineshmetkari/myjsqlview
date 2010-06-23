@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.8 05/19/2010
+// Version 3.9 06/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,8 @@
 //             Method reloadPanel().
 //         3.8 Parameterized Instance tableNamesIterator in Constructor and Method
 //             reloadPanel().
+//         3.9 Modification to Instance Creation for TableTabPanels to Include Argument
+//             viewOnlyTable, false.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +128,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.8 05/19/2010
+ * @version 3.9 06/23/2010
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -324,19 +326,19 @@ public class DBTablesPanel extends JPanel implements ActionListener
 
       // MySQL
       if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
-         tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection);
+         tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection, false);
       // PostgreSQL
       else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
-         tableTabPanel = new TableTabPanel_PostgreSQL(tableName, dbConnection);
+         tableTabPanel = new TableTabPanel_PostgreSQL(tableName, dbConnection, false);
       // HSQL
       else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
-         tableTabPanel = new TableTabPanel_HSQL(tableName, dbConnection);
+         tableTabPanel = new TableTabPanel_HSQL(tableName, dbConnection, false);
       // Oracle
       else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-         tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection);
+         tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection, false);
       // Generic
       else
-         tableTabPanel = new TableTabPanel_Generic(tableName, dbConnection);
+         tableTabPanel = new TableTabPanel_Generic(tableName, dbConnection, false);
 
       if (tableTabPanel.getTableFields() != null)
       {
