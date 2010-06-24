@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.9 06/23/2010
+// Version 3.0 06/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,7 @@
 //             Parameterized So That the Code Will be Compliant to Java 5.0 API.
 //         2.8 Aded Interface Method setActionButtonVisible().
 //         2.9 Removed Interface Method setActionButtonVisible().
+//         3.0 Added Interface Method getTableSQLSearchString().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -77,7 +78,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 2.9 06/23/2010
+ * @version 3.0 06/24/2010
  */
 
 interface TableTabInterface
@@ -183,6 +184,13 @@ interface TableTabInterface
    //==============================================================
 
    String getSaveFileName();
+   
+   //==============================================================
+   // Class method to allow classes to obtain current summary
+   // table SQL Search Condition.
+   //==============================================================
+
+   public String getTableSQLSearchString();
 
    //==============================================================
    // Class method to allow classes to obtain current summary
