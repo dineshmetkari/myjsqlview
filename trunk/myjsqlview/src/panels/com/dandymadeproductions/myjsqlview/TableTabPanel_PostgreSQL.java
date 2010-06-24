@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 11.5 06/23/2010
+// Version 11.6 06/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -271,6 +271,7 @@
 //             addItem().
 //        11.4 Made the Class and Constructor Public.
 //        11.5 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
+//        11.6 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -296,7 +297,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.5 06/23/2010
+ * @version 11.6 06/24/2010
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -556,6 +557,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                 + "::TEXT LIKE '%" + searchTextString + "%'");
       }
+      sqlTableSearchString = searchQueryString.toString();
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
