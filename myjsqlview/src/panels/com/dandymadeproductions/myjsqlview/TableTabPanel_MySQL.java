@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.27 06/21/2010
+// Version 11.28 06/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -445,6 +445,7 @@
 //             addItem().
 //       11.26 Made the Class and Constructor Public.
 //       11.27 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
+//       11.28 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -469,7 +470,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.27 06/23/2010
+ * @version 11.28 06/24/2010
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -697,6 +698,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                 + " LIKE '%" + searchTextString + "%'");
       }
+      sqlTableSearchString = searchQueryString.toString();
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
