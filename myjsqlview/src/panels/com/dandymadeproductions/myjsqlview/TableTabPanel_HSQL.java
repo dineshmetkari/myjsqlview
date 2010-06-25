@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 9.4 06/24/2010
+// Version 9.5 06/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,7 @@
 //         9.2 Made the Class and Constructor Public.
 //         9.3 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
 //         9.4 Assigned searchQueryString to sqlTableSearchString in loadTable().
+//         9.5 Undid Last Revision. Short Sighted.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -239,7 +240,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.4 06/24/2010
+ * @version 9.5 06/24/2010
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -498,7 +499,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                 + " LIKE '%" + searchTextString + "%'");
       }
-      sqlTableSearchString = searchQueryString.toString();
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
