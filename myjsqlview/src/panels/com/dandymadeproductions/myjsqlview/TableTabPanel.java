@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.63 06/24/2010
+// Version 4.64 06/24/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,7 @@
 //        4.62 Added Class Instance viewOnly and Argument boolean viewOnlyTable to Constructor.
 //             Removed Class Method setActionButtonVisible().
 //        4.63 Added Class Instance sqlTableSearchString and Method getTableSQLSearchString().
+//        4.64 Undid 4.63 Revision, Short Sighted.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -171,7 +172,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.63 06/24/2010
+ * @version 4.64 06/24/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -194,7 +195,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected String schemaTableName;
    private String saveFileName;
    protected String lob_sqlTableFieldsString;
-   protected String sqlTableSearchString;
    protected String sqlTableFieldsString;
    protected String sqlTableStatement;
    protected String identifierQuoteString;
@@ -2003,16 +2003,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       return saveFileName;
    }
    
-   //==============================================================
-   // Class method to allow classes to obtain current summary
-   // table SQL Search Condition.
-   //==============================================================
-
-   public String getTableSQLSearchString()
-   {
-      return sqlTableSearchString;
-   }
-
    //==============================================================
    // Class method to allow classes to obtain current summary
    // table SQL statement.
