@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.19 06/27/2010
+// Version 3.20 06/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -170,6 +170,8 @@
 //         3.19 06/27/2010 Added Class Method getLocaleString() and baseName Argument to 
 //                         MyJSQLView_ResourceBundle in Constructor. Made Class Public and
 //                         Methods getLocaleString() & getVersion().
+//         3.20 06/27/2010 Added localeDirectory String to MyJSQLView_RsourceBundle Instance
+//                         Creation.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -203,7 +205,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.19 06/27/2010
+ * @version 3.20 06/27/2010
  */
 
 public class MyJSQLView implements ActionListener
@@ -224,7 +226,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.19", "Build ID: 20100627"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.20", "Build ID: 20100627"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -255,7 +257,7 @@ public class MyJSQLView implements ActionListener
       // ==================================================
       // Obtain resouce bundle for internationalization.
       
-      resourceBundle = new MyJSQLView_ResourceBundle("MyJSQLViewBundle", localeString);
+      resourceBundle = new MyJSQLView_ResourceBundle("locale", "MyJSQLViewBundle", localeString);
       
       // ==================================================
       // Setting up a PopupMenu for cut, copy, and pasting.
