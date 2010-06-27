@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.4 06/16/2010
+// Version 1.5 06/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,7 +41,11 @@
 //         1.4 06/16/2010 Conversion of Using a FileReader to Using FileInputStream
 //                        and a InputStreamReader With Specification of UTF-16 For
 //                        CharsetName.
-//
+//         1.5 06/27/2010 Removed Constructor Instance baseName and Placed As An 
+//                        Argument in Constructor. Changed Class to Public and Its
+//                        Method getResource(). Cleaned Up Some and Created An OptionPane
+//                        For When IOException Created in Unable to Load Resource.
+//                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -54,16 +58,18 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.util.Hashtable;
 
+import javax.swing.JOptionPane;
+
 /**
  *    The MyJSQLView_ResourceBundle class provides a method to more closely
  * control the loading of locale resource files in the MyJSQLView program.
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.4 06/16/2010
+ * @version 1.5 06/27/2010
  */
 
-class MyJSQLView_ResourceBundle
+public class MyJSQLView_ResourceBundle
 {
    // Class Instances.
    private Hashtable<String, String> localeListData;
@@ -72,10 +78,9 @@ class MyJSQLView_ResourceBundle
    // MyJSQLView_ResourceBundle Constructor
    //==============================================================
 
-   protected MyJSQLView_ResourceBundle(String localeString)
+   public MyJSQLView_ResourceBundle(String baseName, String localeString)
    {
       // Constructor Instances.
-      String baseName;
       String localeFileName;
 
       String currentEntry;
@@ -90,7 +95,6 @@ class MyJSQLView_ResourceBundle
          return;
       else
       {
-         baseName = "MyJSQLViewBundle";
          localeFileName = "locale" + MyJSQLView_Utils.getFileSeparator() + baseName + "_" + localeString
                           + ".properties";
       }
@@ -122,16 +126,20 @@ class MyJSQLView_ResourceBundle
          bufferedReader.close();
          inputStreamReader.close();
          fileInputStream.close();
-         //fileReader.close();
       }
       catch (IOException ioe)
       {
-         if (MyJSQLView.getDebug())
-         {
-            System.err.println("MyJSQLView_ResourceBundle Constructor() \n" +
-                               "Failed to process the given locale file, " + localeFileName + "\n"
-                               + ioe);
-         }
+         String ioExceptionString = ioe.toString();
+         if (ioExceptionString.length() > 200)
+            ioExceptionString = ioe.getMessage().substring(0, 200);
+
+            String optionPaneStringErrors = "MyJSQLView_ResourceBundle Constructor() \n" +
+                                            "Failed to process the given locale file, "
+                                            + localeFileName + "\n"
+                                            + ioExceptionString;
+
+            JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert",
+                                          JOptionPane.ERROR_MESSAGE);
       }
    }
 
@@ -140,7 +148,7 @@ class MyJSQLView_ResourceBundle
    // resource given a key.
    //==============================================================
 
-   protected String getResource(String resourceKey)
+   public String getResource(String resourceKey)
    {
       // System.out.println(resourceKey);
       
