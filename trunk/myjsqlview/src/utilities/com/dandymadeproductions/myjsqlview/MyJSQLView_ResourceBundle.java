@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.5 06/27/2010
+// Version 1.6 06/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //                        Argument in Constructor. Changed Class to Public and Its
 //                        Method getResource(). Cleaned Up Some and Created An OptionPane
 //                        For When IOException Created in Unable to Load Resource.
+//         1.6 06/27/2010 Added Constructor Argument localeDirectory.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +67,7 @@ import javax.swing.JOptionPane;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.5 06/27/2010
+ * @version 1.6 06/27/2010
  */
 
 public class MyJSQLView_ResourceBundle
@@ -78,7 +79,7 @@ public class MyJSQLView_ResourceBundle
    // MyJSQLView_ResourceBundle Constructor
    //==============================================================
 
-   public MyJSQLView_ResourceBundle(String baseName, String localeString)
+   public MyJSQLView_ResourceBundle(String localeDirectory, String baseName, String localeString)
    {
       // Constructor Instances.
       String localeFileName;
@@ -95,8 +96,8 @@ public class MyJSQLView_ResourceBundle
          return;
       else
       {
-         localeFileName = "locale" + MyJSQLView_Utils.getFileSeparator() + baseName + "_" + localeString
-                          + ".properties";
+         localeFileName = localeDirectory + MyJSQLView_Utils.getFileSeparator() + baseName
+                          + "_" + localeString + ".properties";
       }
 
       // Begin processing the given locale file to obtain a hashtable
