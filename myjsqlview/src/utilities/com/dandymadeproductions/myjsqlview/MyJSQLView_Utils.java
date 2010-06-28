@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.4 06/13/2010
+// Version 4.5 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,7 @@
 //             to Bring Code Into Compliance With Java 5.0 API.
 //         4.3 Added Class Method getSchemaTableName().
 //         4.4 Class Method formatExportDateString() Added Argument exportType.
+//         4.5 Made Class Method processFileChooserSelection() Public.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -116,7 +117,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.4 06/13/2010
+ * @version 4.5 06/28/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -465,7 +466,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // confirm overwriting an existing file.
    //==============================================================
 
-   protected static int processFileChooserSelection(JFrame parent, JFileChooser fileChooser)
+   public static int processFileChooserSelection(JFrame parent, JFileChooser fileChooser)
    {
       // Method Instances.
       String fileName, fileSeparator;
