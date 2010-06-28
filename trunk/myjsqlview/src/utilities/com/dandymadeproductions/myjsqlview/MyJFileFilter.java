@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 02/18/2010
+// Version 1.2 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 //=================================================================
 // Version 1.0 Original MyJSQLView MyJFileFilter Class.
 //         1.1 Changed Package to Reflect Dandy Made Productions Code.
+//         1.2 Made Class Public.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -50,7 +51,7 @@ import javax.swing.filechooser.*;
  * @version 1.1 02/18/2010
  */
 
-class MyJFileFilter extends FileFilter
+public class MyJFileFilter extends FileFilter
 {
    //==============================================================
    // Required class methods to implement the FileFilter. Accept
