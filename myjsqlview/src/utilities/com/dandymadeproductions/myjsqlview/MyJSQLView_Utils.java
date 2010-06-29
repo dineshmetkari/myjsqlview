@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.5 06/28/2010
+// Version 4.6 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@
 //         4.3 Added Class Method getSchemaTableName().
 //         4.4 Class Method formatExportDateString() Added Argument exportType.
 //         4.5 Made Class Method processFileChooserSelection() Public.
+//         4.6 Made Class Method stateConvert() Public.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.5 06/28/2010
+ * @version 4.6 06/28/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -185,7 +186,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // or dumping per a determined conversion definition.
    //==============================================================
    
-   protected static String stateConvert(byte[] bytesToProcess, boolean in)
+   public static String stateConvert(byte[] bytesToProcess, boolean in)
    {
       // Method Instances
       int b;
