@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.64 06/24/2010
+// Version 4.65 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,6 +140,7 @@
 //             Removed Class Method setActionButtonVisible().
 //        4.63 Added Class Instance sqlTableSearchString and Method getTableSQLSearchString().
 //        4.64 Undid 4.63 Revision, Short Sighted.
+//        4.65 Made Class Method getStateDelimiter() Public.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -172,7 +173,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.64 06/24/2010
+ * @version 4.65 06/28/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2192,7 +2193,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to obtain the state delimiter.
    //==============================================================
 
-   protected static String getStateDelimiter()
+   public static String getStateDelimiter()
    {
       return "%;%";
    }
