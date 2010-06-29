@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.20 06/27/2010
+// Version 3.21 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -172,6 +172,8 @@
 //                         Methods getLocaleString() & getVersion().
 //         3.20 06/27/2010 Added localeDirectory String to MyJSQLView_RsourceBundle Instance
 //                         Creation.
+//         3.21 06/28/2010 Returned a Copy of myJSQLView_Version String Array in getLocaleString().
+//                         Some Minor Reformatting.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -205,7 +207,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.20 06/27/2010
+ * @version 3.21 06/28/2010
  */
 
 public class MyJSQLView implements ActionListener
@@ -222,11 +224,11 @@ public class MyJSQLView implements ActionListener
 
    protected MyJSQLView_Frame myJSQLViewFrame;
    protected MyJSQLView_Access myJSQLViewAccessFrame;
-   protected static MouseListener myJSQLViewPopupListener;
+   private static MouseListener myJSQLViewPopupListener;
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.20", "Build ID: 20100627"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.21", "Build ID: 20100628"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -276,6 +278,7 @@ public class MyJSQLView implements ActionListener
       myJSQLViewPopupMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+      
       popupMenuResource = resourceBundle.getResource("myJSQLViewPopupMenu.action.Copy");
       if (popupMenuResource.equals(""))
          menuItem.setText("Copy");
@@ -286,6 +289,7 @@ public class MyJSQLView implements ActionListener
       myJSQLViewPopupMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+      
       popupMenuResource = resourceBundle.getResource("myJSQLViewPopupMenu.action.Paste");
       if (popupMenuResource.equals(""))
          menuItem.setText("Paste");
@@ -426,7 +430,12 @@ public class MyJSQLView implements ActionListener
 
    public static String[] getVersion()
    {
-      return myJSQLView_Version;
+      String[] versionCopy = new String[myJSQLView_Version.length];
+      
+      for (int i = 0; i < myJSQLView_Version.length; i++)
+         versionCopy[i] = myJSQLView_Version[i];
+      
+      return versionCopy;
    }
 
    //==============================================================
