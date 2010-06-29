@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.1 03/26/2010
+// Version 2.2 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         2.1 03/26/2010 Conditional Check in Constructor Between (i < buf.length) and
 //                        dumpProgressBar to Short-Circuit &&. Organized imports.
+//         2.2 06/28/2010 Made Class Public in Addition to mainWriteDataString().
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -66,10 +67,10 @@ import javax.swing.JOptionPane;
  * also provides a generic means to output byte[] data to a file.
  * 
  * @author Dana M. Proctor
- * @version 2.1 03/26/2010
+ * @version 2.2 06/28/2010
  */
 
-class WriteDataFile
+public class WriteDataFile
 {
    // =================================================
    // Creation of the data types needed to perform the
@@ -142,7 +143,7 @@ class WriteDataFile
    // by outside classes to perform the write file routine.
    //==============================================================
 
-   protected static void mainWriteDataString(String outputFileString, byte[] data, boolean showDumpProgressBar)
+   public static void mainWriteDataString(String outputFileString, byte[] data, boolean showDumpProgressBar)
    {
       WriteDataFile w = new WriteDataFile();
       {
