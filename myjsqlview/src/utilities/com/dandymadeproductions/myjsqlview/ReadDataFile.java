@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.1 02/18/2010
+// Version 2.2 06/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //         1.9 10/23/2008 MyJSQLView Project Common Source Code Formatting.
 //         2.0 05/27/2009 Header Format Changes/Update.
 //         2.1 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         2.2 06/28/2010 Made Class Public in Addition to mainReadDataString().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -70,10 +71,10 @@ import javax.swing.JOptionPane;
  * data from a given input file.
  * 
  * @author Dana M. Proctor
- * @version 2.1 02/18/2010
+ * @version 2.2 06/28/2010
  */
 
-class ReadDataFile
+public class ReadDataFile
 {
    // =================================================
    // Creation of the data types needed to perform the
@@ -167,7 +168,7 @@ class ReadDataFile
    // outside classes to perform the reading of data from a file.
    //==============================================================
 
-   protected static byte[] mainReadDataString(String inputFileString, boolean showDumpProgressBar)
+   public static byte[] mainReadDataString(String inputFileString, boolean showDumpProgressBar)
    {
       ReadDataFile r = new ReadDataFile();
       {
