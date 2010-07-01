@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.8 06/24/2010
+// Version 8.9 07/01/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,6 +199,7 @@
 //         8.6 Implemented a View Only Table, via Constructor Argument viewOnlyTable.
 //         8.7 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //         8.8 Undid Last Revision. Short Sighted.
+//         8.9 Check for All Fields Possibly LOBs. Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -224,7 +225,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.8 06/24/2010
+ * @version 8.9 07/01/2010
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -508,7 +509,15 @@ public class TableTabPanel_Generic extends TableTabPanel
 
             for (int i = 0; i < lobColumns.length; i++)
                lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
-            lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(identifierQuoteString));
+            
+            // All fields maybe lobs, so just include all. Network
+            // performance hit.
+            if (lobLessFieldsString.indexOf(identifierQuoteString) != -1)
+               lobLessFieldsString = lobLessFieldsString.substring(lobLessFieldsString.indexOf(
+                                                                          identifierQuoteString));
+            else
+               lobLessFieldsString = sqlTableFieldsString;
+            
             lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
             if (lobLessFieldsString.endsWith(", "))
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
