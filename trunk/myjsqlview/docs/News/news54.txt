@@ -1,0 +1,39 @@
+The next release of MyJSQLView is in the works and has been seen the release
+of Version 3.17 in May. Normally a break occurs after a release, but almost
+immediately one of the tasks left over from that version announcement was
+implemented. The task was to upgrade the code to the Java 1.5 API. As the
+project manager I felt it was no longer justifiable to have the code not more
+up to date with the latest Java runtime. A few years ago I would said that many
+people still had older systems that could not be upgraded to the latest Java
+runtime because of their operating systems. Now I believe and the MyJSQLView
+web site's statistics bear this out that Linux is user friendly enough for
+users to upgrade those older systems. As a user of computer systems for many
+years now I even updated one of my older i586 Pentium 90Mz systems with one
+of my favorite flavors of Linux this development cycle. The system has been
+used as a CVS repository for the MyJSQLView code and some other development
+platform activity and was beginning to lack some of the latest libraries.
+The upgrade went suprising smooth and that machine is now purring away over
+in the corner.
+
+Now I would like to apologize to perhaps some of the users of the MyJSQLView
+program in Indonesia and maybe some other countries. With the release of
+MyJSQLView v3.17 came i18n, internationalization support for languages other
+than English. It appears some of the translation files may have been incorrect
+so bear with us the next release hopefully will have this all ironed out.
+That should not be to long because the next version of the program should
+be available for update by next month.
+
+Other news and information has too do with the Plugin Module environment.
+Check the web site because an introductory tutorial is now posted with two
+example plugins. Granted the first is just a panel to explain to developers
+how to get a plugin module installed, but the second is a little more
+advanced because it actually connects to the database to do a record count
+on a selected table. Expect more tutorials to come in the future and in the
+meantime one may also review the Table Field Profiler code which shows one
+what can be done with a plugin. The MyJSQLView project will mainly be using
+the plugin environment in the future to add almost all major enhancements
+to the application in the form of reports and BI, business intelligence,
+algorithms that can be applied to the database data.
+
+Dana M. Proctor
+MyJSQLView Project Manager
