@@ -1,4 +1,4 @@
-MyJSQLView Version 3.17
+MyJSQLView Version 3.22
 
 Copyright 2005-2010
 by Dana M. Proctor
@@ -49,13 +49,14 @@ Features:
     * Viewing, Adding, Editing, and Deleting All Table Fields.
     * Update Multiple Rows of Selected Table Field.
     * Support for Table Field Function Operations.
-    * Supports All Basic Data Types, Including Blob/Bytea/Binary.
+    * Support for All Basic Data Types, Including Blob/Bytea/Binary.
     * Data Type Checking During Adding or Updates.
     * Support for All Table Types, Including Transaction Locking.
-    * Support for Flushing Privileges for User root on mysql database.
+    * Support for Flushing Privileges for User root on MySQL database.
     * Printing of Summary Table Data, Screen View.
     * Export of CSV Summary or Complete Table Data.
     * Export of SQL Summary or Complete Table Structure/Data.
+    * Export of PDF Summary Table.
     * Export of SQL Current Open Database/Scheme.
     * Import of SQL Statement File.
     * Import of CSV data File Into Selected Database Table via Insert/Update.
@@ -67,9 +68,9 @@ Features:
 Requirements:
 
     * Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, & Linux, X-Window Environment.
-    * Java Runtime Environment, JRE 1.4 or Newer.
+    * Java Runtime Environment, JRE 1.5 or Newer.
     * HSQL 1.8.0.8 - 1.8.1.1. (JDBC Integrated Into HSQLDB.jar)
-    * MySQL 5.07 - 5.081, JDBC 5.0.7, 5.1.5, 5.1.6.
+    * MySQL 5.07 - 5.084, JDBC 5.0.7, 5.1.5 - 5.1.8.
     * Oracle 10g, JDBC 14.
     * PostgreSQL 8.2.5 - 8.4.1, JDBC3 8.2-506 - 8.4-701.
 
@@ -93,7 +94,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.17 does not, will have an example configuration
+additional database, release v3.22 does not, will have an example configuration
 for the connection parameters of the advanced login. Likely changes will be
 included in the reference myjsqlview.xml file located in the installation
 directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -113,7 +114,7 @@ JRE, to be installed. The minimum runtime environment needs to be JRE-1.4.
 In addition to the JRE an extension, JDBC, needs to be installed that allows
 Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database. The
 programs are available on the Internet free of charge. Check with the sites
-hsqldb.org, mysql.com, oracle.com, and jdbc.postgresql.org. Note, the HSQLDB
+hsqldb.org, dev.mysql.com, oracle.com, and jdbc.postgresql.org. Note, the HSQLDB
 contains no separate JDBC, it is embedded in the HSQLDB.jar. The jar file for
 these extensions needs to be installed to the JRE /lib/ext directory. On a
 Windows system this JRE directory in normally under C:/Windows/java. On a
@@ -201,6 +202,7 @@ Version History:
 
 Production (2008-12-31):
 
+    * Version 3.22 Threaded/Refinements to Plugin Architecture. Upgrade to Java 5.0 API. PDF Exports.
     * Version 3.17 Internationalization Support. Completed Plugin Framework.
     * Version 3.06 Initial Plugin Inclusion, Table Field Charts.
     * Version 3.05 Incremental Release with Core Architecture Cleanup, and Minor

@@ -13,7 +13,7 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.17<br></u></b>
+			<b><u>MyJSQLView Version 3.22<br></u></b>
 		</p>
 		<p align="center">
 			Copyright 2005-2010<br>
@@ -67,13 +67,14 @@
 			<li>Viewing, Adding, Editing, and Deleting All Table Fields.</li>
 			<li>Update Multiple Rows of Selected Table Field.</li>
 			<li>Support for Table Field Function Operations.</li>
-			<li>Supports All Basic Data Types, Including Blob/Bytea/Binary.</li>
+			<li>Support for All Basic Data Types, Including Blob/Bytea/Binary.</li>
     			<li>Data Type Checking During Adding or Updates.</li>
     			<li>Support for All Table Types, Including Transaction Locking.</li>
 			<li>Support for Flushing Privileges for User root on mysql database.</li>
     			<li>Printing of Summary Table Data, Screen View.</li>
     			<li>Export of CSV Summary or Complete Table Data.</li>
     			<li>Export of SQL Summary or Complete Table Structure/Data.</li>
+			<li>Export of PDF Summary Table.</li>
 			<li>Export of SQL Current Open Database/Scheme.</li>
     			<li>Import of SQL Statement File.</li>
     			<li>Import of CSV data File Into Selected Database Table via Insert/Update.</li>
@@ -86,9 +87,9 @@
 		
 		<ul>
   			<li> Microsoft<sup>&reg;</sup> Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, &amp; X-Window Environment.</li>
-                    	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.4</font> or Newer.</li>
+                    	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.5</font> or Newer.</li>
 			<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.1</font> (JDBC Integrated Into HSQLDB.jar)</li>
-			<li>MySQL <font color="#ff0000">5.0.7 - 5.081</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.6</font>.</li>
+			<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
 			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4.701</font>.</li>
 			
@@ -114,7 +115,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release v3.17 does not, will have an example configuration
+			additional database, release v3.22 does not, will have an example configuration
 			for the connection parameters of the advanced login. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -136,7 +137,7 @@
 			that allows Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database.
 			The programs are available on the Internet free of charge. Check with the sites
 			<a href="http://hsqldb.org" target="_blank">hsqldb.org</a>,
-			<a href="http://mysql.com" target="_blank">mysql.com</a>,
+			<a href="http://dev.mysql.com" target="_blank">dev.mysql.com</a>,
 			<a href="http://oracle.com" target="_blank">oracle.com</a>, and
 			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>. Note,
 			the HSQLDB contains no separate JDBC, it is embedded in the HSQLDB.jar. The
@@ -223,6 +224,10 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.22</td>
+      				<td width="80%">Threaded/Refinements to Plugin Architecture. Upgrade to Java 5.0 API. PDF Exports.</td>
+    			</tr>
     			<tr>
       				<td width="20%">Version 3.17</td>
       				<td width="80%">Internationalization Support. Completed Plugin Framework.</td>
