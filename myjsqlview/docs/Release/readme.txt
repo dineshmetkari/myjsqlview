@@ -89,7 +89,7 @@ directory, which all users have access to for application execution.
 Update Notes:
 
     MyJSQLView updates need no special attention. Just install the latest
-release into your existing directory. For prior releases to Version v3.01
+release into your existing directory. For prior releases to Version 3.01
 though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
@@ -102,15 +102,15 @@ will be different for the various database servers. To gain access to any
 new connection parameters one may just open the reference myjsqlview.xml
 file and copy and paste any additional entries desired into your own working
 copy of the myjsqlview.xml file. See the General Setup Instructions below
-for locating this file. NOTICE! THE MyJSQLView v3.17 RELEASE DOES HAVE A MINOR
-CHANGE IN THE myjsqlview.xml CONFIGURATION FILE THAT WILL INVALIDATE ALL
-PREVIOUSLY SAVED PASSWORDS. To remedy this discrepancy use the Connection
-Manager to Update your sites by typing in the password again.<br><br>
+for locating this file. NOTICE! AS OF MyJSQLView v3.17 RELEASE A MINOR
+CHANGE IN THE myjsqlview.xml CONFIGURATION FILE WILL INVALIDATE ALL
+PREVIOUSLY VERSIONS' SAVED PASSWORDS. To remedy this discrepancy use the
+Connection Manager to Update your sites by typing in the password again.<br><br>
 
 General Setup Instructions
 
     The MyJSQLView application is a Java based program and does require the
-JRE, to be installed. The minimum runtime environment needs to be JRE-1.4.
+JRE, to be installed. The minimum runtime environment needs to be JRE-1.5.
 In addition to the JRE an extension, JDBC, needs to be installed that allows
 Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database. The
 programs are available on the Internet free of charge. Check with the sites
