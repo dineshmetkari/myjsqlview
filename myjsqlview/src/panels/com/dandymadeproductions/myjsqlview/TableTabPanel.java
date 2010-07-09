@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.65 06/28/2010
+// Version 4.66 07/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -141,6 +141,8 @@
 //        4.63 Added Class Instance sqlTableSearchString and Method getTableSQLSearchString().
 //        4.64 Undid 4.63 Revision, Short Sighted.
 //        4.65 Made Class Method getStateDelimiter() Public.
+//        4.66 Class Methods getTableFields(), getCurrentTableHeadings(), getAllTableHeadings(),
+//             & getPrimaryKeys() Returned Copy of Vectors.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -173,7 +175,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.65 06/28/2010
+ * @version 4.66 07/09/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1962,7 +1964,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public Vector<String> getTableFields()
    {
-      return fields;
+      Vector<String> fieldsVector = new Vector <String>();
+      Iterator<String> fieldsIterator = fields.iterator();
+      
+      while (fieldsIterator.hasNext())
+         fieldsVector.addElement(fieldsIterator.next());
+      
+      return fieldsVector;
    }
 
    //==============================================================
@@ -1972,7 +1980,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public Vector<String> getCurrentTableHeadings()
    {
-      return currentTableHeadings;
+      Vector<String> tableHeadingsVector = new Vector <String>();
+      Iterator<String> tableHeadingsIterator = currentTableHeadings.iterator();
+      
+      while (tableHeadingsIterator.hasNext())
+         tableHeadingsVector.addElement(tableHeadingsIterator.next());
+      
+      return tableHeadingsVector;
    }
 
    //==============================================================
@@ -1982,7 +1996,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public Vector<String> getAllTableHeadings()
    {
-      return allTableHeadings;
+      Vector<String> allTableHeadingsVector = new Vector <String>();
+      Iterator<String> allTableHeadingsIterator = allTableHeadings.iterator();
+      
+      while (allTableHeadingsIterator.hasNext())
+         allTableHeadingsVector.addElement(allTableHeadingsIterator.next());
+      
+      return allTableHeadingsVector;
    }
 
    //==============================================================
@@ -2077,7 +2097,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public Vector<String> getPrimaryKeys()
    {
-      return primaryKeys;
+      Vector<String> keysVector = new Vector <String>();
+      Iterator<String> keysIterator = primaryKeys.iterator();
+      
+      while (keysIterator.hasNext())
+         keysVector.addElement(keysIterator.next());
+      
+      return keysVector;
    }
 
    //==============================================================
