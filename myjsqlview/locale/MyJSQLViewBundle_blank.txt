@@ -259,6 +259,7 @@ SearchFrame.menu.Paste =
 SearchFrame.menu.SelectAll =  
 SearchFrame.menu.DeSelectAll =  
 SearchFrame.label.SearchDatabaseFor =  
+SearchFrame.label.Include =  
 SearchFrame.label.Table =  
 SearchFrame.label.SearchResultCount =  
 SearchFrame.label.Cancel =  
