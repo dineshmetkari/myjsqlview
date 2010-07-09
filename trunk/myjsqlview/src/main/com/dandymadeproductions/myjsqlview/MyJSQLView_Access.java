@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.67 05/20/2010
+// Version 6.68 07/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -227,6 +227,8 @@
 //             getTableNames().
 //        6.67 Parameterized siteNames and sitesTreeIterator in Class Method
 //             fillSiteDataStructure(). Also tablesIterator in loadDBTables().
+//        6.68 Class Method getSchemas() & getTableNames() Returned a Copy of the
+//             Vector schemas & tables.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -262,7 +264,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.67 05/20/2010
+ * @version 6.68 07/09/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -1686,21 +1688,35 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
    }
    
    //==============================================================
-   // Class method to return the available database schemas names.
+   // Class method to return a copy of the available database
+   // schemas names.
    //==============================================================
 
    public static Vector<String> getSchemas()
    {
-      return schemas;
+      Vector<String> schemasVector = new Vector <String>();
+      Iterator<String> schemasIterator = schemas.iterator();
+      
+      while (schemasIterator.hasNext())
+         schemasVector.addElement(schemasIterator.next());
+      
+      return schemasVector;
    }
 
    //==============================================================
-   // Class method to return the default database table names.
+   // Class method to return a copy of the default database table
+   // names.
    //==============================================================
 
    public static Vector<String> getTableNames()
    {
-      return tables;
+      Vector<String> tablesVector = new Vector <String>();
+      Iterator<String> tablesIterator = tables.iterator();
+      
+      while (tablesIterator.hasNext())
+         tablesVector.addElement(tablesIterator.next());
+      
+      return tablesVector;
    }
 
    //==============================================================
