@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.1 06/09/2010
+// Version 2.2 07/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,9 @@
 //             Instead of new Integer().
 //         2.1 Collected Class Istance schemaTableName in run() From MyJSQLView_Utils
 //             Method getSchemaTableName().
+//         2.2 Added boolean[] selectedTables to Constructor. Implemented an Additional
+//             Condition in do Loop in Method run() for Excluding Search of Tables As
+//             Defined by New Class Instance selectedTables.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -75,7 +78,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.1 06/09/2010
+ * @version 2.2 07/09/2010
  */
 
 class SearchDatabaseThread implements Runnable
@@ -83,6 +86,7 @@ class SearchDatabaseThread implements Runnable
    // Class Instances
    Thread searchThread;
    private Vector<String> databaseTables;
+   private boolean[] selectedTables;
    private String searchQueryString;
    private JProgressBar searchProgressBar;
    private JButton searchCompleteButton;
@@ -96,10 +100,11 @@ class SearchDatabaseThread implements Runnable
    // SearchDatabaseThread Constructor
    //==============================================================
 
-   SearchDatabaseThread(Vector<String> databaseTables, String searchString,
+   SearchDatabaseThread(Vector<String> databaseTables, boolean[] selectedTables, String searchString,
                         JProgressBar progressBar, JButton searchCompleteButton)
    {
       this.databaseTables = databaseTables;
+      this.selectedTables = selectedTables;
       this.searchQueryString = searchString;
       this.searchProgressBar = progressBar;
       this.searchCompleteButton = searchCompleteButton;
@@ -166,11 +171,11 @@ class SearchDatabaseThread implements Runnable
                                                  searchQueryString);
 
          // Problems creating the search, columns, query will be 
-         // return as a empty string so go to next table, but still
-         // allow the table result to be displayed, will be invalid
-         // -1.
+         // return as a empty string or table to be not searched
+         // so go to next table, but still allow the table result
+         // to be displayed, Will be invalid -1.
          
-         if (columnsSQLQuery.equals(""))
+         if (columnsSQLQuery.equals("") || selectedTables[i] == false)
          {
             resultsCount++;
             i++;
@@ -235,7 +240,7 @@ class SearchDatabaseThread implements Runnable
       // =================================
       // Create data object with results.
       
-      resultData = new Object[resultsCount][2];
+      resultData = new Object[resultsCount][3];
       
       int j = 0;
       int k = 0;
@@ -244,8 +249,9 @@ class SearchDatabaseThread implements Runnable
       {
          if (tableSearchResultCounts[j] != 0)
          {
-            resultData[k][0] = databaseTables.get(j);
-            resultData[k++][1] = Integer.valueOf(tableSearchResultCounts[j]);
+            resultData[k][0] = new Boolean(selectedTables[j]);
+            resultData[k][1] = databaseTables.get(j);
+            resultData[k++][2] = Integer.valueOf(tableSearchResultCounts[j]);
          }
          j++;
       }
