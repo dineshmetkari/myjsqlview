@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 05/20/2018
+// Version 3.2 07/09/2018
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,11 @@
 //         3.0 Constructor Changed the Assignment of defaultTableData From new
 //             Integer to Integer.valueOf().
 //         3.1 Parameterized Constructor Instance tableNamesIterator.
+//         3.2 Implemented a Include Table Selectiion Column. Constructor and Methods
+//             actionPerformed(), & mouseClicked() Effected. Added Action of Include
+//             All Tables and Exclude All Tables in Popup Menu. Disabled searchButton
+//             Till clearSearchTextFieldButton After Search. Added Argument selectedTables
+//             to SearchDatabaseThread Instantiation.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -95,6 +100,7 @@ import java.awt.event.WindowListener;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.*;
+import javax.swing.table.TableColumn;
 import javax.swing.text.DefaultEditorKit;
 
 //=================================================================
@@ -107,7 +113,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.1 05/20/2010
+ * @version 3.2 07/09/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -147,7 +153,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       JMenuBar searchFrameMenuBar;
       Vector<String> tableHeadings;
       JScrollPane tableScrollPane;
-      String resource;
+      TableColumn column;
+      String resource, resourceInclude;
       
       JPanel mainPanel, centerPanel, searchPanel, statusCancelPanel;
       JLabel searchLabel;
@@ -253,6 +260,13 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       centerPanel.setBorder(BorderFactory.createEtchedBorder());
 
       tableHeadings = new Vector<String>();
+      
+      resourceInclude = resourceBundle.getResource("SearchFrame.label.Include");
+      if (resourceInclude.equals(""))
+         tableHeadings.addElement("Include");
+      else
+         tableHeadings.addElement(resourceInclude);
+      
       resource = resourceBundle.getResource("SearchFrame.label.Table");
       if (resource.equals(""))
          tableHeadings.addElement("Table");
@@ -266,27 +280,35 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          tableHeadings.addElement(resource);
 
       // Fill the result table with default data.
-      defaultTableData = new Object[DBTablesPanel.getTableCount()][2];
+      defaultTableData = new Object[DBTablesPanel.getTableCount()][3];
 
       Iterator<String> tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
       int i = 0;
 
       while (tableNamesIterator.hasNext())
       {
-         defaultTableData[i][0] = "   " + tableNamesIterator.next();
-         defaultTableData[i++][1] = Integer.valueOf(0);
+         defaultTableData[i][0] = new Boolean(true);
+         defaultTableData[i][1] = "   " + tableNamesIterator.next();
+         defaultTableData[i++][2] = Integer.valueOf(0);
       }
       tableModel = new MyJSQLView_TableModel(tableHeadings, defaultTableData);
 
       resultTable = new JTable(tableModel);
-      resultTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME), TransferHandler.getCopyAction());
+      resultTable.getTableHeader().setFont(new Font(centerPanel.getFont().getName(), Font.BOLD,
+                                           centerPanel.getFont().getSize()));
+      resultTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                                     TransferHandler.getCopyAction());
       //resultTable.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK), "copy");
+      
+      column = resultTable.getColumnModel().getColumn(0);
+      column.setPreferredWidth(resourceInclude.length());
+      
       resultTable.addMouseListener(this);
 
       // Create a scrollpane for the search count result table.
       tableScrollPane = new JScrollPane(resultTable);
-      resultTable.getColumnModel().getColumn(0).setCellRenderer(new SearchResultTableCellRenderer());
       resultTable.getColumnModel().getColumn(1).setCellRenderer(new SearchResultTableCellRenderer());
+      resultTable.getColumnModel().getColumn(2).setCellRenderer(new SearchResultTableCellRenderer());
       centerPanel.add(tableScrollPane);
 
       mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -360,12 +382,17 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          if (actionCommand.equals("SelectAll"))
          {
             resultTable.selectAll();
+            for (int i = 0; i < resultTable.getRowCount(); i++)
+               resultTable.setValueAt(new Boolean(true), i, 0);
+            
          }
 
          // Popup resultTable DeSelect All
          if (actionCommand.equals("DeSelectAll"))
          {
             resultTable.clearSelection();
+            for (int i = 0; i < resultTable.getRowCount(); i++)
+               resultTable.setValueAt(new Boolean(false), i, 0);
          }
          
          // Popup resultTable Copy
@@ -385,17 +412,33 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          {
             if (!searchTextField.getText().equals(""))
             {
+               // Collect the database table names directly from MyJSQLView_Access
+               // instead of relying on the names in the search frame, just in case
+               // a database reload took place.
+               
                Vector<String> databaseTables = MyJSQLView_Access.getTableNames();
+               boolean[] selectedTables = new boolean[databaseTables.size()];
+               
+               // Create a list of included tables to be searched.
                if (!databaseTables.isEmpty())
                {
+                  for (int i = 0; i < databaseTables.size(); i++)
+                  {
+                     if (databaseTables.contains(resultTable.getValueAt(i, 1).toString().trim())
+                         && ((Boolean)resultTable.getValueAt(i, 0)).booleanValue() == true)
+                        selectedTables[i] = true;
+                     else
+                        selectedTables[i] = false;
+                  }
+                  
                   // Execute query
                   searchProgressBar.setMaximum(databaseTables.size());
                   searchProgressBar.setValue(0);
                   searchProgressBar.setIndeterminate(false);
-                  searchDatabase = new SearchDatabaseThread(databaseTables,
+                  searchDatabase = new SearchDatabaseThread(databaseTables, selectedTables,
                                                             searchTextField.getText(),
                                                             searchProgressBar,
-                                                            searchCompleteButton);
+                                                            searchCompleteButton); 
                }
             }
          }
@@ -407,6 +450,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
             searchProgressBar.setValue(0);
             searchProgressBar.setIndeterminate(true);
             tableModel.setValues(defaultTableData);
+            searchButton.setEnabled(true);
          }
 
          // Cancel search action.
@@ -416,14 +460,17 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
                searchDatabase.cancel();
          }
          
-         // Cancel search action.
+         // Database search complete action.
          if (panelSource == searchCompleteButton)
          {
             if (searchDatabase != null)
             {
                Object[][] tableData = searchDatabase.getResultData();
                if (tableData != null)
+               {
                   tableModel.setValues(tableData);
+                  searchButton.setEnabled(false);
+               }
             }
          }
       }
@@ -488,24 +535,40 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
 
    //==============================================================
    // MouseEvent Listener methods for detecting mouse clicked events.
-   // Collect the row selected and shows the appropriate database
-   // table in the MyJSQLView_Frame, DBTablesPanel.
+   // Collects the row & column selected. Then either set or deselects
+   // Include checkbox or shows the appropriate database table in
+   // the MyJSQLView_Frame, DBTablesPanel and
    //==============================================================   
 
    public void mouseClicked(MouseEvent e)
    {  
       Point coordinatePoint;
-      int tableRow;
+      int tableRow, tableColumn;
 
+      // Collect coordinate to determine cell selected.
       coordinatePoint = e.getPoint();
       tableRow = resultTable.rowAtPoint(coordinatePoint);
+      tableColumn = resultTable.columnAtPoint(coordinatePoint);
 
       if (tableRow >= resultTable.getRowCount() || tableRow < 0)
          return;
       else
       {
-         selectedTable = resultTable.getValueAt(tableRow, 0).toString().trim();
-         // System.out.println(table);
+         // Include Action
+         if (tableColumn == 0)
+         {
+            Boolean s = (Boolean) resultTable.getValueAt(tableRow, tableColumn);
+            
+            if (s.booleanValue() == true)
+               resultTable.setValueAt(new Boolean(false), tableRow, tableColumn);
+            else
+               resultTable.setValueAt(new Boolean(true), tableRow, tableColumn);
+            return;
+         }
+         
+         // Show Table Action
+         selectedTable = resultTable.getValueAt(tableRow, 1).toString().trim();
+         //System.out.println(selectedTable);
 
          selectedTableTab = DBTablesPanel.getTableTabPanel(selectedTable);
          
