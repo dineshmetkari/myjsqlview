@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 02/18/2010
+// Version 1.3 07/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 // Version 1.0 MyJSQLView Initial SearchResultTableCellRenderer Class.
 //         1.1 Header Format Changes/Update.
 //         1.2 Changed Package to Reflect Dandy Made Productions Code.
+//         1.3 Updated So Column 1 Gets the HTML Code Link.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -49,7 +50,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * table cell renderer component used in the SearchFrame JTable.
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/18/2010
+ * @version 1.3 07/09/2010
  */
 
 class SearchResultTableCellRenderer extends DefaultTableCellRenderer
@@ -77,7 +78,7 @@ class SearchResultTableCellRenderer extends DefaultTableCellRenderer
       Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
       String text = ((JLabel) c).getText();
 
-      if (column == 0)
+      if (column == 1)
          ((JLabel) c).setText("<html><body><a href=\"\" style=\"text-decoration: none; "
                               + "font-weight: bold;\">" + text + "</a><body></html>");
       else
