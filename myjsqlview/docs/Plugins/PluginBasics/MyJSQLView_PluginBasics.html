@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>June 5, 2010</b></center></div>
+	<div style="font-size:16px"><center><b>July 10, 2010</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -55,7 +55,7 @@
 				are required for loading and running a plugin module. The code for the MyJSQLView_PluginModule
 				is provided here and shown in <b>Listing 1</b>. below. From this code listing we
 				see the MyJSQLView_PluginModule class has a default no argument constructor and
-				seven methods. All plugins which will extend this class should do no initialization
+				several methods. All plugins which will extend this class should do no initialization
 				work in the constructor and just allow the default super() to be called. The key
 				initialization for a plugin should be allocated to the initPlugin() method. The
 				initPlugin() method has an argument instance of the MyJSQLView_Frame which will
@@ -89,7 +89,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 05/08/2010
+// Version 2.1 06/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -122,7 +122,16 @@
 //         1.7 Changed to an Abstract Class That Implements PluginModuleInterface.
 //             Removed Class Method setParentFrame() and Commented initPlugin()
 //             With New Argument MyJSQLView_Frame So That Plugins Must Implement.
-//
+//         1.8 Parameterized Argument tableNames in Class Method setDBTables()
+//             in Order For Code to Be in Compliance With Java 5.0 API.
+//         1.9 Added Class Instances pluginName, pluginIcon, pluginMenuBar, pluginToolBar,
+//             &#038; pluginPanel. Set All to Null in Constructor. Created Setter Methods
+//             to Accompany Getter Methods. Returned Newly Created Instances in
+//             Getter Methods.
+//         2.0 Removed the Setter Methods. Made Class Instances From 1.9 Protected and
+//             Reverted Back to the Default Instances Returned by the Getters to Null.
+//         2.1 Added Interface Method getVersion() and Class Instance version.
+//             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -141,13 +150,18 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/08/2010
+ * @version 2.1 06/10/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 {
    // Class Instances.
    //protected MyJSQLView_Frame parent;
+   protected String name, version;
+   protected ImageIcon tabIcon;
+   protected JMenuBar menuBar;
+   protected JToolBar toolBar;
+   protected JPanel panel;
 
    //===========================================================
    // MyJSQLView_PluginModule Constructor
@@ -155,9 +169,16 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
    public MyJSQLView_PluginModule()
    {
-      // Nothing to do here.
+      // Just Initialize to a NULL condition.
+      
+      name = null;
+      tabIcon = null;
+      menuBar = null;
+      toolBar = null;
+      panel = null;
+      version = null;
    }
-
+   
    //==============================================================
    // Class method to setup up your plugin.
    // OVERIDE THIS METHOD!
@@ -169,10 +190,10 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       // This is where the plugin should be initialized.
       parent = mainFrame;
    }
-   *
+   */
    
    //==============================================================
-   // Class method to obtain the plugin's name.
+   // Class methods to obtain the plugin's name.
    // Interface requirement.
    //==============================================================
 
@@ -182,7 +203,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    }
 
    //==============================================================
-   // Class method to allow the collection of a image icon that
+   // Class methods to allow the collection of a image icon that
    // will be used as an identifier in the MyJSQLView tab structure.
    // NOTE: The tab icon should be no larger than 12 x 12.
    // Interface requirement.
@@ -194,8 +215,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    }
 
    //==============================================================
-   // Class method to obtain the plugin's JMenuBar that can be used
-   // to control various aspects of the modules functionality.
+   // Class methods to obtain the plugin's JMenuBar that can be
+   // used to control various aspects of the modules functionality.
    // Interface requirement.
    //==============================================================
 
@@ -203,9 +224,9 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-
+   
    //==============================================================
-   // Class method to allow the collection of a JToolBar to be
+   // Class methods to allow the collection of a JToolBar to be
    // used with the plugin module.
    // Interface requirement.
    //==============================================================
@@ -214,25 +235,34 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-
+   
    //==============================================================
-   // Class method for returning a JPanel for inclusion in the
-   // MyJSQLView application's main tab.
-   // Interface requirement.
+   // Class methods for returning a JPanel for inclusion in the
+   // MyJSQLView application's main tab. Interface requirement.
    //==============================================================
 
    public JPanel getPanel()
    {
       return null;
    }
+   
+   //==============================================================
+   // Class methods to obtain the plugin's version number.
+   // Interface requirement.
+   //==============================================================
 
+   public String getVersion()
+   {
+      return null;
+   }
+   
    //==============================================================
    // Class method for being able to set the database tables, occurs
    // if the database is reloaded.
    // Interface requirement.
    //==============================================================
 
-   public void setDBTables(Vector tableNames)
+   public void setDBTables(Vector&#060;String&#062; tableNames)
    {
       // Do what you will if you need database table names.
    }
@@ -256,9 +286,10 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 				allow the developer to return the name and an icon that will be used to identify
 				a plugin's tab. The name will appear as the tooltip for the tab and the icon
 				will become the insignia for the tab. The icon returned through the getTabIcon()
-				method should be no larger than 12 x 12 pixels. The last two getter methods
+				method should be no larger than 12 x 12 pixels. Two of the getter methods
 				shown in the listing allows a plugin to create its own Menu and Toolbar that
-				will be used in conjunction with the module. The last method that is included
+				will be used in conjunction with the module. A getter method is also defined so
+				that a plugin may provide version information. The last method that is included
 				in the MyJSQLView_PluginModule class is the setDBTables() method. This routine
 				allows for your plugin to get an updated reload of the database tables that
 				may occur during the running of the MyJSQLView application.
@@ -621,8 +652,18 @@ public class PluginModule extends MyJSQLView_PluginModule
 //=================================================================
 //           TableRecordCount TableRecordCountPanel
 //=================================================================
+//
+//    This class provides the panel that holds holds components
+// associated with MyJSQLView basic tutorial for a plugin module.
+//
+//               << TableRecordCountPanel.java >>
+//
+//=================================================================
+// Copyright (C) 2005-2010 Dana M. Proctor
+// Version 1.6 07/10/2010
 ~
 ~
+//
 //=================================================================
 // Revision History
 // Changes to the code should be documented here and reflected
@@ -631,16 +672,19 @@ public class PluginModule extends MyJSQLView_PluginModule
 //=================================================================
 // Version 1.0 Initial TableFieldChartsPanel Class.
 //         1.1 Cleaned Up Some &#038; Implemented reloadPanel().
-//         1.2 Formatted and Moved the Delay in The Constructor Needed to
-//             Fix the Problem in v3.17 Code to PluginModule initPlugin().
-//         1.3 Added Thread to actionPerformed() Method and Moved All 
-//             Processing From That Method to New Method executreRecordCount().
+//         1.2 Formatted and Moved the Delay in The Constructor Needed to Fix the
+//             Problem in v3.17 Code to PluginModule initPlugin().
+//         1.3 Added Thread to actionPerformed() Method and Moved All Processing
+//             From That Method to New Method executreRecordCount().
 //         1.4 Comment Changes for executeRecordCount() Method and disableActions
 //             During Processing of a Record Count in Same Method.
-//         1.5 Parameterized Argument tableNames in Constructor and Class
-//             Method reloadPanel() Along With Iterator Instance 
-//             tableNamesIterator.
-//
+//         1.5 Parameterized Argument tableNames in Constructor and Class Method
+//             reloadPanel() Along With Iterator Instance tableNamesIterator.
+//         1.6 Replaced Code to Properly Format the schemaTableName Instance
+//             by the MyJSQLView_Utils.getSchemaTableName() Instead of Manually
+//             in Method executeRecordCount(). Removed Method Instance 
+//             identifierQuoteString. 
+//                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -659,16 +703,17 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.TableTabPanel;
-import com.dandymadeproductions.myjsqlview.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.DBTablesPanel;
+import com.dandymadeproductions.myjsqlview.TableTabPanel;
+import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 
 /**
  * The TableRecordCountPanel class provides the panel that holds components
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.5 06/05/2010
+ * @version 1.6 07/10/2010
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
@@ -788,7 +833,6 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       // Setup Instances.
       Connection dbConnection;
       String tableName;
-      String identifierQuoteString;
       String schemaTableName;
 
       String sqlStatementString;
@@ -823,20 +867,10 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          tableName = selectedTablePanel.getTableName();
          // System.out.println(tableName);
 
-         // Collect the schema table name if required. Future versions of
-         // MyJSQLView will handle this or can be obtained from
-         // MyJSQLView_Utils.
-
-         identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
-
-         if (tableName.indexOf(".") != -1)
-         {
-            schemaTableName = identifierQuoteString + tableName.substring(0, tableName.indexOf("."))
-                              + identifierQuoteString + "." + identifierQuoteString
-                              + tableName.substring(tableName.indexOf(".") + 1) + identifierQuoteString;
-         }
-         else
-            schemaTableName = identifierQuoteString + tableName + identifierQuoteString;
+         // Collect the properly formatted schema table name with identifier
+         // quotes for execution in a SQL statement. 
+         
+         schemaTableName = MyJSQLView_Utils.getSchemaTableName(tableName);
          // System.out.println(schemaTableName);
 
          // Setup the statement string and execute the database query.
@@ -861,9 +895,9 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          tableSelectionComboBox.setEnabled(true);
          disableActions = false;
       }
-
+      
       // Close connection to database.
-
+      
       MyJSQLView_Access.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
       tableSelectionComboBox.setEnabled(true);
       disableActions = false;
@@ -886,12 +920,13 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 				to do with the reloading of the table names if changes occur in the database.
 				A user could possibly change the characteristics of a table in the database
 				via a import of a SQL statement or statements. MyJSQLView if told will reload
-				the database and through the PluginModule class method setDBTables() send this
-				information to your plugin. The code <b>Listing 6</b> shows the TableRecordCountPanel
-				class method reloadPanel() that is called from the PluginModule code discussed
-				early in code <b>Listing 3</b>. In this method's argument is passed the reloaded
-				table names from MyJSQLView. The method essentially just removes all the elements
-				in the tableSelectionComboBox then populates it with the new table names.
+				the database and through the PluginModule class method setDBTables() which will
+				in turn send this information to your plugin. The code <b>Listing 6</b> shows the
+				TableRecordCountPanel class method reloadPanel() that is called from the PluginModule
+				code discussed early in code <b>Listing 3</b>. In this method's argument is passed
+				the reloaded table names from MyJSQLView. The method essentially just removes
+				all the elements in the tableSelectionComboBox then populates it with the new
+				table names.
 			</p>
 
 			<p>
