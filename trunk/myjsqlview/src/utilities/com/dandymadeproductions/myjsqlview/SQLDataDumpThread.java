@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.80 05/20/2010
+// Version 6.81 07/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -247,6 +247,8 @@
 //        6.80 Parameterized Class Instance columnNamesIterator, and in Constructor.
 //             Also columnNamesIterator in Class Methods insertReplaceStatementData()
 //             & explicitStatementData().
+//        6.81 Class Method insertReplaceStatementData() Removed Instance currentIndex.
+//             Replaced by Proper Contains Assertion Integer.valueOf(i).
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -279,7 +281,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.80 05/20/2010
+ * @version 6.81 07/11/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -721,11 +723,10 @@ class SQLDataDumpThread implements Runnable
 
             for (int i = 1; i <= columnsCount; i++)
             {
-               String currentIndex = i + "";
                // System.out.print(i + " ");
 
                // Determining binary types and acting appropriately.
-               if (blobFieldIndexes.contains(currentIndex))
+               if (blobFieldIndexes.contains(Integer.valueOf(i)))
                {
                   byte[] theBytes = rs.getBytes(i);
 
@@ -751,7 +752,7 @@ class SQLDataDumpThread implements Runnable
                else
                {
                   // Check for an AutoIncrement
-                  if (autoIncrementFieldIndexes.containsKey(currentIndex)
+                  if (autoIncrementFieldIndexes.containsKey(Integer.valueOf(i))
                       && sqlDataExportOptions.getAutoIncrement())
                   {
                      if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
@@ -761,12 +762,12 @@ class SQLDataDumpThread implements Runnable
                                     + 1)).replaceAll(identifierQuoteString, "");
 
                         dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
-                                   + autoIncrementFieldIndexes.get(currentIndex) + "_seq\"'), ";
+                                   + autoIncrementFieldIndexes.get(Integer.valueOf(i)) + "_seq\"'), ";
                      }
                      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                      {
                         dumpData = dumpData + identifierQuoteString
-                                   + autoIncrementFieldIndexes.get(currentIndex) 
+                                   + autoIncrementFieldIndexes.get(Integer.valueOf(i)) 
                                    + identifierQuoteString + ".NEXTVAL, ";
                      }
                      else
@@ -775,9 +776,9 @@ class SQLDataDumpThread implements Runnable
                   else
                   {
                      // Check for a TimeStamp
-                     if (timeStampIndexes.contains(currentIndex) && sqlDataExportOptions.getTimeStamp())
+                     if (timeStampIndexes.contains(Integer.valueOf(i)) && sqlDataExportOptions.getTimeStamp())
                      {
-                        if (arrayIndexes.contains(currentIndex))
+                        if (arrayIndexes.contains(Integer.valueOf(i)))
                            dumpData = dumpData + "'{NOW()}', ";
                         else
                         {
@@ -789,7 +790,7 @@ class SQLDataDumpThread implements Runnable
                      }
 
                      // Check for Oracle TimeStamp(TZ)
-                     else if (oracleTimeStamp_TZIndexes.contains(currentIndex)
+                     else if (oracleTimeStamp_TZIndexes.contains(Integer.valueOf(i))
                               && !sqlDataExportOptions.getTimeStamp())
                      {
                         if (rs.getTimestamp(i) != null)
@@ -803,7 +804,7 @@ class SQLDataDumpThread implements Runnable
                      }
 
                      // Check for a Date
-                     else if (dateIndexes.contains(currentIndex))
+                     else if (dateIndexes.contains(Integer.valueOf(i)))
                      {
                         if (rs.getString(i) != null)
                         {
@@ -817,7 +818,7 @@ class SQLDataDumpThread implements Runnable
                      }
 
                      // Check for a Year
-                     else if (yearIndexes.contains(currentIndex))
+                     else if (yearIndexes.contains(Integer.valueOf(i)))
                      {
                         // Fix for a bug in connectorJ, I think, that returns
                         // a whole date YYYY-MM-DD. Don't know what else
@@ -835,13 +836,13 @@ class SQLDataDumpThread implements Runnable
                      }
 
                      // Check for Bit fields.
-                     else if (bitFieldIndexes.contains(currentIndex))
+                     else if (bitFieldIndexes.contains(Integer.valueOf(i)))
                      {
                         if (rs.getString(i) != null)
                         {
                            if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
                            {
-                              if (arrayIndexes.contains(currentIndex))
+                              if (arrayIndexes.contains(Integer.valueOf(i)))
                                  dumpData = dumpData + "'" + rs.getString(i) + "', ";
                               else
                                  dumpData = dumpData + "B'" + rs.getString(i) + "', ";
@@ -875,7 +876,7 @@ class SQLDataDumpThread implements Runnable
                         if (contentString != null)
                         {
                            // Check for Oracle TimeStampLTZ
-                           if (oracleTimeStamp_LTZIndexes.contains(currentIndex) &&
+                           if (oracleTimeStamp_LTZIndexes.contains(Integer.valueOf(i)) &&
                                !sqlDataExportOptions.getTimeStamp())
                               dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
                                          + "', 'MM-DD-YYYY HH24:MI:SS TZH:TZM'), ";
