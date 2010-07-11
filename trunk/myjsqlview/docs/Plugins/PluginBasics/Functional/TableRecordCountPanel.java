@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.5 06/05/2010
+// Version 1.6 07/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,15 +32,18 @@
 //=================================================================
 // Version 1.0 Initial TableFieldChartsPanel Class.
 //         1.1 Cleaned Up Some & Implemented reloadPanel().
-//         1.2 Formatted and Moved the Delay in The Constructor Needed to
-//             Fix the Problem in v3.17 Code to PluginModule initPlugin().
-//         1.3 Added Thread to actionPerformed() Method and Moved All 
-//             Processing From That Method to New Method executreRecordCount().
+//         1.2 Formatted and Moved the Delay in The Constructor Needed to Fix the
+//             Problem in v3.17 Code to PluginModule initPlugin().
+//         1.3 Added Thread to actionPerformed() Method and Moved All Processing
+//             From That Method to New Method executreRecordCount().
 //         1.4 Comment Changes for executeRecordCount() Method and disableActions
 //             During Processing of a Record Count in Same Method.
-//         1.5 Parameterized Argument tableNames in Constructor and Class
-//             Method reloadPanel() Along With Iterator Instance 
-//             tableNamesIterator.
+//         1.5 Parameterized Argument tableNames in Constructor and Class Method
+//             reloadPanel() Along With Iterator Instance tableNamesIterator.
+//         1.6 Replaced Code to Properly Format the schemaTableName Instance
+//             by the MyJSQLView_Utils.getSchemaTableName() Instead of Manually
+//             in Method executeRecordCount(). Removed Method Instance 
+//             identifierQuoteString. 
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,16 +63,17 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.TableTabPanel;
-import com.dandymadeproductions.myjsqlview.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.DBTablesPanel;
+import com.dandymadeproductions.myjsqlview.TableTabPanel;
+import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 
 /**
  * The TableRecordCountPanel class provides the panel that holds components
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.5 06/05/2010
+ * @version 1.6 07/10/2010
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
@@ -150,7 +154,6 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       // Setup Instances.
       Connection dbConnection;
       String tableName;
-      String identifierQuoteString;
       String schemaTableName;
 
       String sqlStatementString;
@@ -185,20 +188,10 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          tableName = selectedTablePanel.getTableName();
          // System.out.println(tableName);
 
-         // Collect the schema table name if required. Future versions of
-         // MyJSQLView will handle this or can be obtained from
-         // MyJSQLView_Utils.
-
-         identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
-
-         if (tableName.indexOf(".") != -1)
-         {
-            schemaTableName = identifierQuoteString + tableName.substring(0, tableName.indexOf("."))
-                              + identifierQuoteString + "." + identifierQuoteString
-                              + tableName.substring(tableName.indexOf(".") + 1) + identifierQuoteString;
-         }
-         else
-            schemaTableName = identifierQuoteString + tableName + identifierQuoteString;
+         // Collect the properly formatted schema table name with identifier
+         // quotes for execution in a SQL statement. 
+         
+         schemaTableName = MyJSQLView_Utils.getSchemaTableName(tableName);
          // System.out.println(schemaTableName);
 
          // Setup the statement string and execute the database query.
