@@ -69,10 +69,10 @@ Requirements:
 
     * Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, & Linux, X-Window Environment.
     * Java Runtime Environment, JRE 1.5 or Newer.
-    * HSQL 1.8.0.8 - 1.8.1.1. (JDBC Integrated Into HSQLDB.jar)
+    * HSQL 1.8.0.8 - 1.8.1.3. (JDBC Integrated Into HSQLDB.jar)
     * MySQL 5.07 - 5.084, JDBC 5.0.7, 5.1.5 - 5.1.8.
     * Oracle 10g, JDBC 14.
-    * PostgreSQL 8.2.5 - 8.4.1, JDBC3 8.2-506 - 8.4-701.
+    * PostgreSQL 8.2.5 - 8.4.4, JDBC3 8.2-506 - 8.4-701.
 
 Installation Notes:
 
