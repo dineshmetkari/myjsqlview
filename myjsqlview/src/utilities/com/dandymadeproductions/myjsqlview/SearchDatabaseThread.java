@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.2 07/09/2010
+// Version 2.3 07/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,8 @@
 //         2.2 Added boolean[] selectedTables to Constructor. Implemented an Additional
 //             Condition in do Loop in Method run() for Excluding Search of Tables As
 //             Defined by New Class Instance selectedTables.
+//         2.3 Class Method run() Assignment of Boolean Object to resultData via
+//             Boolean.valueOf() Instead of Creating a New Boolean Object.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -78,7 +80,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.2 07/09/2010
+ * @version 2.3 07/13/2010
  */
 
 class SearchDatabaseThread implements Runnable
@@ -249,7 +251,7 @@ class SearchDatabaseThread implements Runnable
       {
          if (tableSearchResultCounts[j] != 0)
          {
-            resultData[k][0] = new Boolean(selectedTables[j]);
+            resultData[k][0] = Boolean.valueOf(selectedTables[j]);
             resultData[k][1] = databaseTables.get(j);
             resultData[k++][2] = Integer.valueOf(tableSearchResultCounts[j]);
          }
