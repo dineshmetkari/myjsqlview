@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.30 07/01/2010
+// Version 11.31 07/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -448,6 +448,7 @@
 //       11.28 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //       11.29 Undid Last Revision. Short Sighted.
 //       11.30 Check for All Fields Possibly LOBs. Class Method loadTable().
+//       11.31 Class Method getColumnNames() Cleaned Up the Check Output for primaryKeys..
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -472,7 +473,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.30 07/30/2010
+ * @version 11.31 07/14/2010
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -636,11 +637,15 @@ public class TableTabPanel_MySQL extends TableTabPanel
          
          // Debug for key resolution varification.
          /*
-          * System.out.print(sqlTable + ": "); Iterator temp =
-          * primaryKeys.iterator(); while (temp.hasNext()) { String currentKey =
-          * (String)temp.next(); System.out.print(currentKey + " " +
-          * keyLengthHashMap.get(currentKey) + ", "); } System.out.println();
-          */
+         System.out.print(sqlTable + ": ");
+         Iterator<String> temp = primaryKeys.iterator();
+         while (temp.hasNext())
+         {
+            String currentKey = temp.next();
+            System.out.print(currentKey + " " + keyLengthHashMap.get(currentKey) + ", ");
+         }
+         System.out.println();
+         */
 
          db_resultSet.close();
          sqlStatement.close();
