@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.2 07/09/2010
+// Version 3.3 07/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,9 @@
 //             All Tables and Exclude All Tables in Popup Menu. Disabled searchButton
 //             Till clearSearchTextFieldButton After Search. Added Argument selectedTables
 //             to SearchDatabaseThread Instantiation.
+//         3.3 Constructor Assignment of Boolean Object to defaultTableData via
+//             Boolean.valueOf() Instead of Creating a New Boolean Object. Likewise for
+//             resultTable in actionPerformed() & mounseClicked().
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -113,7 +116,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.2 07/09/2010
+ * @version 3.3 07/13/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -287,7 +290,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
 
       while (tableNamesIterator.hasNext())
       {
-         defaultTableData[i][0] = new Boolean(true);
+         defaultTableData[i][0] = Boolean.valueOf(true);
          defaultTableData[i][1] = "   " + tableNamesIterator.next();
          defaultTableData[i++][2] = Integer.valueOf(0);
       }
@@ -383,7 +386,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          {
             resultTable.selectAll();
             for (int i = 0; i < resultTable.getRowCount(); i++)
-               resultTable.setValueAt(new Boolean(true), i, 0);
+               resultTable.setValueAt(Boolean.valueOf(true), i, 0);
             
          }
 
@@ -392,7 +395,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          {
             resultTable.clearSelection();
             for (int i = 0; i < resultTable.getRowCount(); i++)
-               resultTable.setValueAt(new Boolean(false), i, 0);
+               resultTable.setValueAt(Boolean.valueOf(false), i, 0);
          }
          
          // Popup resultTable Copy
@@ -560,9 +563,9 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
             Boolean s = (Boolean) resultTable.getValueAt(tableRow, tableColumn);
             
             if (s.booleanValue() == true)
-               resultTable.setValueAt(new Boolean(false), tableRow, tableColumn);
+               resultTable.setValueAt(Boolean.valueOf(false), tableRow, tableColumn);
             else
-               resultTable.setValueAt(new Boolean(true), tableRow, tableColumn);
+               resultTable.setValueAt(Boolean.valueOf(true), tableRow, tableColumn);
             return;
          }
          
