@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 9.5 07/01/2010
+// Version 9.6 07/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -231,6 +231,8 @@
 //         9.3 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //         9.4 Undid Last Revision. Short Sighted.
 //         9.5 Check for All Fields Possibly LOBs. Class Method loadTable().
+//         9.6 Class Method getColumnNames() Moved the Final Check for primaryKeys, Foreign
+//             Keys, Back To End of Script Because Depends on columnNamesHashMap.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -263,7 +265,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.5 07/01/2010
+ * @version 9.6 07/14/2010
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -363,26 +365,6 @@ public class TableTabPanel_Oracle extends TableTabPanel
             }
          }
          
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
-
-         if (primaryKeys.isEmpty())
-         {
-            rs = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || columnSize.intValue() > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
-               }
-            }
-         }
-
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
@@ -488,15 +470,40 @@ public class TableTabPanel_Oracle extends TableTabPanel
          if (sqlTableFieldsStringLTZ.length() > 2)
             sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
 
+         // Make a final check to see if there are any keys columns
+         // columns in the table. If not then try foreign keys.
+
+         if (primaryKeys.isEmpty())
+         {
+            rs = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+            while (rs.next())
+            {
+               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+               {
+                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  if (columnSize == null || columnSize.intValue() > 255)
+                     columnSize = new Integer("255");
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
+               }
+            }
+         }
+         
          // Debug for key resolution varification.
          /*
-          * System.out.print(sqlTable + ": "); Iterator temp =
-          * primaryKeys.iterator(); while (temp.hasNext()) { String currentKey =
-          * (String)temp.next(); System.out.print(currentKey + " " +
-          * keyLengthHashMap.get(currentKey) + ", "); } System.out.println();
-          */
+         System.out.print(sqlTable + ": ");
+         Iterator<String> temp = primaryKeys.iterator();
+         while (temp.hasNext())
+         {
+            String currentKey = temp.next();
+            System.out.print(currentKey + " " + keyLengthHashMap.get(currentKey) + ", ");
+         }
+         System.out.println();
+         */
 
-         // Finally get any, sequence, autoIncrement Fields.
+         // Finally aaagh!! get any, sequence, autoIncrement Fields.
+         
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
             colNameString = tableMetaData.getColumnName(i);

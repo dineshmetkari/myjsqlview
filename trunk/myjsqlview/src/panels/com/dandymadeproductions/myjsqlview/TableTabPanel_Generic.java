@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.9 07/01/2010
+// Version 9.0 07/14/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -200,6 +200,8 @@
 //         8.7 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //         8.8 Undid Last Revision. Short Sighted.
 //         8.9 Check for All Fields Possibly LOBs. Class Method loadTable().
+//         9.0 Class Method getColumnNames() Moved the Final Check for primaryKeys, Foreign
+//             Keys, Back To End of Script Because Depends on columnNamesHashMap.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -225,7 +227,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 8.9 07/01/2010
+ * @version 9.0 07/14/2010
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -316,29 +318,6 @@ public class TableTabPanel_Generic extends TableTabPanel
             }
          }
          
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
-
-         if (primaryKeys.isEmpty())
-         {
-            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
-                                            tableMetaData.getSchemaName(1),
-                                            tableMetaData.getTableName(1));
-
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || columnSize.intValue() > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
-               }
-            }
-         }
-
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
@@ -426,14 +405,41 @@ public class TableTabPanel_Generic extends TableTabPanel
          // Clean up the SQL field string for later use.
          if (sqlTableFieldsString.length() > 2)
             sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
+         
+         // Make a final check to see if there are any keys columns
+         // columns in the table. If not then try foreign keys.
+
+         if (primaryKeys.isEmpty())
+         {
+            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
+                                            tableMetaData.getSchemaName(1),
+                                            tableMetaData.getTableName(1));
+
+            while (rs.next())
+            {
+               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+               {
+                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  if (columnSize == null || columnSize.intValue() > 255)
+                     columnSize = new Integer("255");
+                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
+               }
+            }
+         }
 
          // Debug for key resolution varification.
          /*
-          * System.out.print(sqlTable + ": "); Iterator temp =
-          * primaryKeys.iterator(); while (temp.hasNext()) { String currentKey =
-          * (String)temp.next(); System.out.print(currentKey + " " +
-          * keyLengthHashMap.get(currentKey) + ", "); } System.out.println();
-          */
+         System.out.print(sqlTable + ": ");
+         Iterator<String> temp = primaryKeys.iterator();
+         while (temp.hasNext())
+         {
+            String currentKey = temp.next();
+            System.out.print(currentKey + " " + keyLengthHashMap.get(currentKey) + ", ");
+         }
+         System.out.println();
+         */
 
          rs.close();
          db_resultSet.close();
