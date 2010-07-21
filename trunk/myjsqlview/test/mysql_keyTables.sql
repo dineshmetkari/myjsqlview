@@ -17,8 +17,9 @@
 --         08/31/2008 Commented View Table.
 --         10/18/2008 Created Table for Testing Date Key Fields.
 --         11/28/2008 Reformat of Key Table Order.
---            
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 --

@@ -11,8 +11,9 @@
 --         10/27/2007 Changed Comments from # to --.
 --         11/09/2007 Added Boolean & BIT(5) Types.
 --                    Fails on MySQL 4.xx.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 DROP TABLE IF EXISTS mysqltypes;

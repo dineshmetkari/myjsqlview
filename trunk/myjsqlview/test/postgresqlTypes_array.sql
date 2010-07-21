@@ -8,9 +8,9 @@
 --         03/10/2008 Included Field boolean_array & Formatted
 --                    Values Statement for Use as Reference.
 --         12/29/2008 Corrected Box and Path Values.
---                   
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 DROP TABLE IF EXISTS array_types;

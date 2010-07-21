@@ -6,8 +6,9 @@
 -- Version 01/18/2008 Original Test hsqltypes Table.
 --         01/29/2008 Field data_type_id Changed to Type IDENTITY.
 --         01/31/2008 Changed Field timeStamp_type0 to timeStamp0_type.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
    DROP TABLE IF EXISTS hsqltypes;

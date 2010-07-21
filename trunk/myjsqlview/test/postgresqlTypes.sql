@@ -11,8 +11,9 @@
 --         11/21/2007 Uncommented All The Geometric Data Types
 --                    & Interval Type.
 --         02/25/2008 bitVary2_type Changed to bitVary5_type.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 DROP TABLE IF EXISTS postgresqltypes;

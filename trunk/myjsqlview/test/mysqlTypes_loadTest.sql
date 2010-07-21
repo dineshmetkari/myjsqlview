@@ -14,9 +14,10 @@
 --         10/27/2007 Changed Quotes to Single Quotes for Data.
 --         10/29/2007 Changed Description.
 --         10/31/2007 Added Tables boolean_types & bit_types.
---
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- gashogtoo@users.sourceforge.net
--- danap_n_mt@users.sourceforge.net
 -- =============================================================
 
 -- #############################################################
