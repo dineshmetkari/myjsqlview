@@ -7,8 +7,9 @@
 --                    Tables of HSQL data types.
 --         01/31/2008 Completed Most, But INSERTS Need Work.
 --         02/01/2008 Explicit INSERT Statements.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 -- #############################################################

@@ -14,8 +14,9 @@
 --         08/31/2008 Commented View Table.
 --         11/28/2008 added key_table8.
 --         11/08/2009 Corrected key_table8 Create Statement.
+--         07/21/2010 Updated Contact, Email, Address.
 --      
--- danap_n_mt@users.sourceforge.net
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 --

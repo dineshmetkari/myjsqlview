@@ -5,8 +5,9 @@
 -- Version 08/31/2008 Original oracle_keyTables Database
 --                    tables.
 --         11/28/2008 Added key_table8.
+--         07/21/2010 Updated Contact, Email, Address.
 --      
--- danap_n_mt@users.sourceforge.net
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 -- Note you may have to remove the DROP SEQUENCE/TABLE statement

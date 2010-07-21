@@ -17,8 +17,9 @@
 --         02/24/2007 Added Table array_types.
 --         02/25/2007 Removed Table array_types, and Moved to
 --                    Separate File, postgresqlTypes_array.sql
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 -- #############################################################

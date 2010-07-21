@@ -19,8 +19,9 @@
 --         08/19/2008 Added Fields interval_year & interval_day.
 --         08/31/2008 Updated Comment on DROP SEQUENCE/TABLE to try
 --                    and clarify.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 -- Note you may have to remove the DROP SEQUENCE/TABLE statement

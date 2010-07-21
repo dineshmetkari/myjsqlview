@@ -7,8 +7,9 @@
 --                    Tables of Oracle data types.
 --         09/01/2008 Added Tables and Sequences for Intervals.
 --                    Corrected Several Problems. Tested.
---
--- danap_n_mt@users.sourceforge.net
+--         07/21/2010 Updated Contact, Email, Address.
+--      
+-- danap@dandymadeproductions.com
 -- =============================================================
 
 -- Note you may have to remove the DROP SEQUENCE/TABLE statement
