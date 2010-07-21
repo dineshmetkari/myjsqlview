@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.66 07/09/2010
+// Version 4.67 07/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,6 +143,9 @@
 //        4.65 Made Class Method getStateDelimiter() Public.
 //        4.66 Class Methods getTableFields(), getCurrentTableHeadings(), getAllTableHeadings(),
 //             & getPrimaryKeys() Returned Copy of Vectors.
+//        4.67 Removed Code for Collection schemaTableName. Done Through MyJSQLView_Utils in
+//             Constructor. Also Updated Methods deleteSelectedItems() & deleteAllItems() Removed
+//             BEGIN Statement SQL Query Execution for SQLite Database.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -175,7 +178,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.66 07/09/2010
+ * @version 4.67 07/21/2010
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -278,15 +281,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(sqlTable);
-
-      if (sqlTable.indexOf(".") != -1)
-      {
-         schemaTableName = identifierQuoteString + sqlTable.substring(0, sqlTable.indexOf("."))
-                           + identifierQuoteString + "." + identifierQuoteString
-                           + sqlTable.substring(sqlTable.indexOf(".") + 1) + identifierQuoteString;
-      }
-      else
-         schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
       // System.out.println(schemaTableName);
 
       // Initializing.
@@ -1588,9 +1582,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                dbConnection.setAutoCommit(false);
                sqlStatement = dbConnection.createStatement();
 
-               // HSQL & Oracle does not support.
+               // HSQL, Oracle, & SQLite does not support.
                if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-                   && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+                   && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
+                   && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
                   sqlStatement.executeUpdate("BEGIN");
 
                // Begin the SQL statement(s) creation.
@@ -1758,7 +1753,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
             // HSQL & Oracle does not support.
             if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-                && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+                && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
+                && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
                sqlStatement.executeUpdate("BEGIN");
 
             // SQL statement creation.
