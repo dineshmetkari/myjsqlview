@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.72 05/20/2010
+// Version 8.73 07/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -308,6 +308,8 @@
 //                        & setComboBoxField().
 //        8.72 05/20/2010 Class Method createFunctionSQLStatement() Converted byte[] Array to String
 //                        via Arrays.toString(getFormFieldBlob(columnName).
+//        8.73 07/21/2010 Updated Method addUpdateTableEntry() Removed BEGIN Statement SQL Query
+//                        Execution for SQLite Database.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -343,7 +345,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.72 05/20/2010
+ * @version 8.73 07/21/2010
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1168,7 +1170,8 @@ class TableEntryForm extends JFrame implements ActionListener
 
          // HSQL & Oracle does not support.
          if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
+             && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
             sqlStatement.executeUpdate("BEGIN");
 
          // ====================
