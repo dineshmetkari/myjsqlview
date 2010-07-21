@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 3.7 05/18/2010
+// Version 3.8 07/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,8 @@
 //         3.6 Changed Package to Reflect Dandy Made Productions Code.
 //         3.7 Parameterized tableFields in Class Method refreshTablePanel() to
 //             Bring Code Into Compliance With Java 5.0 API.
+//         3.8 Updated Method importSQLFile() Removed BEGIN Statement SQL Query
+//             Execution for SQLite Database.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -105,7 +107,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 3.7 05/18/2010
+ * @version 3.8 07/21/2010
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -211,9 +213,11 @@ class SQLDataDumpImportThread implements Runnable
             dbConnection.setAutoCommit(false);
             sqlStatement = dbConnection.createStatement();
 
-            // HSQL & Oracle does not support.
+            // HSQL, Oracle, & SQLite does not support.
+            
             if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1 &&
-                MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+                MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1 &&
+                MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
                sqlStatement.executeUpdate("BEGIN");
 
             // Creating seperate queries and beginning
