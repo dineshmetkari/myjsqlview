@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.68 07/09/2010
+// Version 6.69 07/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -229,6 +229,8 @@
 //             fillSiteDataStructure(). Also tablesIterator in loadDBTables().
 //        6.68 Class Method getSchemas() & getTableNames() Returned a Copy of the
 //             Vector schemas & tables.
+//        6.69 Modification to Support SQLite Database. Changes to Include Defaults
+//             for That Database in fillSitesDefaults() and Changes to accessCheck().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -264,7 +266,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.68 07/09/2010
+ * @version 6.69 07/21/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -863,12 +865,11 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       
       // Example defaults database settings.
       String[] defaultDrivers = {"com.mysql.jdbc.Driver", "org.postgresql.Driver", "org.hsqldb.jdbcDriver",
-                                 "oracle.jdbc.driver.OracleDriver"};
-      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin"};
+                                 "oracle.jdbc.driver.OracleDriver", "org.sqlite.JDBC"};
+      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin", "sqlite"};
       
-      String[] defaultPorts = {"3306", "5432", "9001", "1521"};
-      String[] defaultDatabases = {"mysql", "postgresql", "hsql;",
-                                   "oracle"};
+      String[] defaultPorts = {"3306", "5432", "9001", "1521", "0000"};
+      String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite.db"};
       
       // Clear contents to start anewed.
       driverList.removeAllElements();
@@ -971,7 +972,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       Connection dbConnection;
       char[] passwordCharacters;
       DatabaseMetaData dbMetaData;
-      //ResultSet db_resultSet;
+      // ResultSet db_resultSet;
 
       // Try to login in the user with the specified connection
 
@@ -997,6 +998,15 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          try
          {
             String driver = advancedParametersPanel.getDriver();
+            // System.out.println("driver: " + driver);
+            
+            // Run SQLite in pure Java mode to maintain compatibility,
+            // slower, but works with older versions of JVM. Revisit
+            // Later if really needed.
+            
+            if (advancedParametersPanel.getSubProtocol().indexOf("sqlite") != -1)
+               System.setProperty("sqlite.purejava", "true");
+               
             Class.forName(driver);
             // Class.forName(driver).newInstance();
             // System.out.println("Database Driver Loaded");
@@ -1005,7 +1015,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          {
             // Alert Dialog Output.
             String exceptionString = e.getMessage();
-            if (exceptionString.length() > 200)
+            if (exceptionString != null && exceptionString.length() > 200)
                exceptionString = exceptionString.substring(0, 200);
             
             String javaExtDir = System.getProperty("java.ext.dirs");
@@ -1020,7 +1030,6 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                                             + "Exeception: " + exceptionString;
             JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
 
-            // System.err.println("Unable to find and load driver" + e);
             loggedIn = false;
             return false;
          }
@@ -1070,6 +1079,13 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                // System.out.println(connectionProperties);
                dbConnection = DriverManager.getConnection(connectionProperties, user, passwordString);
             }
+            // SQLite
+            else if (subProtocol.indexOf("sqlite") != -1)
+            {
+               connectionProperties += subProtocol + ":" + db.replaceAll("/", "\\");
+               System.out.println(connectionProperties);
+               dbConnection = DriverManager.getConnection(connectionProperties);
+            }
             // MySQL, PostgreSQL, & HSQL
             else
             {
@@ -1106,6 +1122,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                   dbProductNameVersion = "HSQL ";
                else if (subProtocol.equals("oracle"))
                   dbProductNameVersion = "Oracle ";
+               else if (subProtocol.equals("sqlite"))
+                  dbProductNameVersion = "SQLite ";
                else
                   dbProductNameVersion = "UnknownSQL ";
             }
@@ -1118,10 +1136,9 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
 
             // =======================
             // SQL Key Words
-            /*
-            System.out.println(dbMetaData.getSQLKeywords());
-            */
-
+            
+            // System.out.println(dbMetaData.getSQLKeywords());
+            
             // =======================
             // Database Functions
             /*
@@ -1151,8 +1168,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             // Catalog Separator & Identifier Quote String
             // Identifier will be used, do not comment.
             
-            //System.out.println("Catalog Separator: " + dbMetaData.getCatalogSeparator());
-            //System.out.println("Identifier Quote String: " + dbMetaData.getIdentifierQuoteString());
+            // System.out.println("Catalog Separator: " + dbMetaData.getCatalogSeparator());
+            // System.out.println("Identifier Quote String: " + dbMetaData.getIdentifierQuoteString());
              
             identifierQuoteString = dbMetaData.getIdentifierQuoteString();
             if (identifierQuoteString == null)
@@ -1268,6 +1285,16 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             dbType = "postgresql";
          //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
       }
+      // SQLite
+      else if (subProtocol.indexOf("sqlite") != -1)
+      {
+         catalog = db;
+         schemaPattern = null;
+         tableNamePattern = null;
+         dbType = "sqlite";
+         //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
+         
+      }
       // Unknown
       else
       {
@@ -1299,8 +1326,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          db_resultSet = dbMetaData.getTableTypes();
          while (db_resultSet.next())
          {
-            // System.out.println("Table Types: " +
-            // db_resultSet.getString("TABLE_TYPE"));
+            // System.out.println("Table Types: " + db_resultSet.getString("TABLE_TYPE"));
             tableTypes[i++] = db_resultSet.getString("TABLE_TYPE");
          }
       }
@@ -1455,11 +1481,11 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          {
             // All information, could be to much.
             // System.out.println("Table CAT: " +
-            // db_resultSet.getString("TABLE_CAT") +
-            // " Table Schem: " + db_resultSet.getString("TABLE_SCHEM") +
-            // " Table Type: " + db_resultSet.getString("TABLE_TYPE") +
-            // " Table Name: " + db_resultSet.getString("TABLE_NAME") +
-            // " Remarks: " + db_resultSet.getString("REMARKS"));
+             // db_resultSet.getString("TABLE_CAT") +
+             // " Table Schem: " + db_resultSet.getString("TABLE_SCHEM") +
+             // " Table Type: " + db_resultSet.getString("TABLE_TYPE") +
+             // " Table Name: " + db_resultSet.getString("TABLE_NAME") +
+             // " Remarks: " + db_resultSet.getString("REMARKS"));
 
             // Filter, only TABLEs & VIEWs allowed in MyJSQLView
             // application.
@@ -1534,7 +1560,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                if (!schemas.contains(schemasName))
                {
                   schemas.add(tableName.substring(0, tableName.indexOf(".")));
-                  //System.out.println(tableName.substring(0, tableName.indexOf(".")));
+                  // System.out.println(tableName.substring(0, tableName.indexOf(".")));
                }
             }
          }
