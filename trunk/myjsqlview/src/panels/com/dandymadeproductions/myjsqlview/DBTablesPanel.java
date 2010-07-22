@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.9 06/23/2010
+// Version 4.0 07/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,7 @@
 //             reloadPanel().
 //         3.9 Modification to Instance Creation for TableTabPanels to Include Argument
 //             viewOnlyTable, false.
+//         4.0 Added SQLite TableTabPanel Type for Instantiation in loadTable().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -128,7 +129,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 3.9 06/23/2010
+ * @version 4.0 07/21/2010
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -336,6 +337,9 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // Oracle
       else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
          tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection, false);
+      // SQLite
+      else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+         tableTabPanel = new TableTabPanel_SQLite(tableName, dbConnection, false);
       // Generic
       else
          tableTabPanel = new TableTabPanel_Generic(tableName, dbConnection, false);
