@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.69 07/21/2010
+// Version 6.70 07/22/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -231,6 +231,8 @@
 //             Vector schemas & tables.
 //        6.69 Modification to Support SQLite Database. Changes to Include Defaults
 //             for That Database in fillSitesDefaults() and Changes to accessCheck().
+//        6.70 Changed replaceAll() With Replace for SQLite connectionProperties
+//             String for db in accessCheck().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -266,7 +268,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.69 07/21/2010
+ * @version 6.70 07/22/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -1082,8 +1084,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             // SQLite
             else if (subProtocol.indexOf("sqlite") != -1)
             {
-               connectionProperties += subProtocol + ":" + db.replaceAll("/", "\\");
-               System.out.println(connectionProperties);
+               connectionProperties += subProtocol + ":" + db.replace("\\", "/");
+               // System.out.println(connectionProperties);
                dbConnection = DriverManager.getConnection(connectionProperties);
             }
             // MySQL, PostgreSQL, & HSQL
