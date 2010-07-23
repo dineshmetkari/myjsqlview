@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.8 05/16/2010
+// Version 3.9 07/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,9 @@
 //         3.8 Parameterized Instance autoIncrementColumnNameHashMap in Class Method 
 //             createOracleTableDefinition() to Bring Code Into Compliance With Java
 //             5.0 API.
+//         3.9 Added the selection of SQlite Database in Class Method getTableDefinition().
+//             Added Class Method createSQliteTableDefinition() With a Basic Outline from
+//             the MySQL Definition Method.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -124,7 +127,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 3.8 05/16/2010
+ * @version 3.9 07/23/2010
  */
 
 class TableDefinitionGenerator
@@ -1203,6 +1206,66 @@ class TableDefinitionGenerator
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
+   
+   //==============================================================
+   // Class method for creating a given SQLite TABLE definition.
+   //==============================================================
+
+   private String createSQLiteTableDefinition()
+   {
+      // Class Method Instances.
+      StringBuffer tableDefinition = new StringBuffer("");
+      String tableType;
+
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet resultSet;
+
+      // Beginning the creation of the string description
+      // of the table Structure.
+      try
+      {
+         // Setup a connection statement.
+         sqlStatement = dbConnection.createStatement();
+
+         // SQlite does all the work here with the handy
+         // sqlite_master table.
+
+         sqlStatementString = "SELECT type, sql FROM (SELECT * FROM sqlite_master UNION ALL " 
+                              + "SELECT * FROM sqlite_temp_master) WHERE type!='meta' " 
+                              + "AND sql NOT NULL AND name='" + tableName + "'";
+         // System.out.println(sqlStatementString);
+         
+         resultSet = sqlStatement.executeQuery(sqlStatementString);
+         
+         if (resultSet.next())
+         {
+         
+            // Drop Table Statements As Needed.
+            if (DBTablesPanel.getDataExportProperties().getTableStructure())
+            {
+               tableType = resultSet.getString("type");
+               
+               if (tableType != null)
+                  tableDefinition.append("DROP " + tableType.toUpperCase() + " IF EXISTS "
+                                         + schemaTableName + ";\n");
+            }
+            // Create Table column
+            tableDefinition.append(resultSet.getString("sql") + ";\n");
+         }
+         else
+            tableDefinition.append("\n");
+
+         resultSet.close();
+         sqlStatement.close();
+         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      catch (SQLException e)
+      {
+         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createSQLiteTableDefinition()");
+         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+   }
 
    //==============================================================
    // Class method for getting CREATE TABLE definition.
@@ -1236,6 +1299,12 @@ class TableDefinitionGenerator
       else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
       {
          return createOracleTableDefinition();
+      }
+      
+      // SQLite
+      else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+      {
+         return createSQLiteTableDefinition();
       }
 
       // Default
