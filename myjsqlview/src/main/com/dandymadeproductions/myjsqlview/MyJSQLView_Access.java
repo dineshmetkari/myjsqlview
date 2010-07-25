@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.70 07/22/2010
+// Version 6.71 07/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,8 @@
 //             for That Database in fillSitesDefaults() and Changes to accessCheck().
 //        6.70 Changed replaceAll() With Replace for SQLite connectionProperties
 //             String for db in accessCheck().
+//        6.71 Class Method accessCheck() identifierQuoteString Conditional Check for
+//             NULL and SPACE Returns Empty String.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -268,7 +270,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.70 07/22/2010
+ * @version 6.71 07/23/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -1174,7 +1176,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             // System.out.println("Identifier Quote String: " + dbMetaData.getIdentifierQuoteString());
              
             identifierQuoteString = dbMetaData.getIdentifierQuoteString();
-            if (identifierQuoteString == null)
+            if (identifierQuoteString == null || identifierQuoteString.equals(" "))
                identifierQuoteString = "";
 
             // Load parameters and the databases tables.
