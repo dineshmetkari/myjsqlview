@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 11.9 07/14/2010
+// Version 12.0 07/23/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -276,6 +276,7 @@
 //        11.8 Check for All Fields Possibly LOBs. Class Method loadTable().
 //        11.9 Class Method getColumnNames() Moved the Final Check for primaryKeys, Foreign
 //             Keys, Back To End of Script Because Depends on columnNamesHashMap.
+//        12.0 Minor Format Changes.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -301,7 +302,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.9 07/14/2010
+ * @version 12.0 07/23/2010
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -469,7 +470,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
          }
          // Clean up the SQL field string for later use.
          if (sqlTableFieldsString.length() > 2)
-        	 sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
+            sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
 
          // Make a final check to see if there are any keys columns
          // columns in the table. If not then try foreign keys.
