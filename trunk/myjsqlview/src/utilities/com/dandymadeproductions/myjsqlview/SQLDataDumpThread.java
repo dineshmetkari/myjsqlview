@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.81 07/11/2010
+// Version 6.82 07/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -249,6 +249,9 @@
 //             & explicitStatementData().
 //        6.81 Class Method insertReplaceStatementData() Removed Instance currentIndex.
 //             Replaced by Proper Contains Assertion Integer.valueOf(i).
+//        6.82 Added Support for Exporting BLOB Types for the SQLite Database. Format,
+//             (x'0500'), in Class Methods insertReplaceStatement(), dumpBinaryData(),
+//             & explicitStatementData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -281,7 +284,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.81 07/11/2010
+ * @version 6.82 07/26/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -738,6 +741,8 @@ class SQLDataDumpThread implements Runnable
                         dumpData = dumpData + "'";
                      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                         dumpData = dumpData + "HEXTORAW('";
+                     else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+                        dumpData = dumpData + "x'";
                      else
                         dumpData = dumpData + "0x";
 
@@ -1091,6 +1096,8 @@ class SQLDataDumpThread implements Runnable
                            dumpData = dumpData + "'";
                         else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 && updateDump)
                            dumpData = dumpData + "HEXTORAW('";
+                        else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1 && updateDump)
+                           dumpData = dumpData + "x'";
                         else
                            dumpData = dumpData + "0x";
 
@@ -1387,7 +1394,8 @@ class SQLDataDumpThread implements Runnable
                }
             }
             if (MyJSQLView_Access.getSubProtocol().equals("postgresql") ||
-                MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+                MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1 ||
+                MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
                dumpData = dumpData + "', ";
             else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 &&
                      (updateDump || insertReplaceDump))
