@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 07/21/2010
+// Version 1.1 07/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original TableTabPanel_SQLite Class.
+//         1.1 Commented Out System.out.println() Output in Methods loadTable()
+//             & getColumnNames().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.0 07/21/2010
+ * @version 1.1 07/26/2010
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -381,8 +383,8 @@ public class TableTabPanel_SQLite extends TableTabPanel
                                         + tableRowLimit + " " + "OFFSET " + tableRowStart;  
          }
          sqlTableStatement = sqlStatementString;
-         System.out.println(sqlStatementString);
-         System.out.println(lobLessSQLStatementString);
+         // System.out.println(sqlStatementString);
+         // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
          // Placing the results columns desired into the table that
@@ -406,10 +408,10 @@ public class TableTabPanel_SQLite extends TableTabPanel
                keyLength = keyLengthHashMap.get(columnName);
                preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
-               System.out.println(i + " " + j + " " + currentHeading + " " +
-               columnName + " " + columnClass + " " +
-               columnType + " " + columnSize + " " +
-               preferredColumnSize + " " + keyLength);
+               // System.out.println(i + " " + j + " " + currentHeading + " " +
+               // columnName + " " + columnClass + " " +
+               // columnType + " " + columnSize + " " +
+               // preferredColumnSize + " " + keyLength);
 
                // Storing data appropriately. If you have some date
                // or other formating, for a field here is where you
@@ -419,7 +421,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                   currentContentData = "lob";
                else
                   currentContentData = rs.getObject(columnName);
-               System.out.println(currentContentData);
+               // System.out.println(currentContentData);
 
                if (currentContentData != null)
                {
