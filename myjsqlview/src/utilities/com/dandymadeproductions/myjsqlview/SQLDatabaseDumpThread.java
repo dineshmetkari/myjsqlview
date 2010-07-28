@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 6.9 07/26/2010
+// Version 7.0 07/28/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -174,6 +174,8 @@
 //         6.9 Added Support for Exporting BLOB Types for the SQLite Database. Format,
 //             (x'0500'), in Class Methods insertReplaceStatement(), dumpBinaryData(),
 //             & explicitStatementData().
+//         7.0 Correction in run() to Properly Catch the Condition for REPLACE Explicit
+//             SQL Output.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -205,7 +207,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 6.9 07/26/2010
+ * @version 7.0 07/28/2010
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -331,6 +333,9 @@ class SQLDatabaseDumpThread implements Runnable
                // Oracle
                else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                   currentTableTabPanel = new TableTabPanel_Oracle(exportedTable, dbConnection, true);
+               // SQLite
+               else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+                  currentTableTabPanel = new TableTabPanel_SQLite(exportedTable, dbConnection, true);
                // Generic
                else
                   currentTableTabPanel = new TableTabPanel_Generic(exportedTable, dbConnection, true);
@@ -411,12 +416,26 @@ class SQLDatabaseDumpThread implements Runnable
                   // Create the Appropriate Insert,Replace or Update Statements
                   // with data as needed.
 
-                  if ((sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert") ||
-                       sqlDataExportOptions.getInsertReplaceUpdate().equals("Replace")) &&
-                      !sqlDataExportOptions.getInsertExpression().equals("Explicit"))
-                     insertReplaceStatementData(dbConnection);
+                  // Insert
+                  if (sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert"))
+                  {
+                     if (sqlDataExportOptions.getInsertExpression().equals("Explicit"))
+                        explicitStatementData(dbConnection);
+                     else
+                        insertReplaceStatementData(dbConnection);     
+                  }
+                  // Replace
+                  else if (sqlDataExportOptions.getInsertReplaceUpdate().equals("Replace"))
+                  {
+                     if (sqlDataExportOptions.getReplaceExpression().equals("Explicit"))
+                        explicitStatementData(dbConnection);
+                     else
+                        insertReplaceStatementData(dbConnection);     
+                  }
+                  // Update
                   else
                      explicitStatementData(dbConnection);
+                  
                   dumpData = dumpData + ";\n";
 
                   // Finishing up.
