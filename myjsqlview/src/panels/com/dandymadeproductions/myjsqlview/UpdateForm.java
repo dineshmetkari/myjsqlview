@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 05/19/2010
+// Version 3.2 07/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,8 @@
 //                        Constructor Arguments. Changed Method swapEndComponent From Object
 //                        to JComponent in createUpdateWhereInterface().
 //         3.1 05/19/2010 Parameterized keyComponentIterator in Class Method getKeyComponentsState().
+//         3.2 07/27/2010 Updated Method updateTable() Removed BEGIN Statement SQL Query
+//                        Execution for SQLite Database.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -121,7 +123,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.1 05/19/2010
+ * @version 3.2 07/27/2010
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -804,7 +806,8 @@ class UpdateForm extends JFrame implements ActionListener
 
                // HSQL & Oracle does not support.
                if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-                   && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+                   && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
+                   && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
                   sqlStatement.executeUpdate("BEGIN");
 
                // Setup some instances needed for processing.
