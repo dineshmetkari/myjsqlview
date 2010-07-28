@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.82 07/26/2010
+// Version 6.83 07/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,8 @@
 //        6.82 Added Support for Exporting BLOB Types for the SQLite Database. Format,
 //             (x'0500'), in Class Methods insertReplaceStatement(), dumpBinaryData(),
 //             & explicitStatementData().
+//        6.83 Correction in run() to Properly Catch the Condition for REPLACE Explicit
+//             SQL Output.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -284,7 +286,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.82 07/26/2010
+ * @version 6.83 07/27/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -478,12 +480,26 @@ class SQLDataDumpThread implements Runnable
                // Create the Appropriate Insert,Replace or Update Statements
                // with data as needed.
 
-               if ((sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert") ||
-                    sqlDataExportOptions.getInsertReplaceUpdate().equals("Replace")) &&
-                   !sqlDataExportOptions.getInsertExpression().equals("Explicit"))
-                  insertReplaceStatementData(dbConnection);
+               // Insert
+               if (sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert"))
+               {
+                  if (sqlDataExportOptions.getInsertExpression().equals("Explicit"))
+                     explicitStatementData(dbConnection);
+                  else
+                     insertReplaceStatementData(dbConnection);     
+               }
+               // Replace
+               else if (sqlDataExportOptions.getInsertReplaceUpdate().equals("Replace"))
+               {
+                  if (sqlDataExportOptions.getReplaceExpression().equals("Explicit"))
+                     explicitStatementData(dbConnection);
+                  else
+                     insertReplaceStatementData(dbConnection);     
+               }
+               // Update
                else
                   explicitStatementData(dbConnection);
+               
                dumpData = dumpData + ";\n";
 
                // Finishing up.
@@ -967,7 +983,7 @@ class SQLDataDumpThread implements Runnable
 
       // Setting up the initial dump data string with insert/replace/update,
       // type, and table.
-
+      System.out.println("explicit");
       dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
       dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
 
