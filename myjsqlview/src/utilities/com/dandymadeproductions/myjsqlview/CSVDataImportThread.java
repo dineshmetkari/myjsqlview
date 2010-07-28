@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 5.0 06/09/2010
+// Version 5.1 07/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,21 +95,24 @@
 //             csvImportProgressBar, MyJSQLView_ProgressBar Construction.
 //         4.2 Added Class Instance temporaryDataFile and Same to Constructor() as
 //             an Argument. Handled the Deletion of file in run() as Needed.
-//         4.3 Class Method importCSVFile() Set lineContent to "default" When No
-//             Data Provided.
+//         4.3 Class Method importCSVFile() Set lineContent to "default" When
+//             No Data Provided.
 //         4.4 Class Method importCSVFile() Check for update Type sqlValuesString
 //             Properly Parsed, sqlValuesString.length() > 2.
 //         4.5 Check for SecurityException in run() for file.delete().
 //         4.6 Method importCSVFile() Changed Method Instances sqlFieldNamesString &
 //             sqlValuesString From Strings to StringBuffers.
 //         4.7 Changed Package to Reflect Dandy Made Productions Code.
-//         4.8 Parameterized Instances primaryKeys, tableFields, & fields in Class Method
-//             importCSVFile() to Bring Code Into Compliance With Java 5.0 API.
+//         4.8 Parameterized Instances primaryKeys, tableFields, & fields in Class
+//             Method importCSVFile() to Bring Code Into Compliance With Java 5.0
+//             API.
 //         4.9 Parameterized Instance tableHeadings in Class Method refreshTableTabPanel().
 //             Also columnTypeHashMap, & columnClassHashMap in Class Method
 //             importCSVFile().
-//         5.0 Collected Class Istance schemaTableName in importCSVFile() From MyJSQLView_Utils
-//             Method getSchemaTableName().
+//         5.0 Collected Class Istance schemaTableName in importCSVFile() From
+//             MyJSQLView_Utils Method getSchemaTableName().
+//         5.1 Updated Method importCSVFile() Removed BEGIN Statement SQL Query
+//             Execution for SQLite Database.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -136,7 +139,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.0 06/09/2010
+ * @version 5.1 07/27/2010
  */
 
 class CSVDataImportThread implements Runnable
@@ -281,7 +284,8 @@ class CSVDataImportThread implements Runnable
 
          // HSQL & Oracle does not support.
          if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
+             && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
             sqlStatement.executeUpdate("BEGIN");
 
          try
