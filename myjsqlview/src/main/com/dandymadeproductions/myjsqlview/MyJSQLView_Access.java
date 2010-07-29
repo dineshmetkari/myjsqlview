@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.71 07/23/2010
+// Version 6.72 07/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -235,6 +235,7 @@
 //             String for db in accessCheck().
 //        6.71 Class Method accessCheck() identifierQuoteString Conditional Check for
 //             NULL and SPACE Returns Empty String.
+//        6.72 Minor Format Change.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -270,7 +271,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.71 07/23/2010
+ * @version 6.72 07/29/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -529,6 +530,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       // Setting the component, connection parameters,
       // to last site, and then adding everything to the
       // frame.
+      
       setSelectedSite(lastSite);
       mainPanel.add(actionPanel, BorderLayout.SOUTH);
       getContentPane().add(mainPanel);
