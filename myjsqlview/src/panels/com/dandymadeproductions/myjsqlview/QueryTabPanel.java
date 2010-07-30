@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.7 05/19/2010
+// Version 7.8 07/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -186,6 +186,8 @@
 //             Were Not Needed and Insured Proper Parmeters Were Loaded/Retrieved.
 //         7.7 Parameterized Instance headings in Constructor & Method loadtTable().
 //             Also Instance tableFieldIterator in Class Method viewSelectedItem().
+//         7.8 Implemented Support for SQLite Database. Constructor and Class Methods
+//             getColumnNames() & loadTable() Effected.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -217,7 +219,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.7 05/19/2010
+ * @version 7.8 07/29/2010
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -548,7 +550,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       viewButton.setMnemonic(KeyEvent.VK_V);
       viewButton.addActionListener(this);
       actionButtonPanel.add(viewButton);
-      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 ||
+          MyJSQLView_Access.getSubProtocol().equals("sqlite"))
          viewButton.setVisible(false);
 
       buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
@@ -981,7 +984,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          fields.add(primaryKey);
          columnNamesHashMap.put(primaryKey, primaryKey);
-         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1)
+         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1 &&
+             !MyJSQLView_Access.getSubProtocol().equals("sqlite"))
             tableHeadings.add(primaryKey);
          columnClassHashMap.put(primaryKey, "java.lang.Integer");
          columnTypeHashMap.put(primaryKey, "INTEGER");
@@ -1235,6 +1239,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                sqlStatementString = "CREATE TABLE " + identifierQuoteString + tempTable
                                     + identifierQuoteString + " AS " + query;
             }
+            
+            // SQLite SQL Statement.
+            else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+            {
+               // Create SQL Statement
+               sqlStatementString = "CREATE TABLE " + identifierQuoteString + tempTable
+                                    + identifierQuoteString + " AS " + query;
+            }
 
             // Bite the dust.
             else
@@ -1349,7 +1361,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          }
          if (showQuery)
             QueryFrame.setQueryResultTextArea(sqlStatementString);
-         //System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
          rs = sqlStatement.executeQuery(sqlStatementString);
 
          // Placing the results columns desired into the table that
