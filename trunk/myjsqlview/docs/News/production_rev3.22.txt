@@ -1,0 +1,47 @@
+MyJSQLView Version 3.22 Released
+
+The MyJSQLView project is pleased to provide the release of
+Version 3.22 to the public. The release marks the completion of
+the architecture for a modular plugin framework with a threaded
+loader. Consideration was given to be able to dynamically load
+plugin modules once the application was running, but was put
+off till a future release. Ideally one would be able to use
+the preferences panel to view loaded plugins and load one
+either locally or one located from a network source, including
+the Internet. New to the v3.22 release is the ability to 
+generate a PDF document of the summary table data. The code
+has also undergone a major rebuild to bring the application
+into compliance with the Java 1.5 API. The program will now
+need to be run on a platform that has at least the JRE
+5.0.
+
+A note to users that the MyJSQLView application will now no
+longer come with any plugin modules. For the past two releases
+the Table Field Profiler was included as part of the download,
+but users will now need to download that plugin and others
+separately. The good news is the project has been able to fully
+expand the Table Field Profiler module to include a table field
+analysis panel. Please see the Plugins section of the MyJSQLView's
+Web Page to gain access to the module.
+
+Either in the last release or the prior one a change took
+place in the way that data from the database's tables was
+loaded into the application's summary tables. A decision was
+made to exclude TEXT field's data in the summary table. The
+decision was made to insure network performance was not
+compromised. After using the application over the last few
+months I really miss seeing the content of those fields in
+the summary table. Perhaps that decision needs to be rescinded
+or modified to allow user control. If you or group have
+comments on this or any other aspect of the program's
+functionality please let us know.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, and PostgreSQL databases. A query
+frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
