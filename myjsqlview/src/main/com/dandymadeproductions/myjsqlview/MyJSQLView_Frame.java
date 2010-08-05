@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.5 06/16/2010
+// Version 5.6 08/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,6 +143,8 @@
 //                        mainTabsPane ChangeListener During the Adding of a Tab. Still Trying
 //                        to Fix the ArrayIndexOutOfBoundsException. It Appears That a MouseOver
 //                        Event for the Tab is Trying to Change Aspects of the Tabs.
+//         5.6 08/05/2010 Class Method createGUI() Added Instance topMenuMenu to Replace the
+//                        defaultMenuBar for Plugin Management.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -169,7 +171,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.5 06/16/2010
+ * @version 5.6 08/05/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -218,6 +220,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       JPanel mainPanel;
       String fileSeparator, iconsDirectory;
       ImageIcon mainTabIcon;
+      MyJSQLView_Top_JMenuBar topMenuBar;
       Default_JToolBar defaultToolBar;
       MyJSQLView_JToolBar myJSQLViewToolBar;
       
@@ -234,7 +237,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Setup the menu bar for the frame.
       
       defaultMenuBar = new Default_JMenuBar(this);
-      setJMenuBar(defaultMenuBar);
+      topMenuBar = new MyJSQLView_Top_JMenuBar(this);
+      setJMenuBar(topMenuBar);
       
       // ===============================================
       // Setting up the tabbed pane with the various
