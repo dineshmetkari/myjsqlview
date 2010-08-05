@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.21 06/17/2010
+// Version 7.22 08/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -230,6 +230,8 @@
 //        7.21 Threaded HelpFrame Instances for Manual, Legal, & Readme Actions. Also
 //             Added a Check Through failedToLoadContents to dispose Frame. Class
 //             Method actionSelection().
+//        7.22 Added Action Processing for Tools | Plugin Management for the Top JMenuBar.
+//             Added Class Instance pluginFrameVisible and Method setPluginFrameVisible().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -262,7 +264,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.21 06/17/2010
+ * @version 7.22 08/05/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -271,6 +273,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    private static boolean preferencesVisible = false;
    private static boolean queryFrameVisible = false;
    private static boolean searchFrameVisible = false;
+   private static boolean pluginFrameVisible = false;
    private static String lastSaveDirectory = "";
    private static String lastImportDirectory = "";
    private static String lastExportDirectory = "";
@@ -435,6 +438,19 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             searchFrame.setVisible(true);
             searchFrameVisible = true;
          }
+         return;
+      }
+      
+      // Plugin Management
+      if (actionCommand.equals(ACTION_PLUGIN_MANAGEMENT) && !pluginFrameVisible)
+      {
+         // Showing the Edit Preferences Frame.
+         PluginFrame managePluginPreferences = new PluginFrame();
+         managePluginPreferences.setSize(605, 405);
+         managePluginPreferences.setResizable(false);
+         managePluginPreferences.center();
+         managePluginPreferences.setVisible(true);
+         pluginFrameVisible = true;
          return;
       }
       
@@ -1107,5 +1123,16 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    protected static void setSearchFrameNotVisisble()
    {
       searchFrameVisible = false;
+   }
+   
+   //==============================================================
+   // Class Method to allow the setting the pluginFrameVisible
+   // instance. Insure not more than one PluginFrame will be
+   // created.
+   //==============================================================
+
+   protected static void setPluginFrameNotVisisble()
+   {
+      pluginFrameVisible = false;
    }
 }
