@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.6 08/05/2010
+// Version 5.7 08/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,6 +145,8 @@
 //                        Event for the Tab is Trying to Change Aspects of the Tabs.
 //         5.6 08/05/2010 Class Method createGUI() Added Instance topMenuMenu to Replace the
 //                        defaultMenuBar for Plugin Management.
+//         5.7 08/05/2010 Removed defaultMenuBar and Replaced All Aspects of Its Use to the
+//                        Promoted Class Instance topMenuBar.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -171,7 +173,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.6 08/05/2010
+ * @version 5.7 08/05/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -182,8 +184,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private String[] myJSQLView_Version;
    private String webSiteString;
    private static ImageIcon databaseTablesIcon;
-   private Default_JMenuBar defaultMenuBar;
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
+   private MyJSQLView_Top_JMenuBar topMenuBar;
    private static JPanel toolBarPanel;
    private CardLayout toolBarCardLayout;
    
@@ -220,7 +222,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       JPanel mainPanel;
       String fileSeparator, iconsDirectory;
       ImageIcon mainTabIcon;
-      MyJSQLView_Top_JMenuBar topMenuBar;
       Default_JToolBar defaultToolBar;
       MyJSQLView_JToolBar myJSQLViewToolBar;
       
@@ -236,7 +237,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       
       // Setup the menu bar for the frame.
       
-      defaultMenuBar = new Default_JMenuBar(this);
       topMenuBar = new MyJSQLView_Top_JMenuBar(this);
       setJMenuBar(topMenuBar);
       
@@ -378,7 +378,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          
          // Top Panel
          if (selectedIndex == 0)
-            setJMenuBar(defaultMenuBar);
+            setJMenuBar(topMenuBar);
          // DBTables Panel
          else if (selectedIndex == 1)
             setJMenuBar(myJSQLViewMenuBar);
