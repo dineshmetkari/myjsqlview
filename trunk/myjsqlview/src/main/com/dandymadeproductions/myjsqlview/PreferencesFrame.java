@@ -2,13 +2,13 @@
 //                 MyJSQLView Preferences Frame.
 //=================================================================
 //   This class provides the mechanism in the MyJSQLView application
-// to create a pereferences frame for setting properties.
+// to create a preferences frame for setting properties.
 //
 //             << PreferencesFrame.java >>
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.5 06/15/2010
+// Version 7.6 08/04/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,7 +152,8 @@
 //         7.4 Parameterized cardsIterator in Class Method actionPerformed().
 //         7.5 Addition of the PDFExportPreferencesPanel to Control PDF Export Options.
 //             New Class Instance pdfExportPanel, Changes in Constructor, actionPerformed(),
-//             & createTreeNodes(DefaultMutableTreeNode()
+//             & createTreeNodes(DefaultMutableTreeNode().
+//         7.6 Spelling Corrections and Cleanup.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -179,7 +180,7 @@ import javax.swing.tree.TreeSelectionModel;
 
 /**
  *    The PreferencesFrame class provides the mechanism in the MyJSQLView
- * application to create a pereferences frame for setting properties.
+ * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
  * @version 7.5 06/15/2010
@@ -907,9 +908,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       tableFieldPanel.add(tableFieldsPanel, BorderLayout.CENTER);
    }
 
-   // =============================================================
+   //=============================================================
    // Class Method for setting up the Table Rows Options Panel.
-   // =============================================================
+   //=============================================================
 
    private void createTableRowsOptionPanel(JPanel tableRowPanel)
    {
