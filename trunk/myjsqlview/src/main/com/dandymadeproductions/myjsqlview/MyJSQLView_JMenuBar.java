@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 7.0 06/16/2010
+// Version 7.1 08/05/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,6 +116,7 @@
 //         6.9 Changed Data | Export | CSV/PDF/SQL Format to Just CSV/PDF/SQL.
 //         7.0 Corrected the resourceBundle.getResource() Text For MyJSQLView_JMenBar.
 //             to MyJSQLView_JMenuBar.
+//         7.1 Constructor Resource Correction for flushButton.setToolTipText.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -143,7 +144,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.0 06/16/2010
+ * @version 7.1 08/05/2010
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -204,7 +205,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
          flushButton.setFocusPainted(false);
          flushButton.setBorder(BorderFactory.createLoweredBevelBorder());
          flushButton.setActionCommand(ACTION_FLUSH);
-         resource = resourceBundle.getResource("MyJSQLView_JMenBar.tooltip.FlushPrivileges");
+         resource = resourceBundle.getResource("MyJSQLView_JMenuBar.tooltip.FlushPrivileges");
          if (resource.equals(""))
             flushButton.setToolTipText("Flush Privileges");
          else
