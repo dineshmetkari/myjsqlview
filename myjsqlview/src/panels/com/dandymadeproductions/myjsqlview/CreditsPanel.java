@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 05/18/2010
+// Version 3.2 08/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,7 @@
 //         2.9 Class Instance runThread Changed to volatile.
 //         3.0 Changed Package to Reflect Dandy Made Productions Code.
 //         3.1 Organized Imports.
+//         3.2 SQLite Database Background Image Addition.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -86,7 +87,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.1 05/18/2010
+ * @version 3.2 08/06/2010
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -134,6 +135,8 @@ class CreditsPanel extends JPanel implements Runnable
          backgroundImage = (new ImageIcon("images" + fileSeparator + "spiral.jpg")).getImage();
       else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
          backgroundImage = (new ImageIcon("images" + fileSeparator + "letterO.jpg")).getImage();
+      else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+         backgroundImage = (new ImageIcon("images" + fileSeparator + "feather.jpg")).getImage();
       else
          backgroundImage = (new ImageIcon("images" + fileSeparator + "battleship.jpg")).getImage();
 
