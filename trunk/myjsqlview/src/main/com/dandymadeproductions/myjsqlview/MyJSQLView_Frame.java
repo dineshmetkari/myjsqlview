@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.7 08/05/2010
+// Version 5.8 08/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -147,6 +147,9 @@
 //                        defaultMenuBar for Plugin Management.
 //         5.7 08/05/2010 Removed defaultMenuBar and Replaced All Aspects of Its Use to the
 //                        Promoted Class Instance topMenuBar.
+//         5.8 08/06/2010 Added Class Methods removeTab(), and getPlugins(). Changes to
+//                        toolBarPanel of Assigning the Cards to the Plugin Name Instead of
+//                        the Tab Index.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -173,7 +176,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.7 08/05/2010
+ * @version 5.8 08/06/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -350,13 +353,16 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    public void stateChanged(ChangeEvent evt)
    {
       // Method Instances.
+      Object changeSource;
       int selectedIndex;
       
-      Object changeSource = evt.getSource();
+      // Collect source of event and take appropriate action.
+      
+      changeSource = evt.getSource();
       
       if (changeSource != null && (JTabbedPane) changeSource == mainTabsPane)
       {
-         // Collect some parameters to be used.
+         // Obtain some parameters to be used.
          
          selectedIndex = ((JTabbedPane) changeSource).getSelectedIndex();
          
@@ -390,8 +396,12 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          }
          
          // Set the ToolBar required by the tab.
-         
-         toolBarCardLayout.show(toolBarPanel, Integer.toString(selectedIndex));
+         if (selectedIndex == 0)
+            toolBarCardLayout.show(toolBarPanel, "0");
+         else if (selectedIndex == 1)
+            toolBarCardLayout.show(toolBarPanel, "1");
+         else
+            toolBarCardLayout.show(toolBarPanel, (loadedPluginModules.get(selectedIndex - 2)).name);
       }
    }
    
@@ -407,10 +417,34 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          
          loadedPluginModules.add(plugin);
          mainTabsPane.addTab(null, plugin.tabIcon, plugin.panel, plugin.name);
-         toolBarPanel.add((Integer.toString(mainTabsPane.getTabCount() - 1)), plugin.toolBar);
+         
+         if (plugin.name.equals(""))
+            plugin.name = Integer.toString(loadedPluginModules.size() + 1);
+         
+         toolBarPanel.add(plugin.name, plugin.toolBar);
          
          mainTabsPane.addChangeListener(parent);
       } 
+   }
+   
+   //==============================================================
+   // Class Method to remove a plugin tab from the frame interface.
+   //==============================================================
+   
+   protected static void removeTab(int index)
+   { 
+      mainTabsPane.removeTabAt(index + 2);
+      toolBarPanel.remove((loadedPluginModules.get(index)).toolBar);
+      loadedPluginModules.remove(index);
+   }
+   
+   //==============================================================
+   // Class Method to return the current loaded plugins.
+   //==============================================================
+   
+   protected static Vector<MyJSQLView_PluginModule> getPlugins()
+   {
+      return loadedPluginModules;
    }
    
    //==============================================================
