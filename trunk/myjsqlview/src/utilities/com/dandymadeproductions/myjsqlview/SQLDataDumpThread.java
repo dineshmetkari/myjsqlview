@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.83 07/27/2010
+// Version 6.84 08/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -254,6 +254,7 @@
 //             & explicitStatementData().
 //        6.83 Correction in run() to Properly Catch the Condition for REPLACE Explicit
 //             SQL Output.
+//        6.84 Removed System.out.println() in explicitStatementData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -286,7 +287,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.83 07/27/2010
+ * @version 6.84 08/07/2010
  */
 
 class SQLDataDumpThread implements Runnable
@@ -983,7 +984,6 @@ class SQLDataDumpThread implements Runnable
 
       // Setting up the initial dump data string with insert/replace/update,
       // type, and table.
-      System.out.println("explicit");
       dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
       dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
 
