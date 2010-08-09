@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.3 07/13/2010
+// Version 3.4 08/08/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,8 @@
 //         3.3 Constructor Assignment of Boolean Object to defaultTableData via
 //             Boolean.valueOf() Instead of Creating a New Boolean Object. Likewise for
 //             resultTable in actionPerformed() & mounseClicked().
+//         3.4 Updated Comments and Organized the Setting Up the resultTable in the
+//             Constructor.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,7 +118,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.3 07/13/2010
+ * @version 3.4 08/08/2010
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -262,6 +264,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       centerPanel = new JPanel(new GridLayout(1, 1, 0, 0));
       centerPanel.setBorder(BorderFactory.createEtchedBorder());
 
+      // Setup Headings.
       tableHeadings = new Vector<String>();
       
       resourceInclude = resourceBundle.getResource("SearchFrame.label.Include");
@@ -282,7 +285,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       else
          tableHeadings.addElement(resource);
 
-      // Fill the result table with default data.
+      // Fill the result table structure with default data.
+      
       defaultTableData = new Object[DBTablesPanel.getTableCount()][3];
 
       Iterator<String> tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
@@ -294,6 +298,9 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
          defaultTableData[i][1] = "   " + tableNamesIterator.next();
          defaultTableData[i++][2] = Integer.valueOf(0);
       }
+      
+      // Setup the table.
+      
       tableModel = new MyJSQLView_TableModel(tableHeadings, defaultTableData);
 
       resultTable = new JTable(tableModel);
@@ -305,15 +312,15 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       
       column = resultTable.getColumnModel().getColumn(0);
       column.setPreferredWidth(resourceInclude.length());
+      resultTable.getColumnModel().getColumn(1).setCellRenderer(new SearchResultTableCellRenderer());
+      resultTable.getColumnModel().getColumn(2).setCellRenderer(new SearchResultTableCellRenderer());
       
       resultTable.addMouseListener(this);
 
       // Create a scrollpane for the search count result table.
+      
       tableScrollPane = new JScrollPane(resultTable);
-      resultTable.getColumnModel().getColumn(1).setCellRenderer(new SearchResultTableCellRenderer());
-      resultTable.getColumnModel().getColumn(2).setCellRenderer(new SearchResultTableCellRenderer());
       centerPanel.add(tableScrollPane);
-
       mainPanel.add(centerPanel, BorderLayout.CENTER);
 
       // ==================================
