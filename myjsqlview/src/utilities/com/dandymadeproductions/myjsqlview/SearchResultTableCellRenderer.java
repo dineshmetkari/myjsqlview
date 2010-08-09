@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 07/09/2010
+// Version 1.4 08/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 //         1.1 Header Format Changes/Update.
 //         1.2 Changed Package to Reflect Dandy Made Productions Code.
 //         1.3 Updated So Column 1 Gets the HTML Code Link.
+//         1.4 Formatted to Conform With Rest of Project & Organized Imports.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -40,9 +41,9 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import javax.swing.JTable;
+import java.awt.Component;
 import javax.swing.JLabel;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
@@ -50,7 +51,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * table cell renderer component used in the SearchFrame JTable.
  * 
  * @author Dana M. Proctor
- * @version 1.3 07/09/2010
+ * @version 1.4 08/09/2010
  */
 
 class SearchResultTableCellRenderer extends DefaultTableCellRenderer
@@ -58,19 +59,18 @@ class SearchResultTableCellRenderer extends DefaultTableCellRenderer
    // Class Instances
    private static final long serialVersionUID = 4561743986207432382L;
 
-   //===================================
+   //==============================================================
    // ResultTableCellRender Constructor
-   //===================================
+   //==============================================================
 
    protected SearchResultTableCellRenderer()
    {
       super();
    }
 
-   // ===================================
-   // Class Method to set the columns
-   // default rendering scheme.
-   // ===================================
+   //==============================================================
+   // Class Method to set the columns default rendering scheme.
+   //==============================================================
 
    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
                                                   boolean hasFocus, int row, int column)
