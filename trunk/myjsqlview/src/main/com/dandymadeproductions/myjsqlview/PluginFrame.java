@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.0 08/04/2010
+// Version 1.1 08/09/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial MyJSQLView PluginFrame Class.
+//         1.1 Basic GUI Completion, Functionality Still Needed.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,15 +45,20 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Vector;
-
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 
 /**
  *    The PluginFrame class provides a frame that is used to view, remove,
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.0 08/04/2010
+ * @version 1.1 08/09/2010
  */
 
 //=================================================================
@@ -61,17 +67,16 @@ import javax.swing.*;
 
 class PluginFrame extends JFrame implements ActionListener
 {
-   //=============================================
    // Creation of the necessary class instance
-   // variables for the JFrame.
-   //=============================================
    
    private static final long serialVersionUID = 6203223580678904034L;
 
-   private JPanel mainPanel, pluginViewPanel;
+   private JPanel mainPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
-   private JButton[] removeButtons;
+   private ImageIcon defaultModuleIcon, removeIcon;
    private JButton installButton, closeButton;
+   
+   private Object[][] pluginViewTableData;
 
    //==============================================================
    // PluginFrame Constructor
@@ -81,7 +86,6 @@ class PluginFrame extends JFrame implements ActionListener
    {
       // Constructor Instances.
       JPanel northInstallPanel, southButtonPanel;
-      
       Vector<MyJSQLView_PluginModule> loadedPlugins;
       String resource;
 
@@ -98,6 +102,7 @@ class PluginFrame extends JFrame implements ActionListener
          setTitle(resource);
       
       mainPanel = new JPanel(new BorderLayout());
+      mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
       // ======================================================
       // New Plugin install option components.
@@ -149,7 +154,7 @@ class PluginFrame extends JFrame implements ActionListener
 
    private transient WindowListener pluginFrameListener = new WindowAdapter()
    {
-      // Stop PreferencesPanel thread and dispose.
+      // Standard frame close event, make sure calling frame knows.
       public void windowClosing(WindowEvent e)
       {
          MyJSQLView_JMenuBarActions.setPluginFrameNotVisisble();
@@ -176,7 +181,6 @@ class PluginFrame extends JFrame implements ActionListener
    {
       // Method Instances
       Object frameSource = evt.getSource();
-      int removeIndex;
 
       // Overall action buttons.
       if (frameSource instanceof JButton)
@@ -186,91 +190,114 @@ class PluginFrame extends JFrame implements ActionListener
          {
             System.out.println("Installing New Plugin");
          }
-         // Close buttton action.
-         else if (frameSource == closeButton)
+         // Must be action of Close buttton.
+         else
          {
             MyJSQLView_JMenuBarActions.setPluginFrameNotVisisble();
             this.dispose();
-         }
-         // Must be action to remove a plugin.
-         else
-         {
-            removeIndex = Integer.parseInt(((JButton) frameSource).getActionCommand()); 
-            MyJSQLView_Frame.removeTab(removeIndex);
          }
       }
       else
          return;
    }
-   
+      
    //==============================================================
    // Class Method for setting up the view of the current installed
    // plugins that includes the tabIcon, name, version, and a 
-   // remove button.
+   // remove icon.
    //==============================================================
 
    private void createInstalledPluginsViewPanel(Vector<MyJSQLView_PluginModule> loadedPlugins)
    {
       // Class Method Instances
-      GridBagLayout gridbag;
-      GridBagConstraints constraints;
-      JButton tabIconButton;
-      JLabel pluginName, pluginVersion;
+      JPanel pluginViewPanel;
+      Vector<String> tableColumns;
+      MyJSQLView_TableModel tableModel;
+      JTable pluginViewTable;
+      Font systemBoldFont;
+      JScrollPane tableScrollPane;
       
-      gridbag = new GridBagLayout();
-      constraints = new GridBagConstraints();
-      pluginViewPanel = new JPanel(gridbag);
-      removeButtons = new JButton[loadedPlugins.size()];
+      String resource, resourceTabIcon, resourceRemove;
+      String iconsDirectory;
+
+      // Setup the plugin items to be listed and columns
+      // for the plugin table view.
+
+      tableColumns = new Vector<String>();
       
+      resourceTabIcon = resourceBundle.getResource("PluginFrame.label.TabIcon");
+      if (resourceTabIcon.equals(""))
+         tableColumns.add("Tab Icon");
+      else
+         tableColumns.add(resourceTabIcon);
+      
+      resource = resourceBundle.getResource("PluginFrame.label.Name");
+      if (resource.equals(""))
+         tableColumns.add("Name");
+      else
+         tableColumns.add(resource);
+      
+      resource = resourceBundle.getResource("PluginFrame.label.Version");
+      if (resource.equals(""))
+         tableColumns.add("Version");
+      else
+         tableColumns.add(resource);
+      
+      resourceRemove = resourceBundle.getResource("PluginFrame.label.Remove");
+      if (resource.equals(""))
+         tableColumns.add("Remove");
+      else
+         tableColumns.add(resourceRemove);
+      
+      // Fill the plugin view table with data.
+      
+      pluginViewTableData = new Object[loadedPlugins.size()][4];
+      
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
+      defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+       
       for (int i = 0; i < loadedPlugins.size(); i++)
       {
-         // Plugin Icon
-         tabIconButton = new JButton(loadedPlugins.get(i).getTabIcon());
-         tabIconButton.setFocusable(false);
-         tabIconButton.setMargin(new Insets(0, 0, 0, 0));
+         // Plugin tab icon, name, version and remove element.
          
-         buildConstraints(constraints, 0, i, 1, 1, 100, 100);
-         constraints.fill = GridBagConstraints.NONE;
-         constraints.anchor = GridBagConstraints.CENTER;
-         gridbag.setConstraints(tabIconButton, constraints);
-         pluginViewPanel.add(tabIconButton);
+         if (loadedPlugins.get(i).getTabIcon() == null)
+            pluginViewTableData[i][0] = defaultModuleIcon;
+         else
+            pluginViewTableData[i][0] = loadedPlugins.get(i).getTabIcon();
          
-         // Plugin Name
-         pluginName = new JLabel(loadedPlugins.get(i).getName());
-         
-         buildConstraints(constraints, 1, i, 1, 1, 100, 100);
-         constraints.fill = GridBagConstraints.NONE;
-         constraints.anchor = GridBagConstraints.WEST;
-         gridbag.setConstraints(pluginName, constraints);
-         pluginViewPanel.add(pluginName);
-         
-         // Plugin Version
-         pluginVersion = new JLabel(loadedPlugins.get(i).getVersion());
-         
-         buildConstraints(constraints, 2, i, 1, 1, 100, 100);
-         constraints.fill = GridBagConstraints.NONE;
-         constraints.anchor = GridBagConstraints.WEST;
-         gridbag.setConstraints(pluginVersion, constraints);
-         pluginViewPanel.add(pluginVersion);
-         
-         // Plugin Remove Button
-         removeButtons[i] = new JButton("Remove");
-         removeButtons[i].setActionCommand(Integer.toString(i));
-         removeButtons[i].addActionListener(this);
-         
-         buildConstraints(constraints, 3, i, 1, 1, 100, 100);
-         constraints.fill = GridBagConstraints.NONE;
-         constraints.anchor = GridBagConstraints.WEST;
-         gridbag.setConstraints(removeButtons[i], constraints);
-         pluginViewPanel.add(removeButtons[i]);   
+         pluginViewTableData[i][1] = loadedPlugins.get(i).getName();
+         pluginViewTableData[i][2] = loadedPlugins.get(i).getVersion();
+         pluginViewTableData[i][3] = removeIcon;
       }
+         
+      // Create the plugin table view and scrollpane.
+      
+      tableModel = new MyJSQLView_TableModel(tableColumns, pluginViewTableData);
+      pluginViewTable = new JTable(tableModel);
+      
+      systemBoldFont = new Font(mainPanel.getFont().getName(), Font.BOLD, mainPanel.getFont().getSize());
+      pluginViewTable.getTableHeader().setFont(systemBoldFont);
+      //pluginViewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+      pluginViewTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+      
+      pluginViewTable.getColumnModel().getColumn(0).setPreferredWidth(resourceTabIcon.length() - 10);
+      pluginViewTable.getColumnModel().getColumn(3).setPreferredWidth(resourceTabIcon.length() - 10);
+      
+      //pluginViewTable.addMouseListener(this);
+      
+      tableScrollPane = new JScrollPane(pluginViewTable);
+      
+      pluginViewPanel = new JPanel(new GridLayout(1, 1, 0, 0));
+      pluginViewPanel.setBorder(BorderFactory.createEtchedBorder());
+      pluginViewPanel.add(tableScrollPane);
       mainPanel.add(pluginViewPanel, BorderLayout.CENTER);
    }
-
+   
    //==============================================================
    // Class Method for helping the parameters in gridbag.
    //==============================================================
-
+   /*
    private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw,
                                  int gh, double wx, double wy)
    {
@@ -281,6 +308,7 @@ class PluginFrame extends JFrame implements ActionListener
       gbc.weightx = wx;
       gbc.weighty = wy;
    }
+   */
 
    //==============================================================
    // Class method to center the frame.
