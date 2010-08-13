@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.22 08/05/2010
+// Version 7.23 08/13/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -232,6 +232,7 @@
 //             Method actionSelection().
 //        7.22 Added Action Processing for Tools | Plugin Management for the Top JMenuBar.
 //             Added Class Instance pluginFrameVisible and Method setPluginFrameVisible().
+//        7.23 Changed Class Instance lastSaveDirectory to lastOpenSaveDirectory.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -264,7 +265,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.22 08/05/2010
+ * @version 7.23 08/13/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -274,7 +275,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    private static boolean queryFrameVisible = false;
    private static boolean searchFrameVisible = false;
    private static boolean pluginFrameVisible = false;
-   private static String lastSaveDirectory = "";
+   private static String lastOpenSaveDirectory = "";
    private static String lastImportDirectory = "";
    private static String lastExportDirectory = "";
    private static String fileSeparator;
@@ -620,10 +621,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       String fileName;
 
       // Choosing the directory to import data from.
-      if (lastSaveDirectory.equals(""))
+      if (lastOpenSaveDirectory.equals(""))
          dataFileChooser = new JFileChooser();
       else
-         dataFileChooser = new JFileChooser(new File(lastSaveDirectory));
+         dataFileChooser = new JFileChooser(new File(lastOpenSaveDirectory));
 
       // Add a FileFilter for *.myj and open dialog.
       dataFileChooser.setFileFilter(new MyJFileFilter());
@@ -634,7 +635,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       if (result == JFileChooser.APPROVE_OPTION)
       {
          // Save the selected directory so can be used again.
-         lastSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
+         lastOpenSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
 
          // Collect file name.
          fileName = dataFileChooser.getSelectedFile().getName();
@@ -673,10 +674,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // already been a save of the table or save as action.
 
       // Directory
-      if (lastSaveDirectory.equals(""))
+      if (lastOpenSaveDirectory.equals(""))
          dataFileChooser = new JFileChooser();
       else
-         dataFileChooser = new JFileChooser(new File(lastSaveDirectory));
+         dataFileChooser = new JFileChooser(new File(lastOpenSaveDirectory));
 
       // Create the File Name from the selected database table
       // panel's state to be exported.
@@ -714,7 +715,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       if (resultsOfFileChooser == JFileChooser.APPROVE_OPTION)
       {
          // Save the selected directory and file name so can be used again.
-         lastSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
+         lastOpenSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
          selectedTableTabPanel.setSaveFileName(dataFileChooser.getSelectedFile().getName());
 
          // Get the file name.
