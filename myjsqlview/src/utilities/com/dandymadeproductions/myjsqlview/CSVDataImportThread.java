@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 5.1 07/27/2010
+// Version 5.2 08/11/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,8 @@
 //             MyJSQLView_Utils Method getSchemaTableName().
 //         5.1 Updated Method importCSVFile() Removed BEGIN Statement SQL Query
 //             Execution for SQLite Database.
+//         5.2 Class Method importCSVFile() Instance schemaTableName Code for Deriving
+//             Removed Since Collected From MyJSQLView_Utils, 5.0.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -139,7 +141,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.1 07/27/2010
+ * @version 5.2 08/11/2010
  */
 
 class CSVDataImportThread implements Runnable
@@ -252,15 +254,6 @@ class CSVDataImportThread implements Runnable
       identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
       
-      if (importTable.indexOf(".") != -1)
-      {
-         schemaTableName = identifierQuoteString + importTable.substring(0, importTable.indexOf("."))
-                           + identifierQuoteString + "." + identifierQuoteString
-                           + importTable.substring(importTable.indexOf(".") + 1) + identifierQuoteString;
-      }
-      else
-         schemaTableName = identifierQuoteString + importTable + identifierQuoteString;
-
       primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
       tableFields = new Vector <String>();
       fields = new Vector <String>();
