@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.23 08/13/2010
+// Version 7.24 08/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,8 @@
 //        7.22 Added Action Processing for Tools | Plugin Management for the Top JMenuBar.
 //             Added Class Instance pluginFrameVisible and Method setPluginFrameVisible().
 //        7.23 Changed Class Instance lastSaveDirectory to lastOpenSaveDirectory.
+//        7.24 Constructor Changed parent From JFRame to MyJSQLView_Frame Type. Passed
+//             parent to PluginFrame Constructor Instantiation. 
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -265,7 +267,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.23 08/13/2010
+ * @version 7.24 08/15/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -289,7 +291,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    // selected and then executing the appropriate response.
    //==============================================================
 
-   protected static void actionsSelection(JFrame parent, ActionEvent evt,
+   protected static void actionsSelection(MyJSQLView_Frame parent, ActionEvent evt,
                                           String webSiteString,
                                           String[] myJSQLView_Version)
    {
@@ -446,7 +448,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       if (actionCommand.equals(ACTION_PLUGIN_MANAGEMENT) && !pluginFrameVisible)
       {
          // Showing the Edit Preferences Frame.
-         PluginFrame managePluginPreferences = new PluginFrame();
+         PluginFrame managePluginPreferences = new PluginFrame(parent);
          managePluginPreferences.setSize(605, 405);
          managePluginPreferences.setResizable(false);
          managePluginPreferences.center();
