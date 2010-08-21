@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.8 06/09/2010
+// Version 1.9 08/19/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,11 @@
 //         1.8 06/09/2010 Offloaded the Adding of a Plugin Module to the MyJSQlView's
 //                        Main Frame to the New PluginThread Class in Method
 //                        loadPluginModule().
+//         1.9 08/18/2010 Modified to Handle Manually Loading Plugins Through Two Argument
+//                        Constructor and Method init(). Additional Methods Also Added to
+//                        Properly Process, loadPluginEntry(), loadConfigurationFilePluginEntries().
+//                        Changed Class Method loadPluginEntries() to loadDefaultPluginEntries().
+//                        
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +63,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.io.File;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -80,7 +85,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.8 06/09/2010
+ * @version 1.9 08/18/2010
  */
 
 class PluginLoader implements Runnable
@@ -90,41 +95,146 @@ class PluginLoader implements Runnable
    private MyJSQLView_Frame parentFrame;
    private String fileSeparator;
    private String pluginDirectoryString;
+   private String pluginFileName;
+   private String pluginConfigFileString;
+   private static final String configurationFileName = "myjsqlview_plugin.conf";
    private static final String validPluginModuleName = "PluginModule.class";
    private HashMap<String, String> pluginEntriesHashMap;
 
    //==============================================================
-   // PluginLoader Constructor
+   // PluginLoader Constructor(s)
    //==============================================================
 
    protected PluginLoader(MyJSQLView_Frame parent)
    {
-      // Setup various needing instances.
+      init(parent, "");
+   }
+   
+   protected PluginLoader(MyJSQLView_Frame parent, String pluginFileName)
+   {
+      init(parent, pluginFileName);
+   }
+   
+   //==============================================================
+   // Class method for initialization and starting the class thread.
+   //==============================================================
+   
+   public void init(MyJSQLView_Frame parent, String pluginFileName)
+   {
       parentFrame = parent;
+      this.pluginFileName = pluginFileName;
+      
+      // Setup.
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      pluginDirectoryString = System.getProperty("user.dir") + fileSeparator + "lib" + fileSeparator
-                              + "plugins" + fileSeparator;
-
+      pluginConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
+                               + MyJSQLView_Utils.getFileSeparator() + configurationFileName;
+      
+      if (pluginFileName.equals(""))
+         pluginDirectoryString = System.getProperty("user.dir") + fileSeparator + "lib" + fileSeparator
+                                 + "plugins" + fileSeparator;
+      else
+         pluginDirectoryString = "";
+         
       pluginEntriesHashMap = new HashMap<String, String>();
-
+      
       // Create and start the class thread.
       pluginLoaderThread = new Thread(this, "PluginLoader Thread");
       // System.out.println("PluginLoader Thread");
-
+      
       pluginLoaderThread.start();
    }
 
    //==============================================================
-   // Class method for normal start of the thread
+   // Class method for normal start of the thread.
    //==============================================================
 
    public void run()
    {
-      // Obtain the Plugin Modules.
-      loadPluginEntries();
+      // Obtain the plugin module(s) & install into application.
+      
+      // Plugin Management Tool Load
+      if (!pluginFileName.equals(""))
+         loadPluginEntry(pluginFileName);
+      
+      // Default lib/plugin and configuration load.
+      else
+      {
+         loadDefaultPluginEntries();
+         loadConfigurationFilePluginEntries();
+      }
+      loadPluginModules();
+   }
+   
+   //==============================================================
+   // Class Method for loading a plugin module manually through
+   // the MyJSQLView Plugin Management tool in the top tab.
+   //==============================================================
 
-      if (pluginEntriesHashMap != null && !pluginEntriesHashMap.isEmpty())
-         loadPluginModules();
+   private void loadPluginEntry(String fileName)
+   {
+      // Method Instances
+      String pathKey, className, currentFileName, pluginEntry;
+      ZipFile jarFile;
+      File configurationFile;
+      
+      // Check for a a valid jar file to be processed
+      // then search for a plugin module.
+      
+      if (!fileName.toLowerCase().endsWith(".jar"))
+         return;
+      
+      try
+      {
+         jarFile = new ZipFile(fileName);
+         pathKey = "";
+         className = "";
+         
+         for (Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
+         {
+            currentFileName = ((ZipEntry) entries.nextElement()).getName();
+
+            // Plugin Qualifier
+            if (currentFileName.endsWith(".class") && currentFileName.indexOf("$") == -1
+                && currentFileName.indexOf(validPluginModuleName) != -1)
+            {
+               pathKey = fileName;
+               currentFileName = currentFileName.replaceAll("/", ".");
+               currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
+               className = currentFileName;
+               
+               pluginEntriesHashMap.put(pathKey, className);
+            }
+         }
+         jarFile.close();
+         
+         // Update the configuration file indicating valid
+         // plugin modules that have been loaded manually.
+         
+         if (!pathKey.equals("") && !className.equals(""))
+         {
+            pluginEntry = pathKey + " " + className + "\n";
+            
+            // Write new or appending. 
+            configurationFile = new File(pluginConfigFileString);
+               
+            if (!configurationFile.exists())
+               WriteDataFile.mainWriteDataString(pluginConfigFileString, pluginEntry.getBytes(), false);
+            else
+            {
+               FileWriter fileWriter = new FileWriter(pluginConfigFileString, true);
+               char[] buffer = new char[pluginEntry.length()];
+               pluginEntry.getChars(0, pluginEntry.length(), buffer, 0);
+               fileWriter.write(buffer);
+               fileWriter.close();
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         String errorString = "PluginLoader loadPluginEntry() Exception: " + fileName + "\n"
+                              + e.toString();
+         displayErrors(errorString);
+      }
    }
 
    //==============================================================
@@ -133,7 +243,7 @@ class PluginLoader implements Runnable
    // loaded.
    //==============================================================
 
-   private void loadPluginEntries()
+   private void loadDefaultPluginEntries()
    {
       // Method Instances
       File filePluginsDirectory;
@@ -166,22 +276,78 @@ class PluginLoader implements Runnable
                    && currentFileName.indexOf(validPluginModuleName) != -1)
                {
                   pathKey = pluginDirectoryString + jarFileNames[i];
+                  
                   currentFileName = currentFileName.replaceAll("/", ".");
-                  currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
+                  currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));;
 
                   pluginEntriesHashMap.put(pathKey, currentFileName);
-                  // System.out.println("Located:" + pathKey + " " +
-                  // currentFileName);
+                  // System.out.println("Located:" + pathKey + " " + currentFileName);
                }
             }
             jarFile.close();
          }
          catch (Exception e)
          {
-            String errorString = "PluginLoader loadPluginModule() Exception: " + jarFileNames[i] + "\n"
+            String errorString = "PluginLoader loadPluginEntries() Exception: " + jarFileNames[i] + "\n"
                                  + e.toString();
             displayErrors(errorString);
          }
+      }
+   }
+   
+   //==============================================================
+   // Class Method for reviewing the entries in the configuration
+   // file myjsqlview_plugin.conf file to be loaded as plugins.
+   //==============================================================
+
+   private void loadConfigurationFilePluginEntries()
+   {
+      // Method Instances
+      String currentLine, pathKey, className;
+      File configurationFile;
+      FileReader fileReader;
+      BufferedReader bufferedReader;
+      
+      try
+      {
+         // Check to see if file exists.
+         configurationFile = new File(pluginConfigFileString);
+         try
+         { 
+            if (!configurationFile.exists())
+               return;
+         }
+         catch (SecurityException e)
+         {
+            displayErrors("Security Exception. " + e);
+            return;
+         }
+         
+         // Looks like there is a plugin configuration file
+         // so collect the entries.
+         
+         fileReader = new FileReader(pluginConfigFileString);
+         bufferedReader = new BufferedReader(fileReader);
+            
+         while ((currentLine = bufferedReader.readLine()) != null)
+         {
+            currentLine = currentLine.trim();
+            
+            if (currentLine.indexOf(" ") != -1)
+            {
+               pathKey = currentLine.substring(0, currentLine.indexOf(" "));
+               className = currentLine.substring(currentLine.indexOf(" ") + 1);
+               pluginEntriesHashMap.put(pathKey, className);
+            }
+            else
+               continue;
+         }
+         bufferedReader.close();
+         fileReader.close();
+      }
+      catch (IOException ioe) 
+      {
+         displayErrors("File I/O Problem. " + ioe);
       }
    }
 
@@ -201,7 +367,7 @@ class PluginLoader implements Runnable
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
       defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
 
-      // Iterator through the found plugins and load.
+      // Iterator through the found plugins and load them.
 
       Set<Map.Entry<String, String>> keySet = pluginEntriesHashMap.entrySet();
       Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
@@ -238,6 +404,7 @@ class PluginLoader implements Runnable
             {
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+               pluginModule.setPath_FileName(pluginEntry.getKey() + " " + pluginEntry.getValue());
 
                new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
