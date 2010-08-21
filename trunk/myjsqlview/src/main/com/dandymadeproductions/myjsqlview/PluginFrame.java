@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.1 08/09/2010
+// Version 1.2 08/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,10 @@
 //=================================================================
 // Version 1.0 Initial MyJSQLView PluginFrame Class.
 //         1.1 Basic GUI Completion, Functionality Still Needed.
+//         1.2 Completed Functionality of Removing/Installing Plugins via
+//             MyJSQLView_Frame and Configuration File. Added Mouse and Action
+//             Event Processing and Methods removePluginConfigurationsModule(),
+//             & installPlugin(). 
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -41,16 +45,25 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.table.TableColumn;
 import javax.swing.JTable;
 
 /**
@@ -58,40 +71,61 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.1 08/09/2010
+ * @version 1.2 08/20/2010
  */
 
 //=================================================================
 //                   MyJSQLView PluginFrame
 //=================================================================
 
-class PluginFrame extends JFrame implements ActionListener
+class PluginFrame extends JFrame implements ActionListener, MouseListener
 {
    // Creation of the necessary class instance
    
    private static final long serialVersionUID = 6203223580678904034L;
 
+   private MyJSQLView_Frame parentFrame;
    private JPanel mainPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
    private ImageIcon defaultModuleIcon, removeIcon;
    private JButton installButton, closeButton;
    
    private Object[][] pluginViewTableData;
-
+   private MyJSQLView_TableModel tableModel;
+   private JTable pluginViewTable;
+   private String fileSeparator, lastPluginDirectory;
+   private String resourceAlert;
+   
+   private static final int TABICON_COLUMN = 0;
+   private static final int NAME_COLUMN = 1;
+   private static final int VERSION_COLUMN = 2;
+   private static final int REMOVE_COLUMN = 3;
+   
    //==============================================================
    // PluginFrame Constructor
    //==============================================================
 
-   protected PluginFrame()
+   protected PluginFrame(MyJSQLView_Frame parent)
    {
+      parentFrame = parent;
+      
       // Constructor Instances.
       JPanel northInstallPanel, southButtonPanel;
-      Vector<MyJSQLView_PluginModule> loadedPlugins;
-      String resource;
+      String iconsDirectory, resource;
 
-      // Setting up resources.
+      // Setting up resources & instances.
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
+      defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      lastPluginDirectory = "";
+      
+      resourceAlert = resourceBundle.getResource("PluginFrame.dialogtitle.Alert");
+      if (resourceAlert.equals(""))
+         resourceAlert = "Alert";
       
       // Setting the frame's title layout and main panel.
       
@@ -107,8 +141,20 @@ class PluginFrame extends JFrame implements ActionListener
       // ======================================================
       // New Plugin install option components.
       
-      northInstallPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-      northInstallPanel.setBorder(BorderFactory.createEtchedBorder());
+      northInstallPanel = new JPanel()
+      {
+         private static final long serialVersionUID = -2724112697915703694L;
+         private String imageFileName = "images" + fileSeparator + "pluginframe.jpg";
+         private Image backgroundImage = new ImageIcon(imageFileName).getImage();
+         
+         public void paintComponent(Graphics g)
+         {
+            super.paintComponent(g);
+            g.drawImage(backgroundImage, 0, 0, this);
+         }
+      };
+      northInstallPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+      northInstallPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
       resource = resourceBundle.getResource("PluginFrame.button.Install");
       if (resource.equals(""))
@@ -124,8 +170,7 @@ class PluginFrame extends JFrame implements ActionListener
       // ======================================================
       // Installed plugin view and removal objects.
       
-      loadedPlugins = MyJSQLView_Frame.getPlugins();
-      createInstalledPluginsViewPanel(loadedPlugins);
+      createInstalledPluginsViewPanel(MyJSQLView_Frame.getPlugins());
       
       // ======================================================
       // Button to close down the frame.
@@ -145,6 +190,7 @@ class PluginFrame extends JFrame implements ActionListener
       mainPanel.add(southButtonPanel, BorderLayout.SOUTH);
 
       getContentPane().add(mainPanel);
+      northInstallPanel.validate();
       this.addWindowListener(pluginFrameListener);
    }
 
@@ -159,16 +205,6 @@ class PluginFrame extends JFrame implements ActionListener
       {
          MyJSQLView_JMenuBarActions.setPluginFrameNotVisisble();
          dispose();
-      }
-
-      public void windowDeiconified(WindowEvent e)
-      {
-         
-      }
-
-      public void windowIconified(WindowEvent e)
-      {
-         
       }
    };
 
@@ -188,7 +224,14 @@ class PluginFrame extends JFrame implements ActionListener
          // Install button action.
          if (frameSource == installButton)
          {
-            System.out.println("Installing New Plugin");
+            installPlugin(this);
+         }
+         // MyJSQLView_Frame Tab Addition Notification.
+         else if (frameSource == MyJSQLView_Frame.pluginFrameListenButton)
+         {
+            MyJSQLView_Frame.pluginFrameListenButton.removeActionListener(this);
+            loadPluginsData(MyJSQLView_Frame.getPlugins());
+            tableModel.setValues(pluginViewTableData);
          }
          // Must be action of Close buttton.
          else
@@ -199,6 +242,62 @@ class PluginFrame extends JFrame implements ActionListener
       }
       else
          return;
+   }
+   
+   //==============================================================
+   // MouseEvent Listener methods for detecting mouse events.
+   // MounseListner Interface requirements.
+   //==============================================================
+
+   public void mouseEntered(MouseEvent evt)
+   {
+      // Do Nothing.
+   }
+   
+   public void mouseExited(MouseEvent evt)
+   {
+      // Do Nothing.
+   }
+   
+   public void mousePressed(MouseEvent evt)
+   {
+      // Do Nothing.
+   }
+
+   public void mouseReleased(MouseEvent evt)
+   {
+      // Do Nothing.
+   }
+
+   //==============================================================
+   // MouseEvent Listener method for detecting mouse clicked events.
+   // Collects the row & column selected and then used to remove
+   // the selected Plugin Module.
+   //==============================================================   
+
+   public void mouseClicked(MouseEvent e)
+   {  
+      Point coordinatePoint;
+      int tableRow, tableColumn;
+
+      // Collect coordinate to determine cell selected.
+      coordinatePoint = e.getPoint();
+      tableRow = pluginViewTable.rowAtPoint(coordinatePoint);
+      tableColumn = pluginViewTable.columnAtPoint(coordinatePoint);
+
+      if (tableRow >= pluginViewTable.getRowCount() || tableRow < 0)
+         return;
+      else
+      {
+         // Remove Plugin Action
+         if (tableColumn == REMOVE_COLUMN)
+         {
+            removePluginConfigurationModule(tableRow);
+            MyJSQLView_Frame.removeTab(tableRow);
+            loadPluginsData(MyJSQLView_Frame.getPlugins());
+            tableModel.setValues(pluginViewTableData);
+         }
+      }
    }
       
    //==============================================================
@@ -212,13 +311,10 @@ class PluginFrame extends JFrame implements ActionListener
       // Class Method Instances
       JPanel pluginViewPanel;
       Vector<String> tableColumns;
-      MyJSQLView_TableModel tableModel;
-      JTable pluginViewTable;
       Font systemBoldFont;
+      TableColumn tableColumn;
       JScrollPane tableScrollPane;
-      
       String resource, resourceTabIcon, resourceRemove;
-      String iconsDirectory;
 
       // Setup the plugin items to be listed and columns
       // for the plugin table view.
@@ -249,28 +345,10 @@ class PluginFrame extends JFrame implements ActionListener
       else
          tableColumns.add(resourceRemove);
       
-      // Fill the plugin view table with data.
+      // Collect the plugin data.
       
-      pluginViewTableData = new Object[loadedPlugins.size()][4];
-      
-      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
-      defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
-       
-      for (int i = 0; i < loadedPlugins.size(); i++)
-      {
-         // Plugin tab icon, name, version and remove element.
-         
-         if (loadedPlugins.get(i).getTabIcon() == null)
-            pluginViewTableData[i][0] = defaultModuleIcon;
-         else
-            pluginViewTableData[i][0] = loadedPlugins.get(i).getTabIcon();
-         
-         pluginViewTableData[i][1] = loadedPlugins.get(i).getName();
-         pluginViewTableData[i][2] = loadedPlugins.get(i).getVersion();
-         pluginViewTableData[i][3] = removeIcon;
-      }
-         
+      loadPluginsData(loadedPlugins);
+          
       // Create the plugin table view and scrollpane.
       
       tableModel = new MyJSQLView_TableModel(tableColumns, pluginViewTableData);
@@ -278,37 +356,180 @@ class PluginFrame extends JFrame implements ActionListener
       
       systemBoldFont = new Font(mainPanel.getFont().getName(), Font.BOLD, mainPanel.getFont().getSize());
       pluginViewTable.getTableHeader().setFont(systemBoldFont);
-      //pluginViewTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
       pluginViewTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
-      
-      pluginViewTable.getColumnModel().getColumn(0).setPreferredWidth(resourceTabIcon.length() - 10);
-      pluginViewTable.getColumnModel().getColumn(3).setPreferredWidth(resourceTabIcon.length() - 10);
-      
-      //pluginViewTable.addMouseListener(this);
+      tableColumn = pluginViewTable.getColumnModel().getColumn(TABICON_COLUMN);
+      tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
+      tableColumn = pluginViewTable.getColumnModel().getColumn(REMOVE_COLUMN);
+      tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
+      pluginViewTable.addMouseListener(this);
       
       tableScrollPane = new JScrollPane(pluginViewTable);
       
       pluginViewPanel = new JPanel(new GridLayout(1, 1, 0, 0));
-      pluginViewPanel.setBorder(BorderFactory.createEtchedBorder());
+      pluginViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       pluginViewPanel.add(tableScrollPane);
       mainPanel.add(pluginViewPanel, BorderLayout.CENTER);
    }
    
    //==============================================================
-   // Class Method for helping the parameters in gridbag.
+   // Class Method for removing a manually installed plugin from
+   // the myjsqlview_plugin.conf file.
    //==============================================================
-   /*
-   private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw,
-                                 int gh, double wx, double wy)
+
+   private void removePluginConfigurationModule(int index)
    {
-      gbc.gridx = gx;
-      gbc.gridy = gy;
-      gbc.gridwidth = gw;
-      gbc.gridheight = gh;
-      gbc.weightx = wx;
-      gbc.weighty = wy;
+      // Method Instances
+      String pluginConfigurationFileName = "myjsqlview_plugin.conf";
+      String pluginConfigFileString;
+      String currentLine, pluginPathFileName;
+      File configurationFile;
+      FileReader fileReader;
+      BufferedReader bufferedReader;
+      StringBuffer newPluginConfigurationFileContents;
+      String resource;
+      
+      // Create configuration file name for retrieval.
+      pluginConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
+                               + MyJSQLView_Utils.getFileSeparator() + pluginConfigurationFileName;
+      
+      try
+      {
+         // Check to see if file exists.
+         configurationFile = new File(pluginConfigFileString);
+         
+         try
+         { 
+            // Nothing to do, no plugins installed manually.
+            if (!configurationFile.exists())
+               return;
+         }
+         catch (SecurityException e)
+         {
+            resource = resourceBundle.getResource("PluginFrame.dialogmessage.SecurityException");
+            if (resource.equals(""))
+               resource = "Security Exception.";
+            
+            String optionPaneStringErrors = resource + " " + e;
+            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
+                                          resourceAlert, JOptionPane.ERROR_MESSAGE);
+            return;
+         }
+         
+         // Looks like a plugin configuration exists so
+         // remove the selected entry.
+         
+         fileReader = new FileReader(pluginConfigFileString);
+         bufferedReader = new BufferedReader(fileReader);
+         newPluginConfigurationFileContents = new StringBuffer();
+         pluginPathFileName = MyJSQLView_Frame.getPlugins().get(index).getPath_FileName();
+            
+         while ((currentLine = bufferedReader.readLine()) != null)
+         {
+            currentLine = currentLine.trim();
+            if (currentLine.indexOf(pluginPathFileName) == -1)
+               newPluginConfigurationFileContents.append(currentLine + "\n");
+         }
+         bufferedReader.close();
+         fileReader.close();
+         
+         if (newPluginConfigurationFileContents.length() == 0)
+         {
+            boolean result = configurationFile.delete();
+            if (!result)
+               throw(new IOException("Failed to remove plugin configuration file."));
+         }
+         else
+            WriteDataFile.mainWriteDataString(pluginConfigFileString,
+                                              newPluginConfigurationFileContents.toString().getBytes(),
+                                              false);
+      }
+      catch (IOException ioe) 
+      {
+         resource = resourceBundle.getResource("PluginFrame.dialogmessage.FileI/OProblem");
+         if (resource.equals(""))
+            resource = "File I/O Problem.";
+         
+         String optionPaneStringErrors = resource + " " + ioe;
+         JOptionPane.showMessageDialog(null, optionPaneStringErrors,
+                                       resourceAlert, JOptionPane.ERROR_MESSAGE);
+      }  
    }
-   */
+   
+   //==============================================================
+   // Class Method for loading the plugin modules data, tab icon,
+   // name, etc. in the view table.
+   //==============================================================
+
+   private void loadPluginsData(Vector<MyJSQLView_PluginModule> loadedPlugins)
+   {
+      pluginViewTableData = new Object[loadedPlugins.size()][4];
+       
+      for (int i = 0; i < loadedPlugins.size(); i++)
+      {
+         // Plugin tab icon, name, version and remove element.
+         
+         if (loadedPlugins.get(i).getTabIcon() == null)
+            pluginViewTableData[i][TABICON_COLUMN] = defaultModuleIcon;
+         else
+            pluginViewTableData[i][TABICON_COLUMN] = loadedPlugins.get(i).getTabIcon();
+         
+         pluginViewTableData[i][NAME_COLUMN] = loadedPlugins.get(i).getName();
+         pluginViewTableData[i][VERSION_COLUMN] = loadedPlugins.get(i).getVersion();
+         pluginViewTableData[i][REMOVE_COLUMN] = removeIcon;
+      }
+   }
+   
+   //==============================================================
+   // Classs Method to aquire the seleected plugin file or URL to
+   // be installed.
+   //==============================================================
+   
+   private void installPlugin(JFrame parent)
+   {
+      // Method Instances.
+      JFileChooser pluginFileChooser;
+      String fileName;
+
+      // Collect/Set the default directory to be used.
+      if (lastPluginDirectory.equals(""))
+         pluginFileChooser = new JFileChooser();
+      else
+         pluginFileChooser = new JFileChooser(new File(lastPluginDirectory));
+
+      // Add a FileFilter for *.jar and open dialog.
+      pluginFileChooser.setFileFilter(new JarFileFilter());
+      
+      int result = pluginFileChooser.showOpenDialog(parent);
+
+      // Looks like might be good so lets check and read data.
+      if (result == JFileChooser.APPROVE_OPTION)
+      {
+         // Save the selected directory so can be used again.
+         lastPluginDirectory = pluginFileChooser.getCurrentDirectory().toString();
+
+         // Collect file name.
+         fileName = pluginFileChooser.getSelectedFile().getName();
+         fileName = pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
+
+         // Try Loading the module..
+         if (!fileName.equals(""))
+         {
+            MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
+            new PluginLoader(parentFrame, fileName);
+         }
+         else
+         {
+            String optionPaneStringErrors;
+            
+            optionPaneStringErrors = resourceBundle.getResource("PluginFrame.dialogmessage.FileNOTFile");
+            if (optionPaneStringErrors.equals(""))
+               optionPaneStringErrors = "File NOT Found.";
+            
+            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
+                                          resourceAlert, JOptionPane.ERROR_MESSAGE);
+         }
+      }
+   }
 
    //==============================================================
    // Class method to center the frame.
