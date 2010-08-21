@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.8 08/06/2010
+// Version 5.9 08/20/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -150,6 +150,8 @@
 //         5.8 08/06/2010 Added Class Methods removeTab(), and getPlugins(). Changes to
 //                        toolBarPanel of Assigning the Cards to the Plugin Name Instead of
 //                        the Tab Index.
+//         5.9 08/20/2010 Added Class Instance pluginFrameListenButton. Program Clicked When
+//                        a Plugin Module Tab is Added, addTab().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -176,7 +178,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.8 08/06/2010
+ * @version 5.9 08/20/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -198,6 +200,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    
    private static Vector<MyJSQLView_PluginModule> loadedPluginModules = 
                                                   new Vector <MyJSQLView_PluginModule>();
+   protected static final JButton pluginFrameListenButton = new JButton();
    
    //==============================================================
    // MyJSQLView_Frame Constructor
@@ -422,6 +425,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             plugin.name = Integer.toString(loadedPluginModules.size() + 1);
          
          toolBarPanel.add(plugin.name, plugin.toolBar);
+         
+         // Lets the PluginFrame know that a new
+         // plugin module was loaded.
+         pluginFrameListenButton.doClick();
          
          mainTabsPane.addChangeListener(parent);
       } 
