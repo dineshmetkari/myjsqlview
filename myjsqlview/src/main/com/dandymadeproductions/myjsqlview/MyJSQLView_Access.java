@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.72 07/29/2010
+// Version 6.73 08/21/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -236,6 +236,7 @@
 //        6.71 Class Method accessCheck() identifierQuoteString Conditional Check for
 //             NULL and SPACE Returns Empty String.
 //        6.72 Minor Format Change.
+//        6.73 Class Method loadDBParameters() Output if I/O Error & Debug On.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -271,7 +272,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.72 07/29/2010
+ * @version 6.73 08/21/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -1430,7 +1431,8 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       }
       catch (IOException ioe) 
       {
-         //System.out.println("File I/O Problem. " + ioe);
+         if (MyJSQLView.getDebug())
+            System.out.println("File I/O Problem. " + ioe);
       }
    }
    
