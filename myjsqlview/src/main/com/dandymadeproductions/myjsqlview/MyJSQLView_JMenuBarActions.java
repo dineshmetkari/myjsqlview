@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.24 08/15/2010
+// Version 7.25 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -234,7 +234,8 @@
 //             Added Class Instance pluginFrameVisible and Method setPluginFrameVisible().
 //        7.23 Changed Class Instance lastSaveDirectory to lastOpenSaveDirectory.
 //        7.24 Constructor Changed parent From JFRame to MyJSQLView_Frame Type. Passed
-//             parent to PluginFrame Constructor Instantiation. 
+//             parent to PluginFrame Constructor Instantiation.
+//        7.25 Updated to Reflect Internationalization Support in Action Methods.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -267,7 +268,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.24 08/15/2010
+ * @version 7.25 08/26/2010
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -650,9 +651,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          }
          else
          {
-            String optionPaneStringErrors = "File NOT Found";
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
-                                          "Alert", JOptionPane.ERROR_MESSAGE);
+            createFileNotFoundDialog();
          }
       }
    }
@@ -732,9 +731,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          }
          else
          {
-            String optionPaneStringErrors = "File NOT Found";
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
-                                          "Alert", JOptionPane.ERROR_MESSAGE);
+            createFileNotFoundDialog();
          }
       }
    }
@@ -746,10 +743,16 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
    private static void printAction()
    {
+      // Method Instances
+      Paper customPaper;
+      double margin;
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resourceTitle;
+      
       // Setting up the printing.
-
-      Paper customPaper = new Paper();
-      double margin = 36;
+      
+      customPaper = new Paper();
+      margin = 36;
       customPaper.setImageableArea(margin, margin,
                                    customPaper.getWidth() - margin * 2,
                                    customPaper.getHeight() - margin * 2);
@@ -768,8 +771,13 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          }
          catch (PrinterException e)
          {
-            JOptionPane.showMessageDialog(null, "Printer Exception", e.getMessage(),
-               JOptionPane.ERROR_MESSAGE);
+            resourceBundle = MyJSQLView.getLocaleResourceBundle();
+            resourceTitle = resourceBundle.getResource(
+                                         "MyJSQLView_JMenuBarActions.dialogtitle.PrinterException");
+            if (resourceTitle.equals(""))
+               resourceTitle = "Printer Exception";
+            
+            JOptionPane.showMessageDialog(null, e.getMessage(), resourceTitle, JOptionPane.ERROR_MESSAGE);
          }
       }
    }
@@ -783,7 +791,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    {
       // Method Instances.
       JFileChooser dataFileChooser;
-      String fileName;
+      MyJSQLView_ResourceBundle resourceBundle;
+      String fileName, resource;
+      String resourceOK, resourceCancel;
 
       // Choosing the directory/file to import data from.
       if (lastImportDirectory.equals(""))
@@ -791,6 +801,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       else
          dataFileChooser = new JFileChooser(new File(lastImportDirectory));
 
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
       int result = dataFileChooser.showOpenDialog(parent);
 
       // Looks like might be good so lets check and write data.
@@ -809,24 +820,51 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // Data Import SQL Table(s)
             if (actionCommand.equals(ACTION_IMPORT_SQL_DUMP))
             {
+               
                // Create a dialog to warn the user of possible
                // data overwriting. Also allow the selection
                // of reloading the database tables.
+               
                InputDialog importWarningDialog;
-
-               JLabel message = new JLabel("Warning SQL Import May Cause Loss of Data.",
-                                           JLabel.CENTER);
-               JCheckBox reloadDBTables = new JCheckBox("Reload Database Tables", false);
+               JLabel message;
+               JCheckBox reloadDBTables;
+               
+               resource = resourceBundle.getResource(
+                                     "MyJSQLView_JMenuBarActions.label.WarningImport");
+               if (resource.equals(""))
+                  message = new JLabel("Warning Import May Cause Loss of Data!", JLabel.CENTER);
+               else
+                  message = new JLabel(resource, JLabel.CENTER);
+               
+               resource = resourceBundle.getResource(
+                                     "MyJSQLView_JMenuBarActions.checkbox.ReloadDatabaseTables");
+               if (resource.equals(""))
+                  reloadDBTables = new JCheckBox("Reload Database Tables?", false);
+               else
+                  reloadDBTables = new JCheckBox(resource, false);
+               
                Object[] content = {message, reloadDBTables};
 
-               importWarningDialog = new InputDialog(null, "Import Warning", "ok", "cancel",
+               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.ImportWarning");
+               if (resource.equals(""))
+                  resource = "Import Warning";
+                  
+               resourceOK = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.OK");
+               if (resourceOK.equals(""))
+                  resourceOK = "OK";
+               
+               resourceCancel = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.Cancel");
+               if (resourceCancel.equals(""))
+                  resourceCancel = "Cancel";
+                  
+               importWarningDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                      content, null);
                importWarningDialog.pack();
                importWarningDialog.center();
                importWarningDialog.setResizable(false);
                importWarningDialog.setVisible(true);
 
-               // If ok proceed.
+               // If conformation proceed.
                if (importWarningDialog.isActionResult())
                {
                   //  Load SQL file and reload the application
@@ -849,17 +887,42 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
                // Insert/Update Content.
                ButtonGroup insertUpdateOptionsGroup = new ButtonGroup();
-               JRadioButton insertRadioButton = new JRadioButton("Insert", true);
+               JRadioButton insertRadioButton, updateRadioButton;
+               
+               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.radiobutton.Insert");
+               if (resource.equals(""))
+                  insertRadioButton = new JRadioButton("Insert", true);
+               else
+                  insertRadioButton = new JRadioButton(resource, true);
                insertUpdateOptionsGroup.add(insertRadioButton);
-               JRadioButton updateRadioButton = new JRadioButton("Update", false);
+               
+               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.radiobutton.Update");
+               if (resource.equals(""))
+                  updateRadioButton = new JRadioButton("Update", false);
+               else
+                  updateRadioButton = new JRadioButton(resource, false);
                insertUpdateOptionsGroup.add(updateRadioButton);
 
-               Object content[] = {"Warning Import May Cause Loss of Data!",
-                                   insertRadioButton, updateRadioButton};
-
-               insertUpdateDialog = new InputDialog(null, "Insert Or Update", "ok",
-                                                    "cancel", content, null);
-
+               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.label.WarningImport");
+               if (resource.equals(""))
+                  resource = "Warning Import May Cause Loss of Data!";
+               
+               Object content[] = {resource, insertRadioButton, updateRadioButton};
+               
+               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.InsertOrUpdate");
+               if (resource.equals(""))
+                  resource = "Insert Or Update?";
+                  
+               resourceOK = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.OK");
+               if (resourceOK.equals(""))
+                  resourceOK = "OK";
+               
+               resourceCancel = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.Cancel");
+               if (resourceCancel.equals(""))
+                  resourceCancel = "Cancel";
+                  
+               insertUpdateDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
+                                                     content, null);
                insertUpdateDialog.setSize(300, 150);
                insertUpdateDialog.setResizable(false);
                insertUpdateDialog.center();
@@ -882,7 +945,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             }
          }
          else
-            System.out.println("File NOT Found");
+         {
+            createFileNotFoundDialog();
+         }
       }
    }
 
@@ -1042,9 +1107,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          }
          else
          {
-            String optionPaneStringErrors = "File NOT Found";
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
-                                          "Alert", JOptionPane.ERROR_MESSAGE);
+            createFileNotFoundDialog();
          }
       }
    }
@@ -1093,6 +1156,29 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
       MyJSQLView_Access.closeConnection(dbConnection, "MyJSQLView_JMenuBarActions.flushPrivileges()");
       return flushSuccess;
+   }
+   
+   //==============================================================
+   // Class Method to show a file not found dialog.
+   //==============================================================
+
+   private static void createFileNotFoundDialog()
+   {
+      // Method Instances
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resourceTitle, resourceMessage;
+      
+      // Create the dialog.
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceTitle = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.Alert");
+      if (resourceTitle.equals(""))
+         resourceTitle = "Alert";
+      resourceMessage = resourceBundle.getResource(
+                                           "MyJSQLView_JMenuBarActions.dialogmessage.FileNOTFound");
+      if (resourceMessage.equals(""))
+         resourceMessage = "File NOT Found";
+      
+      JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle, JOptionPane.ERROR_MESSAGE);
    }
 
    //==============================================================
