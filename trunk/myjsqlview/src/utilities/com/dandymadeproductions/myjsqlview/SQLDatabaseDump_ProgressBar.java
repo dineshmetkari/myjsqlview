@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 02/18/2010
+// Version 1.7 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //             From MyJSQLView_Utils Class.
 //         1.5 Added fileSeparator to iconsDirectory.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
+//         1.7 Added Class Instance resourceBundle and Implemented Internationalization.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -57,7 +58,7 @@ import javax.swing.*;
  * during a MyJSQLView SQL database dump.
  * 
  * @author Dana M. Proctor
- * @version 1.6 02/18/2010
+ * @version 1.7 08/26/2010
  */
 
 class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
@@ -66,6 +67,7 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
 
    private static final long serialVersionUID = -9154480981519054457L;
 
+   private MyJSQLView_ResourceBundle resourceBundle;
    private JProgressBar databaseDumpProgressBar;
    private JButton cancelButton;
    
@@ -86,7 +88,7 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
       
       // Constructor Instances
       
-      String iconsDirectory;
+      String iconsDirectory, resource;
       ImageIcon sqlDatabaseDumpIcon;
       JPanel mainPanel, databaseStatusPanel, tableStatusPanel;
       
@@ -107,7 +109,11 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
                              .createCompoundBorder(BorderFactory.createEtchedBorder(),
                                                    BorderFactory.createRaisedBevelBorder()));
       
-      cancelButton = new JButton("Cancel");
+      resource = resourceBundle.getResource("MyJSQLView_ProgressBar.button.Cancel");
+      if (resource.equals(""))
+         cancelButton = new JButton("Cancel");
+      else
+         cancelButton = new JButton(resource);
       cancelButton.setFocusable(false);
       cancelButton.setActionCommand("cancel");
       cancelButton.addActionListener(this);
