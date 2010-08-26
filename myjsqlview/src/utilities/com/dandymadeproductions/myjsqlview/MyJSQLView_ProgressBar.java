@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.4 02/18/2010
+// Version 2.5 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //             From MyJSQLView_Utils Class.
 //         2.3 Added fileSeparator to iconsDirectory.
 //         2.4 Changed Package to Reflect Dandy Made Productions Code.
+//         2.5 Added Class Instance resourceBundle and Implemented Internationalization.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -55,9 +56,18 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 /**
  *    The MyJSQLView_ProgressBar class provides the frame and
@@ -65,7 +75,7 @@ import javax.swing.*;
  * cancel button.
  * 
  * @author Dana M. Proctor
- * @version 2.4 02/18/2010
+ * @version 2.5 08/26/2010
  */
 
 class MyJSQLView_ProgressBar extends JFrame implements ActionListener
@@ -74,6 +84,7 @@ class MyJSQLView_ProgressBar extends JFrame implements ActionListener
 
    private static final long serialVersionUID = -9154480981519054457L;
 
+   private MyJSQLView_ResourceBundle resourceBundle;
    private JProgressBar progressBar;
    private JButton cancelButton;
    private int taskLength;
@@ -88,12 +99,12 @@ class MyJSQLView_ProgressBar extends JFrame implements ActionListener
       super(progressTitle);
       
       // Constructor Instances
-      
-      String iconsDirectory;
+      String iconsDirectory, resource;
       ImageIcon progressBarIcon;
       
       // Setup various instances to be used in the panel.
       
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       progressBarIcon = new ImageIcon(iconsDirectory + "progressBarIcon.gif");
       
@@ -103,9 +114,13 @@ class MyJSQLView_ProgressBar extends JFrame implements ActionListener
       JPanel mainPanel = new JPanel();
       mainPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      cancelButton = new JButton("Cancel");
-      cancelButton.setFocusable(false);
+      resource = resourceBundle.getResource("MyJSQLView_ProgressBar.button.Cancel");
+      if (resource.equals(""))
+         cancelButton = new JButton("Cancel");
+      else
+         cancelButton = new JButton(resource);
       cancelButton.setActionCommand("cancel");
+      cancelButton.setFocusable(false);
       cancelButton.addActionListener(this);
       mainPanel.add(cancelButton);
 
