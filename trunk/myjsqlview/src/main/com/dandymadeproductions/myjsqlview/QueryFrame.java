@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.8 05/17/2010
+// Version 5.9 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,8 @@
 //                        tableColumnTypeHashMap, tableColumnSizeHashMap, &
 //                        columnNameFields to Bring Code Into Compliance With Java
 //                        5.0 API.
+//         5.9 08/26/2010 Internationalization of Table Row Preferences Setting in
+//                        actionPerformed().
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -179,7 +181,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 5.8 05/17/2010
+ * @version 5.9 08/26/2010
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -416,7 +418,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    {
       Object panelSource = evt.getSource();
       int fileChooserResult;
-      String resource, message;
+      String resource, resourceOK, resourceCancel, message;
 
       // Button Actions
       if (panelSource == executeQueryJButton || panelSource == newQueryJButton)
@@ -655,16 +657,33 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             // summary table row size.
 
             JTextField rowSizeTextField = new JTextField();
-            JLabel warning = new JLabel("Warning!", JLabel.CENTER);
+            JLabel warning;
+            
+            resource = resourceBundle.getResource("QueryFrame.label.Warning");
+            if (resource.equals(""))
+               warning = new JLabel("Warning!", JLabel.CENTER);
+            else
+               warning = new JLabel(resource, JLabel.CENTER);
             warning.setForeground(Color.RED);
 
             String rowSizeWarningString = "   A large row size may adversely effect\n"
                                           + "       application/server performance.\n";
             Object content[] = {warning, rowSizeWarningString, rowSizeTextField};
 
-            InputDialog rowSizeDialog = new InputDialog(null,
-                                                        "Set Summary Table Row Size",
-                                                        "ok", "cancel", content, null);
+            resource = resourceBundle.getResource("QueryFrame.label.SetSummaryTableRowSize");
+            if (resource.equals(""))
+               resource = "Set Summary Table Row Size";
+            
+            resourceOK = resourceBundle.getResource("QueryFrame.button.OK");
+            if (resourceOK.equals(""))
+               resourceOK = "OK";
+            
+            resourceCancel = resourceBundle.getResource("QueryFrame.button.Cancel");
+            if (resourceCancel.equals(""))
+               resourceCancel = "Cancel";
+            
+            InputDialog rowSizeDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
+                                                        content, null);
             rowSizeDialog.setSize(300, 150);
             rowSizeDialog.setResizable(false);
             rowSizeDialog.center();
