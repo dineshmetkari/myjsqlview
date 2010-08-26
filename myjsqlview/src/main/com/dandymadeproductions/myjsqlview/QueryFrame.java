@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.9 08/26/2010
+// Version 6.0 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -144,6 +144,7 @@
 //                        5.0 API.
 //         5.9 08/26/2010 Internationalization of Table Row Preferences Setting in
 //                        actionPerformed().
+//         6.0 08/26/2010 Correction to Table Row Preferences Warning Label Resources.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -181,7 +182,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 5.9 08/26/2010
+ * @version 6.0 08/26/2010
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -214,7 +215,6 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private String fileSeparator, iconsDirectory;
    private String lastDirectory;
    
-
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
    private static PageFormat mPageFormat = currentPrintJob.defaultPage();
 
@@ -657,7 +657,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             // summary table row size.
 
             JTextField rowSizeTextField = new JTextField();
-            JLabel warning;
+            JLabel warning, warningMessage1, warningMessage2;
             
             resource = resourceBundle.getResource("QueryFrame.label.Warning");
             if (resource.equals(""))
@@ -665,10 +665,20 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             else
                warning = new JLabel(resource, JLabel.CENTER);
             warning.setForeground(Color.RED);
+            
+            resource = resourceBundle.getResource("QueryFrame.label.LargeRowSize");
+            if (resource.equals(""))
+               warningMessage1 = new JLabel("A large row size may adversely effect", JLabel.CENTER);
+            else
+               warningMessage1 = new JLabel(resource, JLabel.CENTER);
+            
+            resource = resourceBundle.getResource("QueryFrame.label.ApplicationServerPerformance");
+            if (resource.equals(""))
+               warningMessage2 = new JLabel("application/server performance.", JLabel.CENTER);
+            else
+               warningMessage2 = new JLabel(resource, JLabel.CENTER);
 
-            String rowSizeWarningString = "   A large row size may adversely effect\n"
-                                          + "       application/server performance.\n";
-            Object content[] = {warning, rowSizeWarningString, rowSizeTextField};
+            Object content[] = {warning, warningMessage1, warningMessage2, rowSizeTextField};
 
             resource = resourceBundle.getResource("QueryFrame.label.SetSummaryTableRowSize");
             if (resource.equals(""))
