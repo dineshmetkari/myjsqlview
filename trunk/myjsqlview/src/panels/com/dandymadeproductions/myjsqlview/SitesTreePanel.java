@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 3.8 05/19/2010
+// Version 3.9 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -78,6 +78,8 @@
 //             in createSitesTree().
 //         3.8 Parameterized Instances siteNames & sitesTreeIterator in Class
 //             Method createSitesTree().
+//         3.9 Addition of Internationalization Support to Class Methods addSite()
+//             & renameSite(). Also Added Method showSiteExistsDialog().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -110,7 +112,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 3.8 05/19/2010
+ * @version 3.9 08/26/2010
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -127,6 +129,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
+   private MyJSQLView_ResourceBundle resourceBundle;
 
    //==============================================================
    // SitesTreePanel Constructor
@@ -142,9 +145,10 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       this.standardParametersPanel = standardParametersPanel;
       this.advancedParametersPanel = advancedParametersPanel;
 
-      // Setting up a file separator instance.
+      // Setting up a file separator and other instances.
       
       String iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
 
       // Panel Decor Stuff.
       setBorder(BorderFactory.createBevelBorder(1));
@@ -330,6 +334,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       String child = "";
       DefaultMutableTreeNode parentNode = null;
       TreePath selectedTreePath;
+      String resource, resourceOK, resourceCancel;
 
       // Obtain the whole tree path so the
       // appropriate addtion can take place.
@@ -355,14 +360,32 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
          // Create a dialog to obtain the new
          // site node name.
          InputDialog siteNameDialog;
-
-         JLabel message = new JLabel("Enter New Site Name.", JLabel.CENTER);
+         JLabel message;
+         
+         resource = resourceBundle.getResource("SitesTreePanel.message.EnterNewSiteName");
+         if (resource.equals(""))
+            message = new JLabel("Enter New Site Name", JLabel.CENTER);
+         else
+            message = new JLabel(resource, JLabel.CENTER);
+         
          JTextField siteNameTextField = new JTextField(10);
          Object[] content = {message, siteNameTextField};
+         
+         resource = resourceBundle.getResource("SitesTreePanel.dialogTitle.SiteDialog");
+         if (resource.equals(""))
+            resource = "Site Dialog";
+            
+         resourceOK = resourceBundle.getResource("SitesTreePanel.button.OK");
+         if (resourceOK.equals(""))
+            resourceOK = "OK";
+         
+         resourceCancel = resourceBundle.getResource("SitesTreePanel.button.Cancel");
+         if (resourceCancel.equals(""))
+            resourceCancel = "Cancel";
 
          // Obtaining the new site name.
-         siteNameDialog = new InputDialog(connectionManager, "Site Dialog", "ok",
-                                          "cancel", content, null);
+         siteNameDialog = new InputDialog(connectionManager, resource, resourceOK, resourceCancel,
+                                          content, null);
          siteNameDialog.pack();
          siteNameDialog.center();
          siteNameDialog.setResizable(false);
@@ -385,8 +408,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             else
             {
                siteNameDialog.dispose();
-               JOptionPane.showMessageDialog(null, "Site Already Exists or Empty String!",
-                                             "Alert", JOptionPane.ERROR_MESSAGE);
+               showSiteExistsDialog();
                return;
             }
          }
@@ -521,6 +543,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    protected void renameSite()
    {
       String siteName;
+      String resource, resourceOK, resourceCancel;
       DefaultMutableTreeNode selectedNode, parentNode, newSiteNode;
       TreePath selectedTreePath;
 
@@ -543,12 +566,31 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
          // Create a dialog to obtain a new name for the site.
          // Pre-setup
          InputDialog siteNameDialog;
+         JLabel message;
+         
+         resource = resourceBundle.getResource("SitesTreePanel.message.EnterNewSiteName");
+         if (resource.equals(""))
+            message = new JLabel("Enter New Site Name", JLabel.CENTER);
+         else
+            message = new JLabel(resource, JLabel.CENTER);
 
-         JLabel message = new JLabel("Enter New Site Name.", JLabel.CENTER);
          JTextField siteNameTextField = new JTextField(10);
          Object[] content = {message, siteNameTextField};
-         siteNameDialog = new InputDialog(connectionManager, "Site Dialog", "ok",
-                                          "cancel", content, null);
+         
+         resource = resourceBundle.getResource("SitesTreePanel.dialogTitle.SiteDialog");
+         if (resource.equals(""))
+            resource = "Site Dialog";
+            
+         resourceOK = resourceBundle.getResource("SitesTreePanel.button.OK");
+         if (resourceOK.equals(""))
+            resourceOK = "OK";
+         
+         resourceCancel = resourceBundle.getResource("SitesTreePanel.button.Cancel");
+         if (resourceCancel.equals(""))
+            resourceCancel = "Cancel";
+         
+         siteNameDialog = new InputDialog(connectionManager, resource, resourceOK, resourceCancel,
+                                          content, null);
          siteNameDialog.pack();
          siteNameDialog.center();
          siteNameDialog.setResizable(false);
@@ -622,9 +664,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                else
                {
                   siteNameDialog.dispose();
-                  JOptionPane.showMessageDialog(null,
-                                                "Site Already Exists or Empty String!",
-                                                "Alert", JOptionPane.ERROR_MESSAGE);
+                  showSiteExistsDialog();
                   return;
                }
             }
@@ -662,8 +702,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
                else
                {
                   siteNameDialog.dispose();
-                  JOptionPane.showMessageDialog(null, "Site Already Exists or Empty String!",
-                                                "Alert", JOptionPane.ERROR_MESSAGE);
+                  showSiteExistsDialog();
                   return;
                }
             }
@@ -675,6 +714,27 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             }
          }
       }
+   }
+   
+   //==============================================================
+   // Class method to show a dialog indicating an error of site
+   // already exists.
+   //==============================================================
+
+   private void showSiteExistsDialog()
+   {
+      String resourceTitle, resourceMessage;
+      
+      resourceTitle = resourceBundle.getResource("SitesTreePanel.dialogTitle.Alert");
+      if (resourceTitle.equals(""))
+         resourceTitle = "Alert";
+      
+      resourceMessage = resourceBundle.getResource("SitesTreePanel.dialogMessage.SiteAlreadyExist");
+      if (resourceMessage.equals(""))
+         resourceMessage = "Site Already Exists or Empty String!";
+      
+      JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle,
+                                    JOptionPane.ERROR_MESSAGE);
    }
 
    //==============================================================
