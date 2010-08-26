@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Vivek Singh, Dana M. Proctor
-// Version 1.5 04/20/2010
+// Version 1.6 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //                        Methods for the Instance.
 //         1.5 04/20/2010 Made Class public Along With the Method getLastSaveDirectory()
 //                        & setLastSaveDirectory().
+//         1.6 08/26/2010 Added Class Instance resourceBundle and Implemented
+//                        Internationalization.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,13 +65,14 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.5 04/20/2010
+ * @version 1.6 08/26/2010
  */
 
 public class ImageUtil
 {
    // Class Instances.
    private String lastSaveDirectory = "";
+   private MyJSQLView_ResourceBundle resourceBundle;
    
    //==============================================================
    // ImageUtil Constructor
@@ -86,6 +89,8 @@ public class ImageUtil
       else
          this.lastSaveDirectory = lastSaveDirectory;
       
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      
       // Process.
       saveImage(component, imageType);
    }
@@ -97,9 +102,9 @@ public class ImageUtil
    private void saveImage(JComponent component, String itype)
    {
       // Method Instances
-      int componentWidth, componentHeight;
+      int componentWidth, componentHeight, fileChooserResult;
       JFileChooser fileChooser;
-      int fileChooserResult;
+      String resourceTitle, resourceMessage;
       File savedFile;
 
       Graphics2D g2;
@@ -120,7 +125,11 @@ public class ImageUtil
       else
          fileChooser = new JFileChooser(new File(lastSaveDirectory));
 
-      fileChooser.setDialogTitle("PNG Image Save File");
+      resourceTitle = resourceBundle.getResource("ImageUtil.dialogtitle.PNGImageSaveFile");
+      if (resourceTitle.equals(""))
+         resourceTitle = "Save PNG Image File";
+      
+      fileChooser.setDialogTitle(resourceTitle);
       fileChooser.setFileFilter(new PNG_FileFilter());
 
       fileChooserResult = fileChooser.showSaveDialog(null);
@@ -146,8 +155,12 @@ public class ImageUtil
             }
             catch (SecurityException se)
             {
-               JOptionPane.showMessageDialog(null, se.getMessage(), "Image Save Error.",
-                  JOptionPane.ERROR_MESSAGE);
+               resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.ImageSaveError");
+               if (resourceMessage.equals(""))
+                  resourceMessage = "Image Save Error.";   
+               
+               JOptionPane.showMessageDialog(null, se.getMessage(), resourceMessage,
+                                                JOptionPane.ERROR_MESSAGE);
                return;
             }
          }
@@ -155,8 +168,16 @@ public class ImageUtil
          // Confirm overwriting to existing file.
          if (savedFile.exists())
          {
-            int response = JOptionPane.showConfirmDialog(null, "Overwrite existing file?",
-               "Confirm Overwrite", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+            resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.OverwriteExistingFile");
+            if (resourceMessage.equals(""))
+               resourceMessage = "Overwrite existing file?";
+            resourceTitle = resourceBundle.getResource("ImageUtil.dialogtitle.ConfirmOverwrite");
+            if (resourceTitle.equals(""))
+               resourceTitle = "Confirm Overwrite";
+            
+            int response = JOptionPane.showConfirmDialog(null, resourceMessage, resourceTitle,
+                                                         JOptionPane.OK_CANCEL_OPTION,
+                                                         JOptionPane.QUESTION_MESSAGE);
             if (response == JOptionPane.CANCEL_OPTION)
                return;
          }
@@ -171,7 +192,7 @@ public class ImageUtil
          graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
          graphicsConfiguration = graphicsDevice.getDefaultConfiguration();
          bufferedImage = graphicsConfiguration.createCompatibleImage(componentWidth, componentHeight,
-            Transparency.BITMASK);
+                                                                     Transparency.BITMASK);
          g2 = bufferedImage.createGraphics();
          component.paint(g2);
 
@@ -182,8 +203,12 @@ public class ImageUtil
          }
          catch (Exception exp)
          {
-            JOptionPane.showMessageDialog(null, exp.getMessage(), "Image Save Error.",
-               JOptionPane.ERROR_MESSAGE);
+            resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.ImageSaveError");
+            if (resourceMessage.equals(""))
+               resourceMessage = "Image Save Error.";
+            
+            JOptionPane.showMessageDialog(null, exp.getMessage(), resourceMessage,
+                                          JOptionPane.ERROR_MESSAGE);
          }
       }
       else
@@ -220,6 +245,5 @@ public class ImageUtil
    {
       if (lastSave != null)
          lastSaveDirectory = lastSave;
-   }
-   
+   }  
 }
