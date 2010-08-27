@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.6 05/19/2010
+// Version 5.7 08/25/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -136,6 +136,7 @@
 //                        fieldTypeHashMap, fieldClassHashMap, & fieldSizeHashMap In
 //                        Order to Bring The Code Into Compiance With Java 5.0 API.
 //         5.6 05/19/2010 Parameterized columnNamesIterator in Constructor.
+//         5.7 08/25/2010 Added Resource For Message Dialog in saveBlobTextField().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -163,7 +164,7 @@ import javax.swing.text.DefaultEditorKit;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.6 05/19/2010
+ * @version 5.7 08/25/2010
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -529,9 +530,15 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
             }
             catch (IOException e)
             {
-               // System.out.println("Error in Writing to Data File: " +
-               // fileName);
-               JOptionPane.showMessageDialog(null, "Error Writing to Data File " + fileName, "Alert",
+               String resourceMessage, resourceAlert;
+               
+               resourceAlert = resourceBundle.getResource("TableViewForm.dialogtitle.Alert");
+               if (resourceAlert.equals(""))
+                  resourceAlert = "Alert";
+               resourceMessage = resourceBundle.getResource("TableViewForm.dialogmessage.ErrorWritingDataFile");
+               if (resourceAlert.equals(""))
+               
+               JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);
             }
          }
