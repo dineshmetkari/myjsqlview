@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.6 06/28/2010
+// Version 4.7 08/26/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,8 @@
 //         4.4 Class Method formatExportDateString() Added Argument exportType.
 //         4.5 Made Class Method processFileChooserSelection() Public.
 //         4.6 Made Class Method stateConvert() Public.
+//         4.7 Implemented Internationalization for InputDialogs in Class Methods
+//             processFileChooserSelection() & processLocaleLanguage().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -118,7 +120,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.6 06/28/2010
+ * @version 4.7 08/26/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -470,15 +472,19 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static int processFileChooserSelection(JFrame parent, JFileChooser fileChooser)
    {
       // Method Instances.
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileName, fileSeparator;
       String iconsDirectory;
+      String resource, resourceYes, resourceNo;
       File desiredFileName;
       int resultsOfFileChooser;
       ImageIcon deleteFileIcon;
       boolean operationCanceled;
 
       // Setting up some of the method instances.
-
+      
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      
       fileSeparator = System.getProperty("file.separator");
       if (fileSeparator == null || fileSeparator.equals(""))
          fileSeparator = "/";
@@ -511,11 +517,29 @@ public class MyJSQLView_Utils extends MyJSQLView
                if (desiredFileName.exists())
                {
                   InputDialog importWarningDialog;
-
-                  JLabel message = new JLabel("File Exists, Over Write?", JLabel.CENTER);
+                  
+                  JLabel message;
+                  
+                  resource = resourceBundle.getResource("MyJSQLView_Utils.message.FileExistsOverWrite");
+                  if (resource.equals(""))
+                     message = new JLabel("File Exists, Over Write?", JLabel.CENTER);
+                  else
+                     message = new JLabel(resource, JLabel.CENTER);
                   Object[] content = {message};
 
-                  importWarningDialog = new InputDialog(null, "Save Warning", "Yes", "No", content,
+                  resource = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.SaveWarning");
+                  if (resource.equals(""))
+                     resource = "Save Warning";
+                  
+                  resourceYes = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Yes");
+                  if (resourceYes.equals(""))
+                     resourceYes = "Yes";
+                  
+                  resourceNo = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.No");
+                  if (resourceNo.equals(""))
+                     resourceNo = "No";
+                  
+                  importWarningDialog = new InputDialog(null, resource, resourceYes, resourceNo, content,
                                                         deleteFileIcon);
                   importWarningDialog.pack();
                   importWarningDialog.center();
@@ -565,6 +589,8 @@ public class MyJSQLView_Utils extends MyJSQLView
    protected static String processLocaleLanguage()
    {
       // Method Instances
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resource, resourceOK, resourceCancel;
       String localeString;
       String localeFileName;
       String localeFileDirectoryName;
@@ -587,6 +613,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
       // Setup the instances and required data to start.
 
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
       localeString = "";
       localeFileName = "myjsqlview_locale.txt";
       localeFileDirectoryName = "locale";
@@ -658,7 +685,20 @@ public class MyJSQLView_Utils extends MyJSQLView
             localeIcon = new ImageIcon(MyJSQLView_Utils.getIconsDirectory()
                                        + MyJSQLView_Utils.getFileSeparator() + "localeIcon.gif");
 
-            localeSelectDialog = new InputDialog(null, "Language Selection", "ok", "cancel", content,
+            
+            resource = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.LanguageSelection");
+            if (resource.equals(""))
+               resource = "Language Selection";
+            
+            resourceOK = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.OK");
+            if (resourceOK.equals(""))
+               resourceOK = "OK";
+            
+            resourceCancel = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Cancel");
+            if (resourceCancel.equals(""))
+               resourceCancel = "Cancel";
+            
+            localeSelectDialog = new InputDialog(null, resource, resourceOK, resourceCancel, content,
                                                  localeIcon);
             localeSelectDialog.pack();
             localeSelectDialog.center();
