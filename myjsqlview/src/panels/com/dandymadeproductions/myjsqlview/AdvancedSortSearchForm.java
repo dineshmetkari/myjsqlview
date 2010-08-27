@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.76 05/19/2010
+// Version 4.77 08/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,6 +145,7 @@
 //                        Same in Method createSortSearchInterface Instance swapEndCompnents.
 //        4.76 05/19/2010 Parameterized Instance keyComponentIterator in Class Methods
 //                        getKeyComponentsState() & setKeyComponentsState().
+//        4.77 08/27/2010 Added sqliteWhereOperators in Method createSortSearchInterface().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -174,7 +175,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.76 05/19/2010
+ * @version 4.77 08/27/2010
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -508,6 +509,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                        "IS NOT EMPTY", "IN", "NOT IN", "BETWEEN", "NOT BETWEEN", "EXISTS",
                                        "EQUALS_PATH", "UNDER_PATH", "=", "<", "<=", ">", ">=", "<>", "!=",
                                        "^="};
+      Object[] sqliteWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IS NOT", "IN", "NOT IN",
+                                       "OR", "|", "AND", "&", "||", "BETWEEN", "GLOB", "REGEXP", "MATCH",  
+                                       "=", "<", "<<", "<=", ">", ">>", ">=", "<>", "!=", "==", };
 
       // Assigning the appropriate string array WHERE operators.
 
@@ -517,6 +521,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          whereOperators = postgreSQLWhereOperators;
       else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
          whereOperators = oracleWhereOperators;
+      else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+         whereOperators = sqliteWhereOperators;
       // Make HSQL Default
       else
          whereOperators = hsqlWhereOperators;
