@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 08/26/2010
+// Version 1.8 08/27/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.5 Added fileSeparator to iconsDirectory.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
 //         1.7 Added Class Instance resourceBundle and Implemented Internationalization.
+//         1.8 Correction to Initialize Class Instance resourceBundle.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -58,7 +59,7 @@ import javax.swing.*;
  * during a MyJSQLView SQL database dump.
  * 
  * @author Dana M. Proctor
- * @version 1.7 08/26/2010
+ * @version 1.8 08/27/2010
  */
 
 class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
@@ -94,6 +95,7 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
       
       // Setup various instances to be used in the panel.
       
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       sqlDatabaseDumpIcon = new ImageIcon(iconsDirectory + "sqlDatabaseDumpIcon.gif");
       
