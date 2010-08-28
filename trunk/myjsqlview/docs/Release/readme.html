@@ -13,7 +13,7 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.22<br></u></b>
+			<b><u>MyJSQLView Version 3.23<br></u></b>
 		</p>
 		<p align="center">
 			Copyright 2005-2010<br>
@@ -23,10 +23,10 @@
 
 		<p><u><b>What is MyJSQLView?</b></u></p>
 		<p>
-			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface
-			for viewing, adding, editing, or deleting entries in the HSQL, MySQL, Oracle, and 
-			PostgreSQL databases. All tables and fields are available for access in the
-			selected database.<br><br>
+			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing,
+			adding, editing, or deleting entries in the HSQL, MySQL, Oracle, PostgreSQL,
+			and SQLite databases. All tables and fields are available for access in
+			the selected database.<br><br>
 
 			&nbsp;&nbsp;&nbsp;MyJSQLView is the result of a condensed version of a larger project
 			that was needed to access an inventory database. The project from its
@@ -38,18 +38,19 @@
 			server anywhere that was Internet accessable. Java and MySQL fit these
 			needs.<br>
 			&nbsp;&nbsp;&nbsp; MyJSQLView has expanded beyond the scope of MySQL and now supports
-			alternate databases, and plugins. The application only needs two other pieces
-			of code, the JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity,
-			driver. The JDBC provides the driver interface between the Java SQL, structured
-			query language, statements, and the database. As of the release of this
-			version of MyJSQLView the application has been tested with the HSQL, MySQL, 
-			Oracle, and PostgreSQL databases. The application once installed can provide
-			a much quicker access/update to a database than a web based interface
-			frontend and MyJSQLView supports transaction locking. If your small
-			business, scientific community, government agency, or educational institute
-			wants to quickly access either a HSQL, MySQL, Oracle, or PostgreSQL database
-			for viewing, adding, editing, and searching data MyJSQLView provides an
-			alternative that is simple and easy to use.<br><br>
+			alternate databases and plugins. The application only needs two other
+			pieces of code, the JRE, Java Runtime Environment, and a JDBC, Java Database
+			Connectivity, driver. The JDBC provides the driver interface between the
+			Java SQL, structured query language, statements, and the database. As of
+			the release of this version of MyJSQLView the application has been tested
+			with the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. The
+			application once installed can provide a much quicker access/update to
+			a database than a web based interface frontend and MyJSQLView supports
+			transaction locking. If your small business, scientific community, government
+			agency, or educational institute wants to quickly access either a HSQL,
+			MySQL, Oracle, PostgreSQL, or SQLite database for viewing, adding, editing,
+			and searching data MyJSQLView provides an alternative that is simple and
+			easy to use.<br><br>
 
    			Dana M. Proctor<br>
    			Project Manager
@@ -92,6 +93,7 @@
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
 			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4.701</font>.</li>
+			<li>SQLite JDBC <font color="#ff0000">3.6.20 - 3.7.2</font>. Note SQLite need not be installed on the system.</li>
 			
 		</ul>
 		
@@ -115,7 +117,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.22</b> does not, will have an example configuration
+			additional database, release <b>v3.23</b> does, will have an example configuration
 			for the connection parameters of the advanced login. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -135,12 +137,14 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and
 			does require the JRE, to be installed. The minimum runtime environment needs
 			to be JRE-1.5. In addition to the JRE an extension, JDBC, needs to be installed
-			that allows Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database.
-			The programs are available on the Internet free of charge. Check with the sites
+			that allows Java to communicate to the HSQL, MySQL, Oracle, PostgreSQL, or SQLite
+			database. The programs are available on the Internet free of charge. Check with
+			the sites
 			<a href="http://hsqldb.org" target="_blank">hsqldb.org</a>,
 			<a href="http://dev.mysql.com" target="_blank">dev.mysql.com</a>,
-			<a href="http://oracle.com" target="_blank">oracle.com</a>, and
-			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>. Note,
+			<a href="http://oracle.com" target="_blank">oracle.com</a>,
+			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>, and
+			<a href="http://www.xerial.org/trac/Xerial" target="_blank">www.xerial.org</a> Note,
 			the HSQLDB contains no separate JDBC, it is embedded in the HSQLDB.jar. The
 			jar file for these extensions needs to be installed to the JRE /lib/ext directory.
 			On a Windows system this JRE directory in normally under C:/Windows/java. On a
@@ -203,7 +207,6 @@
 		<p>This program is licensed under the GNU GPL.</p>
 		<p><b><u>Credits</u> </b>(in chronological order):</p>
 		
-
 		<ul>
 			<li><a href="mailto:danap_n_mt@users.sourceforge.net">Dana Proctor</a> - Project Manager<br></li>
 			<li>Clifford Hanson - Consultant</li>
@@ -225,6 +228,10 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.23</td>
+      				<td width="80%">SQLite Access. Manual Plugin Management. Additional Internationalization Support.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.22</td>
       				<td width="80%">Threaded/Refinements to Plugin Architecture. Upgrade to Java 5.0 API. PDF Exports.</td>
@@ -263,7 +270,7 @@
     			</tr>
     			<tr>
       				<td>Version 2.87</td>
-      				<td>Fully Qualified Schema TableNames Support, Fault Tolerance.</td>
+      				<td>Fully Qualified Schema.TableNames Support, Fault Tolerance.</td>
     			</tr>
     			<tr>
       				<td>Version 2.86</td>
