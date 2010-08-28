@@ -1,4 +1,4 @@
-MyJSQLView Version 3.22
+MyJSQLView Version 3.23
 
 Copyright 2005-2010
 by Dana M. Proctor
@@ -7,8 +7,8 @@ http://dandymadeproductions.com
 What is MyJSQLView?
 
    MyJSQLView provides an easy to use Java based interface for viewing,
-adding, editing, or deleting entries in the HSQL, MySQL, Oracle and
-PostgreSQL databases. All tables and fields are available for access in
+adding, editing, or deleting entries in the HSQL, MySQL, Oracle, PostgreSQL,
+and SQLite databases. All tables and fields are available for access in
 the selected database.
 
    MyJSQLView is the result of a condensed version of a larger project
@@ -21,18 +21,19 @@ be able to connect to the database either locally, same machine, or a
 server anywhere that was Internet accessable. Java and MySQL fit these
 needs.
    MyJSQLView has expanded beyond the scope of MySQL and now supports
-alternate databases and plugins. The application only needs two other pieces
-of code, the JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity,
-driver. The JDBC provides the driver interface between the Java SQL, structured
-query language, statements, and the database. As of the release of this
-version of MyJSQLView the application has been tested with the HSQL, MySQL, 
-Oracle, and PostgreSQL databases. The application once installed can provide
-a much quicker access/update to a database than a web based interface
-frontend and MyJSQLView supports transaction locking. If your small business,
-scientific community, government agency, or educational institute wants to
-quickly access either a HSQL, MySQL, Oracle, or PostgreSQL, database for
-viewing, adding, editing, and searching data MyJSQLView provides an
-alternative that is simple and easy to use.
+alternate databases and plugins. The application only needs two other
+pieces of code, the JRE, Java Runtime Environment, and a JDBC, Java Database
+Connectivity, driver. The JDBC provides the driver interface between the
+Java SQL, structured query language, statements, and the database. As of
+the release of this version of MyJSQLView the application has been tested
+with the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. The
+application once installed can provide a much quicker access/update to
+a database than a web based interface frontend and MyJSQLView supports
+transaction locking. If your small business, scientific community, government
+agency, or educational institute wants to quickly access either a HSQL,
+MySQL, Oracle, PostgreSQL, or SQLite database for viewing, adding, editing,
+and searching data MyJSQLView provides an alternative that is simple and
+easy to use.
 
    Dana M. Proctor
    Project Manager
@@ -73,6 +74,7 @@ Requirements:
     * MySQL 5.07 - 5.084, JDBC 5.0.7, 5.1.5 - 5.1.8.
     * Oracle 10g, JDBC 14.
     * PostgreSQL 8.2.5 - 8.4.4, JDBC3 8.2-506 - 8.4-701.
+    * SQLite JDBC 3.6.20 - 3.7.2. Note SQLite need not be installed on the system.
 
 Installation Notes:
 
@@ -94,7 +96,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.22 does not, will have an example configuration
+additional database, release v3.23 does, will have an example configuration
 for the connection parameters of the advanced login. Likely changes will be
 included in the reference myjsqlview.xml file located in the installation
 directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -105,20 +107,20 @@ copy of the myjsqlview.xml file. See the General Setup Instructions below
 for locating this file. NOTICE! AS OF MyJSQLView v3.17 RELEASE A MINOR
 CHANGE IN THE myjsqlview.xml CONFIGURATION FILE WILL INVALIDATE ALL
 PREVIOUSLY VERSIONS' SAVED PASSWORDS. To remedy this discrepancy use the
-Connection Manager to Update your sites by typing in the password again.<br><br>
+Connection Manager to Update your sites by typing in the password again.
 
 General Setup Instructions
 
     The MyJSQLView application is a Java based program and does require the
 JRE, to be installed. The minimum runtime environment needs to be JRE-1.5.
 In addition to the JRE an extension, JDBC, needs to be installed that allows
-Java to communicate to the HSQL, MySQL, Oracle, or PostgreSQL database. The
-programs are available on the Internet free of charge. Check with the sites
-hsqldb.org, dev.mysql.com, oracle.com, and jdbc.postgresql.org. Note, the HSQLDB
-contains no separate JDBC, it is embedded in the HSQLDB.jar. The jar file for
-these extensions needs to be installed to the JRE /lib/ext directory. On a
-Windows system this JRE directory in normally under C:/Windows/java. On a
-Linux/Unix system the directory is normally under the /usr/lib directory,
+Java to communicate to the HSQL, MySQL, Oracle, PostgreSQL, or SQLite database.
+The programs are available on the Internet free of charge. Check with the sites
+hsqldb.org, dev.mysql.com, oracle.com, jdbc.postgresql.org, and xerial.org.
+Note, the HSQLDB contains no separate JDBC, it is embedded in the HSQLDB.jar.
+The jar file for these extensions needs to be installed to the JRE /lib/ext
+directory. On a Windows system this JRE directory in normally under C:/Windows/java.
+On a Linux/Unix system the directory is normally under the /usr/lib directory,
 and is most easily found by typing the command "which java" in a console.
 Please consult with each vendor for specific installation instructions for
 these JDBC pieces of code. Similarly if other databases are to be accessed
@@ -202,6 +204,7 @@ Version History:
 
 Production (2008-12-31):
 
+    * Version 3.23 SQLite Access. Manual Plugin Management. Additional Internationalization Support.
     * Version 3.22 Threaded/Refinements to Plugin Architecture. Upgrade to Java 5.0 API. PDF Exports.
     * Version 3.17 Internationalization Support. Completed Plugin Framework.
     * Version 3.06 Initial Plugin Inclusion, Table Field Charts.
