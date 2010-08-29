@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.0 08/04/2010
+// Version 1.1 08/29/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original MyJSQLView_Top_JMenuBar Class.
+//         1.1 Added Help | About Menu.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +53,7 @@ import javax.swing.JMenuItem;
  * contains the MyJSQLView File|Exit, Plugin Management, & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.0 08/04/2010
+ * @version 1.1 08/29/2010
  */
 
 class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -88,6 +89,7 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       // Creating your menu items here, see MyJSQLView_JMenuBar.
       createFileMenu();
       createToolsMenu();
+      createHelpMenu();
       
       add(Box.createHorizontalGlue());
 
@@ -158,6 +160,36 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
          fileMenu.add(menuItem(resource, ACTION_PLUGIN_MANAGEMENT));
       
       add(fileMenu);
+   }
+   
+   //==============================================================
+   // Helper Method to create the Help Menu.
+   //==============================================================
+
+   private void createHelpMenu()
+   {
+      // Method Instances.
+      JMenu helpMenu;
+      String resource;
+      
+      //===========
+      // Help Menu
+      
+      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Help");
+      if (resource.equals(""))
+         helpMenu = new JMenu("Help");
+      else
+         helpMenu = new JMenu(resource);
+      helpMenu.setFont(helpMenu.getFont().deriveFont(Font.BOLD));
+      
+      // About
+      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.About");
+      if (resource.equals(""))
+         helpMenu.add(menuItem("About", ACTION_ABOUT));
+      else
+         helpMenu.add(menuItem(resource, ACTION_ABOUT));
+      
+      add(helpMenu);
    }
    
    //==============================================================
