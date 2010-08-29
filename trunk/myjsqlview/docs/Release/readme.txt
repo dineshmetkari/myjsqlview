@@ -74,7 +74,7 @@ Requirements:
     * MySQL 5.07 - 5.084, JDBC 5.0.7, 5.1.5 - 5.1.8.
     * Oracle 10g, JDBC 14.
     * PostgreSQL 8.2.5 - 8.4.4, JDBC3 8.2-506 - 8.4-701.
-    * SQLite JDBC 3.6.20 - 3.7.2. Note SQLite need not be installed on the system.
+    * SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
 
 Installation Notes:
 
@@ -204,33 +204,36 @@ Version History:
 
 Production (2008-12-31):
 
-    * Version 3.23 SQLite Access. Manual Plugin Management. Additional Internationalization Support.
-    * Version 3.22 Threaded/Refinements to Plugin Architecture. Upgrade to Java 5.0 API. PDF Exports.
+    * Version 3.23 SQLite Access. Manual Plugin Management. Additional
+                   Internationalization Support.
+    * Version 3.22 Threaded/Refinements to Plugin Architecture. Upgrade
+                   to Java 5.0 API. PDF Exports.
     * Version 3.17 Internationalization Support. Completed Plugin Framework.
     * Version 3.06 Initial Plugin Inclusion, Table Field Charts.
-    * Version 3.05 Incremental Release with Core Architecture Cleanup, and Minor
-                   Bug Fixes. Update  Multiple Rows Feature.
-    * Version 3.03 Incremental Release with Minor Bug Fixes and Network Bandwidth
-		   Reduction Enhancements. CSV Import/Export Date Format Option and
-		   Summary Table State Saving/Loading.
+    * Version 3.05 Incremental Release with Core Architecture Cleanup,
+                   and Minor Bug Fixes. Update  Multiple Rows Feature.
+    * Version 3.03 Incremental Release with Minor Bug Fixes and Network
+                   Bandwidth Reduction Enhancements. CSV Import/Export
+                   Date Format Option and Summary Table State Saving/Loading.
     * Version 3.01 Minor Bug Fixes and Performance Enhancements, GUI Revisions,
                    and Plugin Framework.
 
 Beta (2006-10-01):
 
-    * Version 2.91 Minor Bug Fixes and Performance Enhancements, Oracle Database Access.
+    * Version 2.91 Minor Bug Fixes and Performance Enhancements, Oracle
+                   Database Access.
     * Version 2.87 Fully Qualified Schema.TableNames Support, Fault Tolerance
                    Enhancements.
-    * Version 2.86 Minor Bug Fixes, HSQL Database Access, PostgreSQL Array Support, &
-		   CSV Insert/Update Import. 
+    * Version 2.86 Minor Bug Fixes, HSQL Database Access, PostgreSQL Array
+                   Support, & CSV Insert/Update Import. 
     * Version 2.81 Minor Bug Fixes, PostgreSQL Database Access, & CSV Import. 
     * Version 2.76 Code Cleanup, Field Function Operations, Advanced Sort/Search,
 		   Database SQL Export, & Root User Flush Privileges.
-    * Version 2.72 Bug Fix for Multiple Keys, SQL Data Import/Export. TableEntryForm
-		   Enhancements.
+    * Version 2.72 Bug Fix for Multiple Keys, SQL Data Import/Export.
+                   TableEntryForm Enhancements.
     * Version 2.64 New Login Interface & Connection Manager.
-    * Version 2.63 Another Attempt Bug Fix for Timestamp Fields.
-                   Primary Keys Editing if not AutoIncrement.
+    * Version 2.63 Another Attempt Bug Fix for Timestamp Fields. Primary
+                   Keys Editing if not AutoIncrement.
     * Version 2.61 Bug Fix for Date Fields.
     * Version 2.5  Bug Fix for Timestamp Fields.
     * Version 2.4  Documentation Revision.
