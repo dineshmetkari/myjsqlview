@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.73 08/21/2010
+// Version 6.74 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,6 +237,9 @@
 //             NULL and SPACE Returns Empty String.
 //        6.72 Minor Format Change.
 //        6.73 Class Method loadDBParameters() Output if I/O Error & Debug On.
+//        6.74 Added Class Instance memoryConnection to Implement Support for In
+//             Memory Databases of HSQL & SQLite. Changes in accessCheck(), getConnection(),
+//             closeConnection().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -272,7 +275,7 @@ import javax.swing.*;
  * a valid connection to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.73 08/21/2010
+ * @version 6.74 09/06/2010
  */
 
 public class MyJSQLView_Access extends JFrame implements ActionListener
@@ -303,6 +306,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
    private static String protocol, subProtocol, host, port, db, user,
                   passwordString, ssh;
    
+   private static Connection memoryConnection;
    private Hashtable<String, SiteParameters> sites;
    private transient SiteParameters lastSite;
    private transient XMLTranslator xmlTranslator;
@@ -1087,9 +1091,18 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                dbConnection = DriverManager.getConnection(connectionProperties, user, passwordString);
             }
             // SQLite
-            else if (subProtocol.indexOf("sqlite") != -1)
+            else if (subProtocol.equals("sqlite"))
             {
                connectionProperties += subProtocol + ":" + db.replace("\\", "/");
+               // System.out.println(connectionProperties);
+               dbConnection = DriverManager.getConnection(connectionProperties);
+            }
+            // HSQL Memory
+            else if (subProtocol.indexOf("hsql") != -1 && db.indexOf("mem:") != -1)
+            {
+               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
+               connectionProperties += "hsqldb:" + db + "?user=" + user
+                                       + "&password=" + passwordString + "&useSSL=" + ssh;
                // System.out.println(connectionProperties);
                dbConnection = DriverManager.getConnection(connectionProperties);
             }
@@ -1125,9 +1138,9 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
                   dbProductNameVersion = "MySQL ";
                else if (subProtocol.equals("postgresql"))
                   dbProductNameVersion = "PostgreSQL ";
-               else if (subProtocol.equals("hsql"))
+               else if (subProtocol.indexOf("hsql") != -1)
                   dbProductNameVersion = "HSQL ";
-               else if (subProtocol.equals("oracle"))
+               else if (subProtocol.indexOf("oracle") != -1)
                   dbProductNameVersion = "Oracle ";
                else if (subProtocol.equals("sqlite"))
                   dbProductNameVersion = "SQLite ";
@@ -1186,8 +1199,17 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
             loadDBParameters(dbConnection);
             loadDBTables(dbConnection);
             
-            // Must be good.
+            // Must be good so close things out and create a
+            // costant connection for memory database connections.
+            
             //db_resultSet.close();
+            
+            if ((subProtocol.equals("sqlite") && db.toLowerCase().equals(":memory:"))
+                 || (subProtocol.indexOf("hsql") != -1 && db.toLowerCase().indexOf("mem:") != -1))
+            {
+               memoryConnection = DriverManager.getConnection(connectionProperties);
+            }
+            
             dbConnection.close();
             loggedIn = true;
          }
@@ -1293,7 +1315,7 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
          //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
       }
       // SQLite
-      else if (subProtocol.indexOf("sqlite") != -1)
+      else if (subProtocol.equals("sqlite"))
       {
          catalog = db;
          schemaPattern = null;
@@ -1594,8 +1616,20 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       {
          if (MyJSQLView.getDebug())
             System.out.println(description + " Connection Created");
+         
+         // Create the appropriate connection as needed.
+         
+         // Oracle
          if (subProtocol.indexOf("oracle") != -1)
             return DriverManager.getConnection(connectionProperties, user, passwordString);
+         
+         // HSQL & SQLite Memory Connections
+         else if ((memoryConnection != null)
+                   && (subProtocol.equals("sqlite") && db.toLowerCase().equals(":memory:"))
+                       || (subProtocol.indexOf("hsql") != -1 && db.toLowerCase().indexOf("mem:") != -1))
+            return memoryConnection;
+         
+         // All Others
          else
             return DriverManager.getConnection(connectionProperties);
       }
@@ -1618,7 +1652,14 @@ public class MyJSQLView_Access extends JFrame implements ActionListener
       {
          if (MyJSQLView.getDebug())
             System.out.println(description + " Connection Closed");
-         dbConnection.close();
+         
+         // Close connection as needed.
+         if ((memoryConnection != null)
+              && (subProtocol.equals("sqlite") && db.toLowerCase().equals(":memory:"))
+                  || (subProtocol.indexOf("hsql") != -1 && db.toLowerCase().indexOf("mem:") != -1))
+            return;
+         else
+            dbConnection.close();
       }
       catch (SQLException e)
       {
