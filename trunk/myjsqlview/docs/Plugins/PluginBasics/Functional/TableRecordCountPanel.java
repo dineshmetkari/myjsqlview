@@ -2,14 +2,14 @@
 //           TableRecordCount TableRecordCountPanel
 //=================================================================
 //
-//    This class provides the panel that holds holds components
+//    This class provides the panel that holds components
 // associated with MyJSQLView basic tutorial for a plugin module.
 //
 //               << TableRecordCountPanel.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 07/10/2010
+// Version 1.7 09/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,7 +43,8 @@
 //         1.6 Replaced Code to Properly Format the schemaTableName Instance
 //             by the MyJSQLView_Utils.getSchemaTableName() Instead of Manually
 //             in Method executeRecordCount(). Removed Method Instance 
-//             identifierQuoteString. 
+//             identifierQuoteString.
+//         1.7 Added Class Instance version and Method getVersion().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,13 +74,14 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.6 07/10/2010
+ * @version 1.7 09/02/2010
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
+   private final static String version = "Version 1.7";
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
@@ -252,5 +254,14 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          tableSelectionComboBox.setEnabled(true);
       }
       disableActions = false;
+   }
+   
+   //==============================================================
+   // Class method to get the plugin's version.
+   //==============================================================
+
+   protected static String getVersion()
+   {
+      return version;
    }
 }
