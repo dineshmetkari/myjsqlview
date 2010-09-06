@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.2 06/05/2010
+// Version 1.4 09/02/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,9 @@
 //             Removed Delay in initPlugin() Class Method. Parameterized Argument
 //             tableNames in Class Method setDBTables() to Bring Code Into
 //             Compliance With Java 5.0 API.
+//         1.3 Added Method getVersion().
+//         1.4 Method getVersion() String Returned Through Static Access to
+//             TableRecordCountPanel.getVersion().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +58,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.2 06/05/2010
+ * @version 1.4 09/02/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -88,7 +91,17 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public String getName()
    {
-      return "Table Record Counts";
+      return "Table Record Count";
+   }
+   
+   //==============================================================
+   // Class method to return the version release number of the
+   // plugin module.
+   //==============================================================
+   
+   public String getVersion()
+   {
+      return TableRecordCountPanel.getVersion();
    }
 
    //==============================================================
