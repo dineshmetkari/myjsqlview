@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.7 08/26/2010
+// Version 4.8 09/07/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,7 @@
 //         4.6 Made Class Method stateConvert() Public.
 //         4.7 Implemented Internationalization for InputDialogs in Class Methods
 //             processFileChooserSelection() & processLocaleLanguage().
+//         4.8 Removed Class Method getPluginsDirectory().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -120,7 +121,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.7 08/26/2010
+ * @version 4.8 09/07/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -880,15 +881,6 @@ public class MyJSQLView_Utils extends MyJSQLView
       return "images" + getFileSeparator() + "icons";
    }
    
-   //==============================================================
-   // Class method to return the plugins directory path.
-   //==============================================================
-
-   public static String getPluginsDirectory()
-   {
-      return "lib" + getFileSeparator() + "plugins";
-   }
-
    //==============================================================
    // Class method to derive the user's home directory path.
    //==============================================================
