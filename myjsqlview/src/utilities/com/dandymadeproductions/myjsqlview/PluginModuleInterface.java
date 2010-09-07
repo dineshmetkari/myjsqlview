@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 06/10/2010
+// Version 1.4 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //             to Bring Code Into Compliance With Java 5.0 API. Minor Comment
 //             Changes.
 //         1.3 Added Interface getVersion().
+//         1.4 Added Argument String path to Interface Method initPlugin().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -55,7 +56,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/10/2010
+ * @version 1.4 09/06/2010
  */
 
 public interface PluginModuleInterface
@@ -64,7 +65,7 @@ public interface PluginModuleInterface
    // Class method to setup up the plugin.
    //==============================================================
 
-   void initPlugin(MyJSQLView_Frame mainFrame);
+   void initPlugin(MyJSQLView_Frame mainFrame, String path);
    
    //==============================================================
    // Class method to allow the collection of a name that will be
