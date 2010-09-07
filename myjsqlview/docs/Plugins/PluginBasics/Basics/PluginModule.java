@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.3 06/05/2010
+// Version 1.4 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //         1.2 Parameterized Argument tableNames in Class Method setDBTables()
 //             to Bring Code Into Compliance With Java 5.0 API.
 //         1.3 Removed Delay in Class Method initPlugin().
+//         1.4 Added Required Interface Argument String path For Method
+//             initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,7 +56,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/05/2010
+ * @version 1.4 09/06/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -75,7 +77,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class method to initialize your plugin.
    //==============================================================
 
-   public void initPlugin(MyJSQLView_Frame parentFrame)
+   public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
       myPluginPanel = new JPanel();
    }
