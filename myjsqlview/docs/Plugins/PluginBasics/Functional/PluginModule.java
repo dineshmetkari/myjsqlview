@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.4 09/02/2010
+// Version 1.5 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //         1.3 Added Method getVersion().
 //         1.4 Method getVersion() String Returned Through Static Access to
 //             TableRecordCountPanel.getVersion().
+//         1.5 Added Required Interface Argument String path For Method
+//             initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/02/2010
+ * @version 1.5 09/06/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -79,7 +81,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class method to initialize your plugin.
    //==============================================================
 
-   public void initPlugin(MyJSQLView_Frame parentFrame)
+   public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
       tableRecordCountPanel = new TableRecordCountPanel(MyJSQLView_Access.getTableNames());
    }
