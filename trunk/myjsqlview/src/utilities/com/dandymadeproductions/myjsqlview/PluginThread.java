@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.2 06/16/2010
+// Version 1.3 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 //             for the Plugin in Class Method run().
 //         1.2 Class Method run() Call to MyJSQLView_Frame.addTab() Added
 //             Argument parentFrame.
+//         1.3 Class Method run() Obtain String path to Pass to New Argument
+//             of PluginModuleInterface Method initPlugin().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -51,7 +53,7 @@ import javax.swing.JPanel;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.2 06/16/2010
+ * @version 1.3 09/06/2010
  */
 
 class PluginThread implements Runnable
@@ -88,8 +90,11 @@ class PluginThread implements Runnable
    public void run()
    {
       // Call the plugin's initializing code.
-      
-      pluginModule.initPlugin(parentFrame);
+      String path = pluginModule.getPath_FileName().substring(0, pluginModule.getPath_FileName().indexOf("<$$$>"));
+      if (path.indexOf(MyJSQLView_Utils.getFileSeparator()) != -1)
+         path = path.substring(0, path.lastIndexOf(MyJSQLView_Utils.getFileSeparator()));
+     
+      pluginModule.initPlugin(parentFrame, path);
 
       // Check all the main aspects needed by MyJSQLView
       // in the loaded plugin module and isolate the
