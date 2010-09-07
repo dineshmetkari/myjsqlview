@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.2 08/18/2010
+// Version 2.3 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             Reverted Back to the Default Instances Returned by the Getters to Null.
 //         2.1 Added Interface Method getVersion() and Class Instance version.
 //         2.2 Added Instance pathFileName and Protected Methods get/setPath_FileName().
+//         2.3 Added Argument String path to Method initPlugin().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +73,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.2 08/18/2010
+ * @version 2.3 09/06/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -109,7 +110,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
 
    /*
-   public void initPlugin(MyJSQLView_Frame mainFrame)
+   public void initPlugin(MyJSQLView_Frame mainFrame, String path)
    {
       // This is where the plugin should be initialized.
       parent = mainFrame;
@@ -119,7 +120,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
    // Class methods to get/set the plugin's file name.
    //==============================================================
-
+   
    protected String getPath_FileName()
    {
       return pathFileName;
