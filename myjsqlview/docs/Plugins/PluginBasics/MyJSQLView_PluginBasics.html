@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>September 02, 2010</b></center></div>
+	<div style="font-size:16px"><center><b>September 06, 2010</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -60,11 +60,11 @@
 				several methods. All plugins which will extend this class should do no initialization
 				work in the constructor and just allow the default super() to be called. The key
 				initialization for a plugin should be allocated to the initPlugin() method. The
-				initPlugin() method has an argument instance of the MyJSQLView_Frame which will
-				not be discussed or used in this basic tutorial for plugins, but will be covered
-				in more advanced plugin module article(s). Just as a note at this time, that argument
-				instance will allow a plugin to gain access to MyJSQLView's standard database Menu
-				commands. Now from the listing one should see that the initPlugin() method is
+				initPlugin() method has two argument instances of MyJSQLView_Frame and String which
+				will not be discussed or used in this basic tutorial for plugins, but will be covered
+				in more advanced plugin module article(s). Just as a note at this time, the MyJSQLView_Frame
+				argument instance will allow a plugin to gain access to MyJSQLView's standard database
+				Menu commands. Now from the listing one should see that the initPlugin() method is
 				commented out for the MyJSQLView_PluginModule abstract class. This is because this
 				will force you as a developer to implement this method in your plugin module class.	
 			</p>
@@ -91,7 +91,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.2 08/18/2010
+// Version 2.3 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -134,6 +134,7 @@
 //             Reverted Back to the Default Instances Returned by the Getters to Null.
 //         2.1 Added Interface Method getVersion() and Class Instance version.
 //         2.2 Added Instance pathFileName and Protected Methods get/setPath_FileName().
+//         2.3 Added Argument String path to Method initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -153,7 +154,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.2 08/18/2010
+ * @version 2.3 09/06/2010
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -174,7 +175,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public MyJSQLView_PluginModule()
    {
       // Just Initialize to a NULL condition.
-      
+
       pathFileName = null;
       name = null;
       tabIcon = null;
@@ -183,20 +184,20 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       panel = null;
       version = null;
    }
-   
+
    //==============================================================
    // Class method to setup up your plugin.
    // OVERIDE THIS METHOD!
    //==============================================================
 
    /*
-   public void initPlugin(MyJSQLView_Frame mainFrame)
+   public void initPlugin(MyJSQLView_Frame mainFrame, String path)
    {
       // This is where the plugin should be initialized.
       parent = mainFrame;
    }
    */
-   
+
    //==============================================================
    // Class methods to get/set the plugin's file name.
    //==============================================================
@@ -205,12 +206,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return pathFileName;
    }
-   
+
    protected void setPath_FileName(String content)
    {
       this.pathFileName = content;
    }
-   
+
    //==============================================================
    // Class method to obtain the plugin's name.
    // Interface requirement.
@@ -243,7 +244,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-   
+
    //==============================================================
    // Class method to allow the collection of a JToolBar to be
    // used with the plugin module.
@@ -254,7 +255,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-   
+
    //==============================================================
    // Class method for returning a JPanel for inclusion in the
    // MyJSQLView application's main tab. Interface requirement.
@@ -264,7 +265,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-   
+
    //==============================================================
    // Class method to obtain the plugin's version number.
    // Interface requirement.
@@ -274,7 +275,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    {
       return null;
    }
-   
+
    //==============================================================
    // Class method for being able to set the database tables, occurs
    // if the database is reloaded.
@@ -367,11 +368,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //    This class provides the hook to incorporate a external plugin
 // module into the MyJSQLView application.
 //
-//                  PluginModule.java
+//                   PluginModule.java 
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.3 06/05/2010
+// Version 1.4 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -398,6 +399,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //         1.2 Parameterized Argument tableNames in Class Method setDBTables()
 //             to Bring Code Into Compliance With Java 5.0 API.
 //         1.3 Removed Delay in Class Method initPlugin().
+//         1.4 Added Required Interface Argument String path For Method
+//             initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -416,7 +419,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/05/2010
+ * @version 1.4 09/06/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -437,7 +440,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class method to initialize your plugin.
    //==============================================================
 
-   public void initPlugin(MyJSQLView_Frame parentFrame)
+   public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
       myPluginPanel = new JPanel();
    }
@@ -513,11 +516,11 @@ public class PluginModule extends MyJSQLView_PluginModule
 //    This class provides the hook to incorporate a external plugin
 // module into the MyJSQLView application.
 //
-//                  PluginModule.java
+//                   PluginModule.java 
 //
 //=================================================================
 // Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.4 09/02/2010
+// Version 1.5 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -547,6 +550,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //         1.3 Added Method getVersion().
 //         1.4 Method getVersion() String Returned Through Static Access to
 //             TableRecordCountPanel.getVersion().
+//         1.5 Added Required Interface Argument String path For Method
+//             initPlugin().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -566,7 +571,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/02/2010
+ * @version 1.5 09/06/2010
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -587,7 +592,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class method to initialize your plugin.
    //==============================================================
 
-   public void initPlugin(MyJSQLView_Frame parentFrame)
+   public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
       tableRecordCountPanel = new TableRecordCountPanel(MyJSQLView_Access.getTableNames());
    }
