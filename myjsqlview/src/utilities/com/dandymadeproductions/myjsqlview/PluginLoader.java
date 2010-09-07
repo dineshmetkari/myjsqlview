@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.9 08/19/2010
+// Version 2.0 09/06/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,9 @@
 //                        Constructor and Method init(). Additional Methods Also Added to
 //                        Properly Process, loadPluginEntry(), loadConfigurationFilePluginEntries().
 //                        Changed Class Method loadPluginEntries() to loadDefaultPluginEntries().
+//         2.0 09/06/2010 Changed the Delimiter Between pathKey & className to '<$$$>'.
+//                        Methods Effected loadPluginEntry(), loadConfigurationFilePluginEntries(),
+//                        & loadPluginModules().
 //                        
 //
 //-----------------------------------------------------------------
@@ -85,7 +88,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 1.9 08/18/2010
+ * @version 2.0 09/06/2010
  */
 
 class PluginLoader implements Runnable
@@ -212,7 +215,7 @@ class PluginLoader implements Runnable
          
          if (!pathKey.equals("") && !className.equals(""))
          {
-            pluginEntry = pathKey + " " + className + "\n";
+            pluginEntry = pathKey + "<$$$>" + className + "\n";
             
             // Write new or appending. 
             configurationFile = new File(pluginConfigFileString);
@@ -333,10 +336,10 @@ class PluginLoader implements Runnable
          {
             currentLine = currentLine.trim();
             
-            if (currentLine.indexOf(" ") != -1)
+            if (currentLine.indexOf("<$$$>") != -1)
             {
-               pathKey = currentLine.substring(0, currentLine.indexOf(" "));
-               className = currentLine.substring(currentLine.indexOf(" ") + 1);
+               pathKey = currentLine.substring(0, currentLine.indexOf("<$$$>"));
+               className = currentLine.substring(currentLine.indexOf("<$$$>") + 5);
                pluginEntriesHashMap.put(pathKey, className);
             }
             else
@@ -404,7 +407,7 @@ class PluginLoader implements Runnable
             {
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.setPath_FileName(pluginEntry.getKey() + " " + pluginEntry.getValue());
+               pluginModule.setPath_FileName(pluginEntry.getKey() + "<$$$>" + pluginEntry.getValue());
 
                new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
