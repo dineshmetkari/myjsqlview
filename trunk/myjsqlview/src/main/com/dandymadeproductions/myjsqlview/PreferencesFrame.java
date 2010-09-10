@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.6 08/04/2010
+// Version 7.7 09/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,8 @@
 //             New Class Instance pdfExportPanel, Changes in Constructor, actionPerformed(),
 //             & createTreeNodes(DefaultMutableTreeNode().
 //         7.6 Spelling Corrections and Cleanup.
+//         7.7 Changed Constructor Instances  dataImportPreferencesPanel, summaryPreferencesPanel,
+//             & dataExportPreferencesPanel to Type GraphicCanvasPanel.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -183,7 +185,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.5 06/15/2010
+ * @version 7.7 09/10/2010
  */
 
 //=================================================================
@@ -233,9 +235,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Constructor Instances.
       DefaultMutableTreeNode top;
       JPanel treePreferencesSelectionPanel, centerPanel;
-      DataImportPreferencesPanel dataImportPreferencesPanel;
-      DataExportPreferencesPanel dataExportPreferencesPanel;
-      TableSummaryViewPreferencesPanel summaryPreferencesPanel;
+      GraphicsCanvasPanel dataImportPreferencesPanel, dataExportPreferencesPanel;
+      GraphicsCanvasPanel summaryPreferencesPanel;
       JPanel tableFieldPanel;
       JPanel tableRowPanel;
       JPanel southButtonPanel;
@@ -381,7 +382,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       // ***************************************
       // Table Summary View Decorative Panel
-      summaryPreferencesPanel = new TableSummaryViewPreferencesPanel();
+      summaryPreferencesPanel = new GraphicsCanvasPanel("SummaryPreferencesPanel.jpg");
       summaryPreferencesPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       optionsPanel.add(resourceTableSummaryView, summaryPreferencesPanel);
 
@@ -401,7 +402,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       // ***************************************
       // Data Import Decorative Panel
-      dataImportPreferencesPanel = new DataImportPreferencesPanel();
+      dataImportPreferencesPanel = new GraphicsCanvasPanel("DataImportPreferencesPanel.jpg");
       dataImportPreferencesPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       optionsPanel.add(resourceDataImport, dataImportPreferencesPanel);
 
@@ -413,7 +414,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       // ***************************************
       // Data Export Decorative Panel
-      dataExportPreferencesPanel = new DataExportPreferencesPanel();
+      dataExportPreferencesPanel = new GraphicsCanvasPanel("DataExportPreferencesPanel.jpg");
       dataExportPreferencesPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       optionsPanel.add(resourceDataExport, dataExportPreferencesPanel);
 
