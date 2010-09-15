@@ -281,7 +281,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 				the MyJSQLView group is to have a directory under this path by the same name
 				as the plugin and in this directory have images and other pertinent objects
 				required by the plugin. Please see <b>Figure 2.</b> below. With this in mind
-				the tabIcon object is created by first producing an iconDirectorys with the
+				the tabIcon object is created by first producing an iconsDirectory with the
 				path object, file separators, and our known icons directory of <b>images/icons</b>
 				and then appending this with the file's name. Once the initPlugin() completes
 				then all aspects of creating a MyJSQLView plugin module should be initialized.
@@ -791,7 +791,8 @@ class Profiler_MenuBar extends JMenuBar
 				via one of MyJSQLView own action events that is part of MyJSQLView's
 				main frame. We find the action event needed by making a reference to
 				the MyJSQLView_MenuActionCommands class. In this case the action command
-				string is ACTION_EXIT.
+				string is ACTION_EXIT. We complete the File menu by adding the JMenu
+				to the classes' own add method.
 			</p>
 
 			<a name="Summary"></a>
@@ -804,8 +805,8 @@ class Profiler_MenuBar extends JMenuBar
 				plugin creation have to do with returning a version string and tab icon image
 				for the MyJSQLView's tabbed pane. Other requirements that a plugin made need
 				to implement is language support. MyJSQLView provides a class, MyJSQLView_ResourceBundle,
-				and a method to returned user selected locale information via the MyJSQLView.getLocaleString().
-				MyJSQLLView also can help a plugin to determine the location of resources via
+				and a method to return user selected locale information via the MyJSQLView.getLocaleString().
+				MyJSQLView also can help a plugin to determine the location of resources via
 				the path string object that is passed to the initPlugin() method of the PluginModule
 				class. The final advanced features that a plugin may wish to produce is a menu
 				and tool bar components. The PluginModule class provides a means to return
