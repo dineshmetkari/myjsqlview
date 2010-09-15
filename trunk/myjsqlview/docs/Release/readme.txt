@@ -73,7 +73,7 @@ Requirements:
     * HSQL 1.8.0.8 - 1.8.1.3. (JDBC Integrated Into HSQLDB.jar)
     * MySQL 5.07 - 5.084, JDBC 5.0.7, 5.1.5 - 5.1.8.
     * Oracle 10g, JDBC 14.
-    * PostgreSQL 8.2.5 - 8.4.4, JDBC3 8.2-506 - 8.4-701.
+    * PostgreSQL 8.2.5 - 8.4.4, JDBC3 8.2-506 - 8.4-702.
     * SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
 
 Installation Notes:
