@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.8 09/07/2010
+// Version 4.9 09/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,7 @@
 //         4.7 Implemented Internationalization for InputDialogs in Class Methods
 //             processFileChooserSelection() & processLocaleLanguage().
 //         4.8 Removed Class Method getPluginsDirectory().
+//         4.9 Backed Out 4.7 For Class Method processLocaleLanguage(), Duh.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -121,7 +122,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.8 09/07/2010
+ * @version 4.9 09/15/2010
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -469,7 +470,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // through a JFileChooser to allow the querying of the user to
    // confirm overwriting an existing file.
    //==============================================================
-
+   
    public static int processFileChooserSelection(JFrame parent, JFileChooser fileChooser)
    {
       // Method Instances.
@@ -580,6 +581,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       return resultsOfFileChooser;
    }
+   
 
    //==============================================================
    // Class method for allowing the setting of the language locale
@@ -590,8 +592,6 @@ public class MyJSQLView_Utils extends MyJSQLView
    protected static String processLocaleLanguage()
    {
       // Method Instances
-      MyJSQLView_ResourceBundle resourceBundle;
-      String resource, resourceOK, resourceCancel;
       String localeString;
       String localeFileName;
       String localeFileDirectoryName;
@@ -614,7 +614,6 @@ public class MyJSQLView_Utils extends MyJSQLView
 
       // Setup the instances and required data to start.
 
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
       localeString = "";
       localeFileName = "myjsqlview_locale.txt";
       localeFileDirectoryName = "locale";
@@ -686,20 +685,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             localeIcon = new ImageIcon(MyJSQLView_Utils.getIconsDirectory()
                                        + MyJSQLView_Utils.getFileSeparator() + "localeIcon.gif");
 
-            
-            resource = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.LanguageSelection");
-            if (resource.equals(""))
-               resource = "Language Selection";
-            
-            resourceOK = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.OK");
-            if (resourceOK.equals(""))
-               resourceOK = "OK";
-            
-            resourceCancel = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Cancel");
-            if (resourceCancel.equals(""))
-               resourceCancel = "Cancel";
-            
-            localeSelectDialog = new InputDialog(null, resource, resourceOK, resourceCancel, content,
+            localeSelectDialog = new InputDialog(null, "Language Selection", "ok", "cancel", content,
                                                  localeIcon);
             localeSelectDialog.pack();
             localeSelectDialog.center();
@@ -748,7 +734,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       // System.out.println(localeString);
       return localeString;
    }
-
+   
    //==============================================================
    // Class method to load a provided sound file into a audio clip.
    // A check of the returned clip should be made to insure it was
