@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 5.9 08/20/2010
+// Version 6.0 09/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,8 @@
 //                        the Tab Index.
 //         5.9 08/20/2010 Added Class Instance pluginFrameListenButton. Program Clicked When
 //                        a Plugin Module Tab is Added, addTab().
+//         6.0 09/15/2010 Class Method createGUI() Removed the dummyPanel Removal From the
+//                        Main Tab.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -178,7 +180,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 5.9 08/20/2010
+ * @version 6.0 09/15/2010
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -299,21 +301,13 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             resourceBundle = MyJSQLView.getLocaleResourceBundle();
             
             dbTablesPanel = new DBTablesPanel(dbConnection, MyJSQLView_Access.getTableNames());
+            mainTabsPane.setComponentAt(1, dbTablesPanel);
             
             resource = resourceBundle.getResource("MyJSQLView_Frame.tab.DatabaseTables");
             if (resource.equals(""))
-            {
-               JPanel dummyPanel = (JPanel)mainTabsPane.getComponentAt(1);
-               mainTabsPane.remove(dummyPanel);
-               mainTabsPane.setComponentAt(1, dbTablesPanel);
                mainTabsPane.setToolTipTextAt(1, "Database Tables");
-            }
             else
-            {
-               //mainTabsPane.setIconAt(1, databaseTablesIcon);
-               mainTabsPane.setComponentAt(1, dbTablesPanel);
                mainTabsPane.setToolTipTextAt(1, resource);
-            }
             
             // Closing the database connection that is used
             // during the inital setup of the application.
