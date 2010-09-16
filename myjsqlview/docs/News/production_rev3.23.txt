@@ -1,0 +1,42 @@
+MyJSQLView Version 3.23 Released
+
+The MyJSQLView project is pleased to provide the release of
+Version 3.23 to the public. The release marks the addition of 
+support for the SQLite database. New to this release of MyJSQLView
+is also the support for in memory databases that is highlighted
+for both the SQLite and HSQL databases. What this means is data
+sets can not be imported into a table and MyJSQLView should
+be able to perform quicker searches and sorts of the in memory
+data. The group has also abandoned the practice of not including
+open source plugins for the application that it produces. Granted
+only one really exists, the TableFieldProfiler, but downloads
+of that plugin amounted to less then 5% of the total MyJSQLView
+downloads since the last release. The group thought users were
+really missing out on a possible valuable tool which had been
+expanded and included internationalization. So the TableFieldProfiler
+is now included with the standard MyJSQLView download.
+
+This release of MyJSQLView has also enhanced the plugin architecture
+by letting users manually load plugins from alternative directories
+than the default lib/plugins directory. You will find access to
+the Plugin Management Tool in the top main tab menu for the application.
+Speaking of plugins, developers will now find the Plugin Basics Tutorial
+has been updated and an Advanced one has also been created under
+the documentation of the web site.
+
+Since this is a release that supports a new database make sure and
+check out the additional entries that been given for the connection
+parameters in the example reference myjsqlview.xml file. We would
+also like to let you know that a new database is available at the
+web site for the US Congress. The data set is of the legislative
+branches' representatives, curiosity of Sunlight Labs.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. A
+query frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
