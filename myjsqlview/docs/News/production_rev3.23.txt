@@ -4,7 +4,7 @@ The MyJSQLView project is pleased to provide the release of Version
 3.23 to the public. The release marks the addition of support for
 the SQLite database. New to this release of MyJSQLView is also the
 support for in memory databases that is featured for both the SQLite
-and HSQL databases. What this means is data sets can not be imported
+and HSQL databases. What this means is data sets can now be imported
 into a table and MyJSQLView should be able to perform quicker searches
 and sorts of the in memory data. The group has also abandoned the
 practice of not including some of the open source plugins for the
@@ -25,7 +25,7 @@ has been updated and an advanced one has also been created under
 the documentation of the web site.
 
 Since this is a release that supports a new database make sure and
-check out the additional entries that been given for the connection
+check out the additional entries that have been given for the connection
 parameters in the example reference myjsqlview.xml file. We would
 also like to let you know that a new database is available at the
 web site for the US Congress. The data set is of the legislative
