@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.0 08/26/2010
+// Version 6.1 10/10/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,6 +145,7 @@
 //         5.9 08/26/2010 Internationalization of Table Row Preferences Setting in
 //                        actionPerformed().
 //         6.0 08/26/2010 Correction to Table Row Preferences Warning Label Resources.
+//         6.1 10/10/2010 Added Data | Export | PDF to Menu and ToolBar.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -182,7 +183,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.0 08/26/2010
+ * @version 6.1 10/10/2010
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -731,7 +732,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
          // Data Export
          if (getSelectedTab() != null
-             && (actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DESQL") != -1))
+             && (actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DEPDF") != -1
+                 || actionCommand.indexOf("DESQL") != -1))
          {
             String exportedTable;
             HashMap<String, String> tableColumnNamesHashMap = new HashMap <String, String>();
@@ -751,6 +753,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
             if (actionCommand.indexOf("DECSV") != -1)
                fileName += ".txt";
+            else if (actionCommand.indexOf("DEPDF") != -1)
+               fileName += ".pdf";
             else
                fileName += ".sql";
 
@@ -801,6 +805,16 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                                                 tableColumnTypeHashMap, exportedTable,
                                                 fileName);
                   }
+                  
+                  // Data Export PDF Summary Table
+                  else if (actionCommand.equals("DEPDFTST"))
+                  {
+                     JTable summaryListTable = (getSelectedTab()).getListTable();
+                     if (summaryListTable != null)
+                        new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
+                                                   exportedTable, fileName);  
+                  }
+                  
                   /*
                   // Data Export SQL Table
                   else if (actionCommand.equals("DESQLT"))
@@ -1003,25 +1017,38 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       else
          exportMenu = new JMenu(resource);
 
-      resource = resourceBundle.getResource("QueryFrame.menu.CSVFormat");
+      resource = resourceBundle.getResource("QueryFrame.menu.ExportCSV");
       if (resource.equals(""))
-         exportCVSMenu = new JMenu("CSV Format");
+         exportCVSMenu = new JMenu("CSV");
       else
          exportCVSMenu = new JMenu(resource);
       
       /*
-      resource = resourceBundle.getResource("QueryFrame.menu.Table");
+      resource = resourceBundle.getResource("QueryFrame.menu.CSVTable");
       if (resource.equals(""))
          exportCVSMenu.add(menuItem("Table", "DECSVT"));
       else
          exportCVSMenu.add(menuItem(resource, "DECSVT"));
       */
       
-      resource = resourceBundle.getResource("QueryFrame.menu.TabSummaryTable");
+      resource = resourceBundle.getResource("QueryFrame.menu.CSVSummaryTable");
       if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Tab Summary Table", "DECSVTST"));
+         exportCVSMenu.add(menuItem("Summary Table", "DECSVTST"));
       else
          exportCVSMenu.add(menuItem(resource, "DECSVTST"));
+      exportMenu.add(exportCVSMenu);
+      
+      resource = resourceBundle.getResource("QueryFrame.menu.ExportPDF");
+      if (resource.equals(""))
+         exportCVSMenu = new JMenu("PDF");
+      else
+         exportCVSMenu = new JMenu(resource);
+      
+      resource = resourceBundle.getResource("QueryFrame.menu.PDFSummaryTable");
+      if (resource.equals(""))
+         exportCVSMenu.add(menuItem("Summary Table", "DEPDFTST"));
+      else
+         exportCVSMenu.add(menuItem(resource, "DEPDFTST"));
       exportMenu.add(exportCVSMenu);
 
       // JMenu exportSQLMenu = new JMenu("SQL Format");
@@ -1056,7 +1083,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       ImageIcon printIcon, pageFormatIcon, exitIcon;
       ImageIcon openScriptIcon, saveScriptIcon, tableRowsIcon;
-      ImageIcon csvExportTabSummaryTableIcon;
+      ImageIcon csvExportTabSummaryTableIcon, pdfExportTabSummaryTableIcon;
       JButton buttonItem;
       
       // ===============
@@ -1126,13 +1153,22 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // ===============
       // Data Menu
       
-      // Export CSV Tab Summary Table
+      // Export CSV Summary Table
       csvExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "csvExportSummaryTableIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.ExportCSVSummaryTable");
       if (resource.equals(""))
          buttonItem = buttonItem("Export CSV Tab Summary Table", csvExportTabSummaryTableIcon, "DECSVTST");
       else
          buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, "DECSVTST");
+      queryFrameToolBar.add(buttonItem);
+      
+      // Export PDF Summary Table
+      pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
+      resource = resourceBundle.getResource("QueryFrame.tooltip.ExportPDFSummaryTable");
+      if (resource.equals(""))
+         buttonItem = buttonItem("Export CSV Tab Summary Table", pdfExportTabSummaryTableIcon, "DEPDFTST");
+      else
+         buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, "DEPDFTST");
       queryFrameToolBar.add(buttonItem);
    }
 
