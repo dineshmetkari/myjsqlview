@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.1 05/18/2010
+// Version 2.2 10/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,10 @@
 //                        Class.
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         2.1 05/18/2010 Organized Imports.
+//         2.2 10/18/2010 Updated to Have Rendering Done With the paintComponent() Method
+//                        for Panels Instead of paint(). Added paintComponent() and
+//                        Changed paint() to drawPanel(). Removed Use of Graphics2D in
+//                        render() and removed Setting of Border in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,10 +60,8 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.Image;
 import java.util.Random;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 
 /**
@@ -68,7 +70,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's spring months, May-June.
  * 
  * @author Dana M. Proctor
- * @version 2.1 05/18/2010
+ * @version 2.2 10/18/2010
  */
 
 class PreferencesPanelSpring extends PreferencesPanel implements Runnable
@@ -98,10 +100,6 @@ class PreferencesPanelSpring extends PreferencesPanel implements Runnable
       Thread t;
       String fileSeparator;
       String[] owlImageName = {"owl1.gif", "owl2.gif", "owl3.gif", "owl4.gif"};
-
-      // Setting up the panel stuff.
-      setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
-                                                   BorderFactory.createLoweredBevelBorder()));
 
       // ==========================================================
       // Obtaining the background image and setting up as
@@ -158,31 +156,23 @@ class PreferencesPanelSpring extends PreferencesPanel implements Runnable
    }
 
    //==============================================================
-   // Class method to create a double buffered offscreen graphic.
+   // Class method to create a double buffered offscreen graphic
+   // then rendering to the screen.
    //==============================================================
 
    private void render()
    {
-      // Class Instances
-      Graphics g2 = (Graphics2D) getGraphics();
-      Graphics2D imageGraphics;
-
-      // Clear and redraw the graphics background then
-      // draw the component offscreen.
-      if (g2 != null)
+      // Check then draw the component offscreen before
+      // to the screen.
+      
+      if (getGraphics() != null)
       {
          Dimension d = getSize();
          if (checkImage(d))
          {
-            imageGraphics = (Graphics2D) offScreenGraphicsImage.getGraphics();
-
-            // Draw this component offscreen then to screen.
-            paint(imageGraphics);
-            g2.drawImage(offScreenGraphicsImage, 0, 0, null);
-
-            imageGraphics.dispose();
+            drawPanel(offScreenGraphicsImage.getGraphics());
+            getGraphics().drawImage(offScreenGraphicsImage, 0, 0, null);
          }
-         g2.dispose();
       }
    }
 
@@ -223,15 +213,16 @@ class PreferencesPanelSpring extends PreferencesPanel implements Runnable
          System.out.println("Process Interrupted.");
       }
    }
-
+   
    //==============================================================
-   // Overiding public update method that the panel will not
-   // be cleared then refilled.
+   // Class method to overide the standard panel paintComponents
+   // routine.
    //==============================================================
 
-   public void update(Graphics g)
+   protected void paintComponent(Graphics g)
    {
-      paint(g);
+      super.paintComponent(g);
+      drawPanel(g);
    }
 
    //==============================================================
@@ -239,7 +230,7 @@ class PreferencesPanelSpring extends PreferencesPanel implements Runnable
    // in the background.
    //==============================================================
 
-   public void paint(Graphics g)
+   public void drawPanel(Graphics g)
    {
       // Class Methods
       int panelWidth, panelHeight;
