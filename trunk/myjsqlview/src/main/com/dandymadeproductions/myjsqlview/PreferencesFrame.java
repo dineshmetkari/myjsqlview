@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.7 09/10/2010
+// Version 7.8 10/18/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,7 @@
 //         7.6 Spelling Corrections and Cleanup.
 //         7.7 Changed Constructor Instances  dataImportPreferencesPanel, summaryPreferencesPanel,
 //             & dataExportPreferencesPanel to Type GraphicCanvasPanel.
+//         7.8 Removed the Setting of the preferencesTopPanel Border in the Constructor.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -185,7 +186,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.7 09/10/2010
+ * @version 7.8 10/18/2010
  */
 
 //=================================================================
@@ -334,6 +335,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       
       optionsPanel = new JPanel(centerCardLayout = new CardLayout());
       optionsPanel.setBorder(BorderFactory.createEtchedBorder());
+      optionsPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                                                                BorderFactory.createLoweredBevelBorder()));
 
       // ***************************************
       // Preferences Decorative Panel
@@ -346,39 +349,21 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       // {11,0,1} December-February (Winter)
       if (currentMonth == 11 || currentMonth == 1 || currentMonth == 0)
-      {
          preferencesTopPanel = new PreferencesPanelWinter();
-         preferencesTopPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-         optionsPanel.add(resourcePreferences, preferencesTopPanel);
-      }
       // {2,3} March-Arpil (Early Spring)
       else if (currentMonth >= 2 && currentMonth <= 3)
-      {
          preferencesTopPanel = new PreferencesPanelEarlySpring();
-         preferencesTopPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-         optionsPanel.add(resourcePreferences, preferencesTopPanel);
-      }
       // {4,5} May-June (Spring)
       else if (currentMonth >= 4 && currentMonth <= 5)
-      {
          preferencesTopPanel = new PreferencesPanelSpring();
-         preferencesTopPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-         optionsPanel.add(resourcePreferences, preferencesTopPanel);
-      }
       // {6,7,8} July-September (Summer)
       else if (currentMonth >= 6 && currentMonth <= 8)
-      {
          preferencesTopPanel = new PreferencesPanelSummer();
-         preferencesTopPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-         optionsPanel.add(resourcePreferences, preferencesTopPanel);
-      }
       // {9,10} October-November (Fall)
       else
-      {
          preferencesTopPanel = new PreferencesPanelFall();
-         preferencesTopPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-         optionsPanel.add(resourcePreferences, preferencesTopPanel);
-      }
+      
+      optionsPanel.add(resourcePreferences, preferencesTopPanel);
 
       // ***************************************
       // Table Summary View Decorative Panel
