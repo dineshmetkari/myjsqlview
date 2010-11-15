@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.3 10/18/2010
+// Version 2.4 11/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,7 @@
 //                        for Panels Instead of paint(). Added paintComponent() and
 //                        Changed paint() to drawPanel(). Removed Use of Graphics2D in
 //                        render() and removed Setting of Border in Constructor.
+//         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +81,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.3 10/18/2010
+ * @version 2.4 11/15/2010
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable
@@ -338,7 +339,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
    // routine.
    //==============================================================
 
-   protected void paintComponent(Graphics g)
+   public void paintComponent(Graphics g)
    {
       super.paintComponent(g);
       drawPanel(g);
@@ -349,7 +350,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
    // in the background.
    //==============================================================
 
-   public void drawPanel(Graphics g)
+   private void drawPanel(Graphics g)
    {
       // Class Methods
       int panelWidth, panelHeight;
