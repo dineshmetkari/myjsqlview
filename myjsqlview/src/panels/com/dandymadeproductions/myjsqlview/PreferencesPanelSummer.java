@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.9 10/18/2010
+// Version 3.0 11/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
 //                        for Panels Instead of paint(). Added paintComponent() and
 //                        Changed paint() to drawPanel(). Removed Use of Graphics2D in
 //                        render() and removed Setting of Border in Constructor.
+//         3.0 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -88,7 +89,7 @@ import javax.swing.ImageIcon;
  * hemisphere's summer months, July-September.
  * @author Dana M. Proctor
  * 
- * @version 2.9 10/18/2010
+ * @version 3.0 11/15/2010
  */
 
 class PreferencesPanelSummer extends PreferencesPanel implements Runnable
@@ -342,17 +343,17 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
    // routine.
    //==============================================================
 
-   protected void paintComponent(Graphics g)
+   public void paintComponent(Graphics g)
    {
       super.paintComponent(g);
       drawPanel(g);
    }
    
    //==============================================================
-   // Method to create the graphics for the panel.
+   // Class method to create, paint, the graphics for the panel.
    //==============================================================
 
-   public void drawPanel(Graphics g)
+   private void drawPanel(Graphics g)
    {
       // Class Methods
       int panelWidth, panelHeight;
