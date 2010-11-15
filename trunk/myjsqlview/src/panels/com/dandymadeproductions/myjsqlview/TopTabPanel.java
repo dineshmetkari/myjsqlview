@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 05/18/2010
+// Version 1.3 11/15/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,9 @@
 //                        to 10.0.
 //         1.2 05/18/2010 Class Method paint() Instance stringWidth Created
 //                        by Cast Instead of new Double(d).intValue().
+//         1.3 11/15/2010 Replaced the paint() Method With the More Update Version
+//                        Panel Graphic Drawing to drawpanel() Entered vai render()
+//                        & paintComponent(). Removed Border Setting.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +60,6 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import java.util.Calendar;
@@ -68,7 +70,7 @@ import java.util.Random;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.2 05/18/2010
+ * @version 1.3 11/15/2010
  */
 
 class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -110,10 +112,6 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
       int timeOfDay;
       Calendar calendar;
       Thread t;
-
-      // Setting up the panel stuff.
-      setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(), BorderFactory
-            .createLoweredBevelBorder()));
 
       // Setting up as needed instances values & obtaining the
       // background image.
@@ -320,7 +318,7 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
             imageGraphics = (Graphics2D) offScreenGraphicsImage.getGraphics();
 
             // Draw this component offscreen then to screen.
-            paint(imageGraphics);
+            drawPanel(offScreenGraphicsImage.getGraphics());
             g2.drawImage(offScreenGraphicsImage, 0, 0, null);
 
             imageGraphics.dispose();
@@ -402,23 +400,23 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
       // Reset Panel.
       resetPanel();
    }
-
+   
    //==============================================================
-   // Overiding public update method that the panel will not
-   // be cleared then refilled.
+   // Class method to overide the standard panel paintComponents
+   // routine.
    //==============================================================
 
-   public void update(Graphics g)
+   public void paintComponent(Graphics g)
    {
-      paint(g);
+      super.paintComponent(g);
+      drawPanel(g);
    }
 
    //==============================================================
-   // Overiding public paint method so that a images may be placed
-   // in the background and animated.
+   // Class method to create, paint, the graphics for the panel.
    //==============================================================
-
-   public void paint(Graphics g1)
+   
+   private void drawPanel(Graphics g1)
    {
       // Class Methods
       Graphics2D g2D;
