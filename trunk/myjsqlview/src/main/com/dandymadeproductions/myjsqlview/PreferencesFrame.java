@@ -7,8 +7,8 @@
 //             << PreferencesFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.8 10/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 7.9 01/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -157,6 +157,9 @@
 //         7.7 Changed Constructor Instances  dataImportPreferencesPanel, summaryPreferencesPanel,
 //             & dataExportPreferencesPanel to Type GraphicCanvasPanel.
 //         7.8 Removed the Setting of the preferencesTopPanel Border in the Constructor.
+//         7.9 Added the General Options Node. Added Class Instances generalPreferencesPanel,
+//             resourceGeneral, resourceGeneralOptions. Effected Class Methods actionPerformed(),
+//             Constructor, createNodeResourceNames(), & createTreeNodes().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -186,7 +189,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 7.8 10/18/2010
+ * @version 7.9 01/08/2011
  */
 
 //=================================================================
@@ -207,6 +210,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private CardLayout centerCardLayout, tableFieldCardLayout, tableRowCardLayout;
 
    private PreferencesPanel preferencesTopPanel;
+   private GeneralPreferencesPanel generalPreferencesPanel;
    private TableFieldSelectionPreferencesPanel tableFieldPreferences;
    private TableRowSelectionPreferencesPanel tableRowPreferences;
    private CSVImportPreferencesPanel csvImportPanel;
@@ -215,6 +219,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private SQLExportPreferencesPanel sqlExportPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourcePreferences;
+   private String resourceGeneral, resourceGeneralOptions;
    private String resourceTableSummaryView, resourceTableFields, resourceTableRows;
    private String resourceDataImport, resourceImport, resourceDataExport, resourceExport;
    private String tableName, iconsDirectory;
@@ -236,8 +241,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Constructor Instances.
       DefaultMutableTreeNode top;
       JPanel treePreferencesSelectionPanel, centerPanel;
+      GraphicsCanvasPanel generalPanel, summaryPreferencesPanel;
       GraphicsCanvasPanel dataImportPreferencesPanel, dataExportPreferencesPanel;
-      GraphicsCanvasPanel summaryPreferencesPanel;
       JPanel tableFieldPanel;
       JPanel tableRowPanel;
       JPanel southButtonPanel;
@@ -364,6 +369,18 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
          preferencesTopPanel = new PreferencesPanelFall();
       
       optionsPanel.add(resourcePreferences, preferencesTopPanel);
+      
+      // ***************************************
+      // General Options Decorative Panel
+      generalPanel = new GraphicsCanvasPanel("GeneralPreferencesPanel.jpg");
+      generalPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      optionsPanel.add(resourceGeneral, generalPanel);
+      
+      // ***************************************
+      // General Options Panel
+      generalPreferencesPanel = new GeneralPreferencesPanel(resourceBundle);
+      generalPreferencesPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      optionsPanel.add(resourceGeneralOptions, generalPreferencesPanel);
 
       // ***************************************
       // Table Summary View Decorative Panel
@@ -559,6 +576,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             while (cardsIterator.hasNext())
                (tableRowPanelsHashtable.get(cardsIterator.next())).updatePreferences();
 
+            DBTablesPanel.setGeneralProperties(generalPreferencesPanel.getGeneralOptions());
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
             DBTablesPanel.setDataExportProperties(pdfExportPanel.getPDFExportOptions());
@@ -752,6 +770,19 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       else
          resourcePreferences = resource;
       
+      // General View Nodes.
+      
+      resource = resourceBundle.getResource("PreferencesFrame.node.General");
+      if (resource.equals(""))
+         resourceGeneral = "General";
+      else
+         resourceGeneral = resource;
+      resource = resourceBundle.getResource("PreferencesFrame.node.GeneralOptions");
+      if (resource.equals(""))
+         resourceGeneralOptions = "Options";
+      else
+         resourceGeneralOptions = resource;
+      
       // Table Summary View Nodes.
       
       resource = resourceBundle.getResource("PreferencesFrame.node.TableSummaryView");
@@ -770,7 +801,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       else
          resourceTableRows = resource;
       
-      // Data Import & Nodes.
+      // Data Import &  Export Nodes.
       
       resource = resourceBundle.getResource("PreferencesFrame.node.DataImport");
       if (resource.equals(""))
@@ -802,10 +833,21 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private void createTreeNodes(DefaultMutableTreeNode top)
    {
       // Class Method Instances.
+      DefaultMutableTreeNode generalNode, generalOptionsNode;
       DefaultMutableTreeNode summaryTableNode, tableFieldsNode, tableRowsNode;
       DefaultMutableTreeNode dataImportNode, csvImportNode;
       DefaultMutableTreeNode dataExportNode, csvExportNode, pdfExportNode, sqlExportNode;
 
+      // General View Node
+      generalNode = null;
+      generalNode = new DefaultMutableTreeNode(resourceGeneral);
+      top.add(generalNode);
+      
+      // General Options Node
+      generalOptionsNode = null;
+      generalOptionsNode = new DefaultMutableTreeNode(resourceGeneralOptions);
+      generalNode.add(generalOptionsNode);
+      
       // Summary Table View Node
       summaryTableNode = null;
       summaryTableNode = new DefaultMutableTreeNode(resourceTableSummaryView);
