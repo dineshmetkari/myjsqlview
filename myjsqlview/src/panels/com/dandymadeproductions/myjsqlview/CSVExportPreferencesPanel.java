@@ -8,8 +8,8 @@
 //             << CSVExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.8 06/13/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 4.9 01/08/2010
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,7 @@
 //                        to get/setCSVDataFormat(). Affected Methods getCSVExportOptions()
 //                        & setCSVExportProperties().
 //         4.8 06/13/2010 Minor Comment Changes to Methods Information.
+//         4.9 01/08/2011 Comment Changes and Update to Copyright.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -119,7 +120,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.8 06/13/2010
+ * @version 4.9 01/08/2011
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -516,7 +517,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
    }
 
    //===============================================================
-   // Class method to get the delimiter string.
+   // Class method to get the panels options.
    //===============================================================
 
    protected DataExportProperties getCSVExportOptions()
@@ -546,7 +547,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
    }
 
    //========================================================
-   // Class method to get the delimiter string.
+   // Class method to set the panels options.
    //========================================================
 
    protected void setCSVExportProperties(DataExportProperties dataProperties)
