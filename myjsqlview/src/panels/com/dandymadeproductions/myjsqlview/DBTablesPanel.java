@@ -10,8 +10,8 @@
 //                 << DBTablesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.0 07/21/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 4.1 01/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,8 @@
 //         3.9 Modification to Instance Creation for TableTabPanels to Include Argument
 //             viewOnlyTable, false.
 //         4.0 Added SQLite TableTabPanel Type for Instantiation in loadTable().
+//         4.1 Added Class Instance generalProperties and Associated get/setGeneralProperties()
+//             Method.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -129,7 +131,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.0 07/21/2010
+ * @version 4.1 01/08/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -150,6 +152,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static long statusTimer;
    private volatile static boolean stopStatusDelayThread;
    
+   private static GeneralProperties generalProperties = new GeneralProperties();
    private static DataImportProperties dataImportProperties = new DataImportProperties();
    private static DataExportProperties dataExportProperties = new DataExportProperties();
 
@@ -585,6 +588,15 @@ public class DBTablesPanel extends JPanel implements ActionListener
    }
    
    //==============================================================
+   // Class Method to return the current GeneralProperties.
+   //==============================================================
+
+   protected static GeneralProperties getGeneralProperties()
+   {
+      return generalProperties;
+   }
+   
+   //==============================================================
    // Class Method to return the current DataImportProperties.
    //==============================================================
 
@@ -600,6 +612,38 @@ public class DBTablesPanel extends JPanel implements ActionListener
    protected static DataExportProperties getDataExportProperties()
    {
       return dataExportProperties;
+   }
+   
+   //==============================================================
+   // Class Method to set the GeneralProperties.
+   //==============================================================
+
+   protected static void setGeneralProperties(GeneralProperties newGeneralProperties)
+   {
+      // Method Instances
+      //String tableName;
+      //Iterator<String> tableNamesIterator;
+      TableTabPanel currentTableTabPanel;
+      
+      // Set the properties
+      generalProperties = newGeneralProperties;
+      
+      // Refresh the table panel(s) to reflect the changes.
+      
+      currentTableTabPanel = getSelectedTableTabPanel();
+      currentTableTabPanel.refreshButton.doClick();
+      
+      /*
+      if (!tableCards.isEmpty())
+      {
+         tableNamesIterator = tableCards.iterator();
+         while (tableNamesIterator.hasNext())
+         {
+            currentTableTabPanel = getTableTabPanel(tableNamesIterator.next());
+            currentTableTabPanel.refreshButton.doClick();
+         }  
+      }
+      */
    }
    
    //==============================================================
