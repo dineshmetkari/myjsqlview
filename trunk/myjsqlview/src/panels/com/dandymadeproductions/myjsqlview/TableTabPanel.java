@@ -11,8 +11,8 @@
 //                  << TableTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 4.67 07/21/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 4.68 01/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,7 @@
 //        4.67 Removed Code for Collection schemaTableName. Done Through MyJSQLView_Utils in
 //             Constructor. Also Updated Methods deleteSelectedItems() & deleteAllItems() Removed
 //             BEGIN Statement SQL Query Execution for SQLite Database.
+//        4.68 Changed Class Instance refreshButton to Protected.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -178,7 +179,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.67 07/21/2010
+ * @version 4.68 01/08/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -252,7 +253,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected HashMap<String, String> columnSetHashMap;
    
    private JLabel rowsLabel;
-   private JButton refreshButton, previousTableRowsButton, nextTableRowsButton;
+   protected JButton refreshButton;
+   private JButton previousTableRowsButton, nextTableRowsButton;
    private JButton viewButton, addButton, editButton, deleteButton, deleteAllButton;
    private JButton previousViewButton, nextViewButton;
    private JButton closeViewButton;
