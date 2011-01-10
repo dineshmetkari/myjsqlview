@@ -8,8 +8,8 @@
 //             << CSVImportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.8 03/08/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.9 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,8 @@
 //                        resourceBundle. Argument Added to Constructor. Added Arguments
 //                        to Method createDelimiterPanel().
 //         2.8 03/08/2010 Organized Imports.
+//         2.9 01/10/2011 Changed Format for Year From YYYY to yyyy for dateFormatOptions
+//                        in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +86,7 @@ import javax.swing.*;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 2.8 03/08/2010
+ * @version 2.9 01/10/2011
  */
 
 class CSVImportPreferencesPanel extends JPanel implements ActionListener
@@ -172,8 +174,8 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      Object[] dateFormatOptions = {"MM-dd-YYYY", "MM/dd/YYYY", "dd-MM-YYYY", "dd/MM/YYYY",
-                                    "YYYY-MM-dd", "YYYY/MM/dd"};
+      Object[] dateFormatOptions = {"MM-dd-yyyy", "MM/dd/yyyy", "dd-MM-yyyy", "dd/MM/yyyy",
+                                    "yyyy-MM-dd", "yyyy/MM/dd"};
       
       dateFormatComboBox = new JComboBox(dateFormatOptions);
       dateFormatComboBox.addActionListener(this);
