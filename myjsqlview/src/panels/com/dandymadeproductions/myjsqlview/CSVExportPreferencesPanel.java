@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.9 01/08/2010
+// Version 5.0 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,8 @@
 //                        & setCSVExportProperties().
 //         4.8 06/13/2010 Minor Comment Changes to Methods Information.
 //         4.9 01/08/2011 Comment Changes and Update to Copyright.
+//         5.0 01/10/2011 Changed Format for Year From YYYY to yyyy for dateFormatOptions
+//                        in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +122,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.9 01/08/2011
+ * @version 5.0 01/10/2011
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -198,9 +200,9 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      Object[] dateFormatOptions = {"MM-dd-YYYY", "MM/dd/YYYY", "MMM-dd-YYYY", "dd-MM-YYYY",
-                                    "dd/MM/YYYY", "dd-MMM-YYYY", "YYYY-MM-dd", "YYYY/MM/dd",
-                                    "YYYY-MMM-dd"};
+      Object[] dateFormatOptions = {"MM-dd-yyyy", "MM/dd/yyyy", "MMM-dd-yyyy", "dd-MM-yyyy",
+                                    "dd/MM/yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd",
+                                    "yyyy-MMM-dd"};
       
       dateFormatComboBox = new JComboBox(dateFormatOptions);
       dateFormatComboBox.addActionListener(this);
