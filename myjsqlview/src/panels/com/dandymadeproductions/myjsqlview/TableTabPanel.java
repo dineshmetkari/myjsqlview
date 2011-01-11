@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.68 01/08/2011
+// Version 4.69 01/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -147,6 +147,10 @@
 //             Constructor. Also Updated Methods deleteSelectedItems() & deleteAllItems() Removed
 //             BEGIN Statement SQL Query Execution for SQLite Database.
 //        4.68 Changed Class Instance refreshButton to Protected.
+//        4.69 Class Method displayMyDateString() Changed the Call to MyJSQLView_Utils
+//             Method convertDBDateString_To_ViewDateString(). Also the Same in
+//             Method deleteSelectedItems() Except convertViewDateString_To_DBDateString
+//             for Date Keys.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -179,7 +183,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.68 01/08/2011
+ * @version 4.69 01/11/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1320,12 +1324,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    //=============================================================
    // Class method for displaying the MyJSQLView standard date
-   // format from a java.sql.date string. YYYY-MM-dd to MM-dd-YYYY.
+   // format from a java.sql.date string. YYYY-MM-dd to the selected
+   // MyJSQLView general date view preferences.
    //=============================================================
-
+   
    protected String displayMyDateString(String javaDateString)
    {
-      return MyJSQLView_Utils.displayMyDateString(javaDateString);
+      return MyJSQLView_Utils.convertDBDateString_To_ViewDateString(javaDateString,
+                                                  DBTablesPanel.getGeneralProperties().getViewDateFormat());
    }
 
    //==============================================================
@@ -1643,20 +1649,27 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "=STR_TO_DATE('"
-                                                           + currentContentData + "', '%m-%d-%Y') AND ");
+                                                           + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                              currentContentData + "",
+                                                              DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                           + "', '%Y-%m-%d') AND ");
                               }
                               else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "=TO_DATE('"
-                                                           + currentContentData + "', 'MM-dd-YYYY') AND ");
+                                                           + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                              currentContentData + "",
+                                                              DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                           + "', 'YYYY-MM-dd') AND ");
                               }
                               else
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "='"
-                                                           + MyJSQLView_Utils.formatJavaDateString(
-                                                                           currentContentData + "")
+                                                           + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                              currentContentData + "",
+                                                              DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                                            + "' AND ");
                               }
                            }
