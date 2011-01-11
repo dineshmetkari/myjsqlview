@@ -9,8 +9,8 @@
 //                 << QueryTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.8 07/29/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 7.9 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,33 +32,30 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original QueryTabPanel Class.
-//         1.1 Replaced Blob Data In Table With Just
-//             Blob Type Information.
-//         1.2 Modified Table Creation to be Aborted
-//             if Class Method loadTable Query Fails.
+//         1.1 Replaced Blob Data In Table With Just Blob Type Information.
+//         1.2 Modified Table Creation to be Aborted if Class Method loadTable
+//             Query Fails.
 //         1.3 Class Method buildConstraints().
 //         1.4 Class Method displayMyDateString().
-//         1.5 Class Methods parseColumnNameString() &
-//             firstLetterToUpperCase().
-//         1.6 Class Method loadTable() Replaced the DATE,
-//             DATETIME, TIMESTAMP, and YEAR Filling with
-//             More Robustness. Removed Class Method displayMyDateString().
-//         1.7 Added a System.out for Instance mysqlStatementString
-//             In getColumnNames() Class Method.
-//         1.8 Stripped ";" From inputQuery Constructor Argument
-//             Instance Per Fearow Recommedation.
+//         1.5 Class Methods parseColumnNameString() & firstLetterToUpperCase().
+//         1.6 Class Method loadTable() Replaced the DATE, DATETIME, TIMESTAMP,
+//             and YEAR Filling with More Robustness. Removed Class Method
+//             displayMyDateString().
+//         1.7 Added a System.out for Instance mysqlStatementString In getColumnNames()
+//             Class Method.
+//         1.8 Stripped ";" From inputQuery Constructor Argument Instance
+//             Per Fearow Recommedation.
 //         1.9 Added Class Instances rowsLabel & preferredColumnSizeHashMap.
 //             Implentation of Same in Panel, Row Position Indicator
 //             and Auto-Sizing of Columns Based on Header/Content.
 //         2.0 Implemented KeyListener for Class Instance searchTextField.
 //         2.1 Implemented View of Entry, TableViewForm.
 //         2.2 Added sqlTable Identifer Label, tableLabel.
-//         2.3 Added All Getter Class Methods for Later Use
-//             in Data Export.
-//         2.4 Removed TEXT Fields From Being Handled the Same as
-//             Blobs in Class Methods loadTable() & viewSelectedItem.
-//         2.5 Integrated the Advanced Sort/Search Interface Into
-//             the Panel. Also Added Class Method setTableRowSize().
+//         2.3 Added All Getter Class Methods for Later Use in Data Export.
+//         2.4 Removed TEXT Fields From Being Handled the Same as Blobs in
+//             Class Methods loadTable() & viewSelectedItem.
+//         2.5 Integrated the Advanced Sort/Search Interface Into the Panel.
+//             Also Added Class Method setTableRowSize().
 //         2.6 Class Method viewSelectedItem() Modified the Check from NULL
 //             to Length Check to Properly Fill Button to Either byte Count
 //             or 0. Code Cleanup.
@@ -188,6 +185,8 @@
 //             Also Instance tableFieldIterator in Class Method viewSelectedItem().
 //         7.8 Implemented Support for SQLite Database. Constructor and Class Methods
 //             getColumnNames() & loadTable() Effected.
+//         7.9 Class Methods loadTable(), & viewSelectedItem(), Changed Default Entry
+//             for Date/DateTime/TimeStamp Type Entry to GeneralProperties.getDateViewFormat().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -219,7 +218,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.8 07/29/2010
+ * @version 7.9 01/10/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1406,12 +1405,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   // =============================================
                   // Date
                   else if (columnType.equals("DATE"))
-                     tableData[i][j++] = new SimpleDateFormat("MM-dd-yyyy").format(currentContentData);
+                     tableData[i][j++] = new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()).format(currentContentData);
 
                   // =============================================
                   // Datetime
                   else if (columnType.equals("DATETIME"))
-                     tableData[i][j++] = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
+                     tableData[i][j++] = new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
                            .format(currentContentData);
 
                   // =============================================
@@ -1443,15 +1444,18 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                      else if (columnSize == 12)
                         tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                               .format(currentContentData));
+                     // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
                      else
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
+                        tableData[i][j++] = (new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
                               .format(currentContentData));
                   }
 
                   else if (columnType.equals("TIMESTAMPTZ"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
-                     tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z")
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z")
                            .format(currentContentData));
                   }
 
@@ -1827,7 +1831,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                if (currentColumnType.equals("DATE"))
                {
                   tableViewForm.setFormField(currentColumnName,
-                     (Object) MyJSQLView_Utils.displayMyDateString(currentContentData + ""));
+                     (Object) MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentContentData + "",
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()));
                }
 
                // DATETIME Type Field
@@ -1835,7 +1840,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                {
                   String dateString = currentContentData + "";
                   dateString = dateString.substring(0, (dateString.indexOf(" ")));
-                  dateString = MyJSQLView_Utils.displayMyDateString(dateString);
+                  dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString + "",
+                     DBTablesPanel.getGeneralProperties().getViewDateFormat());
 
                   String timeString = currentContentData + "";
                   timeString = timeString.substring(timeString.indexOf(" "));
@@ -1875,16 +1881,20 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   else if (currentColumnSize == 12)
                      tableViewForm.setFormField(currentColumnName,
                                                 (new SimpleDateFormat("MM-dd-yyyy HH:mm").format(currentContentData)));
+                  // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
                   else
                      tableViewForm.setFormField(currentColumnName,
-                        (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(currentContentData)));
+                        (new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           + " HH:mm:ss").format(currentContentData)));
                }
 
                else if (currentColumnType.equals("TIMESTAMPTZ"))
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
-                  tableViewForm.setFormField(currentColumnName,
-                                             (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z").format(currentContentData)));
+                  tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat(
+                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     + " HH:mm:ss z").format(currentContentData)));
                }
 
                // YEAR Type Field
