@@ -12,8 +12,8 @@
 //              << TableTabPanel_Oracle.java >>
 //
 //================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 9.6 07/14/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 9.7 01/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,11 @@
 //         9.5 Check for All Fields Possibly LOBs. Class Method loadTable().
 //         9.6 Class Method getColumnNames() Moved the Final Check for primaryKeys, Foreign
 //             Keys, Back To End of Script Because Depends on columnNamesHashMap.
+//         9.7 Class Methods loadTable(), viewSelectedItem(), addItem() & editSelectedItem()
+//             Changed Default Entry for Date/DateTime/TimeStamp Type Entry to
+//             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
+//             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
+//             DBDateString().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -265,7 +270,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.6 07/14/2010
+ * @version 9.7 01/09/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -444,7 +449,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
             if (columnType.toUpperCase().equals("TIMESTAMPLTZ"))
             {
                sqlTableFieldsStringLTZ += "TO_CHAR(" + identifierQuoteString + colNameString
-                                          + identifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                          + identifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
                                           + identifierQuoteString + colNameString + identifierQuoteString
                                           + ", ";
             }
@@ -781,8 +786,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   else if (columnType.equals("TIMESTAMP"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
-                     tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                           .format(currentContentData));
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData));
                   }
 
                   // =============================================
@@ -791,8 +797,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   else if (columnType.equals("TIMESTAMPTZ"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
-                     tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z")
-                           .format(currentContentData));
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss Z").format(currentContentData));
                   }
 
                   // =============================================
@@ -986,8 +993,10 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                               + identifierQuoteString + "=TO_DATE('" + currentContentData
-                                               + "', 'MM-dd-YYYY') AND ");
+                                               + identifierQuoteString + "=TO_DATE('"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                               + "', 'YYYY-MM-dd') AND ");
                   }
                   else
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1042,7 +1051,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                                             (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(currentContentData)));
+                                             (new SimpleDateFormat(
+                                                DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                                + " HH:mm:ss").format(currentContentData)));
                }
 
                // Timestamps With Time Zone Type Field
@@ -1050,7 +1061,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z").format(currentContentData)));
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss Z").format(currentContentData)));
                }
 
                // Timestamps With Local Time Zone Type Field
@@ -1204,7 +1216,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = "MM-DD-YYYY";
+            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1345,7 +1357,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "=TO_DATE('"
-                                               + currentContentData + "', 'MM-dd-YYYY') AND ");
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                               + "', 'YYYY-MM-dd') AND ");
                   }
                   else
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1402,7 +1416,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
                                         (Object) displayMyDateString(currentContentData + ""));
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY");
+                  editForm.setFormField(currentColumnName,
+                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
             }
 
             // Timestamps Type Field
@@ -1413,10 +1428,12 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
-                     (Object) (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(currentContentData)));
+                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData)));
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM:SS");
+                  editForm.setFormField(currentColumnName,
+                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // Timestamps With Time Zone Type Fields
@@ -1430,14 +1447,16 @@ public class TableTabPanel_Oracle extends TableTabPanel
                      currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                      // System.out.println(currentContentData);
                      editForm.setFormField(currentColumnName,
-                        (Object) (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z").format(currentContentData)));
+                        (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           + " HH:mm:ss Z").format(currentContentData)));
                   }
                   else
                   
                      editForm.setFormField(currentColumnName, currentContentData);
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM:SS");
+                  editForm.setFormField(currentColumnName,
+                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // Blob & Raw Type Field
