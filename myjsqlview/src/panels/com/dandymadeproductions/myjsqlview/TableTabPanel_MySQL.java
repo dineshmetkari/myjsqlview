@@ -12,8 +12,8 @@
 //            << TableTabPanel_MySQL.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 11.31 07/14/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 11.32 01/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -448,7 +448,12 @@
 //       11.28 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //       11.29 Undid Last Revision. Short Sighted.
 //       11.30 Check for All Fields Possibly LOBs. Class Method loadTable().
-//       11.31 Class Method getColumnNames() Cleaned Up the Check Output for primaryKeys..
+//       11.31 Class Method getColumnNames() Cleaned Up the Check Output for primaryKeys.
+//       11.32 Class Methods loadTable(), viewSelectedItem(), addItem() & editSelectedItem()
+//             Changed Default Entry for Date/DateTime/TimeStamp Type Entry to
+//             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
+//             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
+//             DBDateString().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -473,7 +478,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.31 07/14/2010
+ * @version 11.32 01/09/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -823,8 +828,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      currentContentData = rs.getTimestamp(columnName);
                      // System.out.println(currentContentData);
                      
-                     tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                                              .format(currentContentData));
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData));
                   }
 
                   // =============================================
@@ -848,9 +854,11 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      else if (columnSize == 12)
                         tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                               .format(currentContentData));
+                     // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
                      else
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                              .format(currentContentData));
+                        tableData[i][j++] = (new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           + " HH:mm:ss").format(currentContentData));
                   }
 
                   // =============================================
@@ -1078,7 +1086,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                             + identifierQuoteString + "='"
-                                            + MyJSQLView_Utils.formatJavaDateString(currentContentData + "")
+                                            + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                               currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                             + "' AND ");
                }
                else
@@ -1128,8 +1137,10 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   
-                  tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                        .format(currentContentData)));
+                  tableViewForm.setFormField(currentColumnName,
+                                             (new SimpleDateFormat(
+                                                DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                                + " HH:mm:ss").format(currentContentData)));
                }
 
                // TIMESTAMP Type Field
@@ -1155,9 +1166,11 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   else if (columnSize == 12)
                      tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                            .format(currentContentData)));
+                  // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
                   else
                      tableViewForm.setFormField(currentColumnName,
-                        (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss").format(currentContentData)));
+                        (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           + " HH:mm:ss").format(currentContentData)));
                }
 
                // YEAR Type Field
@@ -1305,7 +1318,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = "MM-DD-YYYY";
+            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1319,7 +1332,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
          // DATETIME Type Field
          if (currentColumnType.equals("DATETIME"))
          {
-            currentContentData = "MM-DD-YYYY hh:mm:ss";
+            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat() + " hh:mm:ss";
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1445,7 +1458,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                             + identifierQuoteString + "='"
-                                            + MyJSQLView_Utils.formatJavaDateString(currentContentData + "")
+                                            + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                               currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                             + "' AND ");
                }
                else
@@ -1504,7 +1518,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                                                                                         + ""));
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY");
+                  editForm.setFormField(currentColumnName,
+                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
             }
 
             // DATETIME Type Field
@@ -1515,12 +1530,14 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   
-                  currentContentData = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                                       .format(currentContentData);
+                  currentContentData = new SimpleDateFormat(
+                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     + " HH:mm:ss").format(currentContentData);
                   editForm.setFormField(currentColumnName, currentContentData);
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM:SS");
+                  editForm.setFormField(currentColumnName,
+                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // TIMESTAMP Type Field
@@ -1589,16 +1606,19 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   else
                      editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM");
                }
+               // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
                else
                {
                   if (currentContentData != null)
                   {
-                     currentContentData = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")
-                           .format(currentContentData);
+                     currentContentData = new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData);
                      editForm.setFormField(currentColumnName, currentContentData);
                   }
                   else
-                     editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM:SS");
+                     editForm.setFormField(currentColumnName,
+                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
                }
             }
 
