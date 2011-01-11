@@ -10,8 +10,8 @@
 //                << DataTableDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.7 06/13/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 2.8 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,9 @@
 //         2.6 Corrected Conditional Check for currentType Date to UpperCase.
 //         2.7 Class Method run() Change in MyJSQLView_Utils.formatCSVExportDateString()
 //             to formatExportDateString().
+//         2.8 Class Method run() Change in the Handling of Date, DateTime,
+//             and Timestamp Output, By Formatting Through New Routines in
+//             MyJSQLView_Utils.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -82,7 +85,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.7 06/13/2010
+ * @version 2.8 01/10/2011
  */
 
 class DataTableDumpThread implements Runnable
@@ -180,27 +183,27 @@ class DataTableDumpThread implements Runnable
                {
                   if (!currentString.toLowerCase().equals("null"))
                   {
-                     if (currentType.equals("DATE"))
-                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "CSV");
-                     else
+                     int firstSpace;
+                     String time;
+                        
+                     // Dates fall through DateTime and Timestamps try
+                     // to get the time separated before formatting
+                     // the date.
+                     
+                     if (currentString.indexOf(" ") != -1)
                      {
-                        int firstSpace;
-                        String time;
-                        
-                        // Try to get the time separated before formatting
-                        // the date.
-                        
-                        if (currentString.indexOf(" ") != -1)
-                        {
-                           firstSpace = currentString.indexOf(" ");
-                           time = currentString.substring(firstSpace);
-                           currentString = currentString.substring(0, firstSpace);
-                        }
-                        else
-                           time = "";
-                        
-                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "CSV") + time;
+                        firstSpace = currentString.indexOf(" ");
+                        time = currentString.substring(firstSpace);
+                        currentString = currentString.substring(0, firstSpace);
                      }
+                     else
+                        time = "";
+                        
+                     currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                     currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
+                        DBTablesPanel.getDataExportProperties().getCSVDateFormat()) + time;
+                        
                   }
                }
                currentEntry.append(currentString + delimiterString);

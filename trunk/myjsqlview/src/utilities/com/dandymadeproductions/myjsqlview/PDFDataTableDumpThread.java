@@ -8,8 +8,8 @@
 //                << PDFDataTableDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.4 06/17/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.5 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,9 @@
 //         1.4 Consolidation of Numeric, Date, Time, Year Fields Format/Alignment
 //             Under One Conditional to Check for currentType != Null. Effected
 //             Class Method run().
+//         1.5 Class Method run() Change in the Handling of Date, DateTime,
+//             and Timestamp Output, By Formatting Through New Routines in
+//             MyJSQLView_Utils.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -72,7 +75,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.4 06/17/2010
+ * @version 1.5 01/10/2011
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -223,27 +226,26 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                {
                   if (!currentString.toLowerCase().equals("null"))
                   {
-                     if (currentType.equals("DATE"))
-                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "PDF");
-                     else
+                     int firstSpace;
+                     String time;
+                        
+                     // Dates fall through DateTime and Timestamps try
+                     // to get the time separated before formatting
+                     // the date.
+                     
+                     if (currentString.indexOf(" ") != -1)
                      {
-                        int firstSpace;
-                        String time;
-
-                        // Try to get the time separated before formatting
-                        // the date.
-
-                        if (currentString.indexOf(" ") != -1)
-                        {
-                           firstSpace = currentString.indexOf(" ");
-                           time = currentString.substring(firstSpace);
-                           currentString = currentString.substring(0, firstSpace);
-                        }
-                        else
-                           time = "";
-
-                        currentString = MyJSQLView_Utils.formatExportDateString(currentString, "PDF") + time;
+                        firstSpace = currentString.indexOf(" ");
+                        time = currentString.substring(firstSpace);
+                        currentString = currentString.substring(0, firstSpace);
                      }
+                     else
+                        time = "";
+                        
+                     currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                     currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
+                        DBTablesPanel.getDataExportProperties().getCSVDateFormat()) + time;
                   }
                }
                bodyCell = new PdfPCell(new Phrase(currentString));
