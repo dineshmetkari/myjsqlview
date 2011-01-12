@@ -8,8 +8,8 @@
 //                 << MyJSQLView_Utils.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.9 09/15/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 5.0 01/12/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,9 @@
 //             processFileChooserSelection() & processLocaleLanguage().
 //         4.8 Removed Class Method getPluginsDirectory().
 //         4.9 Backed Out 4.7 For Class Method processLocaleLanguage(), Duh.
+//         5.0 Added Class Methods convertDBDateString_To_ViewDateString() and
+//             convertViewDateString_To_DBDateString(). Removed Class Methods
+//             formatExportDateString(), displayMyDateString(), & formatJavaDateString(). 
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -122,7 +125,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 4.9 09/15/2010
+ * @version 5.0 01/12/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -266,91 +269,140 @@ public class MyJSQLView_Utils extends MyJSQLView
       else
          return "";
    }
-
+   
    //==============================================================
-   // Method for converting a date or timestamp date field format
-   // to the appropriate selected CSV exported properties. Routine
-   // does not allow dates with spaces, ex. Jan. 01, 2009. Requires
-   // Input Date to be of the format MM-dd-YYYY.
+   // Method for converting a date input string from the standard
+   // database format, yyyy-MM-DD, to a selected view date string.
    //==============================================================
 
-   protected static String formatExportDateString(String inputDateString, String exportType)
+   protected static String convertDBDateString_To_ViewDateString(String db_DateString, String dateFormat)
    {
       // Method Instances
-      DataExportProperties dataExportProperties;
-      String dateFormat, year, month, day;
+      String year, month, day;
+      String formattedDateString;
       int firstDashIndex, lastDashIndex;
-
-      // Get the current Date import option, CSV or PDF.
-      dataExportProperties = DBTablesPanel.getDataExportProperties();
-      if (exportType.equals("CSV"))
-         dateFormat = dataExportProperties.getCSVDateFormat();
-      else
-         dateFormat = dataExportProperties.getPDFDateFormat();
-
-      if (inputDateString != null && !inputDateString.equals(""))
+      
+      if (db_DateString != null && !db_DateString.equals(""))
       {
          // Collect dashes
-         inputDateString = inputDateString.trim();
-         firstDashIndex = inputDateString.indexOf("-");
-         lastDashIndex = inputDateString.lastIndexOf("-");
+         db_DateString = db_DateString.trim();
+         firstDashIndex = db_DateString.indexOf("-");
+         lastDashIndex = db_DateString.lastIndexOf("-");
+         
          if (firstDashIndex == -1 || lastDashIndex == -1)
             return "";
-
-         // Collect the year, month, & date
-         year = inputDateString.substring(lastDashIndex + 1);
-         month = inputDateString.substring(0, firstDashIndex);
-         if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
-         day = inputDateString.substring(firstDashIndex + 1, lastDashIndex);
-
-         // System.out.println("Year:" + year + " Month:" + month + " Day:" +
-         // day);
-
-         // Convert the input date string to the appropriate format.
-
-         // YYYY-MM-dd
-         if (dateFormat.equals("YYYY-MM-dd") || dateFormat.equals("YYYY/MM/dd")
-             || dateFormat.equals("YYYY-MMM-dd"))
+         
+         // Collect the year, month, & day.
+         year = db_DateString.substring(0, firstDashIndex);
+         month = db_DateString.substring((firstDashIndex + 1), lastDashIndex);
+         day = db_DateString.substring(db_DateString.lastIndexOf("-") + 1);
+            
+         // Convert to the selected format.
+         
+         // yyyy-MM-dd
+         if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
+             || dateFormat.equals("yyyy-MMM-dd"))
          {
             if (dateFormat.indexOf("MMM") != -1)
-               inputDateString = year + "-"
+               formattedDateString = year + "-"
                                  + MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
                                  + day;
             else
-               inputDateString = year + "-" + month + "-" + day;
+               formattedDateString = year + "-" + month + "-" + day;
          }
 
-         // dd-MM-YYYY
-         else if (dateFormat.equals("dd-MM-YYYY") || dateFormat.equals("dd/MM/YYYY")
-                  || dateFormat.equals("dd-MMM-YYYY"))
+         // dd-MM-yyyy
+         else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
+                  || dateFormat.equals("dd-MMM-yyyy"))
          {
             if (dateFormat.indexOf("MMM") != -1)
-               inputDateString = day + "-"
+               formattedDateString = day + "-"
                                  + MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
                                  + year;
             else
-               inputDateString = day + "-" + month + "-" + year;
+               formattedDateString = day + "-" + month + "-" + year;
          }
 
-         // MM-dd-YYYY
+         // MM-dd-yyyy
          else
          {
             if (dateFormat.indexOf("MMM") != -1)
-               inputDateString = MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
-                                 + day + "-" + year;
+               formattedDateString = MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
+                                     + day + "-" + year;
             else
-               inputDateString = month + "-" + day + "-" + year;
+               formattedDateString = month + "-" + day + "-" + year;
          }
 
          // Replace standard dashes in date with slashes as required.
          if (dateFormat.indexOf("/") != -1)
-            inputDateString = inputDateString.replaceAll("-", "/");
-
-         return inputDateString;
+            formattedDateString = formattedDateString.replaceAll("-", "/"); 
+         
+         // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
+         return formattedDateString;
       }
       else
+         return db_DateString;    
+   }
+   
+   //==============================================================
+   // Method for converting a date input string of the selected
+   // date format to the standard database format yyyy-MM-DD.
+   //==============================================================
+   
+   protected static String convertViewDateString_To_DBDateString(String view_DateString, String dateFormat)
+   {
+      // Method Instances.
+      String year, month, day;
+      int firstDashIndex, lastDashIndex;
+      
+      // Generally just replace all forward slashes to required dash
+      // and check to make sure there is some kind of valid format.
+      // Routine does not allow dates with spaces, ex. Jan. 01, 2009.
+      
+      if (view_DateString.indexOf("/") != -1)
+         view_DateString = view_DateString.replaceAll("/", "-");
+      
+      firstDashIndex = view_DateString.indexOf("-");
+      lastDashIndex = view_DateString.lastIndexOf("-");
+      if (firstDashIndex == -1 || lastDashIndex == -1)
          return "";
+      
+      // Convert the input date string to the appropriate format.
+      
+      // yyyy-MM-dd
+      if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
+          || dateFormat.equals("yyyy-MMM-dd"))
+      {
+         year = view_DateString.substring(0, firstDashIndex);
+         month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
+         if (month.length() > 2)
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+         day = view_DateString.substring(lastDashIndex + 1);
+      }
+      
+      // dd-MM-yyyy
+      else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
+            || dateFormat.equals("dd-MMM-yyyy"))
+      {
+         year = view_DateString.substring(lastDashIndex + 1);
+         month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
+         if (month.length() > 2)
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+         day = view_DateString.substring(0, firstDashIndex);
+      }
+      
+      // MM-dd-yyyy
+      else
+      {  
+         year = view_DateString.substring(lastDashIndex + 1);
+         month = view_DateString.substring(0, firstDashIndex);
+         if (month.length() > 2)
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+         day = view_DateString.substring(firstDashIndex + 1, lastDashIndex); 
+      }
+      
+      // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
+      return year + "-" + month + "-" + day; 
    }
 
    //==============================================================
@@ -423,48 +475,6 @@ public class MyJSQLView_Utils extends MyJSQLView
          return month + "";
    }
    
-   //=============================================================
-   // Class method for displaying the MyJSQLView standard date
-   // format from a java.sql.date string. YYYY-MM-dd to MM-dd-YYYY.
-   //=============================================================
-
-   protected static String displayMyDateString(String javaDateString)
-   {
-      String displayString = javaDateString.trim();
-      String monthDay = displayString.substring(displayString.indexOf("-") + 1);
-      String year = javaDateString.substring(0, javaDateString.indexOf("-"));
-      return monthDay + "-" + year;
-   }
-   
-   //==============================================================
-   // Class method for converting a standard Java date string into
-   // a java.sql.date string. MM-dd-YYYY to YYYY-MM-dd. Comments:
-   // MySQL-STR_TO_DATE('data', '%m-%d-%Y'), Oracle-TO_DATE('data',
-   // 'MM-dd-YYYY').
-   //==============================================================
-   
-   protected static String formatJavaDateString(String displayString)
-   {
-      // Method Instances
-      String javaDateString;
-      int dashIndex, lastDashIndex;
-      
-      javaDateString = displayString.trim();
-      dashIndex = javaDateString.indexOf("-");
-      lastDashIndex = javaDateString.lastIndexOf("-");
-
-      if ((lastDashIndex != -1) & (dashIndex >= 1 & dashIndex <= 2)
-          & ((lastDashIndex - dashIndex >= 1) & (lastDashIndex - dashIndex <= 3)))
-      {
-         String year = javaDateString.substring(javaDateString.lastIndexOf("-") + 1);
-         String monthDay = javaDateString.substring(0, javaDateString.lastIndexOf("-"));
-         return year + "-" + monthDay;
-      }
-      else
-         return "";
-   }
-  
-
    //==============================================================
    // Method for providing a mechanism to process a choosen file
    // through a JFileChooser to allow the querying of the user to
