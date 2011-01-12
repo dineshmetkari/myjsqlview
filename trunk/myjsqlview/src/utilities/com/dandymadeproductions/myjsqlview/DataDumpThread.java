@@ -8,8 +8,8 @@
 //                   << DataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 5.6 06/13/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 5.7 01/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,44 +44,41 @@
 //             Output.
 //         2.0 Class Instance dumpData Back to Object.
 //         2.1 Instance Reorganizing.
-//         2.2 Comment Changes & Disposing of dumpProgressBar on
-//             SQLExceptions.
+//         2.2 Comment Changes & Disposing of dumpProgressBar on SQLExceptions.
 //         2.3 Class Method run() Instance dataDelimiter.
-//         2.4 Added TEXT, MEDIUMTEXT, & LONGTEXT Option Output
-//             As Defined in Preferences Data Export in run().
-//             Added Class Instance tableColumnSizeHashMap, Argument.
-//         2.5 Insured NULL Placed for Fields As Needed & Cleanup
-//             of Text Fields Some, "\n" & "\r" Removed.
-//         2.6 Class Instance dumpProgressBar Set pack() and 
-//             setVisible(true).
+//         2.4 Added TEXT, MEDIUMTEXT, & LONGTEXT Option Output As Defined
+//             in Preferences Data Export in run(). Added Class Instance
+//             tableColumnSizeHashMap, Argument.
+//         2.5 Insured NULL Placed for Fields As Needed & Cleanup of Text
+//             Fields Some, "\n" & "\r" Removed.
+//         2.6 Class Instance dumpProgressBar Set pack() and setVisible(true).
 //         2.7 Code Cleanup.
 //         2.8 Cleaned Up Javadoc Comments.
 //         2.9 Header Update.
 //         3.0 Added/Implemented identiferQuoteString.
 //         3.1 MyJSQLView.getDataExportProperties().
-//         3.2 Output Non-Modified Field Names. Same As Table Name.
-//             Modified rowCount Method to SELECT COUNT(*). Inserted
-//             identifierQuoteString. Trimmed Default Content.
+//         3.2 Output Non-Modified Field Names. Same As Table Name. Modified
+//             rowCount Method to SELECT COUNT(*). Inserted identifierQuoteString.
+//             Trimmed Default Content.
 //         3.3 Deliminator to Delimiter.
-//         3.4 ColumnType Binary Exclusion, mysqlStatement Changed to
-//             sqlStatement, and rs Changed to dbResultSet, All in
-//             Class Method run().
+//         3.4 ColumnType Binary Exclusion, mysqlStatement Changed to sqlStatement,
+//             and rs Changed to dbResultSet, All in Class Method run().
 //         3.5 Converted MySQL Exported Data Bit Fields to Base 2.
 //         3.6 Chopped MySQL Year Fields to Only Four Digits on Export.
 //         3.7 Implemented Fully Qualified Table Name. Added Instance
 //             schemaTableName to Class Method run().
 //         3.8 Modified to Accomodate Oracle Data Field Types.
 //         3.9 MyJSQLView Project Common Source Code Formatting.
-//         4.0 Class Method run() getDataExportProperites Changed
-//             Over to the MyJSQLView_Frame Class.
-//         4.1 Changed MyJSQLView_Frame.getDatabaseExportProperties()
-//             Method Moved Over to the DBTablesPanel.
+//         4.0 Class Method run() getDataExportProperites Changed Over to
+//             the MyJSQLView_Frame Class.
+//         4.1 Changed MyJSQLView_Frame.getDatabaseExportProperties() Method
+//             Moved Over to the DBTablesPanel.
 //         4.2 Conditional Check for NULL db_Connection in run().
 //         4.3 Formatted Oracle TimestampTZ Data Types For Consistency
 //             Throughout the Application With RFC 822 Time Zone in
 //             Class Method run().
-//         4.4 Formatted All Oracle Date & Timestamp Fields to be Able
-//             to Properly Allow Data Imports, Changed to MM-dd-yyyy.
+//         4.4 Formatted All Oracle Date & Timestamp Fields to be Able to
+//             Properly Allow Data Imports, Changed to MM-dd-yyyy.
 //         4.5 Implemented A Formatting of the Date, DateTime, and Timestamp
 //             Fields as Determined by the CSVDataExportPreferencesPanel.
 //             Class Method run().
@@ -104,6 +101,10 @@
 //             Method getSchemaTableName().
 //         5.6 Class Method run() Change in MyJSQLView_Utils.formatCSVExportDateString()
 //             to formatExportDateString().
+//         5.7 Class Method run() Changed the Call to Convert Date, DateTime,
+//             and Timestamp Content to the Selected CSV Export Format. Also for
+//             Oracle Insured Returning the Standard SQL Database Format of
+//             YYYY-MM-DD.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.6 06/13/2010
+ * @version 5.7 01/12/2011
  */
 
 class DataDumpThread implements Runnable
@@ -232,7 +233,7 @@ class DataDumpThread implements Runnable
                columnNames_String.append("TO_CHAR(" + identifierQuoteString
                                      + tableColumnNamesHashMap.get(columnNameString) 
                                      + identifierQuoteString
-                                     + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS " 
+                                     + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS " 
                                      + identifierQuoteString
                                      + tableColumnNamesHashMap.get(columnNameString) 
                                      + identifierQuoteString + ", ");
@@ -356,44 +357,30 @@ class DataDumpThread implements Runnable
                   {
                      if (columnType.equals("DATE"))
                      {
-                        fieldContent = MyJSQLView_Utils.displayMyDateString(dbResultSet.getDate(i) + "");
-                        fieldContent = MyJSQLView_Utils.formatExportDateString(fieldContent, "CSV");
+                        fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                           dbResultSet.getDate(i) + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
                      }
                      else
                      {  
-                        int firstSpace;
-                        String time;
-                        
                         if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
                         {
                            Object dateTime = dbResultSet.getTimestamp(i);
-                           fieldContent = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss")).format(dateTime) + "";  
+                           fieldContent = (new SimpleDateFormat(
+                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                              + " HH:mm:ss")).format(dateTime) + "";  
                         }
                         else if (columnType.equals("TIMESTAMPTZ"))
                         {
                            Object dateTime = dbResultSet.getTimestamp(i);
-                           fieldContent = (new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z")).format(dateTime) + "";  
+                           fieldContent = (new SimpleDateFormat(
+                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                              + " HH:mm:ss Z")).format(dateTime) + "";  
                         }
                         // TIMESTAMPLTZ, Oracle
                         else
                         {
                            // Do Nothing. Who knows, just comes out in MM-dd-YY with the getString().
                         }
-                        // System.out.println(fieldContent);
-                          
-                        // Try to get the time separated before formatting
-                        // the date.
-                           
-                        if (fieldContent.indexOf(" ") != -1)
-                        {
-                           firstSpace = fieldContent.indexOf(" ");
-                           time = fieldContent.substring(firstSpace);
-                           fieldContent = fieldContent.substring(0, firstSpace);
-                        }
-                        else
-                           time = "";
-                        
-                        fieldContent = MyJSQLView_Utils.formatExportDateString(fieldContent, "CSV") + time;
                      }
                      dumpData = dumpData + fieldContent + dataDelimiter;  
                   }
