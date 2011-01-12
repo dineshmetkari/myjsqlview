@@ -8,8 +8,8 @@
 //                  << XMLTranslator.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Nil_lin, Dana Proctor
-// Version 4.6 05/20/2010
+// Copyright (C) 2006-2011 Nil_lin, Dana Proctor
+// Version 4.7 01/12/2011
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,8 @@
 //                        to setSites() to Bring Code Into Compliance With Java 5.0 API.
 //         4.5 05/18/2010 Minor Format Changes.
 //         4.6 05/20/2010 Parameterized siteKeys in Class Method setSites().
+//         4.7 01/12/2011 Class Method getSites() Changed currentSiteName Instance to a
+//                        StringBuffer.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -132,7 +134,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.6 05/20/2010
+ * @version 4.7 01/12/2011
  */
 
 class XMLTranslator
@@ -363,7 +365,7 @@ class XMLTranslator
       NodeList siteElements;
       Node currentSite;
       NamedNodeMap currentSiteAttributes;
-      String currentSiteName;
+      StringBuffer currentSiteName;
 
       // Setting up some of the class instances.
       sites = new Hashtable <String, SiteParameters>();
@@ -386,13 +388,14 @@ class XMLTranslator
             // Allows the creation of a single level folder for
             // sites in MyJSQLView_Access JMenu and ConnnectionManager JTree.
 
-            currentSiteName = currentSiteAttributes.getNamedItem("Name").getNodeValue();
-            currentSiteName += "#" + currentSiteAttributes.getNamedItem("Database").getNodeValue();
+            currentSiteName = new StringBuffer();
+            currentSiteName.append(currentSiteAttributes.getNamedItem("Name").getNodeValue());
+            currentSiteName.append("#" + currentSiteAttributes.getNamedItem("Database").getNodeValue());
             // System.out.println(currentSiteName);
 
             // Filling the site parameter object.
 
-            currentSiteParameter.setSiteName(currentSiteName);
+            currentSiteParameter.setSiteName(currentSiteName.toString());
             currentSiteParameter.setDriver(currentSiteAttributes.getNamedItem("Driver").getNodeValue());
             currentSiteParameter.setProtocol(currentSiteAttributes.getNamedItem("Protocol").getNodeValue());
             currentSiteParameter.setSubProtocol(currentSiteAttributes.getNamedItem("SubProtocol").getNodeValue());
@@ -404,7 +407,7 @@ class XMLTranslator
             currentSiteParameter.setSsh(currentSiteAttributes.getNamedItem("SSH").getNodeValue());
 
             // Placing the SiteParameter object in the sites hashtable.
-            sites.put(currentSiteName, currentSiteParameter);
+            sites.put(currentSiteName.toString(), currentSiteParameter);
             i++;
          }
       }
