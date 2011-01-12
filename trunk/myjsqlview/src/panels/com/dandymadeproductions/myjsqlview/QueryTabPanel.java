@@ -186,7 +186,9 @@
 //         7.8 Implemented Support for SQLite Database. Constructor and Class Methods
 //             getColumnNames() & loadTable() Effected.
 //         7.9 Class Methods loadTable(), & viewSelectedItem(), Changed Default Entry
-//             for Date/DateTime/TimeStamp Type Entry to GeneralProperties.getDateViewFormat().
+//             for Date/DateTime/TimeStamp Type to GeneralProperties.getDateViewFormat().
+//             Also Class Method getColumnNames() Oracle sqlTableFieldsString Added
+//             for TimestampLTZ the Return of Date Foramt to YYYY-MM-DD.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -218,7 +220,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.9 01/10/2011
+ * @version 7.9 01/12/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1055,7 +1057,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             if (columnType.equals("TIMESTAMPLTZ"))
             {
                sqlTableFieldsString += "TO_CHAR(" + identifierQuoteString + colNameString
-                                       + identifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                       + identifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
                                        + identifierQuoteString + colNameString + identifierQuoteString + ", ";
             }
             else
@@ -1444,7 +1446,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                      else if (columnSize == 12)
                         tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                               .format(currentContentData));
-                     // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
+                     // All current coloumnSizes for MySQL > 5.0 Should be 19.
                      else
                         tableData[i][j++] = (new SimpleDateFormat(
                            DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
@@ -1692,11 +1694,11 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       summaryTablePopupListener = new MyJSQLView_MouseAdapter(summaryTablePopupMenu);
    }
 
-   // =============================================================
+   //=============================================================
    // Class method to parse the MyJSQLView table's column name
    // fields. The parsed strings creates a more user friendly
    // format for use in the sort and search comboBoxes.
-   // =============================================================
+   //=============================================================
 
    private String parseColumnNameField(String columnString)
    {
@@ -1881,7 +1883,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   else if (currentColumnSize == 12)
                      tableViewForm.setFormField(currentColumnName,
                                                 (new SimpleDateFormat("MM-dd-yyyy HH:mm").format(currentContentData)));
-                  // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
+                  // All current coloumnSizes for MySQL > 5.0 Should be 19.
                   else
                      tableViewForm.setFormField(currentColumnName,
                         (new SimpleDateFormat(
