@@ -7,8 +7,8 @@
 //                     << DateFieldCalendar.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.6 03/01/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 2.8 01/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,9 @@
 //                        showAlertDialog().
 //         2.7 03/03/2010 Correction in Constructor to Include resource for okButton,
 //                        & cancelButton.
+//         2.8 01/11/2011 Class Methods actionPerformed() & createInitialCalendarDate()
+//                        Changes to Reflect the Formatting of Dates According to
+//                        the Selected General Date Preferences.
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -79,7 +82,7 @@ import javax.swing.*;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 2.7 03/03/2010
+ * @version 2.8 01/11/2011
  */
 
 class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -377,8 +380,17 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
          // OK Button Action.
          if (frameSource == okButton)
          {
+            Object formattedDateSelection;
+            
             dateSelection = dateSelectionLabel.getText() + timeString;
-            callingForm.setFormField(columnName, dateSelection);
+            
+            formattedDateSelection = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+               dateSelectionLabel.getText(), "MM-dd-yyyy");
+            formattedDateSelection = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+               formattedDateSelection + "", DBTablesPanel.getGeneralProperties().getViewDateFormat());
+            formattedDateSelection = formattedDateSelection + timeString;
+            
+            callingForm.setFormField(columnName, formattedDateSelection);
             this.dispose();
          }
 
@@ -566,13 +578,17 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
          if (columnType.equals("DATE"))
          {
             // Check for some kind of valid input.
-            if (formFieldEntry.length() != 10)
+            if (!(formFieldEntry.length() >= 10 && formFieldEntry.length() < 12))
                java.sql.Date.valueOf("error");
             else
             {
-               dateString = formFieldEntry.substring(0, 10);
+               dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(formFieldEntry,
+                  DBTablesPanel.getGeneralProperties().getViewDateFormat());
+               dateValue = java.sql.Date.valueOf(dateString);
+               
+               dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString, "MM-dd-yyyy");
                timeString = "";
-               dateValue = java.sql.Date.valueOf(formatJavaDateString(dateString));
+               
                calendar.setTime(dateValue);
             }
          }
@@ -584,13 +600,18 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
                java.sql.Date.valueOf("error");
             else
             {
-               dateString = formFieldEntry.substring(0, 10);
+               dateString = formFieldEntry.substring(0, formFieldEntry.indexOf(" "));
+               dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(dateString,
+                  DBTablesPanel.getGeneralProperties().getViewDateFormat());
                timeString = formFieldEntry.substring(formFieldEntry.indexOf(" "));
                timeString = timeString.trim();
                if (timeString.length() > 8)
                   timeString = timeString.substring(0, 8);
                timeString = " " + timeString;
-               dateValue = java.sql.Date.valueOf(formatJavaDateString(dateString));
+               dateValue = java.sql.Date.valueOf(dateString);
+               
+               dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString, "MM-dd-yyyy");
+               
                calendar.setTime(dateValue);
             }
          }
