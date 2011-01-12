@@ -8,8 +8,8 @@
 //                  << TableEntryForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 8.74 07/28/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 8.75 01/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -312,6 +312,9 @@
 //                        Execution for SQLite Database.
 //        8.74 07/28/2010 Class Method selectFunctionOperator() Added SQLite Function Selection
 //                        File Loading.
+//        8.75 01/11/2010 Class Method addUpdateTableEntry() Change to Convert Date/DateTime/Timestamp
+//                        Entries According to the GeneralPreferences.getViewDateFormat(). Conversion
+//                        via MyJSQLView_Utils.convertViewDateString_To_DBDateString().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -347,7 +350,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.74 07/28/2010
+ * @version 8.75 01/11/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1644,10 +1647,17 @@ class TableEntryForm extends JFrame implements ActionListener
                   if (columnType.indexOf("DATE") != -1)
                   {
                      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
-                        currentContentData = "TO_DATE('" + currentContentData + "', 'MM-dd-YYYY')";
+                     {
+                        currentContentData = "TO_DATE('"
+                           + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                              currentContentData + "",
+                              DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                              + "', 'YYYY-MM-dd')";
+                     }
                      else
-                        currentContentData = "'" + MyJSQLView_Utils.formatJavaDateString(currentContentData
-                                             + "") + "'";
+                        currentContentData = "'" + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                           currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                           + "'";
                      
                      sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
                                                + identifierQuoteString + "="
@@ -1869,11 +1879,11 @@ class TableEntryForm extends JFrame implements ActionListener
                      java.sql.Date dateValue;
 
                      // Check for some kind of valid input.
-                     if (dateTimeFormString.length() != 10)
+                     if (!(dateTimeFormString.length() >= 10 && dateTimeFormString.length() < 12))
                         java.sql.Date.valueOf("error");
 
-                     dateString = dateTimeFormString.substring(0, 10);
-                     dateString = MyJSQLView_Utils.formatJavaDateString(dateString);
+                     dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                        dateTimeFormString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
                      dateValue = java.sql.Date.valueOf(dateString);
                      prepared_sqlStatement.setDate(i++, dateValue);
                   }
@@ -1900,7 +1910,9 @@ class TableEntryForm extends JFrame implements ActionListener
                      if (dateTimeFormString.indexOf(" ") == -1 || dateTimeFormString.length() < 10)
                         java.sql.Date.valueOf("error");
 
-                     dateString = MyJSQLView_Utils.formatJavaDateString(dateTimeFormString.substring(0, 10));
+                     dateString = dateTimeFormString.substring(0, dateTimeFormString.indexOf(" "));
+                     dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(dateString,
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
                      timeString = getFormField(columnName).substring(dateTimeFormString.indexOf(" "));
                      dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
                      prepared_sqlStatement.setTimestamp(i++, dateTimeValue);
@@ -1940,15 +1952,22 @@ class TableEntryForm extends JFrame implements ActionListener
                                  timeStampFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
                               else if (columnSize == 12)
                                  timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+                              // All current coloumnSizes for MySQL > 5.0 Should be 19.
                               else
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                                 timeStampFormat = new SimpleDateFormat(
+                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    + " HH:mm:ss");
                            }
                            else
                            {
                               if (columnType.equals("TIMESTAMPLTZ"))
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z");
+                                 timeStampFormat = new SimpleDateFormat(
+                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    + " HH:mm:ss Z");
                               else
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z");
+                                 timeStampFormat = new SimpleDateFormat(
+                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    + " HH:mm:ss z");
                            }
 
                            // Parse the TimeStamp Format.
