@@ -312,6 +312,8 @@ AboutFrame.button.Close =
 
 PreferencesFrame.message.Title = 
 PreferencesFrame.node.Preferences = 
+PreferencesFrame.node.General = 
+PreferecnesFrame.node.GeneralOptions = 
 PreferencesFrame.node.TableSummaryView = 
 PreferencesFrame.node.TableFields = 
 PreferencesFrame.node.TableRows = 
@@ -325,6 +327,10 @@ PreferencesFrame.button.Help =
 PreferencesFrame.label.TableSelection = 
 PreferencesFrame.message.Warning = 
 PreferencesFrame.message.RowSizeWarning = 
+
+GeneralPreferencesPanel.label.DateFormat = 
+GeneralPreferencesPanel.button.RestoreDefaults = 
+GeneralPreferencesPanel.button.Apply = 
 
 TableFieldSelectionPreferencesPanel.button.SelectAll = 
 TableFieldSelectionPreferencesPanel.button.ClearAll = 
