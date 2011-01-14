@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.0 01/12/2011
+// Version 5.1 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,7 +91,9 @@
 //         4.9 Backed Out 4.7 For Class Method processLocaleLanguage(), Duh.
 //         5.0 Added Class Methods convertDBDateString_To_ViewDateString() and
 //             convertViewDateString_To_DBDateString(). Removed Class Methods
-//             formatExportDateString(), displayMyDateString(), & formatJavaDateString(). 
+//             formatExportDateString(), displayMyDateString(), & formatJavaDateString().
+//         5.1 Reorganized Methods. Return Type for convertDecimalToCharMonth() to
+//             String. Added Class Method processDateFormatSearch().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -125,7 +127,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 5.0 01/12/2011
+ * @version 5.1 01/14/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -145,131 +147,77 @@ public class MyJSQLView_Utils extends MyJSQLView
       gbc.weightx = wx;
       gbc.weighty = wy;
    }
-
+   
    //==============================================================
-   // Class method to convert a password character set to a string.
-   //==============================================================
-
-   protected static String convertPasswordToString(char[] passwordCharacters)
-   {
-      StringBuffer passwordString = new StringBuffer();
-
-      // Obtaining the password & clearing.
-      for (int i = 0; i < passwordCharacters.length; i++)
-         passwordString.append(passwordCharacters[i]);
-
-      if (passwordString.length() == 0)
-         return "";
-      else
-         return passwordString.toString();
-   }
-
-   //==============================================================
-   // Method for performing the n-digit chopping operation on an
-   // input number.
-   //==============================================================
-
-   public static double nDigitChop(double numberToChop, int n)
-   {
-      // Method Instances
-      int decimal;
-      int chop = n;
-      String pass_string;
-
-      pass_string = Double.toString(numberToChop);
-      decimal = pass_string.indexOf(".");
-      if (decimal != -1 & pass_string.length() >= decimal + chop + 1)
-      {
-         numberToChop = (Double.valueOf(pass_string.substring(0, decimal + chop + 1))).doubleValue();
-      }
-      else
-         numberToChop = Double.valueOf(pass_string).doubleValue();
-
-      return numberToChop;
-   }
-
-   //==============================================================
-   // Method for converting an input byte array either extracting
-   // or dumping per a determined conversion definition.
+   // Method for converting a month text character input to the
+   // valid numeric value.
    //==============================================================
    
-   public static String stateConvert(byte[] bytesToProcess, boolean in)
+   public static String convertCharMonthToDecimal(String month)
    {
-      // Method Instances
-      int b;
-      String base10_1, base10_10;
-      StringBuffer convertedString;
-      String hexadecimalString;
-      BufferedInputStream inputStream;
-
-      // Otain byes in a stream and convert to
-      // hex for extraction/dumping.
-
-      if (bytesToProcess != null)
-      {
-         convertedString = new StringBuffer();
-         inputStream = new BufferedInputStream(new ByteArrayInputStream(bytesToProcess));
-
-         if (in)
-            convertedString.append("");
-         else
-            convertedString.append("0x");
-
-         try
-         {
-            int skipBytes = 1;
-
-            while ((b = inputStream.read()) != -1)
-            {
-               if (in)
-               {
-                  if (skipBytes++ > 2)
-                  {
-                     // Extract
-                     try
-                     {
-                        base10_10 = (char) b + "";
-                        base10_1 = (char) inputStream.read() + "";
-
-                        int b10 = (Integer.valueOf(base10_10, 16).intValue()) * 16;
-                        int b1 = (Integer.valueOf(base10_1, 16).intValue());
-                        convertedString.append((char) (b10 + b1));
-                     }
-                     catch (NumberFormatException e)
-                     {
-                        String msg = "Unable to Decode Input State File Format.";
-                        JOptionPane.showMessageDialog(null, msg, "Alert", JOptionPane.ERROR_MESSAGE);
-                        inputStream.close();
-                        return "";
-                     }
-                  }
-               }
-               else
-               {
-                  // Dump.
-                  hexadecimalString = Integer.toString(b, 16);
-
-                  if (hexadecimalString.length() < 2)
-                     hexadecimalString = "0" + hexadecimalString;
-                  if (hexadecimalString.length() > 2)
-                     hexadecimalString = hexadecimalString.substring(hexadecimalString.length() - 2);
-                  convertedString.append(hexadecimalString);
-               }
-            }
-            inputStream.close();
-         }
-         catch (IOException e)
-         {
-            String msg = "I/O BufferedInputStream Failure.";
-            JOptionPane.showMessageDialog(null, msg, "Alert", JOptionPane.ERROR_MESSAGE);
-            return "";
-         }
-         return convertedString.toString();
-      }
+      if (month.toLowerCase().indexOf("jan") != -1)
+         return "01";
+      else if (month.toLowerCase().indexOf("feb") != -1)
+         return "02";
+      else if (month.toLowerCase().indexOf("mar") != -1)
+         return "03";
+      else if (month.toLowerCase().indexOf("apr") != -1)
+         return "04";
+      else if (month.toLowerCase().indexOf("may") != -1)
+         return "05";
+      else if (month.toLowerCase().indexOf("jun") != -1)
+         return "06";
+      else if (month.toLowerCase().indexOf("jul") != -1)
+         return "07";
+      else if (month.toLowerCase().indexOf("aug") != -1)
+         return "08";
+      else if (month.toLowerCase().indexOf("sep") != -1)
+         return "09";
+      else if (month.toLowerCase().indexOf("oct") != -1)
+         return "10";
+      else if (month.toLowerCase().indexOf("nov") != -1)
+         return "11";
+      else if (month.toLowerCase().indexOf("dec") != -1)
+         return "12";
       else
-         return "";
+         return "0";
    }
-   
+
+   //==============================================================
+   // Method for converting a month integer value 01-12 to a valid
+   // three character month string.
+   //==============================================================
+
+   public static String convertDecimalToCharMonth(int month)
+   {
+      if (month == 1)
+         return "Jan";
+      else if (month == 2)
+         return "Feb";
+      else if (month == 3)
+         return "Mar";
+      else if (month == 4)
+         return "Apr";
+      else if (month == 5)
+         return "May";
+      else if (month == 6)
+         return "Jun";
+      else if (month == 7)
+         return "Jul";
+      else if (month == 8)
+         return "Aug";
+      else if (month == 9)
+         return "Sep";
+      else if (month == 10)
+         return "Oct";
+      else if (month == 11)
+         return "Nov";
+      else if (month == 12)
+         return "Dec";
+      else
+         return month + "";
+   }
+
    //==============================================================
    // Method for converting a date input string from the standard
    // database format, yyyy-MM-DD, to a selected view date string.
@@ -376,7 +324,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          year = view_DateString.substring(0, firstDashIndex);
          month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
          if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
          day = view_DateString.substring(lastDashIndex + 1);
       }
       
@@ -387,7 +335,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          year = view_DateString.substring(lastDashIndex + 1);
          month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
          if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
          day = view_DateString.substring(0, firstDashIndex);
       }
       
@@ -397,82 +345,328 @@ public class MyJSQLView_Utils extends MyJSQLView
          year = view_DateString.substring(lastDashIndex + 1);
          month = view_DateString.substring(0, firstDashIndex);
          if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
+            month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
          day = view_DateString.substring(firstDashIndex + 1, lastDashIndex); 
       }
       
       // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
       return year + "-" + month + "-" + day; 
    }
-
+   
    //==============================================================
-   // Method for converting a month text character input to the
-   // valid numeric value.
+   // Class method to convert a password character set to a string.
    //==============================================================
 
-   public static int convertCharMonthToDecimal(String month)
+   protected static String convertPasswordToString(char[] passwordCharacters)
    {
-      if (month.toLowerCase().indexOf("jan") != -1)
-         return 1;
-      else if (month.toLowerCase().indexOf("feb") != -1)
-         return 2;
-      else if (month.toLowerCase().indexOf("mar") != -1)
-         return 3;
-      else if (month.toLowerCase().indexOf("apr") != -1)
-         return 4;
-      else if (month.toLowerCase().indexOf("may") != -1)
-         return 5;
-      else if (month.toLowerCase().indexOf("jun") != -1)
-         return 6;
-      else if (month.toLowerCase().indexOf("jul") != -1)
-         return 7;
-      else if (month.toLowerCase().indexOf("aug") != -1)
-         return 8;
-      else if (month.toLowerCase().indexOf("sep") != -1)
-         return 9;
-      else if (month.toLowerCase().indexOf("oct") != -1)
-         return 10;
-      else if (month.toLowerCase().indexOf("nov") != -1)
-         return 11;
-      else if (month.toLowerCase().indexOf("dec") != -1)
-         return 12;
+      StringBuffer passwordString = new StringBuffer();
+
+      // Obtaining the password & clearing.
+      for (int i = 0; i < passwordCharacters.length; i++)
+         passwordString.append(passwordCharacters[i]);
+
+      if (passwordString.length() == 0)
+         return "";
       else
-         return 0;
+         return passwordString.toString();
+   }
+   
+   //==============================================================
+   // Class method to load a provided sound file into a audio clip.
+   // A check of the returned clip should be made to insure it was
+   // properly created. The method will return NULL if it was not.
+   //==============================================================
+
+   public static Clip getAudioClip(String fileName)
+   {
+      // Method Instances
+      File audioFile;
+      AudioInputStream audioInputStream;
+      AudioFormat audioFormat;
+      DataLine.Info dataLineInfo;
+      Clip clip;
+
+      audioFile = new File(fileName);
+
+      // Create a audio stream that will be used to load the
+      // audio file then open a line that will be associated
+      // with the clip.
+
+      try
+      {
+         try
+         {
+            audioInputStream = AudioSystem.getAudioInputStream(audioFile);
+         }
+         catch (UnsupportedAudioFileException e)
+         {
+            // System.out.println("Unsupported Audio File Format.\n" + e);
+            return null;
+         }
+
+         audioFormat = audioInputStream.getFormat();
+         dataLineInfo = new DataLine.Info(Clip.class, audioFormat);
+
+         if (!AudioSystem.isLineSupported(dataLineInfo))
+         {
+            // System.out.println("Line NOT Supported");
+            audioInputStream.close();
+            return null;
+         }
+         else
+         {
+            try
+            {
+               clip = (Clip) AudioSystem.getLine(dataLineInfo);
+
+               // The follwing class may be uncommented to
+               // provide a event listener to monitor the
+               // activity of the sound clip.
+               /*
+                * class lineEvent implements LineListener { public void
+                * update(LineEvent e) { Object eventSource = e.getSource(); if
+                * (eventSource instanceof Clip) {
+                * System.out.println(e.getType()); //if (e.getType() ==
+                * LineEvent.Type.STOP) // ((Clip)e.getSource()).close(); } } }
+                * clip.addLineListener(new lineEvent());
+                */
+
+               clip.open(audioInputStream);
+               audioInputStream.close();
+               return clip;
+            }
+            catch (LineUnavailableException e)
+            {
+               // System.out.println("Line Unavailable.\n" + e);
+               return null;
+            }
+         }
+      }
+      catch (IOException e)
+      {
+         // System.out.println("IO Exception in InputStream.\n" + e);
+         return null;
+      }
+   }
+   
+   //==============================================================
+   // Class method to return the system file separator character.
+   //==============================================================
+
+   public static String getFileSeparator()
+   {
+      String fileSeparator;
+
+      fileSeparator = System.getProperty("file.separator");
+
+      if (fileSeparator == null || fileSeparator.equals(""))
+         fileSeparator = "/";
+
+      return fileSeparator;
    }
 
    //==============================================================
-   // Method for converting a month integer value 01-12 to a valid
-   // three character month string.
+   // Class method to return the image icons directory path.
    //==============================================================
 
-   public static String convertDecimalToCharMonth(int month)
+   public static String getIconsDirectory()
    {
-      if (month == 1)
-         return "Jan";
-      else if (month == 2)
-         return "Feb";
-      else if (month == 3)
-         return "Mar";
-      else if (month == 4)
-         return "Apr";
-      else if (month == 5)
-         return "May";
-      else if (month == 6)
-         return "Jun";
-      else if (month == 7)
-         return "Jul";
-      else if (month == 8)
-         return "Aug";
-      else if (month == 9)
-         return "Sep";
-      else if (month == 10)
-         return "Oct";
-      else if (month == 11)
-         return "Nov";
-      else if (month == 12)
-         return "Dec";
+      return "images" + getFileSeparator() + "icons";
+   }
+   
+   //==============================================================
+   // Class method to derive the user's home directory path.
+   //==============================================================
+   
+   protected static String getMyJSQLViewDirectory()
+   {
+      return System.getProperty("user.home") + getFileSeparator() + ".myjsqlview";
+   }
+   
+   //==============================================================
+   // Class method to return the properly format SQL database table
+   // name to be used in query statement. The argumnet must be a
+   // valid table name for the current database that MyJSQLView is
+   // connected to.
+   //==============================================================
+
+   public static String getSchemaTableName(String sqlTable)
+   {
+      String schemaTableName;
+      String identifierQuoteString;
+      
+      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      
+      if (sqlTable.indexOf(".") != -1)
+      {
+         schemaTableName = identifierQuoteString
+                           + sqlTable.substring(0, sqlTable.indexOf("."))
+                           + identifierQuoteString + "." + identifierQuoteString
+                           + sqlTable.substring(sqlTable.indexOf(".") + 1)
+                           + identifierQuoteString;
+      }
       else
-         return month + "";
+         schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
+      //System.out.println(schemaTableName);
+      
+      return schemaTableName;
+   }
+   
+   //==============================================================
+   // Class method to allow standard characters retrieval.
+   //==============================================================
+
+   protected static char[] getStandardCharacters()
+   {
+      return "k8^ef1209rEW-+$xB1aH".toCharArray();
+   }
+   
+   //==============================================================
+   // Method for providing a mechanism to process a given input
+   // DATE data type search string and process into a manageable
+   // format of the standard SQL Date format of YYYY-MM-DD. This
+   // must handle partial date entries.
+   //==============================================================
+   
+   public static String processDateFormatSearch(String searchString)
+   {
+      if (searchString == null)
+         return null;
+      
+      if (searchString.indexOf("/") != -1)
+         searchString = searchString.replaceAll("/", "-");
+      
+      // Short date either month, day, or year so just return it.
+      if (searchString.indexOf("-") == -1)
+      {
+         if (searchString.length() == 3)
+            searchString = MyJSQLView_Utils.convertCharMonthToDecimal(searchString);
+         return searchString;
+      }
+      else
+      {  
+         // Looks like complete standard date so process according
+         // to current selected date fromat.
+         
+         if (searchString.length() >= 10 && searchString.length() < 12)
+            return convertViewDateString_To_DBDateString(searchString,
+               DBTablesPanel.getGeneralProperties().getViewDateFormat());
+         
+         // Either (day and month) or (month and year) or some other
+         // combination.
+         else
+         {
+            String dateFormat, day, month, year;
+            String[] dateContents = searchString.split("-");
+            
+            // Only one aspect of date given.
+            if (dateContents.length == 1)
+            {
+               if (dateContents[0].length() == 3)
+               {
+                  dateContents[0] = MyJSQLView_Utils.convertCharMonthToDecimal(dateContents[0]);
+                  if (searchString.indexOf("-") == 0)
+                     searchString = "-" + dateContents[0];
+                  else
+                     searchString = dateContents[0] + "-";
+               }
+               return searchString;
+            }
+            
+            dateFormat = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            
+            // yyyy-MM-dd
+            if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
+                || dateFormat.equals("yyyy-MMM-dd"))
+            {
+               // Something with yyyy-MM-dd, but not standard format.
+               if (dateContents.length == 3)
+                  return dateContents[0] + "-" + dateContents[1] + "-" + dateContents[2];
+               
+               // yyyy-MM
+               if (dateContents[0].length() == 4)
+               {
+                  year = dateContents[0];
+                  month = dateContents[1];
+                  
+                  if (month.length() > 2)
+                     month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
+                  
+                  return year + "-" + month;
+               }
+               // MM-dd
+               else
+               {
+                  month = dateContents[0];
+                  day = dateContents[1];
+                  
+                  if (month.length() > 2)
+                     month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
+                  
+                  return month + "-" + day;
+               }
+            }
+            
+            // dd-MM-yyyy
+            else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
+                  || dateFormat.equals("dd-MMM-yyyy"))
+            {
+               // Something with dd-MM-yyyy, but not standard format.
+               if (dateContents.length == 3)
+                  return dateContents[2] + "-" + dateContents[1] + "-" + dateContents[0];
+               
+               // MM-yyyy
+               if (dateContents[1].length() == 4)
+               {
+                  year = dateContents[1];
+                  month = dateContents[0];
+                  
+                  if (month.length() > 2)
+                     month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
+                  
+                  return year + "-" + month;
+               }
+               // dd-MM
+               else
+               {
+                  month = dateContents[1];
+                  day = dateContents[0];
+                  
+                  if (month.length() > 2)
+                     month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
+                  
+                  return month + "-" + day;
+               }
+            }
+            
+            // MM-dd-yyyy
+            else
+            {  
+               // Something with MM-dd-yyyy, but not standard format.
+               if (dateContents.length == 3)
+                  return dateContents[2] + "-" + dateContents[0] + "-" + dateContents[1];
+               
+               // dd-yyyy
+               if (dateContents[1].length() == 4)
+               {
+                  year = dateContents[1];
+                  day = dateContents[0];
+                  return year + "-%-" + day;
+               }
+               // MM-dd
+               else
+               {
+                  month = dateContents[0];
+                  day = dateContents[1];
+                  
+                  if (month.length() > 2)
+                     month = MyJSQLView_Utils.convertCharMonthToDecimal(month);
+                  
+                  return month + "-" + day;
+               }
+            }
+         }
+      }  
    }
    
    //==============================================================
@@ -592,7 +786,6 @@ public class MyJSQLView_Utils extends MyJSQLView
       return resultsOfFileChooser;
    }
    
-
    //==============================================================
    // Class method for allowing the setting of the language locale
    // if the program has not been run before and the MyJSQLView
@@ -746,154 +939,85 @@ public class MyJSQLView_Utils extends MyJSQLView
    }
    
    //==============================================================
-   // Class method to load a provided sound file into a audio clip.
-   // A check of the returned clip should be made to insure it was
-   // properly created. The method will return NULL if it was not.
+   // Method for converting an input byte array either extracting
+   // or dumping per a determined conversion definition.
    //==============================================================
-
-   public static Clip getAudioClip(String fileName)
+   
+   public static String stateConvert(byte[] bytesToProcess, boolean in)
    {
       // Method Instances
-      File audioFile;
-      AudioInputStream audioInputStream;
-      AudioFormat audioFormat;
-      DataLine.Info dataLineInfo;
-      Clip clip;
+      int b;
+      String base10_1, base10_10;
+      StringBuffer convertedString;
+      String hexadecimalString;
+      BufferedInputStream inputStream;
 
-      audioFile = new File(fileName);
+      // Otain byes in a stream and convert to
+      // hex for extraction/dumping.
 
-      // Create a audio stream that will be used to load the
-      // audio file then open a line that will be associated
-      // with the clip.
-
-      try
+      if (bytesToProcess != null)
       {
+         convertedString = new StringBuffer();
+         inputStream = new BufferedInputStream(new ByteArrayInputStream(bytesToProcess));
+
+         if (in)
+            convertedString.append("");
+         else
+            convertedString.append("0x");
+
          try
          {
-            audioInputStream = AudioSystem.getAudioInputStream(audioFile);
-         }
-         catch (UnsupportedAudioFileException e)
-         {
-            // System.out.println("Unsupported Audio File Format.\n" + e);
-            return null;
-         }
+            int skipBytes = 1;
 
-         audioFormat = audioInputStream.getFormat();
-         dataLineInfo = new DataLine.Info(Clip.class, audioFormat);
-
-         if (!AudioSystem.isLineSupported(dataLineInfo))
-         {
-            // System.out.println("Line NOT Supported");
-            audioInputStream.close();
-            return null;
-         }
-         else
-         {
-            try
+            while ((b = inputStream.read()) != -1)
             {
-               clip = (Clip) AudioSystem.getLine(dataLineInfo);
+               if (in)
+               {
+                  if (skipBytes++ > 2)
+                  {
+                     // Extract
+                     try
+                     {
+                        base10_10 = (char) b + "";
+                        base10_1 = (char) inputStream.read() + "";
 
-               // The follwing class may be uncommented to
-               // provide a event listener to monitor the
-               // activity of the sound clip.
-               /*
-                * class lineEvent implements LineListener { public void
-                * update(LineEvent e) { Object eventSource = e.getSource(); if
-                * (eventSource instanceof Clip) {
-                * System.out.println(e.getType()); //if (e.getType() ==
-                * LineEvent.Type.STOP) // ((Clip)e.getSource()).close(); } } }
-                * clip.addLineListener(new lineEvent());
-                */
+                        int b10 = (Integer.valueOf(base10_10, 16).intValue()) * 16;
+                        int b1 = (Integer.valueOf(base10_1, 16).intValue());
+                        convertedString.append((char) (b10 + b1));
+                     }
+                     catch (NumberFormatException e)
+                     {
+                        String msg = "Unable to Decode Input State File Format.";
+                        JOptionPane.showMessageDialog(null, msg, "Alert", JOptionPane.ERROR_MESSAGE);
+                        inputStream.close();
+                        return "";
+                     }
+                  }
+               }
+               else
+               {
+                  // Dump.
+                  hexadecimalString = Integer.toString(b, 16);
 
-               clip.open(audioInputStream);
-               audioInputStream.close();
-               return clip;
+                  if (hexadecimalString.length() < 2)
+                     hexadecimalString = "0" + hexadecimalString;
+                  if (hexadecimalString.length() > 2)
+                     hexadecimalString = hexadecimalString.substring(hexadecimalString.length() - 2);
+                  convertedString.append(hexadecimalString);
+               }
             }
-            catch (LineUnavailableException e)
-            {
-               // System.out.println("Line Unavailable.\n" + e);
-               return null;
-            }
+            inputStream.close();
          }
-      }
-      catch (IOException e)
-      {
-         // System.out.println("IO Exception in InputStream.\n" + e);
-         return null;
-      }
-   }
-   
-   //==============================================================
-   // Class method to return the properly format SQL database table
-   // name to be used in query statement. The argumnet must be a
-   // valid table name for the current database that MyJSQLView is
-   // connected to.
-   //==============================================================
-
-   public static String getSchemaTableName(String sqlTable)
-   {
-      String schemaTableName;
-      String identifierQuoteString;
-      
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
-      
-      if (sqlTable.indexOf(".") != -1)
-      {
-         schemaTableName = identifierQuoteString
-                           + sqlTable.substring(0, sqlTable.indexOf("."))
-                           + identifierQuoteString + "." + identifierQuoteString
-                           + sqlTable.substring(sqlTable.indexOf(".") + 1)
-                           + identifierQuoteString;
+         catch (IOException e)
+         {
+            String msg = "I/O BufferedInputStream Failure.";
+            JOptionPane.showMessageDialog(null, msg, "Alert", JOptionPane.ERROR_MESSAGE);
+            return "";
+         }
+         return convertedString.toString();
       }
       else
-         schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
-      //System.out.println(schemaTableName);
-      
-      return schemaTableName;
-   }
-
-   //==============================================================
-   // Class method to return the system file separator character.
-   //==============================================================
-
-   public static String getFileSeparator()
-   {
-      String fileSeparator;
-
-      fileSeparator = System.getProperty("file.separator");
-
-      if (fileSeparator == null || fileSeparator.equals(""))
-         fileSeparator = "/";
-
-      return fileSeparator;
-   }
-
-   //==============================================================
-   // Class method to return the image icons directory path.
-   //==============================================================
-
-   public static String getIconsDirectory()
-   {
-      return "images" + getFileSeparator() + "icons";
-   }
-   
-   //==============================================================
-   // Class method to derive the user's home directory path.
-   //==============================================================
-   
-   protected static String getMyJSQLViewDirectory()
-   {
-      return System.getProperty("user.home") + getFileSeparator() + ".myjsqlview";
-   }
-   
-   
-   //==============================================================
-   // Class method to allow standard characters retrieval.
-   //==============================================================
-
-   protected static char[] getStandardCharacters()
-   {
-      return "k8^ef1209rEW-+$xB1aH".toCharArray();
+         return "";
    }
 
    //==============================================================
@@ -923,5 +1047,29 @@ public class MyJSQLView_Utils extends MyJSQLView
          MyJSQLView_Access.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
          return;
       }
+   }
+   
+   //==============================================================
+   // Method for performing the n-digit chopping operation on an
+   // input number.
+   //==============================================================
+
+   public static double nDigitChop(double numberToChop, int n)
+   {
+      // Method Instances
+      int decimal;
+      int chop = n;
+      String pass_string;
+
+      pass_string = Double.toString(numberToChop);
+      decimal = pass_string.indexOf(".");
+      if (decimal != -1 & pass_string.length() >= decimal + chop + 1)
+      {
+         numberToChop = (Double.valueOf(pass_string.substring(0, decimal + chop + 1))).doubleValue();
+      }
+      else
+         numberToChop = Double.valueOf(pass_string).doubleValue();
+
+      return numberToChop;
    }
 }
