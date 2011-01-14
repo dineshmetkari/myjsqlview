@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.32 01/09/2011
+// Version 11.33 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -454,6 +454,8 @@
 //             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
+//       11.33 Class Method loadTable() Changes to Give the Ability to Properly Search
+//             Given Input for Date/DateTime/Timestamp Fields. 
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -478,7 +480,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.32 01/09/2011
+ * @version 11.33 01/14/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -692,7 +694,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       if (searchTextString.equals(""))
          searchQueryString.append("'1' LIKE '%'");
       else
-      {
+      {         
          if (columnSearchString == null)
          {
             String[] tableColumns;
@@ -707,9 +709,27 @@ public class TableTabPanel_MySQL extends TableTabPanel
             }
          }
          else
+         {
+            // Try and process Date/Datetime/TimeStamp Fields
+            columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            
+            if (columnType.equals("DATE"))
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+            {
+               if (searchTextString.indexOf(" ") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                     searchTextString.substring(0, searchTextString.indexOf(" ")))
+                     + searchTextString.substring(searchTextString.indexOf(" "));
+               else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            }
+            
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                + " LIKE '%" + searchTextString + "%'");
+                                     + " LIKE '%" + searchTextString + "%'");
+         }
       }
+      // System.out.println(searchQueryString);
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
@@ -854,7 +874,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      else if (columnSize == 12)
                         tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                               .format(currentContentData));
-                     // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
+                     // All current coloumnSizes for MySQL > 5.0 Should be 19.
                      else
                         tableData[i][j++] = (new SimpleDateFormat(
                            DBTablesPanel.getGeneralProperties().getViewDateFormat()
@@ -1098,7 +1118,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
          }
          sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
-         // System.out.println(sqlStatementString);
+         System.out.println(sqlStatementString);
          db_resultSet = sqlStatement.executeQuery(sqlStatementString.toString());
          db_resultSet.next();
 
@@ -1166,7 +1186,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   else if (columnSize == 12)
                      tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                            .format(currentContentData)));
-                  // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
+                  // All current coloumnSizes for MySQL > 5.0 Should be 19.
                   else
                      tableViewForm.setFormField(currentColumnName,
                         (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
@@ -1606,7 +1626,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   else
                      editForm.setFormField(currentColumnName, (Object) "MM-DD-YYYY HH:MM");
                }
-               // All current coloumnSizes for MyJSQLView > 5.0 Should be 19.
+               // All current coloumnSizes for MySQL > 5.0 Should be 19.
                else
                {
                   if (currentContentData != null)
