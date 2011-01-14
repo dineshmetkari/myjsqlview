@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.8 01/09/2011
+// Version 9.9 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,13 +216,15 @@
 //         9.4 Assigned searchQueryString to sqlTableSearchString in loadTable().
 //         9.5 Undid Last Revision. Short Sighted.
 //         9.6 Check for All Fields Possibly LOBs. Class Method loadTable().
-//         9.7 Class Method getColumnNames() Moved the Final Check for primaryKeys, Foreign
-//             Keys, Back To End of Script Because Depends on columnNamesHashMap.
+//         9.7 Class Method getColumnNames() Moved the Final Check for primaryKeys,
+//             Foreign Keys, Back To End of Script Because Depends on columnNamesHashMap.
 //         9.8 Class Methods loadTable(), viewSelectedItem(), addItem() & editSelectedItem()
 //             Changed Default Entry for Date/DateTime/TimeStamp Type Entry to
 //             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
+//         9.9 Class Method loadTable() Changes to Give the Ability to Properly Search
+//             Given Input for Date/DateTime/Timestamp Fields. 
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -248,7 +250,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.8 01/09/2011
+ * @version 9.9 01/14/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -508,8 +510,27 @@ public class TableTabPanel_HSQL extends TableTabPanel
             }
          }
          else
+         {
+            // Try and process Date/Datetime/TimeStamp Fields
+            columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            
+            if (columnType.equals("DATE"))
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            else if (columnType.equals("TIMESTAMP"))
+            {
+               if (searchTextString.indexOf(" ") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                     searchTextString.substring(0, searchTextString.indexOf(" ")))
+                     + searchTextString.substring(searchTextString.indexOf(" "));
+               else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            }
+            
+            
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                 + " LIKE '%" + searchTextString + "%'");
+         }
+         // System.out.println(searchTextString);
       }
 
       // Connect to database to obtain the initial/new items set

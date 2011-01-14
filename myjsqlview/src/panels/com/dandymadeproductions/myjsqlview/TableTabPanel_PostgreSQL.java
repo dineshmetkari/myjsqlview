@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 12.1 01/09/2011
+// Version 12.2 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -282,6 +282,8 @@
 //             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
+//        12.2 Class Method loadTable() Changes to Give the Ability to Properly Search
+//             Given Input for Date/DateTime/Timestamp Fields. 
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -307,7 +309,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.1 01/09/2011
+ * @version 12.2 01/14/2011
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -568,8 +570,26 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
             }
          }
          else
+         {
+            // Try and process Date/Datetime/TimeStamp Fields
+            columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            
+            if (columnType.equals("DATE"))
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ"))
+            {
+               if (searchTextString.indexOf(" ") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                     searchTextString.substring(0, searchTextString.indexOf(" ")))
+                     + searchTextString.substring(searchTextString.indexOf(" "));
+               else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+            }
+            
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                 + "::TEXT LIKE '%" + searchTextString + "%'");
+         }
+         // System.out.println(searchTextString);
       }
 
       // Connect to database to obtain the initial/new items set
