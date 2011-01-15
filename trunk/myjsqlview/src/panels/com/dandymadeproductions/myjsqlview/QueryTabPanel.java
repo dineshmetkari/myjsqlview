@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.9 01/10/2011
+// Version 8.0 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -189,6 +189,8 @@
 //             for Date/DateTime/TimeStamp Type to GeneralProperties.getDateViewFormat().
 //             Also Class Method getColumnNames() Oracle sqlTableFieldsString Added
 //             for TimestampLTZ the Return of Date Foramt to YYYY-MM-DD.
+//         8.0 Class Method loadTable() Changes to Give the Ability to Properly Search
+//             Given Input for Date/DateTime/Timestamp Fields. 
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -220,7 +222,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 7.9 01/12/2011
+ * @version 8.0 01/14/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1116,7 +1118,24 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       if (searchTextString.equals(""))
          searchTextString = "'%'";
       else
+      {
+         // Try and process Date/Datetime/TimeStamp Fields
+         columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+         
+         if (columnType.equals("DATE"))
+            searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+         else if (columnType.equals("DATETIME") || columnType.indexOf("TIMESTAMP") != -1)
+         {
+            if (searchTextString.indexOf(" ") != -1)
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                  searchTextString.substring(0, searchTextString.indexOf(" ")))
+                  + searchTextString.substring(searchTextString.indexOf(" "));
+            else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+         }
+         
          searchTextString = "'%" + searchTextString + "%'";
+      }
 
       // Connect to database to create a temporary table to be used
       // for the initial/new items set and then sorting that set.
