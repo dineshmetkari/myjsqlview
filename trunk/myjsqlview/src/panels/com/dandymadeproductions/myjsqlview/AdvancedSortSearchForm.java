@@ -9,8 +9,8 @@
 //              << AdvancedSorSearchForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 4.77 08/27/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 4.78 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,9 @@
 //        4.76 05/19/2010 Parameterized Instance keyComponentIterator in Class Methods
 //                        getKeyComponentsState() & setKeyComponentsState().
 //        4.77 08/27/2010 Added sqliteWhereOperators in Method createSortSearchInterface().
+//        4.78 01/14/2011 Class Method getAdvancedSortSearchSQL() Changes to Give the
+//                        Ability to Properly Search Given Input for Date/DateTime/Timestamp
+//                        Fields. 
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -175,7 +178,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.77 08/27/2010
+ * @version 4.78 01/14/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -739,17 +742,50 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                             + " " + searchString + " ");
                else
                {
-                  if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                      && columnTypeString.equals("DATE"))
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString
-                                               + " TO_DATE('" + searchString + "', 'MM-dd-YYYY') ");
-                  else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                  if (columnTypeString.equals("DATE"))
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     {
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString
+                                                  + " TO_DATE('"
+                                                  + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                    searchString,
+                                                    DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                    + "', 'YYYY-MM-dd') ");
+                     }
+                     else
+                     {
+                        searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + searchString + "' ");
+                     }
+                  }
+                  else if (columnTypeString.equals("DATETIME") || columnTypeString.indexOf("TIMESTAMP") != -1)
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString
-                                               + " TO_TIMESTAMP('" + searchString
-                                               + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                     {
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                 + identifierQuoteString + " " + operatorString
+                                                 + " TO_TIMESTAMP('" + searchString
+                                                 + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                     }
+                     else
+                     {
+                        if (searchString.indexOf(" ") != -1)
+                           searchString = MyJSQLView_Utils.processDateFormatSearch(
+                              searchString.substring(0, searchString.indexOf(" ")))
+                              + searchString.substring(searchString.indexOf(" "));
+                        else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
+                           searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
+                        
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + searchString + "' ");
+                     }
+                  }
                   else
                      sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                + identifierQuoteString + " " + operatorString + " '"
