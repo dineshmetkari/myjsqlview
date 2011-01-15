@@ -9,8 +9,8 @@
 //                      << UpdateForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.3 08/27/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.4 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -92,6 +92,8 @@
 //         3.2 07/27/2010 Updated Method updateTable() Removed BEGIN Statement SQL Query
 //                        Execution for SQLite Database.
 //         3.3 08/27/2010 Added sqliteWhereOperators in Method createUpdateWhereInterface().
+//         3.4 01/14/2011 Class Method getWhereSQLExpression() Changes to Give the Ability to
+//                        Properly Search Given Input for Date/DateTime/Timestamp Fields. 
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -124,7 +126,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.3 08/27/2010
+ * @version 3.4 01/14/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -854,20 +856,21 @@ class UpdateForm extends JFrame implements ActionListener
                            updateTextString = updateTextString.trim();
 
                            // Check for some kind of valid input.
-                           if (updateTextString.length() != 10)
+                           if (!(updateTextString.length() >= 10 && updateTextString.length() < 12))
                               java.sql.Date.valueOf("error");
                            
                            // Process
-                           dateString = updateTextString.substring(0, 10);
+                           dateString = updateTextString.trim();
+                           dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                              dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
                            
                            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
                            {
-                              updateString = "TO_DATE('" + dateString + "', 'MM-dd-YYYY')";
+                              updateString = "TO_DATE('" + dateString + "', 'YYYY-MM-dd')";
                               quoteCheckBox.setSelected(false);
                            }
                            else
                            {
-                              dateString = MyJSQLView_Utils.formatJavaDateString(dateString);
                               dateValue = java.sql.Date.valueOf(dateString);
                               updateString = dateValue.toString();
                            }
@@ -899,8 +902,10 @@ class UpdateForm extends JFrame implements ActionListener
                               java.sql.Date.valueOf("error");
                         
                            // Process
-                           dateString = MyJSQLView_Utils.formatJavaDateString(
-                                                                   updateTextString.substring(0, 10));
+                           dateString = dateString.substring(0, updateTextString.indexOf(" "));
+                           dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                              dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                           
                            timeString = updateTextString.substring(updateTextString.indexOf(" "));
                            dateTimeValue = Timestamp.valueOf(dateString + timeString);
                            updateString = dateTimeValue.toString();
@@ -933,15 +938,19 @@ class UpdateForm extends JFrame implements ActionListener
                                     timeStampFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
                                  else if (columnSize == 12)
                                     timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+                                 // All current coloumnSizes for MySQL > 5.0 Should be 19.
                                  else
-                                    timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss");
+                                    timeStampFormat = new SimpleDateFormat(
+                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss");
                               }
                               else
                               {
                                  if (columnType.equals("TIMESTAMPLTZ"))
-                                    timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss Z");
+                                    timeStampFormat = new SimpleDateFormat(
+                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss Z");
                                  else
-                                    timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm:ss z");
+                                    timeStampFormat = new SimpleDateFormat(
+                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z");
                               }
 
                               // Parse the TimeStamp Format.
@@ -1108,17 +1117,50 @@ class UpdateForm extends JFrame implements ActionListener
                                             + " " + tempSearchString + " ");
                else
                {
-                  if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
-                      && columnTypeString.equals("DATE"))
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString
-                                               + " TO_DATE('" + tempSearchString + "', 'MM-dd-YYYY') ");
-                  else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                  if (columnTypeString.equals("DATE"))
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     {
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString
+                                                  + " TO_DATE('"
+                                                  + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                    tempSearchString,
+                                                    DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                    + "', 'YYYY-MM-dd') ");
+                     }
+                     else
+                     {
+                        tempSearchString = MyJSQLView_Utils.processDateFormatSearch(tempSearchString);
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + tempSearchString + "' ");
+                     }
+                  }
+                  else if (columnTypeString.equals("DATETIME") || columnTypeString.indexOf("TIMESTAMP") != -1)
+                  {
+                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString
-                                               + " TO_TIMESTAMP('" + tempSearchString
-                                               + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                     {
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                 + identifierQuoteString + " " + operatorString
+                                                 + " TO_TIMESTAMP('" + tempSearchString
+                                                 + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                     }
+                     else
+                     {
+                        if (tempSearchString.indexOf(" ") != -1)
+                           tempSearchString = MyJSQLView_Utils.processDateFormatSearch(
+                              tempSearchString.substring(0, tempSearchString.indexOf(" ")))
+                              + tempSearchString.substring(tempSearchString.indexOf(" "));
+                        else if (tempSearchString.indexOf("-") != -1 || tempSearchString.indexOf("/") != -1)
+                           tempSearchString = MyJSQLView_Utils.processDateFormatSearch(tempSearchString);
+                        
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + tempSearchString + "' ");
+                     }
+                  }
                   else
                      sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                + identifierQuoteString + " " + operatorString + " '"
