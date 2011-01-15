@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.7 01/09/2011
+// Version 9.8 01/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -238,6 +238,8 @@
 //             GeneralProperties.getDateViewFormat(). Class Methods view/editSelectedItem()
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
+//         9.8 Class Method loadTable() Changes to Give the Ability to Properly Search
+//             Given Input for Date/DateTime/Timestamp Fields. 
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -270,7 +272,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.7 01/09/2011
+ * @version 9.8 01/14/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -587,10 +589,24 @@ public class TableTabPanel_Oracle extends TableTabPanel
                if (columnType.equals("BFILE") || columnType.equals("LONG"))
                   continue;
                
-               if (columnType.equals("DATE"))
-                  searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchTextString
-                                           + "', 'MM-dd-YYYY') OR");
-               else
+               if (columnType.equals("DATE") || columnType.indexOf("TIMESTAMP") != -1)
+               {
+                  if (columnType.equals("DATE"))
+                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  else
+                  {
+                     if (searchTextString.indexOf(" ") != -1)
+                        searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                           searchTextString.substring(0, searchTextString.indexOf(" ")))
+                           + searchTextString.substring(searchTextString.indexOf(" "));
+                     else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                        searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  }
+                  
+                  //searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchTextString
+                  //                         + "', 'MM-dd-YYYY') OR");
+               }
+               //else
                   searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
             }
             if (searchQueryString.length() >= 3)
