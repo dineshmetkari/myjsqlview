@@ -10,8 +10,8 @@
 //              << SQLDataDumpImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 3.8 07/21/2010
+// Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
+// Version 3.9 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,8 @@
 //             Bring Code Into Compliance With Java 5.0 API.
 //         3.8 Updated Method importSQLFile() Removed BEGIN Statement SQL Query
 //             Execution for SQLite Database.
+//         3.9 Class Method importSQLFile() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -107,7 +109,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 3.8 07/21/2010
+ * @version 3.9 01/15/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -194,7 +196,8 @@ class SQLDataDumpImportThread implements Runnable
       if (dump != null)
       {
          // Obtain database connection & setting up.
-         dbConnection = MyJSQLView_Access.getConnection("SQLDataDumpImportThread importSQLFile()");
+         dbConnection = (Connection) MyJSQLView_Access.getConnection(
+            "SQLDataDumpImportThread importSQLFile()");
          
          if (dbConnection == null)
          {
