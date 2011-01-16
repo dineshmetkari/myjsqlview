@@ -10,8 +10,8 @@
 //                 << CSVDataImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 5.2 08/11/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 5.3 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -115,6 +115,8 @@
 //             Execution for SQLite Database.
 //         5.2 Class Method importCSVFile() Instance schemaTableName Code for Deriving
 //             Removed Since Collected From MyJSQLView_Utils, 5.0.
+//         5.3 Class Method importCSVFile() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -141,7 +143,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.2 08/11/2010
+ * @version 5.3 01/15/2011
  */
 
 class CSVDataImportThread implements Runnable
@@ -239,7 +241,8 @@ class CSVDataImportThread implements Runnable
 
       // Obtain database connection & setting up.
 
-      dbConnection = MyJSQLView_Access.getConnection("CSVDataImportThread importCSVFile()");
+      dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         "CSVDataImportThread importCSVFile()");
       
       if (dbConnection == null)
       {
