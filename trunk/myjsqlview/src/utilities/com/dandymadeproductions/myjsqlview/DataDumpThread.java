@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 5.7 01/10/2011
+// Version 5.8 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,8 @@
 //             and Timestamp Content to the Selected CSV Export Format. Also for
 //             Oracle Insured Returning the Standard SQL Database Format of
 //             YYYY-MM-DD.
+//         5.8 Class Method run() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -127,7 +129,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.7 01/12/2011
+ * @version 5.8 01/15/2011
  */
 
 class DataDumpThread implements Runnable
@@ -196,7 +198,7 @@ class DataDumpThread implements Runnable
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
       // Get Connection to Database.
-      Connection db_Connection = MyJSQLView_Access.getConnection("DataDumpThread run()");
+      Connection db_Connection = (Connection) MyJSQLView_Access.getConnection("DataDumpThread run()");
       
       if (db_Connection == null)
          return;
