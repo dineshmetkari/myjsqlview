@@ -10,8 +10,8 @@
 //                   << MyJSQLView_Frame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.0 09/15/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 6.1 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,8 @@
 //                        a Plugin Module Tab is Added, addTab().
 //         6.0 09/15/2010 Class Method createGUI() Removed the dummyPanel Removal From the
 //                        Main Tab.
+//         6.1 01/15/2011 Class Methods createGUI() & reloadDBTables() Cast Object Returned by
+//                        MyJSQLView_Access.getConnection() to Connection.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -180,7 +182,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.0 09/15/2010
+ * @version 6.1 01/15/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -297,7 +299,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             
             // Obtain a database connection & resources.
             
-            dbConnection = MyJSQLView_Access.getConnection("MyJSQLView_Frame createGUI()");
+            dbConnection = (Connection) MyJSQLView_Access.getConnection("MyJSQLView_Frame createGUI()");
             resourceBundle = MyJSQLView.getLocaleResourceBundle();
             
             dbTablesPanel = new DBTablesPanel(dbConnection, MyJSQLView_Access.getTableNames());
@@ -464,7 +466,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
       
-      dbConnection = MyJSQLView_Access.getConnection("TableTabPanel_Frame reloadDBTables()");
+      dbConnection = (Connection) MyJSQLView_Access.getConnection("TableTabPanel_Frame reloadDBTables()");
       
       if (dbConnection == null)
          return;
