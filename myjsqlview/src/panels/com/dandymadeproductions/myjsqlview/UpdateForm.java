@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.4 01/14/2011
+// Version 3.5 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -93,7 +93,9 @@
 //                        Execution for SQLite Database.
 //         3.3 08/27/2010 Added sqliteWhereOperators in Method createUpdateWhereInterface().
 //         3.4 01/14/2011 Class Method getWhereSQLExpression() Changes to Give the Ability to
-//                        Properly Search Given Input for Date/DateTime/Timestamp Fields. 
+//                        Properly Search Given Input for Date/DateTime/Timestamp Fields.
+//         3.5 01/15/2011 Class Method updateTable() Cast Object Returned by MyJSQLView_Access.
+//                        getConnection() to Connection.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +128,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.4 01/14/2011
+ * @version 3.5 01/15/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -742,7 +744,7 @@ class UpdateForm extends JFrame implements ActionListener
 
       // Obtain connection to database & setup.
 
-      Connection dbConnection = MyJSQLView_Access.getConnection("UpdateForm updateTable()");
+      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection("UpdateForm updateTable()");
 
       if (dbConnection == null)
          return false;
