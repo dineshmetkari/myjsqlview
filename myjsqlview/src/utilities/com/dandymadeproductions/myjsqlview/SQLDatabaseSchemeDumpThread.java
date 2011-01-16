@@ -9,8 +9,8 @@
 //            << SQLDatabaseSchemeDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.6 05/20/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.7 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@
 //         1.4 Changed Package to Reflect Dandy Made Productions Code.
 //         1.5 Organized Imports.
 //         1.6 Parameterized Instance tableNamesIterator in run().
+//         1.7 Class Method run() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import java.util.Iterator;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 1.6 05/20/2010
+ * @version 1.7 01/15/2011
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable
@@ -100,7 +102,8 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       Object dumpData;
 
       // Get Connection to Database.
-      Connection dbConnection = MyJSQLView_Access.getConnection("DatabaseSchemeDumpThread run()");
+      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         "DatabaseSchemeDumpThread run()");
 
       if (dbConnection == null)
          return;
