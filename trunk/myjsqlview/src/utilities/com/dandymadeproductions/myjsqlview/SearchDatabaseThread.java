@@ -8,8 +8,8 @@
 //                << SearchDatabaseThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.3 07/13/2010
+// Copyright (C) 2005-2011 Dana M. Proctor.
+// Version 2.4 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,8 @@
 //             Defined by New Class Instance selectedTables.
 //         2.3 Class Method run() Assignment of Boolean Object to resultData via
 //             Boolean.valueOf() Instead of Creating a New Boolean Object.
+//         2.4 Class Method run() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -80,7 +82,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.3 07/13/2010
+ * @version 2.4 01/15/2011
  */
 
 class SearchDatabaseThread implements Runnable
@@ -133,7 +135,8 @@ class SearchDatabaseThread implements Runnable
       String columnsSQLQuery, sqlTable;
       String identifierQuoteString, schemaTableName;
 
-      dbConnection = MyJSQLView_Access.getConnection("SearchDatabaseThread queryDatabase()");
+      dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         "SearchDatabaseThread queryDatabase()");
       
       if (dbConnection == null)
          return;
