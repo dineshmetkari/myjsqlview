@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.8 01/14/2011
+// Version 9.9 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -239,7 +239,9 @@
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
 //         9.8 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//         9.9 Class Method setTableHeadings() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -272,7 +274,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.8 01/14/2011
+ * @version 9.9 01/15/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -1572,7 +1574,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
       // Create connection, remove old summary table and
       // reload the center panel.
 
-      Connection work_dbConnection = MyJSQLView_Access.getConnection("TableTabPanel_Oracle setTableHeadings()");
+      Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         "TableTabPanel_Oracle setTableHeadings()");
       
       if (work_dbConnection == null)
          return;
