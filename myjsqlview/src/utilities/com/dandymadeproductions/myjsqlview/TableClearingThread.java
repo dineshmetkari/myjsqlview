@@ -8,8 +8,8 @@
 //                 << TableClearingThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.4 05/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.5 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 //         1.2 Header Format Changes/Update.
 //         1.3 Changed Package to Reflect Dandy Made Productions Code.
 //         1.4 Organized Imports.
+//         1.5 Class Method flushPrivileges() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -53,7 +55,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.4 05/18/2010
+ * @version 1.5 01/15/2011
  */
 
 class TableClearingThread implements Runnable
@@ -84,7 +86,7 @@ class TableClearingThread implements Runnable
    public void run()
    {
       // Get Connection to Database & Export Options.
-      Connection dbConnection = MyJSQLView_Access.getConnection("ClearingTableThread run()");
+      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection("ClearingTableThread run()");
 
       // Remove the appropriate Memory/Temporary Table(s) for HSQL
       // or Oracle databases.
