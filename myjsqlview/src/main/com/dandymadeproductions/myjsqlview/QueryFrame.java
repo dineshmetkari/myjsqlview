@@ -8,8 +8,8 @@
 //                  << QueryFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 6.1 10/10/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 6.2 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,8 @@
 //                        actionPerformed().
 //         6.0 08/26/2010 Correction to Table Row Preferences Warning Label Resources.
 //         6.1 10/10/2010 Added Data | Export | PDF to Menu and ToolBar.
+//         6.2 01/15/2011 Constructor Cast Object Returned by MyJSQLView_Access.
+//                        getConnection() to Connection.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -183,7 +185,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.1 10/10/2010
+ * @version 6.2 01/15/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -267,7 +269,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          summaryTableRowSize[i] = 50;
 
       // Setting up a connection.
-      query_dbConnection = MyJSQLView_Access.getConnection("QueryFrame");
+      query_dbConnection = (Connection) MyJSQLView_Access.getConnection("QueryFrame");
       
       //==================================================
       // Frame Window Closing Addition. Also method for
