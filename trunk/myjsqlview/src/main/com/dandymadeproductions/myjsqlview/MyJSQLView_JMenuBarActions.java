@@ -9,8 +9,8 @@
 //               << MyJSQLView_JMenuBarActions.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 7.25 08/26/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 7.26 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -236,6 +236,8 @@
 //        7.24 Constructor Changed parent From JFRame to MyJSQLView_Frame Type. Passed
 //             parent to PluginFrame Constructor Instantiation.
 //        7.25 Updated to Reflect Internationalization Support in Action Methods.
+//        7.26 Class Method flushPrivileges() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -268,7 +270,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.25 08/26/2010
+ * @version 7.26 01/15/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1126,7 +1128,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       boolean flushSuccess;
 
       // Get Connection to Database.
-      Connection dbConnection = MyJSQLView_Access
+      Connection dbConnection = (Connection) MyJSQLView_Access
             .getConnection("MyJSQLView_JMenuBarActions.flushPrivileges()");
       
       if (dbConnection == null)
