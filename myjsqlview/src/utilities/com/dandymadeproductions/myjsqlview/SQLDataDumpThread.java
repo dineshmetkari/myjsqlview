@@ -9,8 +9,8 @@
 //                   << SQLDataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Borislav Gizdov, Dana M. Proctor
-// Version 6.84 08/07/2010
+// Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
+// Version 6.85 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -255,6 +255,8 @@
 //        6.83 Correction in run() to Properly Catch the Condition for REPLACE Explicit
 //             SQL Output.
 //        6.84 Removed System.out.println() in explicitStatementData().
+//        6.85 Class Method run() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -287,7 +289,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.84 08/07/2010
+ * @version 6.85 01/15/2011
  */
 
 class SQLDataDumpThread implements Runnable
@@ -387,7 +389,7 @@ class SQLDataDumpThread implements Runnable
       ResultSet rs;
 
       // Get Connection to Database.
-      Connection dbConnection = MyJSQLView_Access.getConnection("SQLDataDumpThread run()");
+      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection("SQLDataDumpThread run()");
       
       if (dbConnection == null)
          return;
