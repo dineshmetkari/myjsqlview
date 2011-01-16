@@ -9,8 +9,8 @@
 //                 << SQLDatabaseDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 7.0 07/28/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 7.1 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -176,6 +176,8 @@
 //             & explicitStatementData().
 //         7.0 Correction in run() to Properly Catch the Condition for REPLACE Explicit
 //             SQL Output.
+//         7.1 Class Method run() Cast Object Returned by MyJSQLView_Access.
+//             getConnection() to Connection.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -207,7 +209,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.0 07/28/2010
+ * @version 7.1 01/15/2011
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -263,7 +265,7 @@ class SQLDatabaseDumpThread implements Runnable
       ResultSet rs;
 
       // Get Connection to Database & Export Options.
-      Connection dbConnection = MyJSQLView_Access.getConnection("SQLDatabaseDumpThread run()");
+      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection("SQLDatabaseDumpThread run()");
       
       if (dbConnection == null)
          return;
