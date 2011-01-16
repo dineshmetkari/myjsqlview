@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.1 01/08/2011
+// Version 4.2 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,9 @@
 //         4.0 Added SQLite TableTabPanel Type for Instantiation in loadTable().
 //         4.1 Added Class Instance generalProperties and Associated get/setGeneralProperties()
 //             Method.
+//         4.2 Class Methods actionPerformed(), setSelectedTableTablPanel(), & 
+//             getTableTabPanel() Cast Object Returned by MyJSQLView_Access.getConnection()
+//             to Connection.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -131,7 +134,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.1 01/08/2011
+ * @version 4.2 01/15/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -284,7 +287,8 @@ public class DBTablesPanel extends JPanel implements ActionListener
                {
                   public void run()
                   {
-                     Connection work_dbConnection = MyJSQLView_Access.getConnection("DBTablesPanel actionPerformed()");
+                     Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+                        "DBTablesPanel actionPerformed()");
                      String tableName = (String) tableSelectionComboBox.getSelectedItem();
                      
                      if (work_dbConnection == null)
@@ -504,6 +508,31 @@ public class DBTablesPanel extends JPanel implements ActionListener
       else
          return tableSelectionComboBox.getItemCount();
    }
+   
+   //==============================================================
+   // Class Method to get a TableTabPanel given the table
+   // tab name, aka table name. Load it if necessary via selecting
+   // by the tableSelectionComboBox.
+   //==============================================================
+   
+   public static TableTabPanel getTableTabPanel(String tableName)
+   {
+      // Table not loaded so load it.
+      if (tableTabHashMap.get(tableName) == null)
+      {
+         Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+            "DBTablesPanel getTableTabPanel()");
+         
+         loadTable(tableName, work_dbConnection);
+         
+         MyJSQLView_Access.closeConnection(work_dbConnection, "DBTablesPanel getTableTabPanel()");
+      }
+
+      if (tableTabHashMap.get(tableName) == null)
+         return null;
+      else
+         return tableTabHashMap.get(tableName);
+   }
 
    //==============================================================
    // Class Method to return the current selected visible
@@ -549,7 +578,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
          if (tableTabHashMap.get(tableName) == null)
          {
             String connectionString = "DBTablesPanel setSelectedTableTabPanel()";
-            Connection work_dbConnection = MyJSQLView_Access.getConnection(connectionString);
+            Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(connectionString);
             
             loadTable(tableName, work_dbConnection);
             
@@ -561,30 +590,6 @@ public class DBTablesPanel extends JPanel implements ActionListener
          else
             tableSelectionComboBox.setSelectedItem(tableName);
       }
-   }
-
-   //==============================================================
-   // Class Method to get a TableTabPanel given the table
-   // tab name, aka table name. Load it if necessary via selecting
-   // by the tableSelectionComboBox.
-   //==============================================================
-   
-   public static TableTabPanel getTableTabPanel(String tableName)
-   {
-      // Table not loaded so load it.
-      if (tableTabHashMap.get(tableName) == null)
-      {
-         Connection work_dbConnection = MyJSQLView_Access.getConnection("DBTablesPanel getTableTabPanel()");
-         
-         loadTable(tableName, work_dbConnection);
-         
-         MyJSQLView_Access.closeConnection(work_dbConnection, "DBTablesPanel getTableTabPanel()");
-      }
-
-      if (tableTabHashMap.get(tableName) == null)
-         return null;
-      else
-         return tableTabHashMap.get(tableName);
    }
    
    //==============================================================
