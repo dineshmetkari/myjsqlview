@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.75 01/11/2011
+// Version 8.76 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -315,6 +315,8 @@
 //        8.75 01/11/2010 Class Method addUpdateTableEntry() Change to Convert Date/DateTime/Timestamp
 //                        Entries According to the GeneralPreferences.getViewDateFormat(). Conversion
 //                        via MyJSQLView_Utils.convertViewDateString_To_DBDateString().
+//        8.76 01/15/2011 Class Method addUpdateTableEntry() Cast Object Returned by MyJSQLView_Access.
+//                        getConnection() to Connection.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -350,7 +352,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.75 01/11/2011
+ * @version 8.76 01/15/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1158,7 +1160,8 @@ class TableEntryForm extends JFrame implements ActionListener
       int keyColumn = 0;
 
       // Get Connection to Database.
-      Connection db_Connection = MyJSQLView_Access.getConnection("TableEntryForm addUpdateTableEntry()");
+      Connection db_Connection = (Connection) MyJSQLView_Access.getConnection(
+         "TableEntryForm addUpdateTableEntry()");
 
       if (db_Connection == null)
       {
