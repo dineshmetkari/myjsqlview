@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.69 01/11/2011
+// Version 4.70 01/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -151,6 +151,8 @@
 //             Method convertDBDateString_To_ViewDateString(). Also the Same in
 //             Method deleteSelectedItems() Except convertViewDateString_To_DBDateString
 //             for Date Keys.
+//        4.70 Class Methods executeActions() & setTableHeadings() Cast Object Returned
+//             by MyJSQLView_Access.getConnection() to Connection.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -183,7 +185,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.69 01/11/2011
+ * @version 4.70 01/15/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -841,7 +843,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // Button Actions
       if (panelSource instanceof JButton)
       {
-         Connection work_dbConnection = MyJSQLView_Access
+         Connection work_dbConnection = (Connection) MyJSQLView_Access
                .getConnection("TableTabPanel actionPerformed()");
 
          if (work_dbConnection == null)
@@ -1051,7 +1053,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       {
          if (panelSource == ascSortRadioButton || panelSource == descSortRadioButton)
          {
-            Connection work_dbConnection = MyJSQLView_Access
+            Connection work_dbConnection = (Connection) MyJSQLView_Access
                   .getConnection("TableTabPanel actionPerformed()");
 
             if (work_dbConnection == null)
@@ -1078,7 +1080,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          // Sort ComboBox Action
          if (panelSource == sortComboBox)
          {
-            Connection work_dbConnection = MyJSQLView_Access
+            Connection work_dbConnection = (Connection) MyJSQLView_Access
                   .getConnection("TableTabPanel actionPerformed()");
 
             if (work_dbConnection == null)
@@ -2244,7 +2246,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // Create connection, remove old summary table and
       // reload the center panel.
 
-      Connection work_dbConnection = MyJSQLView_Access.getConnection("TableTabPanel setTableHeadings()");
+      Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         "TableTabPanel setTableHeadings()");
 
       if (work_dbConnection == null)
          return;
