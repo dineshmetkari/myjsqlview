@@ -7,8 +7,8 @@
 //           << DataExportProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana Proctor
-// Version 3.4 06/15/2010
+// Copyright (C) 2006-2011 Dana Proctor
+// Version 3.5 01/22/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //             Methods and Final Instances to Corespond.
 //         3.4 Cleanup and Correction to savePreference() in Setter Methods for PDF
 //             Export Options.
+//         3.5 Updated Copyright and Some Comments.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +90,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.4 06/15/2010
+ * @version 3.5 01/22/2011
  */
 
 class DataExportProperties
