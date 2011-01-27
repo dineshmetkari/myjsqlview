@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.76 01/15/2011
+// Version 8.77 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -317,6 +317,9 @@
 //                        via MyJSQLView_Utils.convertViewDateString_To_DBDateString().
 //        8.76 01/15/2011 Class Method addUpdateTableEntry() Cast Object Returned by MyJSQLView_Access.
 //                        getConnection() to Connection.
+//        8.77 01/26/2011 Changes to Class Method addUpdateTableEntry() to Use Newly Redefined
+//                        ConnectionManager to Display SQL Errors. Also identifierQuoteString 
+//                        Collected From ConnectionManager. Added Class Instance subProtocol.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -352,7 +355,7 @@ import javax.swing.text.DefaultEditorKit;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.76 01/15/2011
+ * @version 8.77 01/26/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -378,6 +381,7 @@ class TableEntryForm extends JFrame implements ActionListener
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private String sqlTable;
+   private String subProtocol;
    private String iconsDirectory;
    private String identifierQuoteString;
    private String resourceInvalidInput, resourceType, resourceAlert;
@@ -426,7 +430,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
       this.addItem = addItem;
 
-      // Class Instances
+      // Constructor Instances
 
       MyJSQLView_FocusTraversalPolicy focusSequence;
       Iterator<String> columnNamesIterator;
@@ -450,9 +454,11 @@ class TableEntryForm extends JFrame implements ActionListener
 
       // Setting up a icons directory identifier quote character,
       // & other instances.
-
+      
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.SUBPROTOCOL);
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
       resource = resourceBundle.getResource("TableEntryForm.dialogtitle.Alert");
       if (resource.equals(""))
@@ -1160,7 +1166,7 @@ class TableEntryForm extends JFrame implements ActionListener
       int keyColumn = 0;
 
       // Get Connection to Database.
-      Connection db_Connection = (Connection) MyJSQLView_Access.getConnection(
+      Connection db_Connection = (Connection) ConnectionManager.getConnection(
          "TableEntryForm addUpdateTableEntry()");
 
       if (db_Connection == null)
@@ -1177,9 +1183,9 @@ class TableEntryForm extends JFrame implements ActionListener
          sqlStatementString = new StringBuffer();
 
          // HSQL & Oracle does not support.
-         if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
+         if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
+             && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
+             && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
             sqlStatement.executeUpdate("BEGIN");
 
          // ====================
@@ -1259,7 +1265,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      if (getFormField(columnName).toLowerCase().equals("auto"))
                      {
-                        if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1268,7 +1274,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            sqlValuesString += "nextval('" + schemaName + tableName + "_"
                                               + columnNamesHashMap.get(columnName) + "_seq\"'), ";
                         }
-                        else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1288,7 +1294,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
                            || columnType.equals("TIMESTAMPLTZ"))
                   {
-                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                         sqlValuesString += "SYSTIMESTAMP, ";
                      else
                         sqlValuesString += "NOW(), ";
@@ -1305,7 +1311,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !MyJSQLView_Access.getSubProtocol().equals("mysql")
+                           && !subProtocol.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlValuesString += "B'" + getFormField(columnName) + "', ";
@@ -1350,7 +1356,7 @@ class TableEntryForm extends JFrame implements ActionListener
                         db_Connection.rollback();
                         sqlStatement.close();
                         db_Connection.setAutoCommit(true);
-                        MyJSQLView_Access.closeConnection(db_Connection,
+                        ConnectionManager.closeConnection(db_Connection,
                            "TableEntryForm addUpdateTableEntry()");
                         return;
                      }
@@ -1475,7 +1481,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      if (getFormField(columnName).toLowerCase().equals("AUTO".toLowerCase()))
                      {
-                        if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1484,7 +1490,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            sqlStatementString.append("nextval('" + schemaName + tableName + "_"
                                                      + columnNamesHashMap.get(columnName) + "_seq\"'), ");
                         }
-                        else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1514,7 +1520,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !MyJSQLView_Access.getSubProtocol().equals("mysql")
+                           && !subProtocol.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
@@ -1649,7 +1655,7 @@ class TableEntryForm extends JFrame implements ActionListener
                         .parseColumnNameField(currentKey_ColumnName));
                   if (columnType.indexOf("DATE") != -1)
                   {
-                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                      {
                         currentContentData = "TO_DATE('"
                            + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
@@ -1675,7 +1681,7 @@ class TableEntryForm extends JFrame implements ActionListener
             sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
 
             // Adding LIMIT expression for supported databases.
-            if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+            if (subProtocol.equals(ConnectionManager.MYSQL))
             {
                if (limitCheckBox.isSelected())
                {
@@ -1701,7 +1707,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      db_Connection.rollback();
                      sqlStatement.close();
                      db_Connection.setAutoCommit(true);
-                     MyJSQLView_Access.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
+                     ConnectionManager.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
                      return;
                   }
                }
@@ -1792,7 +1798,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      prepared_sqlStatement.close();
                      sqlStatement.close();
                      db_Connection.setAutoCommit(true);
-                     MyJSQLView_Access.closeConnection(db_Connection,
+                     ConnectionManager.closeConnection(db_Connection,
                                                        "TableEntryForm addUpdateTableEntry()");
                      return;
                   }
@@ -1864,7 +1870,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   prepared_sqlStatement.close();
                   sqlStatement.close();
                   db_Connection.setAutoCommit(true);
-                  MyJSQLView_Access.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
+                  ConnectionManager.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
                   return;
                }
             }
@@ -2019,7 +2025,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   prepared_sqlStatement.close();
                   sqlStatement.close();
                   db_Connection.setAutoCommit(true);
-                  MyJSQLView_Access.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
+                  ConnectionManager.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
                   return;
                }
             }
@@ -2093,7 +2099,7 @@ class TableEntryForm extends JFrame implements ActionListener
             // Bit Type Fields
             else if (columnType.indexOf("BIT") != -1 && columnType.indexOf("_") == -1)
             {
-               if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                {
                   // Do Nothing. Already set since undefined type.
                }
@@ -2124,7 +2130,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      prepared_sqlStatement.close();
                      sqlStatement.close();
                      db_Connection.setAutoCommit(true);
-                     MyJSQLView_Access.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
+                     ConnectionManager.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
                      return;
                   }
                }
@@ -2178,24 +2184,24 @@ class TableEntryForm extends JFrame implements ActionListener
          sqlStatement.close();
 
          db_Connection.setAutoCommit(true);
-         MyJSQLView_Access.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
+         ConnectionManager.closeConnection(db_Connection, "TableEntryForm addUpdateTableEntry()");
          validEntry = true;
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableEntryForm addUpdateTableEntry()");
+         ConnectionManager.displaySQLErrors(e, "TableEntryForm addUpdateTableEntry()");
          try
          {
             validEntry = false;
             setVisible(true);
             db_Connection.rollback();
             db_Connection.setAutoCommit(true);
-            MyJSQLView_Access.closeConnection(db_Connection,
+            ConnectionManager.closeConnection(db_Connection,
                                               "TableEntryForm addUpdateTableEntry() rollback");
          }
          catch (SQLException error)
          {
-            MyJSQLView_Access.displaySQLErrors(e, "TableEntryForm addUpdateTableEntry() rollback failed");
+            ConnectionManager.displaySQLErrors(e, "TableEntryForm addUpdateTableEntry() rollback failed");
          }
       }
    }
@@ -2228,13 +2234,13 @@ class TableEntryForm extends JFrame implements ActionListener
       // as needed.
 
       // Select database appropriate functions file.
-      if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+      if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          functionsFileName = "postgresql_" + functionsFileName;
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
          functionsFileName = "hsql_" + functionsFileName;
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          functionsFileName = "oracle_" + functionsFileName;
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
          functionsFileName = "sqlite_" + functionsFileName;
       else
          functionsFileName = "mysql_" + functionsFileName;
