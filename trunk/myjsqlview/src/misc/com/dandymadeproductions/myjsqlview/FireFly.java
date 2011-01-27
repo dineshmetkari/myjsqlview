@@ -9,8 +9,8 @@
 //                    << FireFly.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.0 05/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 2.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.8 Updated Header Information.
 //         1.9 Changed Package to Reflect Dandy Made Productions Code.
 //         2.0 Organized Imports.
+//         2.1 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -62,7 +63,7 @@ import java.awt.Rectangle;
  * that is used in the preferences frame, Preferences panel summer.
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/18/2010
+ * @version 2.1 01/27/2010
  */
 
 class FireFly extends Sprite

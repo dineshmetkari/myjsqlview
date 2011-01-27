@@ -9,8 +9,8 @@
 //                    << SnowFlake.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.7 05/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.8 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //         1.5 Updated Header Information.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
 //         1.7 Organized Imports.
+//         1.8 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -58,7 +59,7 @@ import java.awt.Rectangle;
  * winter.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/18/2010
+ * @version 1.8 01/27/2011
  */
 
 class SnowFlake extends Sprite

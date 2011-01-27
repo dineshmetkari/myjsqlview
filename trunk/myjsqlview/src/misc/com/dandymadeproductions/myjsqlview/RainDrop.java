@@ -9,8 +9,8 @@
 //                    << RainDrop.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.6 05/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.7 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.4 Updated Header Information.
 //         1.5 Changed Package to Reflect Dandy Made Productions Code.
 //         1.6 Organized Imports.
+//         1.7 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //               danap@dandymadeproductions.com
@@ -56,7 +57,7 @@ import java.awt.Rectangle;
  * panel winter.
  * 
  * @author Dana M. Proctor
- * @version 1.6 05/18/2010
+ * @version 1.7 01/27/2011
  */
 
 class RainDrop extends Sprite
