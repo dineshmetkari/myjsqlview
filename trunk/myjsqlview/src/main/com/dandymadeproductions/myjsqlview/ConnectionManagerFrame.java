@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.5 01/22/2011
+// Version 4.6 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,8 @@
 //             5.0 API.
 //         4.4 Parameterized Constructor Instance siteKeys.
 //         4.5 Renamed to ConnectionManagerFrame.
+//         4.6 Correction to resourceBundle.getResource() to Correctly Identify
+//             New Class Name ConnectionManagerFrame in Constructor.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -111,13 +113,13 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 /**
- *    The ConnectionManager class provides a frame that is accessed
+ *    The ConnectionManagerFrame class provides a frame that is accessed
  * from the MyJSQLView_Access, login, class to create and save a
  * user's connection sites. The class reads and outputs the connection
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 4.5 01/22/2011
+ * @version 4.6 01/27/2011
  */
 
 class ConnectionManagerFrame extends JFrame implements ActionListener
@@ -146,7 +148,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
    private boolean advancedOptionsShowing = false;
 
    //==============================================================
-   // ConnectionManager Constructor
+   // ConnectionManagerFrame Constructor
    //==============================================================
 
    protected ConnectionManagerFrame(MyJSQLView_ResourceBundle resourceBundle,
@@ -188,7 +190,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       newSiteButton = new JButton(new ImageIcon(iconsDirectory + "newsiteIcon.png"));
       newSiteButton.setFocusable(false);
       newSiteButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("ConnectionManager.tooltip.NewSite");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.tooltip.NewSite");
       if (resource.equals(""))
          newSiteButton.setToolTipText("New Site");
       else
@@ -200,7 +202,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       updateSiteButton = new JButton(new ImageIcon(iconsDirectory + "updateSiteIcon.png"));
       updateSiteButton.setFocusable(false);
       updateSiteButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("ConnectionManager.tooltip.UpdateSite");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.tooltip.UpdateSite");
       if (resource.equals(""))
          updateSiteButton.setToolTipText("Update Site");
       else
@@ -212,7 +214,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       renameSiteButton = new JButton(new ImageIcon(iconsDirectory + "renameSiteIcon.png"));
       renameSiteButton.setFocusable(false);
       renameSiteButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("ConnectionManager.tooltip.RenameSite");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.tooltip.RenameSite");
       if (resource.equals(""))
          renameSiteButton.setToolTipText("Rename Site");
       else
@@ -224,7 +226,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       deleteButton = new JButton(new ImageIcon(iconsDirectory + "removeIcon.png"));
       deleteButton.setFocusable(false);
       deleteButton.setMargin(new Insets(2, 2, 2, 2));
-      resource = resourceBundle.getResource("ConnectionManager.tooltip.Delete");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.tooltip.Delete");
       if (resource.equals(""))
          deleteButton.setToolTipText("Delete");
       else
@@ -236,7 +238,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       advancedButton = new JButton(new ImageIcon(iconsDirectory + "advancedConnectionsIcon.png"));
       advancedButton.setFocusable(false);
       advancedButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("ConnectionManager.tooltip.AdvancedParameters");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.tooltip.AdvancedParameters");
       if (resource.equals(""))
          advancedButton.setToolTipText("Advanced Parameters");
       else
@@ -284,7 +286,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       // SSH Just Added Here For Convience
       sshUpIcon = new ImageIcon(iconsDirectory + "sshUpIcon.png");
       sshDownIcon = new ImageIcon(iconsDirectory + "sshDownIcon.png");
-      resource = resourceBundle.getResource("ConnectionManager.checkbox.SSH");
+      resource = resourceBundle.getResource("ConnectionManagerFrame.checkbox.SSH");
       if (resource.equals(""))
          sshCheckBox = new JCheckBox("SSH", sshUpIcon);
       else
