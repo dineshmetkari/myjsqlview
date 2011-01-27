@@ -12,8 +12,8 @@
 //                  << MyJSQLView.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.23 09/15/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.24 01/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,8 @@
 //         3.22 07/13/2010 Class Instance myJSQLView_Version Update for Release
 //         3.23 09/15/2010 Class Instance myJSQLView_Version Update for Release
 //                         3.23.
+//         3.24 01/26/2011 Instance Change of MyJSQLView_Access to LoginFrame. Addition of
+//                         Class Instance connectionManager and Its Getter Method.
 //         
 //
 //-----------------------------------------------------------------
@@ -211,7 +213,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.23 09/15/2010
+ * @version 3.24 01/25/2011
  */
 
 public class MyJSQLView implements ActionListener
@@ -226,13 +228,14 @@ public class MyJSQLView implements ActionListener
    private static String localeString;
    private JButton validLoginButton;
 
+   private ConnectionManager connectionManager;
+   private LoginFrame loginFrame;
    protected MyJSQLView_Frame myJSQLViewFrame;
-   protected MyJSQLView_Access myJSQLViewAccessFrame;
    private static MouseListener myJSQLViewPopupListener;
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.23", "Build ID: 20100915"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.24", "Build ID: 20110125"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -315,14 +318,15 @@ public class MyJSQLView implements ActionListener
 
       // ==================================================
       // Show the database login access frame.
-
-      myJSQLViewAccessFrame = new MyJSQLView_Access(validLoginButton);
-      myJSQLViewAccessFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-      myJSQLViewAccessFrame.addMouseListener(myJSQLViewPopupListener);
-      myJSQLViewAccessFrame.setSize(335, 320);
-      myJSQLViewAccessFrame.setResizable(false);
-      myJSQLViewAccessFrame.center();
-      myJSQLViewAccessFrame.setVisible(true);
+      
+      connectionManager = new ConnectionManager();
+      loginFrame = new LoginFrame(validLoginButton);
+      loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+      loginFrame.addMouseListener(myJSQLViewPopupListener);
+      loginFrame.setSize(335, 320);
+      loginFrame.setResizable(false);
+      loginFrame.center();
+      loginFrame.setVisible(true);
    }
 
    //==============================================================
@@ -339,9 +343,9 @@ public class MyJSQLView implements ActionListener
       {
          if (panelSource == validLoginButton)
          {
-            // Hide the login access frame.
+            // Dispose the login access frame.
 
-            myJSQLViewAccessFrame.setVisible(false);
+            loginFrame.dispose();
 
             // Create the MyJSQLView main application frame.
 
@@ -401,6 +405,15 @@ public class MyJSQLView implements ActionListener
    }
    
    //==============================================================
+   // Class Method to return to the Connection Manager.
+   //==============================================================
+   
+   public ConnectionManager getConnectionManager()
+   {
+      return connectionManager;
+   }
+   
+   //==============================================================
    // Class Method to return the debug argument.
    //==============================================================
 
@@ -429,6 +442,16 @@ public class MyJSQLView implements ActionListener
    }
    
    //==============================================================
+   // Class Method to return to temporary panels a JPopupMenu for
+   // cutting, coping, and pasteing.
+   //==============================================================
+
+   protected static MouseListener getPopupMenuListener()
+   {
+      return myJSQLViewPopupListener;
+   }
+   
+   //==============================================================
    // Class Method to return to the MyJSQLView version.
    //==============================================================
 
@@ -440,15 +463,5 @@ public class MyJSQLView implements ActionListener
          versionCopy[i] = myJSQLView_Version[i];
       
       return versionCopy;
-   }
-
-   //==============================================================
-   // Class Method to return to temporary panels a JPopupMenu for
-   // cutting, coping, and pasteing.
-   //==============================================================
-
-   protected static MouseListener getPopupMenuListener()
-   {
-      return myJSQLViewPopupListener;
    }
 }
