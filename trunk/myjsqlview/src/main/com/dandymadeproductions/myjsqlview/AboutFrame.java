@@ -9,8 +9,8 @@
 //                   << AboutFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.1 03/06/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.2 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //         2.1 Implementation of Internationalization Through Instance 
 //             resourceBundle in Constructor. Added Instance resource also
 //             in Constructor.
+//         2.2 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,7 +74,7 @@ import javax.swing.JPanel;
  * MyJSQLView application when the Help About selection is made in the menu bar.
  * 
  * @author Dana M. Proctor
- * @version 2.1 03/06/2010
+ * @version 2.2 01/26/2011
  */
 
 class AboutFrame extends JFrame implements ActionListener
