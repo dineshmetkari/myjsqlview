@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.9 01/15/2011
+// Version 10.0 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -242,6 +242,9 @@
 //             Given Input for Date/DateTime/Timestamp Fields.
 //         9.9 Class Method setTableHeadings() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//        10.0 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
+//             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
+//             SQL Errors. Added Method Instance databaseName to getColumnNames().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -274,7 +277,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.9 01/15/2011
+ * @version 10.0 01/26/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -308,7 +311,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       DatabaseMetaData dbMetaData;
       ResultSetMetaData tableMetaData;
 
-      String schemaName, tableName;
+      String databaseName, schemaName, tableName;
       String colNameString, comboBoxNameString;
       String columnClass, columnType;
       Integer columnSize;
@@ -318,6 +321,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       try
       {
          sqlStatement = dbConnection.createStatement();
+         
          if (sqlTable.indexOf(".") != -1)
          {
             schemaName = sqlTable.substring(0, sqlTable.indexOf("."));
@@ -328,6 +332,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
             schemaName = "";
             tableName = sqlTable;
          }
+         databaseName = ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB);
 
          // ====================================================
          // Setting Up the Column Names, Form Fields, ComboBox
@@ -342,7 +347,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
 
-         rs = dbMetaData.getPrimaryKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+         rs = dbMetaData.getPrimaryKeys(databaseName, schemaName, tableName);
          while (rs.next())
          {
             if (rs.getString("COLUMN_NAME").indexOf("chunk") == -1
@@ -354,11 +359,11 @@ public class TableTabPanel_Oracle extends TableTabPanel
          }
 
          // Additional Indexes, Exclude VIEWS.
-         rs = dbMetaData.getTables(MyJSQLView_Access.getDBName(), schemaName, tableName, null);
+         rs = dbMetaData.getTables(databaseName, schemaName, tableName, null);
          if (rs.next() && !rs.getString("TABLE_TYPE").equals("VIEW"))
          {
             // Clueless why needs quotes?
-            rs = dbMetaData.getIndexInfo(MyJSQLView_Access.getDBName(),
+            rs = dbMetaData.getIndexInfo(databaseName,
                (identifierQuoteString + schemaName + identifierQuoteString),
                (identifierQuoteString + tableName + identifierQuoteString), false, false);
             while (rs.next())
@@ -484,7 +489,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
          if (primaryKeys.isEmpty())
          {
-            rs = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+            rs = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
             while (rs.next())
             {
                if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
@@ -540,7 +545,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Oracle getColumnNames()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle getColumnNames()");
          return false;
       }
    }
@@ -930,7 +935,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Oracle loadTable()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle loadTable()");
          return false;
       }
    }
@@ -1170,7 +1175,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Oracle viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle viewSelectedItem()");
       }
    }
 
@@ -1561,7 +1566,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Oracle editSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle editSelectedItem()");
       }
    }
    
@@ -1574,7 +1579,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       // Create connection, remove old summary table and
       // reload the center panel.
 
-      Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+      Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
          "TableTabPanel_Oracle setTableHeadings()");
       
       if (work_dbConnection == null)
@@ -1638,6 +1643,6 @@ public class TableTabPanel_Oracle extends TableTabPanel
       centerPanel.add(sqlTable, tableScrollPane);
       centerCardLayout.show(centerPanel, sqlTable);
 
-      MyJSQLView_Access.closeConnection(work_dbConnection, "TableTabPanel_Oracle setTableHeadings()");
+      ConnectionManager.closeConnection(work_dbConnection, "TableTabPanel_Oracle setTableHeadings()");
    }
 }
