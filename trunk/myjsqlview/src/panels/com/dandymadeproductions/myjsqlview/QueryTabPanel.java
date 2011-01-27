@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.0 01/14/2011
+// Version 8.1 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -190,7 +190,9 @@
 //             Also Class Method getColumnNames() Oracle sqlTableFieldsString Added
 //             for TimestampLTZ the Return of Date Foramt to YYYY-MM-DD.
 //         8.0 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//         8.1 Added Class Instance subProtocol. Constructor Obtained identifierQuoteString
+//             From New Class ConnectionManger Along With subProtocol.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -222,7 +224,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.0 01/14/2011
+ * @version 8.1 01/26/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -241,6 +243,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
    private String sqlTable;
 
+   private String subProtocol;
    private String identifierQuoteString;
    private String primaryKey;
    private String sqlTableFieldsString;
@@ -311,8 +314,11 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       // character, & proper table name qualifier.
       
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+   
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+                        ConnectionProperties.SUBPROTOCOL);
       
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       // Setting up.
       sqlTable = "temptable" + queryNumber;
@@ -553,8 +559,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       viewButton.setMnemonic(KeyEvent.VK_V);
       viewButton.addActionListener(this);
       actionButtonPanel.add(viewButton);
-      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 ||
-          MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1
+          || subProtocol.equals(ConnectionManager.SQLITE))
          viewButton.setVisible(false);
 
       buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
@@ -949,7 +955,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          // properly parse a standard short query with trailing
          // LIMIT. I hate crap like this.
          // ********************************************************
-         if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+         if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
          {
             if (query.toUpperCase().indexOf("WHERE") != -1 ||
                 query.toUpperCase().indexOf("GROUP") != -1 ||
@@ -959,7 +965,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             else
                sqlStatementString = query + " AS lame LIMIT 1";
          }
-         else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+         else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          {
             if (query.toUpperCase().indexOf("WHERE") != -1)
             {
@@ -987,8 +993,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          fields.add(primaryKey);
          columnNamesHashMap.put(primaryKey, primaryKey);
-         if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1 &&
-             !MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+         if (subProtocol.indexOf(ConnectionManager.ORACLE) == -1 &&
+             !subProtocol.equals(ConnectionManager.SQLITE))
             tableHeadings.add(primaryKey);
          columnClassHashMap.put(primaryKey, "java.lang.Integer");
          columnTypeHashMap.put(primaryKey, "INTEGER");
@@ -1027,13 +1033,13 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             if (columnClass == null)
             {
                if (columnType.equals("BINARY_FLOAT")
-                   && MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                   && subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                {
                   columnClass = "java.lang.Float";
                   columnType = "FLOAT";
                }
                else if (columnType.equals("BINARY_DOUBLE")
-                        && MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                        && subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                {
                   columnClass = "java.lang.Double";
                   columnType = "DOUBLE";
@@ -1106,7 +1112,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       if (columnSearchString == null)
       {
-         if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+         if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
             columnSearchString = "TRUE";
          else
             columnSearchString = "'1'";
@@ -1161,7 +1167,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             // Drop any previous temporary table that has been
             // created.
 
-            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
             {
                sqlStatementString = "SELECT OBJECT_NAME FROM USER_OBJECTS " + "WHERE OBJECT_NAME='"
                                     + tempTable + "'" + " AND OBJECT_TYPE='TABLE'";
@@ -1184,7 +1190,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
 
             // MySQL SQL Statement.
-            if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+            if (subProtocol.equals(ConnectionManager.MYSQL))
             {
                sqlStatementString = "CREATE TEMPORARY TABLE " + identifierQuoteString + tempTable
                                     + identifierQuoteString + " (" + primaryKey
@@ -1192,7 +1198,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
 
             // PostgreSQL SQL Statement.
-            else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+            else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
             {
                // Drop any existing primary key sequence and create
                // a new one.
@@ -1211,7 +1217,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
 
             // HSQL SQL Statement.
-            else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+            else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
             {
                // Drop any existing primary key sequence and create
                // a new one.
@@ -1237,7 +1243,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
 
             // Oracle SQL Statement.
-            else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
             {
                // Drop any existing primary key sequence and create
                // a new one.
@@ -1261,7 +1267,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
             
             // SQLite SQL Statement.
-            else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+            else if (subProtocol.equals(ConnectionManager.SQLITE))
             {
                // Create SQL Statement
                sqlStatementString = "CREATE TABLE " + identifierQuoteString + tempTable
@@ -1316,7 +1322,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          if (advancedSortSearch)
          {
-            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
             {
                String sqlWhereString = "";
                String sqlOrderString = "";
@@ -1360,7 +1366,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          }
          else
          {
-            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
             {
                sqlStatementString = "SELECT * " + " FROM " + "(SELECT ROW_NUMBER() OVER " + "(ORDER BY "
                                     + identifierQuoteString
@@ -1548,7 +1554,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   // =============================================
                   // Bit
                   else if (columnType.indexOf("BIT") != -1
-                           && MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                           && subProtocol.equals(ConnectionManager.MYSQL))
                   {
                      //int bitValue = rs.getInt(columnName);
                      //tableData[i][j++] = Integer.toBinaryString(bitValue);
@@ -1567,7 +1573,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                      else
                      // (columnSize > 16777215)
                      {
-                        if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+                        if (subProtocol.equals(ConnectionManager.MYSQL))
                            tableData[i][j++] = ("Long Text");
                         else
                         {
@@ -1973,7 +1979,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                }
 
                // Bit Type Field
-               else if (currentColumnType.equals("BIT") && MyJSQLView_Access.getSubProtocol().equals("mysql"))
+               else if (currentColumnType.equals("BIT") && subProtocol.equals(ConnectionManager.MYSQL))
                {
                   int bitValue = db_resultSet.getInt(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName, Integer.toBinaryString(bitValue));
@@ -2062,7 +2068,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "QueryTabPanel viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "QueryTabPanel viewSelectedItem()");
       }
    }
 
