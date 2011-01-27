@@ -7,8 +7,8 @@
 //                   << PluginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.2 08/20/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,7 +34,8 @@
 //         1.2 Completed Functionality of Removing/Installing Plugins via
 //             MyJSQLView_Frame and Configuration File. Added Mouse and Action
 //             Event Processing and Methods removePluginConfigurationsModule(),
-//             & installPlugin(). 
+//             & installPlugin().
+//         1.3 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +72,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.2 08/20/2010
+ * @version 1.3 01/26/2011
  */
 
 //=================================================================
