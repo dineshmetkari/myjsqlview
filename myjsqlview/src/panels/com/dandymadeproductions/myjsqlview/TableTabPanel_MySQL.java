@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.33 01/14/2011
+// Version 11.34 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -455,7 +455,10 @@
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
 //       11.33 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//       11.34 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
+//             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
+//             SQL Errors.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -480,7 +483,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.33 01/14/2011
+ * @version 11.34 01/26/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -660,7 +663,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_MySQL getColumnNames()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL getColumnNames()");
          return false;
       }
    }
@@ -1034,7 +1037,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_MySQL loadTable()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL loadTable()");
          return false;
       }
    }
@@ -1268,7 +1271,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_MySQL viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL viewSelectedItem()");
       }
    }
 
@@ -1743,7 +1746,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_MySQL editSelectedEntry()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL editSelectedEntry()");
       }
    }
 }
