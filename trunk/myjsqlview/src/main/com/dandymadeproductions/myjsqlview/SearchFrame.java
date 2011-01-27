@@ -8,8 +8,8 @@
 //                  << SearchFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.4 08/08/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.5 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,8 @@
 //             resultTable in actionPerformed() & mounseClicked().
 //         3.4 Updated Comments and Organized the Setting Up the resultTable in the
 //             Constructor.
+//         3.5 Table Names Obtained From New Class ConnectionManager in Constructor
+//             and actionPerformed().
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +120,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.4 08/08/2010
+ * @version 3.5 01/26/2011
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -289,7 +291,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       
       defaultTableData = new Object[DBTablesPanel.getTableCount()][3];
 
-      Iterator<String> tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
+      Iterator<String> tableNamesIterator = ConnectionManager.getTableNames().iterator();
       int i = 0;
 
       while (tableNamesIterator.hasNext())
@@ -426,7 +428,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
                // instead of relying on the names in the search frame, just in case
                // a database reload took place.
                
-               Vector<String> databaseTables = MyJSQLView_Access.getTableNames();
+               Vector<String> databaseTables = ConnectionManager.getTableNames();
                boolean[] selectedTables = new boolean[databaseTables.size()];
                
                // Create a list of included tables to be searched.
