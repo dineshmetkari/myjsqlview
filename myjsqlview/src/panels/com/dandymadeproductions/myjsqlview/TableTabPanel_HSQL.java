@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.9 01/14/2011
+// Version 10.0 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -224,7 +224,10 @@
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
 //         9.9 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//        10.0 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
+//             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
+//             SQL Errors.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -250,7 +253,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.9 01/14/2011
+ * @version 10.0 01/26/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -461,7 +464,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_HSQL getColumnNames()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_HSQL getColumnNames()");
          return false;
       }
    }
@@ -778,7 +781,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_HSQL loadTable()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_HSQL loadTable()");
          return false;
       }
    }
@@ -971,7 +974,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_HSQL viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_HSQL viewSelectedItem()");
       }
    }
 
@@ -1345,7 +1348,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_HSQL editSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_HSQL editSelectedItem()");
       }
    }
 }
