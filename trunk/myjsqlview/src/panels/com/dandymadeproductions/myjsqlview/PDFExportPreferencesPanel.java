@@ -8,8 +8,8 @@
 //             << PDFExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 06/15/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.3 06/15/2010 Changed Class Instance titleTableNameRadioButton to
 //                        titleDefaultRadioButton. Class Methods Effected fillHeaderPanel(),
 //                        getPDFExportOptions(), & setPDFExportOptions().
+//         1.4 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +63,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/15/2010
+ * @version 1.4 01/27/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener

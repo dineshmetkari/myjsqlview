@@ -9,8 +9,8 @@
 //            << StandardParametersPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 2.5 05/19/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 2.6 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //         2.4 Minor Format Changes.
 //         2.5 Parameterized Instance contentsIterator in CLass Methods
 //             setHost(), setDatabaseItem(), & setUser().
+//         2.6 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +78,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.5 05/19/2010
+ * @version 2.6 01/27/2011
  */
 
 class StandardParametersPanel extends JPanel

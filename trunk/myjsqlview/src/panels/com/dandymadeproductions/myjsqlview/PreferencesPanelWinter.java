@@ -9,8 +9,8 @@
 //           << PreferencesPanelWinter.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.4 11/15/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 2.5 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,7 @@
 //                        Changed paint() to drawPanel(). Removed Use of Graphics2D in
 //                        render() and removed Setting of Border in Constructor.
 //         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
+//         2.5 01/27/2011 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -81,7 +82,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.4 11/15/2010
+ * @version 2.5 01/27/2011
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable

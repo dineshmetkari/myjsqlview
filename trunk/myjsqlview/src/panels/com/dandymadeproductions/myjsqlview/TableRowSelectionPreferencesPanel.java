@@ -9,8 +9,8 @@
 //        << TableRowSelectionPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.2 05/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 3.3 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
 //             Argument Added to Constructor and Constructor Instance resource.
 //         3.2 Class Methods actionPerformed() & loadRowSize() Instance rowSizeSpinner
 //             Assigned via Integer.valueOf() Instead of new Integer().
+//         3.3 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -86,7 +87,7 @@ import javax.swing.event.ChangeListener;
  * in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 3.2 05/18/2010
+ * @version 3.3 01/27/2011
  */
 
 class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener, ChangeListener

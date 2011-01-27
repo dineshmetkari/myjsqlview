@@ -9,8 +9,8 @@
 //           << AdvancedParametersPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.0 05/19/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@
 //             and setPort().
 //         2.0 Parameterized Instance contentsIterator in Class Methods
 //             setDriver(), setProtocol(), setSubProtocol(), & setPort().
+//         2.1 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +72,7 @@ import javax.swing.JPanel;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/19/2010
+ * @version 2.1 01/27/2011
  */
 
 class AdvancedParametersPanel extends JPanel
