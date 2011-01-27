@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.2 01/14/2011
+// Version 9.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,10 +35,10 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original TableTabPanel_Generic Class.
-//         1.1 Moved Class Instances and All Non-Essential Class
-//             Methods to Parent, TableTabPanel.
-//         1.2 Removed doneButton Replaced With closeViewButton.
-//             Revamped Actions Buttons Panel. Changed record to row.
+//         1.1 Moved Class Instances and All Non-Essential Class Methods to
+//             Parent, TableTabPanel.
+//         1.2 Removed doneButton Replaced With closeViewButton. Revamped
+//             Actions Buttons Panel. Changed record to row.
 //         1.3 Added Binary Detection in Class Method viewSelectedItem(),
 //             editSelectedItem(), and deleteSelecteditem().
 //         1.4 Class Method setTableFields() Renamed to setTableHeadings().
@@ -208,7 +208,10 @@
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
 //         9.2 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//         9.3 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
+//             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
+//             SQL Errors.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -234,7 +237,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.2 01/14/2011
+ * @version 9.3 01/26/2011
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -455,7 +458,7 @@ public class TableTabPanel_Generic extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Generic getColumnNames()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Generic getColumnNames()");
          return false;
       }
    }
@@ -767,7 +770,7 @@ public class TableTabPanel_Generic extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Generic loadTable()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Generic loadTable()");
          return false;
       }
    }
@@ -1000,7 +1003,7 @@ public class TableTabPanel_Generic extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Generic viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Generic viewSelectedItem()");
       }
    }
 
@@ -1412,7 +1415,7 @@ public class TableTabPanel_Generic extends TableTabPanel
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_Generic editSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_Generic editSelectedItem()");
       }
    }
 }
