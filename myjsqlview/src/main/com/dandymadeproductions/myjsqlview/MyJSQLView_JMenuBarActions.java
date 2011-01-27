@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.26 01/15/2011
+// Version 7.27 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -238,6 +238,10 @@
 //        7.25 Updated to Reflect Internationalization Support in Action Methods.
 //        7.26 Class Method flushPrivileges() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//        7.27 Class Method actionSelection() Changed Instance dbName to subProtocol.
+//             Changes to Access Connections/Errors to the New Redefined Class
+//             ConnectionManager in flushPrivileges(). Changed in Collection of Connection
+//             Properties, database, in dataExportAction(). 
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -270,7 +274,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.26 01/15/2011
+ * @version 7.27 01/26/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -470,15 +474,18 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          actionCommand = ((JRadioButtonMenuItem) item).getActionCommand();
          if (actionCommand.equals("All"))
          {
-            String dbName = MyJSQLView_Access.getSubProtocol();
-            if (dbName.indexOf("hsql") != -1 || dbName.indexOf("oracle") != -1)
+            String subProtocol = ConnectionManager.getConnectionProperties()
+                                 .getProperty(ConnectionProperties.SUBPROTOCOL);
+            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
+                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                actionCommand = "%";
-            else if (dbName.equals("mysql") || dbName.equals("postgresql"))
+            else if (subProtocol.equals(ConnectionManager.MYSQL)
+                     || subProtocol.equals(ConnectionManager.POSTGRESQL))
                actionCommand = "";
             else
                actionCommand = null;
          }
-         MyJSQLView_Access.setSchemaPattern(actionCommand);
+         ConnectionManager.setSchemaPattern(actionCommand);
          
          DBTablesPanel.startStatusTimer();
          
@@ -986,7 +993,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          dataFileChooser = new JFileChooser(new File(lastExportDirectory));
 
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-      database = MyJSQLView_Access.getDBName();
+      database = ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB);
       if (database.indexOf(";") != -1)
          database = database.replaceAll(";", "");
       exportedTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
@@ -1128,7 +1135,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       boolean flushSuccess;
 
       // Get Connection to Database.
-      Connection dbConnection = (Connection) MyJSQLView_Access
+      Connection dbConnection = (Connection) ConnectionManager
             .getConnection("MyJSQLView_JMenuBarActions.flushPrivileges()");
       
       if (dbConnection == null)
@@ -1152,11 +1159,11 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "MyJSQLView_JMenuBarActions.flushPrivileges()");
+         ConnectionManager.displaySQLErrors(e, "MyJSQLView_JMenuBarActions.flushPrivileges()");
          flushSuccess = false;
       }
 
-      MyJSQLView_Access.closeConnection(dbConnection, "MyJSQLView_JMenuBarActions.flushPrivileges()");
+      ConnectionManager.closeConnection(dbConnection, "MyJSQLView_JMenuBarActions.flushPrivileges()");
       return flushSuccess;
    }
    
