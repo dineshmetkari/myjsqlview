@@ -9,8 +9,8 @@
 //                   << CreditsPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.2 08/06/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@
 //         3.0 Changed Package to Reflect Dandy Made Productions Code.
 //         3.1 Organized Imports.
 //         3.2 SQLite Database Background Image Addition.
+//         3.3 Added Method subProtocol to Constructor.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +88,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.2 08/06/2010
+ * @version 3.3 01/26/2011
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -122,20 +123,22 @@ class CreditsPanel extends JPanel implements Runnable
       this.webSiteString = webSiteString;
 
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      String subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.SUBPROTOCOL);
       
       runThread = true;
 
       // Get the corresponding background image.
 
-      if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+      if (subProtocol.equals(ConnectionManager.MYSQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "dolphin.jpg")).getImage();
-      else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "elephant.jpg")).getImage();
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
          backgroundImage = (new ImageIcon("images" + fileSeparator + "spiral.jpg")).getImage();
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          backgroundImage = (new ImageIcon("images" + fileSeparator + "letterO.jpg")).getImage();
-      else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+      else if (subProtocol.equals(ConnectionManager.SQLITE))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "feather.jpg")).getImage();
       else
          backgroundImage = (new ImageIcon("images" + fileSeparator + "battleship.jpg")).getImage();
