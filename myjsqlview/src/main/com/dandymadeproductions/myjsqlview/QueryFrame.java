@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.2 01/15/2011
+// Version 6.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,6 +148,10 @@
 //         6.1 10/10/2010 Added Data | Export | PDF to Menu and ToolBar.
 //         6.2 01/15/2011 Constructor Cast Object Returned by MyJSQLView_Access.
 //                        getConnection() to Connection.
+//         6.3 01/26/2011 Added Class Instance subProtocol and Constructor Instances
+//                        connectionProperties, hostName, & databaseName. Connection
+//                        Parameters Obtained From New Class ConnectionManager in
+//                        Constructor and actionPerformed().
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -185,7 +189,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.2 01/15/2011
+ * @version 6.3 01/26/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -215,7 +219,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static JTextArea queryResultTextArea = new JTextArea(4, 40);
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourceAlert, resourceFileNOTFound;
-   private String fileSeparator, iconsDirectory;
+   private String subProtocol, fileSeparator, iconsDirectory;
    private String lastDirectory;
    
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
@@ -235,19 +239,23 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JPanel centerPanel, queryResultPanel;
       JLabel queryLabel;
       
-      String resource;
+      ConnectionProperties connectionProperties;
+      String hostName, databaseName, resource;
       
       // Setting up title, and other instances.
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
+      connectionProperties = ConnectionManager.getConnectionProperties();
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      hostName = connectionProperties.getProperty(ConnectionProperties.HOST);
+      databaseName = connectionProperties.getProperty(ConnectionProperties.DB);
+      
       resource = resourceBundle.getResource("QueryFrame.message.Title");
       if (resource.equals(""))
-         setTitle("MyJSQLView Query Frame   " + MyJSQLView_Access.getHostName() + ":"
-                  + MyJSQLView_Access.getDBName());
+         setTitle("MyJSQLView Query Frame   " + hostName + ":" + databaseName);
       else
-         setTitle("MyJSQLView " + resource + "   " + MyJSQLView_Access.getHostName() + ":"
-                   + MyJSQLView_Access.getDBName());
+         setTitle("MyJSQLView " + resource + "   " + hostName + ":" + databaseName);
       
       resource = resourceBundle.getResource("QueryFrame.dialogtitle.Alert");
       if (resource.equals(""))
@@ -269,7 +277,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          summaryTableRowSize[i] = 50;
 
       // Setting up a connection.
-      query_dbConnection = (Connection) MyJSQLView_Access.getConnection("QueryFrame");
+      query_dbConnection = (Connection) ConnectionManager.getConnection("QueryFrame");
       
       //==================================================
       // Frame Window Closing Addition. Also method for
@@ -281,8 +289,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          public void windowClosing(WindowEvent e)
          {
             // Remove Memory/Temporary Table(s) for HSQL & Oracle
-            if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1
-                || MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
+                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                new TableClearingThread(queryTabsPane.getTabCount());
 
             // Clear out any query tab panes.
@@ -294,7 +302,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
             // Close Connection
             if (query_dbConnection != null)
-               MyJSQLView_Access.closeConnection(query_dbConnection, "QueryFrame");
+               ConnectionManager.closeConnection(query_dbConnection, "QueryFrame");
             MyJSQLView_JMenuBarActions.setQueryFrameNotVisisble();
             dispose();
          }
@@ -631,8 +639,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          if (actionCommand.equals("FE"))
          {
             // Remove Memory/Temp Table(s) for HSQL & Oracle
-            if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1
-                || MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
+                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                new TableClearingThread(queryTabsPane.getTabCount());
 
             // Clear out any query tab panes.
@@ -644,7 +652,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
             // Close connection and dispose.
             if (query_dbConnection != null)
-               MyJSQLView_Access.closeConnection(query_dbConnection, "QueryFrame");
+               ConnectionManager.closeConnection(query_dbConnection, "QueryFrame");
             MyJSQLView_JMenuBarActions.setQueryFrameNotVisisble();
             this.dispose();
          }
