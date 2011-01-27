@@ -8,8 +8,8 @@
 //                << HelpFrame.java >>
 //
 //=================================================================
-// Copyright (C) 1999-2010 Dana M. Proctor
-// Version 2.1 06/17/2010
+// Copyright (C) 1999-2011 Dana M. Proctor
+// Version 2.2 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,7 +46,8 @@
 //         2.0 Changed Package to Reflect Dandy Made Productions Code.
 //         2.1 Added Class Instance failedToLoadContents. Made the Catching
 //             of Content Loading a Little More Robust With OptionPanes to
-//             Display Error Information. 
+//             Display Error Information.
+//         2.2 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +73,7 @@ import java.io.IOException;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.1 06/17/2010
+ * @version 2.2 01/26/2011
  */
 
 class HelpFrame extends JFrame
