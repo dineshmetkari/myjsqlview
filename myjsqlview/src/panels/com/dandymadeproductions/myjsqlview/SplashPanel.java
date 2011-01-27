@@ -9,8 +9,8 @@
 //                   << SplashPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.8 02/26/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.9 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //                        of versionString from Same Resource.
 //         1.8 02/26/2010 Correction of key String for resource in Constructor
 //                        versionString.
+//         1.9 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +66,7 @@ import java.util.Random;
  * successful login to indicate the progress of the application initialization.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/26/2010
+ * @version 1.9 01/27/2011
  */
 
 class SplashPanel extends JPanel implements Runnable

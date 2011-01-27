@@ -9,8 +9,8 @@
 //                    << TopTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 11/15/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //         1.3 11/15/2010 Replaced the paint() Method With the More Update Version
 //                        Panel Graphic Drawing to drawpanel() Entered vai render()
 //                        & paintComponent(). Removed Border Setting.
+//         1.4 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import java.util.Random;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.3 11/15/2010
+ * @version 1.4 01/27/2011
  */
 
 class TopTabPanel extends JPanel implements MouseListener, Runnable

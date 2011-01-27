@@ -8,8 +8,8 @@
 //          << CSVImportPreferencesFiller.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.5 02/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.6 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //         1.4 10/24/2009 Constructor Instance fileSeparator Obtained From
 //                        MyJSQLView_Utils Class.
 //         1.5 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         1.6 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +58,7 @@ import javax.swing.ImageIcon;
  * the Preferences Menu CSV Import to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.5 02/18/2010
+ * @version 1.6 01/27/2011
  */
 
 class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyListener
