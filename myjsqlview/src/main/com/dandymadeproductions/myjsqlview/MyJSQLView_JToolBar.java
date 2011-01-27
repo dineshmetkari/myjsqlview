@@ -8,8 +8,8 @@
 //               << MyJSQLView_JToolBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 2.2 06/11/2010
+// Copyright (C) 2005-2011 Dana M. Proctor.
+// Version 2.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //         2.1 Added Data Export PDF Summary Table ToolBar Button.
 //         2.2 Corrected the Arrangement of the Data Export PDF Summary Table
 //             ToolBar Button.
+//         2.3 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +67,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.2 06/11/2010
+ * @version 2.3 01/26/2011
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
