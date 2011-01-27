@@ -8,8 +8,8 @@
 //               << MyJSQLView_JMenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 7.1 08/05/2010
+// Copyright (C) 2005-2011 Dana M. Proctor.
+// Version 7.2 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,6 +117,8 @@
 //         7.0 Corrected the resourceBundle.getResource() Text For MyJSQLView_JMenBar.
 //             to MyJSQLView_JMenuBar.
 //         7.1 Constructor Resource Correction for flushButton.setToolTipText.
+//         7.2 Changes to Access Database Properties schemas and ConnectionProperties
+//             to the New Redefined Class ConnectionManager.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,7 +146,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.1 08/05/2010
+ * @version 7.2 01/26/2011
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -181,7 +183,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       createToolsMenu();
       
       // Schemas Menu
-      schemas = MyJSQLView_Access.getSchemas();
+      schemas = ConnectionManager.getSchemas();
       
       if (!schemas.isEmpty() && schemas.size() > 1)
       {
@@ -194,8 +196,10 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       add(Box.createHorizontalGlue());
 
       // Root User Flush Privileges Button
-      if (MyJSQLView_Access.getDBName().equals("mysql") &&
-          MyJSQLView_Access.getCurrentUser().equals("root"))
+      if (ConnectionManager.getConnectionProperties().getProperty(
+                         ConnectionProperties.SUBPROTOCOL).equals(ConnectionManager.MYSQL)
+           && ConnectionManager.getConnectionProperties().getProperty(
+                         ConnectionProperties.USER).equals("root"))
       {
          ImageIcon flushIcon = new ImageIcon(iconsDirectory + "flushIcon.png");
          ImageIcon flushIconPressed = new ImageIcon(iconsDirectory + "flushIconPressed.png");
