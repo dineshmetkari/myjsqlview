@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.2 01/15/2011
+// Version 4.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,9 @@
 //         4.2 Class Methods actionPerformed(), setSelectedTableTablPanel(), & 
 //             getTableTabPanel() Cast Object Returned by MyJSQLView_Access.getConnection()
 //             to Connection.
+//         4.3 Class Method loadTable() Added Instances connectionProperties & subProtocol.
+//             Class Methods getTableTabPanel() and setSelectedTableTabPanel() Changes
+//             Collection/Closing Connection to Redefined ConnectionManager Class.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +137,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.2 01/15/2011
+ * @version 4.3 01/26/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -287,7 +290,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
                {
                   public void run()
                   {
-                     Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+                     Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
                         "DBTablesPanel actionPerformed()");
                      String tableName = (String) tableSelectionComboBox.getSelectedItem();
                      
@@ -299,7 +302,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
                      loadTable(tableName, work_dbConnection);
                      tablesCardLayout.show(tablesPanel, tableName);
                      
-                     MyJSQLView_Access.closeConnection(work_dbConnection, "DBTablesPanel actionPerformed()");
+                     ConnectionManager.closeConnection(work_dbConnection, "DBTablesPanel actionPerformed()");
                      stopStatusTimer();
                   }
                }, "DBTablesPanel.loadTableThread");
@@ -330,22 +333,27 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static void loadTable(String tableName, Connection dbConnection)
    {
       // Method Instances
+      ConnectionProperties connectionProperties;
+      String subProtocol;
       TableTabPanel tableTabPanel;
+      
+      connectionProperties = ConnectionManager.getConnectionProperties();
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
 
       // MySQL
-      if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+      if (subProtocol.equals(ConnectionManager.MYSQL))
          tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection, false);
       // PostgreSQL
-      else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          tableTabPanel = new TableTabPanel_PostgreSQL(tableName, dbConnection, false);
       // HSQL
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
          tableTabPanel = new TableTabPanel_HSQL(tableName, dbConnection, false);
       // Oracle
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection, false);
       // SQLite
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
          tableTabPanel = new TableTabPanel_SQLite(tableName, dbConnection, false);
       // Generic
       else
@@ -520,12 +528,12 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // Table not loaded so load it.
       if (tableTabHashMap.get(tableName) == null)
       {
-         Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
             "DBTablesPanel getTableTabPanel()");
          
          loadTable(tableName, work_dbConnection);
          
-         MyJSQLView_Access.closeConnection(work_dbConnection, "DBTablesPanel getTableTabPanel()");
+         ConnectionManager.closeConnection(work_dbConnection, "DBTablesPanel getTableTabPanel()");
       }
 
       if (tableTabHashMap.get(tableName) == null)
@@ -578,11 +586,11 @@ public class DBTablesPanel extends JPanel implements ActionListener
          if (tableTabHashMap.get(tableName) == null)
          {
             String connectionString = "DBTablesPanel setSelectedTableTabPanel()";
-            Connection work_dbConnection = (Connection) MyJSQLView_Access.getConnection(connectionString);
+            Connection work_dbConnection = (Connection) ConnectionManager.getConnection(connectionString);
             
             loadTable(tableName, work_dbConnection);
             
-            MyJSQLView_Access.closeConnection(work_dbConnection, connectionString);
+            ConnectionManager.closeConnection(work_dbConnection, connectionString);
          }
          
          if (tableTabHashMap.get(tableName) == null)
