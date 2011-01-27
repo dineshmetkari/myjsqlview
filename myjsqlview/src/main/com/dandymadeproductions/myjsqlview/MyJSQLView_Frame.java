@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.1 01/15/2011
+// Version 6.2 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,8 @@
 //                        Main Tab.
 //         6.1 01/15/2011 Class Methods createGUI() & reloadDBTables() Cast Object Returned by
 //                        MyJSQLView_Access.getConnection() to Connection.
+//         6.2 01/26/2011 Change in Obtaining host and db For Frame Title. Changes to Access
+//                        Connections/Errors to the New Redefined Class ConnectionManager.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -182,7 +184,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.1 01/15/2011
+ * @version 6.2 01/26/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -214,8 +216,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    {
       // Displaying title and assigning instance associations.
 
-      super("MyJSQLView   " + MyJSQLView_Access.getHostName() + ":"
-             + MyJSQLView_Access.getDBName());
+      super("MyJSQLView   "
+            + ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.HOST) + ":"
+            + ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB));
 
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
@@ -299,10 +302,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             
             // Obtain a database connection & resources.
             
-            dbConnection = (Connection) MyJSQLView_Access.getConnection("MyJSQLView_Frame createGUI()");
+            dbConnection = (Connection) ConnectionManager.getConnection("MyJSQLView_Frame createGUI()");
             resourceBundle = MyJSQLView.getLocaleResourceBundle();
             
-            dbTablesPanel = new DBTablesPanel(dbConnection, MyJSQLView_Access.getTableNames());
+            dbTablesPanel = new DBTablesPanel(dbConnection, ConnectionManager.getTableNames());
             mainTabsPane.setComponentAt(1, dbTablesPanel);
             
             resource = resourceBundle.getResource("MyJSQLView_Frame.tab.DatabaseTables");
@@ -314,7 +317,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             // Closing the database connection that is used
             // during the inital setup of the application.
             
-            MyJSQLView_Access.closeConnection(dbConnection, "MyJSQLView_Frame createGUI()");
+            ConnectionManager.closeConnection(dbConnection, "MyJSQLView_Frame createGUI()");
          }
       }, "MyJSQLView_Frame.createGUI(), databaseTablesThread");
       databaseTablesThread.start();
@@ -466,7 +469,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
       
-      dbConnection = (Connection) MyJSQLView_Access.getConnection("TableTabPanel_Frame reloadDBTables()");
+      dbConnection = (Connection) ConnectionManager.getConnection("TableTabPanel_Frame reloadDBTables()");
       
       if (dbConnection == null)
          return;
@@ -482,9 +485,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             currentSelectedTable = "";
          
          // Reload Database Tables.
-         MyJSQLView_Access.loadDBTables(dbConnection);
+         ConnectionManager.loadDBTables(dbConnection);
          
-         DBTablesPanel.reloadPanel(dbConnection, MyJSQLView_Access.getTableNames());
+         DBTablesPanel.reloadPanel(dbConnection, ConnectionManager.getTableNames());
          dbTablesPanel.repaint();
          
          // Reload Plugins' Tables.
@@ -492,7 +495,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          while (pluginModulesIterator.hasNext())
          {
             MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
-            currentPlugin.setDBTables(MyJSQLView_Access.getTableNames());
+            currentPlugin.setDBTables(ConnectionManager.getTableNames());
          }
          
          // Try set the table showing before the reload.
@@ -504,9 +507,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "MyJSQLView_Frame reloadDBTables()");
+         ConnectionManager.displaySQLErrors(e, "MyJSQLView_Frame reloadDBTables()");
       }
       
-      MyJSQLView_Access.closeConnection(dbConnection, "TableTabPanel_Frame reloadDBTables()");
+      ConnectionManager.closeConnection(dbConnection, "TableTabPanel_Frame reloadDBTables()");
    }  
 }
