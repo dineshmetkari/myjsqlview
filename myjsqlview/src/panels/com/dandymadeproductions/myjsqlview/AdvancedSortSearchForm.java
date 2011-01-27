@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.78 01/14/2011
+// Version 4.79 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,7 +148,10 @@
 //        4.77 08/27/2010 Added sqliteWhereOperators in Method createSortSearchInterface().
 //        4.78 01/14/2011 Class Method getAdvancedSortSearchSQL() Changes to Give the
 //                        Ability to Properly Search Given Input for Date/DateTime/Timestamp
-//                        Fields. 
+//                        Fields.
+//        4.79 01/26/2011 Added Instances connectionProperties & subProtocol. Instantiated
+//                        in Constructor. Use and Change of Said in createSortSearchInterface(),
+//                        & getAdvancedSortSearchSQL().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -178,7 +181,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.78 01/14/2011
+ * @version 4.79 01/26/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -187,7 +190,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private static final long serialVersionUID = -2663401193471271657L;
 
    private String sqlTable;
-   private String identifierQuoteString;
+   private String subProtocol, identifierQuoteString;
    private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnTypesHashMap;
    private Vector<String> comboBoxColumnNames;
@@ -226,6 +229,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       this.comboBoxColumnNames = comboBoxColumnNames;
 
       // Constructor Instances
+      ConnectionProperties connectionProperties;
       JPanel mainPanel, formPanel, northPanel, selectTypePanel;
       JPanel helpPanel, southPanel, actionButtonPanel, clearPanel;
       JLabel selectTypeLabel;
@@ -235,6 +239,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Setting up a icons directory and other instances.
       
+      connectionProperties = ConnectionManager.getConnectionProperties();
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      
       resource = resourceBundle.getResource("AdvancedSortSearchForm.message.Title");
       if (resource.equals(""))
          setTitle("Advanced Sort/Search : " + table);
@@ -242,7 +249,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          setTitle(resource + " : " + table);
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       stateComponents = new Vector <JComponent>();
 
@@ -517,14 +524,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                        "=", "<", "<<", "<=", ">", ">>", ">=", "<>", "!=", "==", };
 
       // Assigning the appropriate string array WHERE operators.
-
-      if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+      
+      if (subProtocol.equals(ConnectionManager.MYSQL))
          whereOperators = mysqlWhereOperators;
-      else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          whereOperators = postgreSQLWhereOperators;
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          whereOperators = oracleWhereOperators;
-      else if (MyJSQLView_Access.getSubProtocol().equals("sqlite"))
+      else if (subProtocol.equals(ConnectionManager.SQLITE))
          whereOperators = sqliteWhereOperators;
       // Make HSQL Default
       else
@@ -744,7 +751,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                {
                   if (columnTypeString.equals("DATE"))
                   {
-                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString
@@ -764,7 +771,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   }
                   else if (columnTypeString.equals("DATETIME") || columnTypeString.indexOf("TIMESTAMP") != -1)
                   {
-                     if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1 
+                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
