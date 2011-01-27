@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 12.2 01/14/2011
+// Version 12.3 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -283,7 +283,10 @@
 //             Change for Date Key Conversion to MyJSQLView_utils.convertViewDateString_To_
 //             DBDateString().
 //        12.2 Class Method loadTable() Changes to Give the Ability to Properly Search
-//             Given Input for Date/DateTime/Timestamp Fields. 
+//             Given Input for Date/DateTime/Timestamp Fields.
+//        12.3 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
+//             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
+//             SQL Errors.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -309,7 +312,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.2 01/14/2011
+ * @version 12.3 01/26/2011
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -521,7 +524,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_PostgreSQL getColumnNames()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_PostgreSQL getColumnNames()");
          return false;
       }
    }
@@ -838,7 +841,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_PostgreSQL loadTable()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_PostgreSQL loadTable()");
          return false;
       }
    }
@@ -1102,7 +1105,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_PostgreSQL viewSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_PostgreSQL viewSelectedItem()");
       }
    }
 
@@ -1573,7 +1576,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableTabPanel_PostgreSQL editSelectedItem()");
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel_PostgreSQL editSelectedItem()");
       }
    }
 }
