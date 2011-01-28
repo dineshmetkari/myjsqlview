@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 4.0 01/22/2011
+// Version 4.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,7 @@
 //         4.0 Class Instance connectionManager Changed to connectionManagerFrame.
 //             Constructor, valueChanged(), addSite(), updateSiteNode(), &
 //             renameSite() Methods Effected.
+//         4.1 Increased the PreferredSize of the treeScrollPane Instance.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -115,7 +116,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.0 01/22/2011
+ * @version 4.1 01/27/2011
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -179,7 +180,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       sitesTree.addTreeSelectionListener(this);
 
       JScrollPane treeScrollPane = new JScrollPane(sitesTree);
-      treeScrollPane.setPreferredSize(new Dimension(190, 195));
+      treeScrollPane.setPreferredSize(new Dimension(250, 230));
       treeScrollPane.setAutoscrolls(true);
       add(treeScrollPane);
 
