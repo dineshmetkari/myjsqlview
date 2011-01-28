@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.5 01/15/2011
+// Version 1.6 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,10 @@
 //         1.4 Organized Imports.
 //         1.5 Class Method flushPrivileges() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         1.6 Methods run(), clearHSQLDBMemoryTables(), & clearOracleDBTemporaryTables()
+//             Changed the Collection of Connections and Displaying SQL Errors
+//             from New Class ConnectionManager. Also identifierQuoteString in Method
+//             clearHSQL/OracleDBMemoryTables(). Added Instance subProtocol to run().
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -55,7 +59,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.5 01/15/2011
+ * @version 1.6 01/27/2011
  */
 
 class TableClearingThread implements Runnable
@@ -85,20 +89,26 @@ class TableClearingThread implements Runnable
 
    public void run()
    {
+      // Method Instances.
+      String subProtocol;
+      
       // Get Connection to Database & Export Options.
-      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection("ClearingTableThread run()");
+      Connection dbConnection = (Connection) ConnectionManager.getConnection("ClearingTableThread run()");
 
       // Remove the appropriate Memory/Temporary Table(s) for HSQL
       // or Oracle databases.
-
-      if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+      
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.SUBPROTOCOL);
+      
+      if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
          clearHSQLDBMemoryTables(dbConnection);
 
-      if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          clearOracleDBTemporaryTables(dbConnection);
 
       // Closing down.
-      MyJSQLView_Access.closeConnection(dbConnection, "ClearingTableThread run()");
+      ConnectionManager.closeConnection(dbConnection, "ClearingTableThread run()");
    }
 
    //==============================================================
@@ -116,16 +126,16 @@ class TableClearingThread implements Runnable
          {
             sqlStatement = dbConnection.createStatement();
             sqlStatement.executeUpdate("DROP TABLE " 
-                                       + MyJSQLView_Access.getIdentifierQuoteString()
+                                       + ConnectionManager.getIdentifierQuoteString()
                                        + "temptable" + tabNumber
-                                       + MyJSQLView_Access.getIdentifierQuoteString() 
+                                       + ConnectionManager.getIdentifierQuoteString() 
                                        + " IF EXISTS");
             sqlStatement.executeUpdate("DROP SEQUENCE id_" + tabNumber-- + " IF EXISTS");
             sqlStatement.close();
          }
          catch (SQLException err)
          {
-            MyJSQLView_Access.displaySQLErrors(err, "QueryFrame clearHSQLDBMemoryTables()");
+            ConnectionManager.displaySQLErrors(err, "QueryFrame clearHSQLDBMemoryTables()");
          }
       }
    }
@@ -145,7 +155,7 @@ class TableClearingThread implements Runnable
 
       // Get the tab count and removing tables
       // as needed.
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       try
       {
@@ -185,7 +195,7 @@ class TableClearingThread implements Runnable
       }
       catch (SQLException err)
       {
-         MyJSQLView_Access.displaySQLErrors(err, "QueryFrame clearOracleDBTemporaryTables()");
+         ConnectionManager.displaySQLErrors(err, "QueryFrame clearOracleDBTemporaryTables()");
       }
    }
 }
