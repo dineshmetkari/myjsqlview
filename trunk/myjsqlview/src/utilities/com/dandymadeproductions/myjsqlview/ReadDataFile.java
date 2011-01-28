@@ -11,8 +11,8 @@
 //                   << ReadDataFile.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.2 06/28/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.3 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //         2.0 05/27/2009 Header Format Changes/Update.
 //         2.1 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         2.2 06/28/2010 Made Class Public in Addition to mainReadDataString().
+//         2.3 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -71,7 +72,7 @@ import javax.swing.JOptionPane;
  * data from a given input file.
  * 
  * @author Dana M. Proctor
- * @version 2.2 06/28/2010
+ * @version 2.3 01/27/2011
  */
 
 public class ReadDataFile

@@ -7,8 +7,8 @@
 //                   << BlobTextKey.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana Proctor
-// Version 1.6 02/18/2010
+// Copyright (C) 2006-2011 Dana Proctor
+// Version 1.7 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //         1.4 MyJSQLView Project Common Source Code Formatting.
 //         1.5 Header Format Changes/Update.
 //         1.6 Changed Package to Reflect Dandy Made Productions Code.
+//         1.7 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,7 +49,7 @@ package com.dandymadeproductions.myjsqlview;
  * SQL database that might consist of BLOB or TEXT data.
  * 
  * @author Dana M. Proctor
- * @version 1.6 02/18/2010
+ * @version 1.7 01/27/2011
  */
 
 class BlobTextKey

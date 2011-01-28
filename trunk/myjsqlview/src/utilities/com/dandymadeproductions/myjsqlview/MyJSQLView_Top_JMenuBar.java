@@ -8,8 +8,8 @@
 //            << MyJSQLView_Top_JMenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.1 08/29/2010
+// Copyright (C) 2005-2011 Dana M. Proctor.
+// Version 1.2 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 //=================================================================
 // Version 1.0 Original MyJSQLView_Top_JMenuBar Class.
 //         1.1 Added Help | About Menu.
+//         1.2 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import javax.swing.JMenuItem;
  * contains the MyJSQLView File|Exit, Plugin Management, & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.1 08/29/2010
+ * @version 1.2 01/27/2011
  */
 
 class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands

@@ -8,8 +8,8 @@
 //              << PluginModuleInterface.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.4 09/06/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.5 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //             Changes.
 //         1.3 Added Interface getVersion().
 //         1.4 Added Argument String path to Interface Method initPlugin().
+//         1.5 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -56,7 +57,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/06/2010
+ * @version 1.5 01/27/2011
  */
 
 public interface PluginModuleInterface

@@ -9,8 +9,8 @@
 //            << PreferencesPanelInterface.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 1.4 02/18/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 1.5 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //         1.2 MyJSQLView Project Common Source Code Formatting.
 //         1.3 Header Format Changes/Update.
 //         1.4 Changed Package to Reflect Dandy Made Productions Code.
+//         1.5 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -50,7 +51,7 @@ package com.dandymadeproductions.myjsqlview;
  * PreferencesPanels Should All be Animatied Scenes.
  * 
  * @author Dana M. Proctor
- * @version 1.4 02/18/2010
+ * @version 1.5 01/27/2011
  */
 
 interface PreferencesPanelInterface

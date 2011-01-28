@@ -11,8 +11,8 @@
 //              << MyJSQLView_TableModel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.1 02/20/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.2 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         2.1 05/20/2010 Parmeterized Class Instance headings and Same in 
 //                        Constructor Argument.
+//         2.2 01/27/2011 Copyright Update.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import javax.swing.table.AbstractTableModel;
  * actions are generated.
  * 
  * @author Dana M. Proctor
- * @version 2.1 02/20/2010
+ * @version 2.2 01/27/2011
  */
 
 class MyJSQLView_TableModel extends AbstractTableModel

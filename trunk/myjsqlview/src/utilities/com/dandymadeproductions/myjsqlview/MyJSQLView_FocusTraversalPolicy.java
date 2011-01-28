@@ -9,8 +9,8 @@
 //          << MyJSQLView_FocusTraversalPolicy.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 05/20/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.8 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             componentSequence and Argument to Constructor components
 //             to Bring Code Into Compliance With Java 5.0 API,
 //         1.7 Parameterized componentsIterator in Constructor.
+//         1.8 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +62,7 @@ import java.util.Vector;
  * focus sequence for themselves.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/20/2010
+ * @version 1.8 01/27/2011
  */
 
 class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy

@@ -7,8 +7,8 @@
 //           << DataImportProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana Proctor
-// Version 1.8 05/17/2010
+// Copyright (C) 2007-2011 Dana Proctor
+// Version 1.9 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //             to Constructor and Setter Methods. Additional Method savePreference().
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 Organized Imports.
+//         1.9 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -56,7 +57,7 @@ import java.util.prefs.Preferences;
  * data import properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.8 05/17/2010
+ * @version 1.9 01/27/2011
  */
 
 class DataImportProperties

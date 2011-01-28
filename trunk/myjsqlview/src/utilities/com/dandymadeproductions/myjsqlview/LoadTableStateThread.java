@@ -9,8 +9,8 @@
 //              << LoadTableStateThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.3 05/17/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.3 Parameterized Instance tableFields in Class Method
 //             refreshTableTabPanel() to Bring Code Into Compliance
 //             With Java 5.0 API.
+//         1.4 Copyright Update.
 //          
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -54,7 +55,7 @@ import javax.swing.JOptionPane;
  * a summary table configuration state.
  * 
  * @author Dana M. Proctor
- * @version 1.3 025/17/2010
+ * @version 1.4 01/27/2011
  */
 
 class LoadTableStateThread implements Runnable

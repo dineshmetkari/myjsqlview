@@ -8,8 +8,8 @@
 //               << Default_JMenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.3 06/20/2010
+// Copyright (C) 2005-2011 Dana M. Proctor.
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 //         1.1 Implemented MyJSQLView_MenuActionCommands.
 //         1.2 Minor Format Changes.
 //         1.3 Correction to Resource MyJSQLView_JMenuBar Name.
+//         1.4 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +56,7 @@ import javax.swing.JMenuItem;
  * contains essentially only the MyJSQLView File|Exit & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.3 06/20/2010
+ * @version 1.4 01/27/2011
  */
 
 class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands

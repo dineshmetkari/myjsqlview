@@ -8,8 +8,8 @@
 //                   << ImageUtil.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Vivek Singh, Dana M. Proctor
-// Version 1.6 08/26/2010
+// Copyright (C) 2006-2011 Vivek Singh, Dana M. Proctor
+// Version 1.7 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //                        & setLastSaveDirectory().
 //         1.6 08/26/2010 Added Class Instance resourceBundle and Implemented
 //                        Internationalization.
+//         1.7 01/27/2011 Copyright Update.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +66,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.6 08/26/2010
+ * @version 1.7 01/27/2011
  */
 
 public class ImageUtil

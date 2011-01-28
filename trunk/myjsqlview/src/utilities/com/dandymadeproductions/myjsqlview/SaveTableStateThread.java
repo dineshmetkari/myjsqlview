@@ -7,8 +7,8 @@
 //                 << SaveTableStateThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.3 05/17/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 //             Thread. Argument to Constructor Now.
 //         1.2 Changed Package to Reflect Dandy Made Productions Code.
 //         1.3 Comment Changes.
+//         1.4 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,7 +47,7 @@ package com.dandymadeproductions.myjsqlview;
  * dump a database table's current state to a local file.   
  * 
  * @author Dana M. Proctor
- * @version 1.3 05/17/2010
+ * @version 1.4 01/27/2011
  */
 
 class SaveTableStateThread implements Runnable
