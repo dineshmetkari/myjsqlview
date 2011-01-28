@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 5.8 01/15/2011
+// Version 5.9 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,10 @@
 //             YYYY-MM-DD.
 //         5.8 Class Method run() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         5.9 Changes to Class Method run() Used Newly Redefined ConnectionManager
+//             to Collect Connections & Display SQL Errors. Also identifierQuoteString
+//             Collected From ConnectionManager. Added Method Instance subProtocol
+//             in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -129,7 +133,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.8 01/15/2011
+ * @version 5.9 01/26/2011
  */
 
 class DataDumpThread implements Runnable
@@ -180,7 +184,7 @@ class DataDumpThread implements Runnable
       MyJSQLView_ProgressBar dumpProgressBar;
       Iterator<String> columnNamesIterator;
       StringBuffer columnNames_String;
-      String schemaTableName;
+      String subProtocol, schemaTableName;
       String columnClass, columnType, dataDelimiter;
       String identifierQuoteString;
       String fieldContent;
@@ -193,12 +197,14 @@ class DataDumpThread implements Runnable
       // Setting up
       rowNumber = 0;
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.SUBPROTOCOL);
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
       // Get Connection to Database.
-      Connection db_Connection = (Connection) MyJSQLView_Access.getConnection("DataDumpThread run()");
+      Connection db_Connection = (Connection) ConnectionManager.getConnection("DataDumpThread run()");
       
       if (db_Connection == null)
          return;
@@ -229,7 +235,7 @@ class DataDumpThread implements Runnable
             // Oracle TIMESTAMPLTZ handled differently to remove the
             // need to SET SESSION.
 
-            if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1
+            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1
                 && (tableColumnTypeHashMap.get(columnNameString)).equals("TIMESTAMPLTZ"))
             {
                columnNames_String.append("TO_CHAR(" + identifierQuoteString
@@ -327,7 +333,7 @@ class DataDumpThread implements Runnable
 
                   // Convert MySQL Bit Fields to Such, Since they will
                   // be returned in base 10.
-                  else if (MyJSQLView_Access.getSubProtocol().equals("mysql")
+                  else if (subProtocol.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("BIT") != -1)
                   {
                      try
@@ -342,7 +348,7 @@ class DataDumpThread implements Runnable
                   }
 
                   // Insure MySQL Date/Year fields are chopped to only 4 digits.
-                  else if (MyJSQLView_Access.getSubProtocol().equals("mysql")
+                  else if (subProtocol.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("YEAR") != -1)
                   {
                      String yearString = fieldContent.trim();
@@ -405,13 +411,13 @@ class DataDumpThread implements Runnable
          dbResultSet.close();
          sqlStatement.close();
          dumpProgressBar.dispose();
-         MyJSQLView_Access.closeConnection(db_Connection, "DataDumpThread run()");
+         ConnectionManager.closeConnection(db_Connection, "DataDumpThread run()");
       }
       catch (SQLException e)
       {
          dumpProgressBar.dispose();
-         MyJSQLView_Access.displaySQLErrors(e, "DataDumpThread run()");
-         MyJSQLView_Access.closeConnection(db_Connection, "DataDumpThread run()");
+         ConnectionManager.displaySQLErrors(e, "DataDumpThread run()");
+         ConnectionManager.closeConnection(db_Connection, "DataDumpThread run()");
       }
    }
 }
