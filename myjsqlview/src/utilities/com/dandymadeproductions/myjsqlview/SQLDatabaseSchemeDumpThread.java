@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.7 01/15/2011
+// Version 1.8 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,10 @@
 //         1.6 Parameterized Instance tableNamesIterator in run().
 //         1.7 Class Method run() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         1.8 Changes to Class Method run(), to Use Newly Redefined ConnectionManager
+//             to Obtain Connections and Display SQL Errors. Also identifierQuoteString
+//             and Tables Names Collected From ConnectionManager. Added Methods Instances
+//             connectionProperties, hostName & databaseName in generateHeaders().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -102,14 +106,14 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       Object dumpData;
 
       // Get Connection to Database.
-      Connection dbConnection = (Connection) MyJSQLView_Access.getConnection(
+      Connection dbConnection = (Connection) ConnectionManager.getConnection(
          "DatabaseSchemeDumpThread run()");
 
       if (dbConnection == null)
          return;
 
       //identifierQuoteString = DBTablesPanel.getDataExportProperties().getIdentifierQuoteString();
-      dbIdentifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       // Create a progress bar for giving the user a
       // visual and cancel ability.
@@ -119,14 +123,14 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       dumpData = generateHeaders(dbConnection);
 
       // Start a progress bar for tracking/canceling.
-      databaseDumpProgressBar.setTaskLength(MyJSQLView_Access.getTableNames().size());
+      databaseDumpProgressBar.setTaskLength(ConnectionManager.getTableNames().size());
       databaseDumpProgressBar.pack();
       databaseDumpProgressBar.center();
       databaseDumpProgressBar.setVisible(true);
 
       // Cycle through the tables, scheme dumping.
       int i = 0;
-      tableNamesIterator = MyJSQLView_Access.getTableNames().iterator();
+      tableNamesIterator = ConnectionManager.getTableNames().iterator();
 
       while (tableNamesIterator.hasNext() && !databaseDumpProgressBar.isCanceled())
       {
@@ -164,10 +168,10 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.closeConnection(dbConnection, "DatabaseSchemeDumpThread run()");
+         ConnectionManager.closeConnection(dbConnection, "DatabaseSchemeDumpThread run()");
       }
 
-      MyJSQLView_Access.closeConnection(dbConnection, "DatabaseSchemeDumpThread run()");
+      ConnectionManager.closeConnection(dbConnection, "DatabaseSchemeDumpThread run()");
    }
 
    //==============================================================
@@ -177,18 +181,25 @@ class SQLDatabaseSchemeDumpThread implements Runnable
    protected String generateHeaders(Connection dbConnection)
    {
       // Class Method Instances.
+      ConnectionProperties connectionProperties;
+      String hostName, databaseName;
       String dateTime, headers;
       SimpleDateFormat dateTimeFormat;
 
       // Create Header.
+      
+      connectionProperties = ConnectionManager.getConnectionProperties();
+      hostName = connectionProperties.getProperty(ConnectionProperties.HOST);
+      databaseName = connectionProperties.getProperty(ConnectionProperties.DB);
+      
       dateTimeFormat = new SimpleDateFormat("yyyy.MM.dd G 'at' hh:mm:ss z");
       dateTime = dateTimeFormat.format(new Date());
 
       headers = "--\n" + "-- MyJSQLView SQL Dump\n" + "-- Version: " + myJSQLView_Version[1] + "\n"
                 + "-- WebSite: http://myjsqlview.sourceforge.net\n" + "--\n" + "-- Host: "
-                + MyJSQLView_Access.getHostName() + "\n" + "-- Generated On: " + dateTime + "\n"
-                + "-- SQL version: " + MyJSQLView_Access.getDBProductName_And_Version() + "\n"
-                + "-- Database: " + MyJSQLView_Access.getDBName() + "\n" + "--\n\n"
+                + hostName + "\n" + "-- Generated On: " + dateTime + "\n"
+                + "-- SQL version: " + ConnectionManager.getDBProductName_And_Version() + "\n"
+                + "-- Database: " + databaseName + "\n" + "--\n\n"
                 + "-- ------------------------------------------\n";
 
       // System.out.println(headers);
