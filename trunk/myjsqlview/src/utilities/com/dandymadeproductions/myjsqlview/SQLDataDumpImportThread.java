@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 3.9 01/15/2011
+// Version 4.0 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,8 @@
 //             Execution for SQLite Database.
 //         3.9 Class Method importSQLFile() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         4.0 Class Method importSQL() Added Instance subProtocol and Collected
+//             Connections and Displayed SQL Errors via the New Class ConnectionManager.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -109,7 +111,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 3.9 01/15/2011
+ * @version 4.0 01/27/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -181,6 +183,7 @@ class SQLDataDumpImportThread implements Runnable
       Connection dbConnection;
       Statement sqlStatement;
 
+      String subProtocol;
       String sqlDump;
       String[] queries;
       int currentLine = 0;
@@ -196,7 +199,7 @@ class SQLDataDumpImportThread implements Runnable
       if (dump != null)
       {
          // Obtain database connection & setting up.
-         dbConnection = (Connection) MyJSQLView_Access.getConnection(
+         dbConnection = (Connection) ConnectionManager.getConnection(
             "SQLDataDumpImportThread importSQLFile()");
          
          if (dbConnection == null)
@@ -206,6 +209,8 @@ class SQLDataDumpImportThread implements Runnable
          }
 
          sqlDumpProgressBar = new MyJSQLView_ProgressBar("SQL Import");
+         subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+            ConnectionProperties.SUBPROTOCOL);
          sqlDump = new String(dump);
          // System.out.println(sqlDump);
 
@@ -218,9 +223,9 @@ class SQLDataDumpImportThread implements Runnable
 
             // HSQL, Oracle, & SQLite does not support.
             
-            if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1 &&
-                MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1 &&
-                MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
+            if (subProtocol.indexOf(ConnectionManager.HSQL) == -1 &&
+                subProtocol.indexOf(ConnectionManager.ORACLE) == -1 &&
+                subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
                sqlStatement.executeUpdate("BEGIN");
 
             // Creating seperate queries and beginning
@@ -268,7 +273,7 @@ class SQLDataDumpImportThread implements Runnable
                   // Oracle SQL statements and bypassing any single commented
                   // SQL statement lines in Same Also.
                   
-                  if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                  if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                   {
                      if ((queries[i].substring(0, 2)).matches("^-{2}?") && queries[i].indexOf("\n") == -1)
                          continue;
@@ -292,23 +297,23 @@ class SQLDataDumpImportThread implements Runnable
             sqlStatement.close();
             dbConnection.setAutoCommit(true);
 
-            MyJSQLView_Access.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile()");
+            ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile()");
          }
          catch (SQLException e)
          {
             sqlDumpProgressBar.dispose();
             validImport = false;
-            MyJSQLView_Access.displaySQLErrors(e, "line# " + currentLine + " " + failedQuery
+            ConnectionManager.displaySQLErrors(e, "line# " + currentLine + " " + failedQuery
                                                   + " SQLDataDumpImportThread importSQLFile()");
             try
             {
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
-               MyJSQLView_Access.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
+               ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
             }
             catch (SQLException error)
             {
-               MyJSQLView_Access.displaySQLErrors(e, "SQLDataDumpImportThread importSQLFile() rollback failed");
+               ConnectionManager.displaySQLErrors(e, "SQLDataDumpImportThread importSQLFile() rollback failed");
             }
          }
       }
