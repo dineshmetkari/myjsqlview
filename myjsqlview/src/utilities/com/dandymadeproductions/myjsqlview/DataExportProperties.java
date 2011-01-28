@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana Proctor
-// Version 3.5 01/22/2011
+// Version 3.6 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,8 @@
 //         3.4 Cleanup and Correction to savePreference() in Setter Methods for PDF
 //             Export Options.
 //         3.5 Updated Copyright and Some Comments.
+//         3.6 Constructor identifierQuoteString Obtained From Redefined Class
+//             ConnctionManager.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -90,7 +92,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.5 01/22/2011
+ * @version 3.6 01/26/2011
  */
 
 class DataExportProperties
@@ -197,7 +199,7 @@ class DataExportProperties
       insertTypeSetting = "Low_Priority";
       replaceTypeSetting = "Low_Priority";
       updateTypeSetting = "Low_Priority";
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       // CSV
       textInclusion = false;
