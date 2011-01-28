@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.6 01/27/2011
+// Version 4.7 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,8 @@
 //         4.5 Renamed to ConnectionManagerFrame.
 //         4.6 Correction to resourceBundle.getResource() to Correctly Identify
 //             New Class Name ConnectionManagerFrame in Constructor.
+//         4.7 Increased Bounds Width for the Standard & AdvancedParametersPanels.
+//             Increased the Size of Frame Setting in actionPerformed().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -269,10 +271,10 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       centerPanel = new JPanel();
       centerPanel.setLayout(null);
 
-      standardParametersPanel.setBounds(10, 0, 190, 200);
+      standardParametersPanel.setBounds(10, 0, 210, 200);
       centerPanel.add(standardParametersPanel);
 
-      advancedParametersPanel.setBounds(210, 0, 180, 200);
+      advancedParametersPanel.setBounds(230, 0, 210, 200);
       centerPanel.add(advancedParametersPanel);
 
       mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -355,12 +357,12 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
          {
             if (advancedOptionsShowing)
             {
-               setSize(420, 310);
+               setSize(505, 345);
                advancedOptionsShowing = false;
             }
             else
             {
-               setSize(615, 310);
+               setSize(725, 345);
                advancedOptionsShowing = true;
             }
          }
