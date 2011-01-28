@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.4 01/15/2011
+// Version 2.5 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,10 @@
 //             Boolean.valueOf() Instead of Creating a New Boolean Object.
 //         2.4 Class Method run() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         2.5 Changes to Class Methods run() & createColumnSQLQuery() to Use Newly
+//             Redefined ConnectionManager to Derive Connections & Display SQL Errors.
+//             Also identifierQuoteString Collected From ConnectionManager. Changed
+//             dbType to subProtocol in Class Method createColumnSQLQuery().
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -135,7 +139,7 @@ class SearchDatabaseThread implements Runnable
       String columnsSQLQuery, sqlTable;
       String identifierQuoteString, schemaTableName;
 
-      dbConnection = (Connection) MyJSQLView_Access.getConnection(
+      dbConnection = (Connection) ConnectionManager.getConnection(
          "SearchDatabaseThread queryDatabase()");
       
       if (dbConnection == null)
@@ -143,7 +147,7 @@ class SearchDatabaseThread implements Runnable
 
       // Setting up various instances needed.
       
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       tableSearchThreads = new Thread[databaseTables.size()];
       tableSearchResultCounts = new int[databaseTables.size()];
 
@@ -262,7 +266,7 @@ class SearchDatabaseThread implements Runnable
       }
       
       searchCompleteButton.doClick();
-      MyJSQLView_Access.closeConnection(dbConnection, "SearchDatabaseThread queryDatabase()");
+      ConnectionManager.closeConnection(dbConnection, "SearchDatabaseThread queryDatabase()");
    }
    
    //==============================================================
@@ -279,12 +283,12 @@ class SearchDatabaseThread implements Runnable
       ResultSetMetaData tableMetaData;
 
       StringBuffer columnsSQLQuery;
-      String dbType, sqlColumnSelectString;
+      String subProtocol, sqlColumnSelectString;
       String identifierQuoteString;
 
       // Setting up.
       columnsSQLQuery = new StringBuffer();
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       // Beginning creating the table columns
       // search string query.
@@ -293,13 +297,14 @@ class SearchDatabaseThread implements Runnable
          sqlStatement = dbConnection.createStatement();
 
          // Create query to obtain the tables Table Meta Data.
-         dbType = MyJSQLView_Access.getSubProtocol();
+         subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+            ConnectionProperties.SUBPROTOCOL);
 
          // HSQL
-         if (dbType.indexOf("hsql") != -1)
+         if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
             sqlColumnSelectString = "SELECT LIMIT 0 1 * FROM " + tableName;
          // Oracle
-         else if (dbType.indexOf("oracle") != -1)
+         else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
             sqlColumnSelectString = "SELECT * FROM " + tableName + " WHERE ROWNUM=1";
          // MySQL, PostgreSQL, & Others
          else
@@ -325,14 +330,14 @@ class SearchDatabaseThread implements Runnable
                 && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
                 && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1)
             {
-               if (dbType.equals("postgresql"))
+               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                {
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                      + "::TEXT LIKE \'%" + searchQueryString + "%\' OR ");
                }
                else
                {
-                  if (dbType.indexOf("oracle") != -1 && columnType.equals("DATE"))
+                  if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && columnType.equals("DATE"))
                      columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                             + " LIKE TO_DATE(\'" + searchQueryString + "\', "
                                             + "\'MM-dd-YYYY\') OR ");
@@ -352,7 +357,7 @@ class SearchDatabaseThread implements Runnable
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "SearchDatabaseThread createColumnSQLQuery()");
+         ConnectionManager.displaySQLErrors(e, "SearchDatabaseThread createColumnSQLQuery()");
          return "";
       }
    }
