@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.75 01/25/2011
+// Version 6.76 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -244,6 +244,8 @@
 //             Connnections to New Class ConnectionManager, Except the Initial accessCheck().
 //             The Method accessCheck() Saves the Parameters and Properly Directs the
 //             Type of Processing for the Data Source Desired.
+//        6.76 Increased Bounds Width for the Standard & AdvancedParametersPanels.
+//             Increased the Size of Frame Setting in actionPerformed().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -278,7 +280,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.75 01/25/2011
+ * @version 6.76 01/27/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -476,12 +478,12 @@ public class LoginFrame extends JFrame implements ActionListener
       // Standard Parameters Panel & Components
       standardParametersPanel = new StandardParametersPanel(resourceBundle, hostList, databaseList,
                                                             userList);
-      standardParametersPanel.setBounds(125, 0, 190, 200);
+      standardParametersPanel.setBounds(125, 0, 210, 200);
       centerPanel.add(standardParametersPanel);
 
       advancedParametersPanel = new AdvancedParametersPanel(resourceBundle, driverList, protocolList,
                                                             subProtocolList, portList);
-      advancedParametersPanel.setBounds(330, 0, 180, 200);
+      advancedParametersPanel.setBounds(345, 0, 210, 200);
       centerPanel.add(advancedParametersPanel);
 
       mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -576,7 +578,7 @@ public class LoginFrame extends JFrame implements ActionListener
                                                                     standardPanelClone, advancedPanelClone,
                                                                     connectionManagerFrame_SaveExitButton,
                                                                     connectionManagerFrame_CancelButton);
-               connectionManagerFrame.setSize(420, 310);
+               connectionManagerFrame.setSize(505, 345);
                connectionManagerFrame.setResizable(false);
                connectionManagerFrame.center(-50, 50);
                connectionManagerFrame.setVisible(true);
@@ -594,12 +596,12 @@ public class LoginFrame extends JFrame implements ActionListener
          {
             if (advancedOptionsShowing)
             {
-               setSize(335, 320);
+               setSize(355, 320);
                advancedOptionsShowing = false;
             }
             else
             {
-               setSize(530, 320);
+               setSize(575, 320);
                advancedOptionsShowing = true;
             }
          }
