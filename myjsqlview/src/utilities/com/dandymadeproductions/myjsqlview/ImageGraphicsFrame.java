@@ -7,8 +7,8 @@
 //                << ImageGraphicsFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 02/18/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.8 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.5 10/23/2008 MyJSQLView Project Common Source Code Formatting.
 //         1.6 05/27/2009 Header Format Changes/Update.
 //         1.7 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
+//         1.8 01/27/2011 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -54,7 +55,7 @@ import java.awt.Graphics;
  * be painted on to display a table item image.
  * 
  * @author Dana M. Proctor
- * @version 1.7 02/18/2010
+ * @version 1.8 01/27/2011
  */
 
 class ImageGraphicsFrame extends JFrame

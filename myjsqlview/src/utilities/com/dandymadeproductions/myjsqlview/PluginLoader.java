@@ -10,8 +10,8 @@
 //                     << PluginLoader.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.0 09/06/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,7 @@
 //         2.0 09/06/2010 Changed the Delimiter Between pathKey & className to '<$$$>'.
 //                        Methods Effected loadPluginEntry(), loadConfigurationFilePluginEntries(),
 //                        & loadPluginModules().
+//         2.1 01/27/2011 Copyright Update.
 //                        
 //
 //-----------------------------------------------------------------
@@ -88,7 +89,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.0 09/06/2010
+ * @version 2.1 01/27/2011
  */
 
 class PluginLoader implements Runnable

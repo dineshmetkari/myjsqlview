@@ -8,8 +8,8 @@
 //                << MyJSQLView_ProgressBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.5 08/26/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.6 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //         2.3 Added fileSeparator to iconsDirectory.
 //         2.4 Changed Package to Reflect Dandy Made Productions Code.
 //         2.5 Added Class Instance resourceBundle and Implemented Internationalization.
+//         2.6 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -75,7 +76,7 @@ import javax.swing.JProgressBar;
  * cancel button.
  * 
  * @author Dana M. Proctor
- * @version 2.5 08/26/2010
+ * @version 2.6 01/27/2011
  */
 
 class MyJSQLView_ProgressBar extends JFrame implements ActionListener

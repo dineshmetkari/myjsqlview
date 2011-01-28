@@ -7,8 +7,8 @@
 //                  << SiteParameter.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Nil_lin, Dana Proctor
-// Version 2.0 02/18/2010
+// Copyright (C) 2005-2011 Nil_lin, Dana Proctor
+// Version 2.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.8 Renamed to SiteParameters.
 //         1.9 Header Format Changes/Update.
 //         2.0 Changed Package to Reflect Dandy Made Productions Code.
+//         2.1 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -55,7 +56,7 @@ package com.dandymadeproductions.myjsqlview;
  * XMLTranslator.
  * 
  * @author Nil, Dana M. Proctor
- * @version 2.0 02/18/2010
+ * @version 2.1 01/27/2011
  */
 
 class SiteParameters

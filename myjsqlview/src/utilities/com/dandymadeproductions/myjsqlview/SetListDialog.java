@@ -7,8 +7,8 @@
 //                   << SetListDialog.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 2.0 05/20/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 2.1 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //             cancelButton.
 //         2.0 Parameterized Class Instance listElements and Likewise Argument
 //             in Constructor.
+//         2.1 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -67,7 +68,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/20/2010
+ * @version 2.1 01/27/2011
  */
 
 class SetListDialog extends JFrame implements ActionListener

@@ -7,8 +7,8 @@
 //                   << PluginThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.3 09/06/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 1.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //             Argument parentFrame.
 //         1.3 Class Method run() Obtain String path to Pass to New Argument
 //             of PluginModuleInterface Method initPlugin().
+//         1.4 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import javax.swing.JPanel;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.3 09/06/2010
+ * @version 1.4 01/27/2011
  */
 
 class PluginThread implements Runnable

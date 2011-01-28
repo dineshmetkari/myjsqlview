@@ -8,8 +8,8 @@
 //             << TableTabInterface.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.1 06/24/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 3.2 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,7 @@
 //         2.9 Removed Interface Method setActionButtonVisible().
 //         3.0 Added Interface Method getTableSQLSearchString().
 //         3.1 Undid 3.0 Revision, Short Sighted.
+//         3.2 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -79,7 +80,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.1 06/24/2010
+ * @version 3.2 01/27/2011
  */
 
 interface TableTabInterface
