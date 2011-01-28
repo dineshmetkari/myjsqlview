@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.1 01/14/2011
+// Version 5.2 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,9 @@
 //             formatExportDateString(), displayMyDateString(), & formatJavaDateString().
 //         5.1 Reorganized Methods. Return Type for convertDecimalToCharMonth() to
 //             String. Added Class Method processDateFormatSearch().
+//         5.2 Class Method getSchemaTableName() identifierQuoteString Obtained From
+//             Redefined ConnectionManager Class. Same for Class Method 
+//             setLocalTimeZone() Except for SQL Errors.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -127,7 +130,7 @@ import java.sql.Statement;
  * 
  * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 5.1 01/14/2011
+ * @version 5.2 01/26/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -495,7 +498,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       String schemaTableName;
       String identifierQuoteString;
       
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
       if (sqlTable.indexOf(".") != -1)
       {
@@ -1044,7 +1047,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
+         ConnectionManager.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
          return;
       }
    }
