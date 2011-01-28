@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.0 01/22/2011
+// Version 1.1 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial ConnectionManager Class.
+//         1.1 Made Class Public Along With Class Method getConnectionProperties().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,10 +60,10 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.0 01/22/2011
+ * @version 1.1 01/28/2011
  */
 
-class ConnectionManager
+public class ConnectionManager
 {
    // Class Instances.
    private static Connection memoryConnection;
@@ -576,7 +577,7 @@ class ConnectionManager
    // version.
    //==============================================================
 
-   protected static ConnectionProperties getConnectionProperties()
+   public static ConnectionProperties getConnectionProperties()
    {
       return connectionProperties;
    }
