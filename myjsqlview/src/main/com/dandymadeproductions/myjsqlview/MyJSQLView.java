@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.24 01/25/2011
+// Version 3.25 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,7 @@
 //                         3.23.
 //         3.24 01/26/2011 Instance Change of MyJSQLView_Access to LoginFrame. Addition of
 //                         Class Instance connectionManager and Its Getter Method.
+//         3.25 01/27/2011 Increased The Width for the Sizing of the loginFrame in Constructor.
 //         
 //
 //-----------------------------------------------------------------
@@ -213,7 +214,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.24 01/25/2011
+ * @version 3.25 01/27/2011
  */
 
 public class MyJSQLView implements ActionListener
@@ -235,7 +236,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.24", "Build ID: 20110125"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.25", "Build ID: 20110127"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -323,7 +324,7 @@ public class MyJSQLView implements ActionListener
       loginFrame = new LoginFrame(validLoginButton);
       loginFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       loginFrame.addMouseListener(myJSQLViewPopupListener);
-      loginFrame.setSize(335, 320);
+      loginFrame.setSize(355, 320);
       loginFrame.setResizable(false);
       loginFrame.center();
       loginFrame.setVisible(true);
