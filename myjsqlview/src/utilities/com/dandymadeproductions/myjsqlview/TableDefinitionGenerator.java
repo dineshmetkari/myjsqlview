@@ -8,8 +8,8 @@
 //              << TableDefinitionGenerator.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2010 Dana M. Proctor
-// Version 3.9 07/23/2010
+// Copyright (C) 2007-2011 Dana M. Proctor
+// Version 4.0 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -106,6 +106,9 @@
 //         3.9 Added the selection of SQlite Database in Class Method getTableDefinition().
 //             Added Class Method createSQliteTableDefinition() With a Basic Outline from
 //             the MySQL Definition Method.
+//         4.0 Added Class Instance databaseName. All createTableDefintion() Methods the
+//             Display of SQL Errors Directed to New Class ConnectionManager. Class Method
+//             getTableDefinition() Added Instance subProtocol.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -127,13 +130,13 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 3.9 07/23/2010
+ * @version 4.0 01/27/2011
  */
 
 class TableDefinitionGenerator
 {
    // Class Instances.
-   private String schemaTableName, schemaName, tableName;
+   private String databaseName, schemaTableName, schemaName, tableName;
    private Connection dbConnection;
    private String dbIdentifierQuoteString;
    private String identifierQuoteString;
@@ -149,9 +152,12 @@ class TableDefinitionGenerator
       this.dbConnection = dbConnection;
       this.schemaTableName = table;
       //System.out.println(schemaTableName);
+      
+      databaseName = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.DB);
 
       // Setting up required instances.
-      dbIdentifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
       
@@ -212,7 +218,7 @@ class TableDefinitionGenerator
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createMySQLTableDefinition()");
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createMySQLTableDefinition()");
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
@@ -251,7 +257,7 @@ class TableDefinitionGenerator
          // Collect table type for the table.
          
          sqlStatementString = "SELECT table_type FROM information_schema.tables WHERE "
-                               + "table_catalog='" + MyJSQLView_Access.getDBName() + "' AND "
+                               + "table_catalog='" + databaseName + "' AND "
                                + "table_schema='" + schemaName + "' AND "
                                + "table_name='" + tableName + "'";
          //System.out.println(sqlStatementString);
@@ -278,7 +284,7 @@ class TableDefinitionGenerator
          if (tableType.equals("VIEW"))
          {
             sqlStatementString = "SELECT view_definition FROM information_schema.views WHERE "
-                                 + "table_catalog='" + MyJSQLView_Access.getDBName() + "' AND "
+                                 + "table_catalog='" + databaseName + "' AND "
                                  + "table_schema='" + schemaName + "' AND "
                                  + "table_name='" + tableName + "'";
             //System.out.println(sqlStatementString);
@@ -307,7 +313,7 @@ class TableDefinitionGenerator
                               + "column_default, is_nullable, data_type, character_maximum_length, "
                               + "numeric_precision, numeric_scale, datetime_precision FROM "
                               + "information_schema.columns " + "WHERE table_catalog='"
-                              + MyJSQLView_Access.getDBName() + "' AND " + "table_schema='" + schemaName
+                              + databaseName + "' AND " + "table_schema='" + schemaName
                               + "' AND table_name='" + tableName + "' ORDER BY ordinal_position";
          // System.out.println(sqlStatementString);
 
@@ -452,7 +458,7 @@ class TableDefinitionGenerator
 
          sqlStatementString = "SELECT table_catalog, table_name, column_name, constraint_name FROM "
                               + "information_schema.key_column_usage " + "WHERE table_catalog='"
-                              + MyJSQLView_Access.getDBName() + "' AND " + "table_schema='" + schemaName
+                              + databaseName + "' AND " + "table_schema='" + schemaName
                               + "' AND table_name='" + tableName + "'";
          // System.out.println(sqlStatementString);
 
@@ -508,7 +514,7 @@ class TableDefinitionGenerator
                                  + "column_name, constraint_name FROM "
                                  + "information_schema.constraint_column_usage "
                                  + "WHERE table_catalog='"
-                                 + MyJSQLView_Access.getDBName()
+                                 + databaseName
                                  + "' AND "
                                  + "constraint_name='"
                                  + constraint + "'";
@@ -527,7 +533,7 @@ class TableDefinitionGenerator
 
             sqlStatementString = "SELECT constraint_catalog, constraint_name, delete_rule FROM "
                                  + "information_schema.referential_constraints "
-                                 + "WHERE constraint_catalog='" + MyJSQLView_Access.getDBName()
+                                 + "WHERE constraint_catalog='" + databaseName
                                  + "' AND " + "constraint_name='" + constraint + "'";
             // System.out.println(sqlStatementString);
 
@@ -550,7 +556,7 @@ class TableDefinitionGenerator
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createPostgreSQLTableDefinition()");
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createPostgreSQLTableDefinition()");
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
@@ -841,7 +847,7 @@ class TableDefinitionGenerator
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createHSQLTableDefinition()");
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createHSQLTableDefinition()");
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
@@ -959,7 +965,7 @@ class TableDefinitionGenerator
          // Create the individual column field definitions.
          // Column name, data type, default, and isNullable.
 
-         resultSet = dbMetaData.getColumns(MyJSQLView_Access.getDBName(), schemaName, tableName, "%");
+         resultSet = dbMetaData.getColumns(databaseName, schemaName, tableName, "%");
 
          while (resultSet.next())
          {
@@ -1103,7 +1109,7 @@ class TableDefinitionGenerator
          onDeleteRule = "";
 
          // Primary Keys
-         resultSet = dbMetaData.getPrimaryKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+         resultSet = dbMetaData.getPrimaryKeys(databaseName, schemaName, tableName);
 
          while (resultSet.next())
          {
@@ -1116,10 +1122,10 @@ class TableDefinitionGenerator
 
          // Unique Keys
          // Clueless why needs quotes?
-         resultSet = dbMetaData.getIndexInfo(MyJSQLView_Access.getDBName(), dbIdentifierQuoteString
-                                                                            + schemaName
-                                                                            + dbIdentifierQuoteString,
-            dbIdentifierQuoteString + tableName + dbIdentifierQuoteString, false, false);
+         resultSet = dbMetaData.getIndexInfo(databaseName, dbIdentifierQuoteString
+                                             + schemaName + dbIdentifierQuoteString,
+                                             dbIdentifierQuoteString + tableName
+                                             + dbIdentifierQuoteString, false, false);
 
          while (resultSet.next())
          {
@@ -1149,7 +1155,7 @@ class TableDefinitionGenerator
          // Foreign Keys
          // The Oracle database is having considerable delay right here
          // with collecting the imported keys.
-         resultSet = dbMetaData.getImportedKeys(MyJSQLView_Access.getDBName(), schemaName, tableName);
+         resultSet = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
 
          while (resultSet.next())
          {
@@ -1202,7 +1208,7 @@ class TableDefinitionGenerator
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createOracleTableDefinition()");
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createOracleTableDefinition()");
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
@@ -1262,7 +1268,7 @@ class TableDefinitionGenerator
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableDefinitionGenerator createSQLiteTableDefinition()");
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createSQLiteTableDefinition()");
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
@@ -1273,36 +1279,42 @@ class TableDefinitionGenerator
 
    protected String getTableDefinition()
    {
+      // Method Instances.
+      String subProtocol;
+      
       // Determine the correct table structure method to
       // apply and proceed with creating a string of
       // the table definition.
+      
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+         ConnectionProperties.SUBPROTOCOL);
 
       // MySQL
-      if (MyJSQLView_Access.getSubProtocol().equals("mysql"))
+      if (subProtocol.equals(ConnectionManager.MYSQL))
       {
          return createMySQLTableDefinition();
       }
 
       // PostgreSQL
-      else if (MyJSQLView_Access.getSubProtocol().equals("postgresql"))
+      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
       {
          return createPostgreSQLTableDefinition();
       }
 
       // HSQL
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
       {
          return createHSQLTableDefinition();
       }
 
       // Oracle
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
       {
          return createOracleTableDefinition();
       }
       
       // SQLite
-      else if (MyJSQLView_Access.getSubProtocol().indexOf("sqlite") != -1)
+      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
       {
          return createSQLiteTableDefinition();
       }
