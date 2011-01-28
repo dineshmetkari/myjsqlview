@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.3 01/15/2011
+// Version 5.4 01/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,6 +117,8 @@
 //             Removed Since Collected From MyJSQLView_Utils, 5.0.
 //         5.3 Class Method importCSVFile() Cast Object Returned by MyJSQLView_Access.
 //             getConnection() to Connection.
+//         5.4 Added Instances connectionProperties, & subProtocol. Changes to Access
+//             Connections/Errors to the New Redefined Class ConnectionManager.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -143,14 +145,14 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.3 01/15/2011
+ * @version 5.4 01/26/2011
  */
 
 class CSVDataImportThread implements Runnable
 {
    // Class Instance Fields.
    Thread importThread;
-   String fileName, csvOption;
+   String subProtocol, fileName, csvOption;
    boolean validImport, temporaryDataFile;
 
    //==============================================================
@@ -160,9 +162,14 @@ class CSVDataImportThread implements Runnable
    CSVDataImportThread(String fileName, String csvOption, boolean temporaryDataFile)
    {
       // Constructor Instances
+      ConnectionProperties connectionProperties;
+      
       this.fileName = fileName;
       this.csvOption = csvOption;
       this.temporaryDataFile = temporaryDataFile;
+      
+      connectionProperties = ConnectionManager.getConnectionProperties();
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
 
       importThread = new Thread(this, "CSVDataImportThread");
       importThread.start();
@@ -241,7 +248,7 @@ class CSVDataImportThread implements Runnable
 
       // Obtain database connection & setting up.
 
-      dbConnection = (Connection) MyJSQLView_Access.getConnection(
+      dbConnection = (Connection) ConnectionManager.getConnection(
          "CSVDataImportThread importCSVFile()");
       
       if (dbConnection == null)
@@ -254,7 +261,7 @@ class CSVDataImportThread implements Runnable
       
       csvImportProgressBar = new MyJSQLView_ProgressBar("CSV Import To: " + importTable);
 
-      identifierQuoteString = MyJSQLView_Access.getIdentifierQuoteString();
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
       
       primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
@@ -279,9 +286,9 @@ class CSVDataImportThread implements Runnable
          sqlStatement = dbConnection.createStatement();
 
          // HSQL & Oracle does not support.
-         if (MyJSQLView_Access.getSubProtocol().indexOf("hsql") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("oracle") == -1
-             && MyJSQLView_Access.getSubProtocol().indexOf("sqlite") == -1)
+         if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
+             && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
+             && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
             sqlStatement.executeUpdate("BEGIN");
 
          try
@@ -394,7 +401,7 @@ class CSVDataImportThread implements Runnable
                      
                      // MySQL Bit Fields
                      
-                     else if (MyJSQLView_Access.getSubProtocol().equals("mysql") &&
+                     else if (subProtocol.equals(ConnectionManager.MYSQL) &&
                               columnType != null && columnType.indexOf("BIT") != -1)
                      {
                         lineContent[i] = "B'" + lineContent[i] + "'";
@@ -402,7 +409,7 @@ class CSVDataImportThread implements Runnable
                      
                      // PostgreSQL Geometric Fields
                      
-                     else if (MyJSQLView_Access.getSubProtocol().equals("postgresql") &&
+                     else if (subProtocol.equals(ConnectionManager.POSTGRESQL) &&
                               columnClass != null && columnClass.indexOf("geometric") != -1)
                      {
                         lineContent[i] = "'" + lineContent[i] + "'::" + columnType;
@@ -416,7 +423,7 @@ class CSVDataImportThread implements Runnable
                      {
                         if (columnType.equals("DATE"))
                         {
-                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                               lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i]) + "', 'YYYY-MM-DD')";
                            else
                               lineContent[i] = "'" + formatDateString(lineContent[i]) + "'";
@@ -442,7 +449,7 @@ class CSVDataImportThread implements Runnable
                            // Process accordingly.
                            
                            // Oracle Timestamps
-                           if (MyJSQLView_Access.getSubProtocol().indexOf("oracle") != -1)
+                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                            {
                               if (columnType.equals("TIMESTAMP"))
                                  lineContent[i] = "TO_TIMESTAMP('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
@@ -537,7 +544,7 @@ class CSVDataImportThread implements Runnable
             bufferedReader.close();
             sqlStatement.close();
             dbConnection.setAutoCommit(true);
-            MyJSQLView_Access.closeConnection(dbConnection, "CSVDataImportThread importCSVFile()");
+            ConnectionManager.closeConnection(dbConnection, "CSVDataImportThread importCSVFile()");
          }
          catch (IOException e)
          {
@@ -549,12 +556,12 @@ class CSVDataImportThread implements Runnable
                sqlStatement.close();
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
-               MyJSQLView_Access
+               ConnectionManager
                      .closeConnection(dbConnection, "CSVDataImportThread importCSVFile() rollback");
             }
             catch (SQLException error)
             {
-               MyJSQLView_Access.displaySQLErrors(error,
+               ConnectionManager.displaySQLErrors(error,
                   "SQLDataImportThread importCSVFile() rollback failed");
             }
          }
@@ -562,16 +569,16 @@ class CSVDataImportThread implements Runnable
       catch (SQLException e)
       {
          csvImportProgressBar.dispose();
-         MyJSQLView_Access.displaySQLErrors(e, "line# " + line + " CSVDataImportThread importCSVLFile()");
+         ConnectionManager.displaySQLErrors(e, "line# " + line + " CSVDataImportThread importCSVLFile()");
          try
          {
             dbConnection.rollback();
             dbConnection.setAutoCommit(true);
-            MyJSQLView_Access.closeConnection(dbConnection, "CSVDataImportThread importCSVFile() rollback");
+            ConnectionManager.closeConnection(dbConnection, "CSVDataImportThread importCSVFile() rollback");
          }
          catch (SQLException error)
          {
-            MyJSQLView_Access.displaySQLErrors(e, "CSVDataImportThread importCSVFile() rollback failed");
+            ConnectionManager.displaySQLErrors(e, "CSVDataImportThread importCSVFile() rollback failed");
          }
       }
    }
