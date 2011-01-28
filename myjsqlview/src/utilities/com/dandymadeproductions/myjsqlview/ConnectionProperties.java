@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana Proctor
-// Version 1.0 01/22/2011
+// Version 1.1 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial ConnectionProperties Class.
+//         1.1 Made Class Public Along With Class Method getProperty().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -43,10 +44,10 @@ package com.dandymadeproductions.myjsqlview;
  * connection properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.0 01/22/2011
+ * @version 1.1 01/28/2011
  */
 
-class ConnectionProperties
+public class ConnectionProperties
 {
    // Class Instances.
    private String connectionProperties;
@@ -87,7 +88,7 @@ class ConnectionProperties
       return connectionProperties;
    }
    
-   protected String getProperty(String property)
+   public String getProperty(String property)
    {
       if (property.equals(DRIVER))
          return driver;
