@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.1 01/26/2011
+// Version 8.2 01/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,6 +193,7 @@
 //             Given Input for Date/DateTime/Timestamp Fields.
 //         8.1 Added Class Instance subProtocol. Constructor Obtained identifierQuoteString
 //             From New Class ConnectionManger Along With subProtocol.
+//         8.2 Removed resourceRowsOf in setRowsLabel().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -224,7 +225,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.1 01/26/2011
+ * @version 8.2 01/29/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -2190,15 +2191,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
    private void setRowsLabel(int start, int end)
    {
-      String resourceRows, resourceRowsOf;
+      String resourceRows;
       
       resourceRows = resourceBundle.getResource("QueryTabPanel.label.Rows");
-      resourceRowsOf = resourceBundle.getResource("QueryTabPanel.label.RowsOf");
       
-      if (resourceRows.equals("") || resourceRowsOf.equals(""))
-         rowsLabel.setText("Rows: " + start + " of " + end);
+      if (resourceRows.equals(""))
+         rowsLabel.setText("Rows: " + start + " - " + end);
       else
-         rowsLabel.setText(resourceRows + ": " + start + " " + resourceRowsOf + " " + end); 
+         rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
    }
 
    //==============================================================
