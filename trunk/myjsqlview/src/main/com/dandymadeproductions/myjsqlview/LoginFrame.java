@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.76 01/27/2011
+// Version 6.77 01/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -246,6 +246,8 @@
 //             Type of Processing for the Data Source Desired.
 //        6.76 Increased Bounds Width for the Standard & AdvancedParametersPanels.
 //             Increased the Size of Frame Setting in actionPerformed().
+//        6.77 Added StringBuffer tempBuffer in Class Method accessCheck() to Build
+//             the passwordString.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -280,7 +282,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.76 01/27/2011
+ * @version 6.77 01/29/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1052,11 +1054,14 @@ public class LoginFrame extends JFrame implements ActionListener
          passwordCharacters = standardParametersPanel.getPassword();
 
          // Obtaining the password & clearing.
+         
+         StringBuffer tempBuffer = new StringBuffer();
          for (int i = 0; i < passwordCharacters.length; i++)
          {
-            passwordString += passwordCharacters[i];
+            tempBuffer.append(passwordCharacters[i]);
             passwordCharacters[i] = '0';
          }
+         passwordString = tempBuffer.toString();
 
          // ===============================================
          // Connection Attempt.
