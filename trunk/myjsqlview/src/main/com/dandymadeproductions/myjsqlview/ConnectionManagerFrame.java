@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.7 01/27/2011
+// Version 4.8 01/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -90,6 +90,9 @@
 //             New Class Name ConnectionManagerFrame in Constructor.
 //         4.7 Increased Bounds Width for the Standard & AdvancedParametersPanels.
 //             Increased the Size of Frame Setting in actionPerformed().
+//         4.8 Pushed the advancedParametersPanel Over Some in its Bounds,
+//             Constructor. Increased the Size of the Frame Slightly in
+//             actionPerformed() for Advanced Action.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -121,7 +124,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 4.6 01/27/2011
+ * @version 4.8 01/29/2011
  */
 
 class ConnectionManagerFrame extends JFrame implements ActionListener
@@ -274,7 +277,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
       standardParametersPanel.setBounds(10, 0, 210, 200);
       centerPanel.add(standardParametersPanel);
 
-      advancedParametersPanel.setBounds(230, 0, 210, 200);
+      advancedParametersPanel.setBounds(235, 0, 210, 200);
       centerPanel.add(advancedParametersPanel);
 
       mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -362,7 +365,7 @@ class ConnectionManagerFrame extends JFrame implements ActionListener
             }
             else
             {
-               setSize(725, 345);
+               setSize(730, 345);
                advancedOptionsShowing = true;
             }
          }
