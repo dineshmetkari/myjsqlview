@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.71 01/26/2011
+// Version 4.72 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -157,6 +157,9 @@
 //             and Also Connections/Errors in execcuteActions(), setSpecialFieldData(),
 //             deleteSelectedItems(), deleteAllItems(), & setTableHeadings(). Collection
 //             of subProtocol Instance in deleteSelected/AllItems().
+//        4.72 Added Select Fields to Popup in createListTablePopup(). Added Action Event in
+//             actionPerformed() to Handle New Popup Menu Select Fields Along With New Method
+//             selectTableFields(). Removed resourceRowsOf in setRowsLabel().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -189,7 +192,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.71 01/26/2011
+ * @version 4.72 01/28/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -705,7 +708,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                String actionCommand = ((JMenuItem) panelSource).getActionCommand();
                // System.out.println(actionCommand);
 
-               if (actionCommand.equals("View"))
+               if (actionCommand.equals("Select Fields"))
+                  selectTableFields();
+               else if (actionCommand.equals("View"))
                   viewButton.doClick();
                else if (actionCommand.equals("Add"))
                   addButton.doClick();
@@ -832,6 +837,43 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             }
          }
       }
+   }
+   
+   //==============================================================
+   // Class method to select the summary table fields directly.
+   //==============================================================
+
+   private void selectTableFields()
+   {
+      // Method Instances
+      TableFieldSelectionPreferencesPanel tableFieldPreferences;
+      String resource, resourceOK, resourceCancel;
+      InputDialog selectFieldsDialog;
+      
+      resource = resourceBundle.getResource("TableTabPanel.dialogtitle.SelectSummaryTableFields");
+      if (resource.equals(""))
+         resource = "Set Summary Table Fields";
+      
+      resourceOK = resourceBundle.getResource("TableTabPanel.dialogbutton.OK");
+      if (resourceOK.equals(""))
+         resourceOK = "OK";
+      
+      resourceCancel = resourceBundle.getResource("TableTabPanel.dialogbutton.Cancel");
+      if (resourceCancel.equals(""))
+         resourceCancel = "Cancel";
+       
+      tableFieldPreferences = new TableFieldSelectionPreferencesPanel(sqlTable, getAllTableHeadings(),
+                                                                      resourceBundle);
+      Object[] content = {tableFieldPreferences};
+      
+      selectFieldsDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
+                                                  content, null);
+      selectFieldsDialog.pack();
+      selectFieldsDialog.center();
+      selectFieldsDialog.setVisible(true);
+      
+      if (selectFieldsDialog.isActionResult())
+         tableFieldPreferences.updatePreferences();
    }
 
    //==============================================================
@@ -1186,6 +1228,15 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       String resource;
 
       // Basic table actions.
+      
+      resource = resourceBundle.getResource("TableTabPanel.popup.SelectFields");
+      if (resource.equals(""))
+         menuItem = menuItem("Select Fields", "Select Fields");
+      else
+         menuItem = menuItem(resource, "Select Fields");
+      summaryTablePopupMenu.add(menuItem);
+      
+      summaryTablePopupMenu.addSeparator();
 
       // No keys than cannot perform these operations.
       if (!primaryKeys.isEmpty())
@@ -2365,15 +2416,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    private void setRowsLabel(int start, int end)
    {
-      String resourceRows, resourceRowsOf;
+      String resourceRows;
       
       resourceRows = resourceBundle.getResource("TableTabPanel.label.Rows");
-      resourceRowsOf = resourceBundle.getResource("TableTabPanel.label.RowsOf");
       
-      if (resourceRows.equals("") || resourceRowsOf.equals(""))
-         rowsLabel.setText("Rows: " + start + " of " + end);
+      if (resourceRows.equals(""))
+         rowsLabel.setText("Rows: " + start + " - " + end);
       else
-         rowsLabel.setText(resourceRows + ": " + start + " " + resourceRowsOf + " " + end); 
+         rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
    }
 
    //==============================================================
