@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 8.0 01/26/2011
+// Version 8.1 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -162,6 +162,7 @@
 //             Constructor, createNodeResourceNames(), & createTreeNodes().
 //         8.0 Class Methods createTableFieldsOptionPanel() & createTableRowsOptionPanel()
 //             Table Names Obtained From New ConnectionManager Class.
+//         8.1 Increased Width of treeScrollPane Preferred Size in Constructor.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -191,7 +192,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 1.0 01/26/2011
+ * @version 8.1 01/28/2011
  */
 
 //=================================================================
@@ -306,7 +307,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       preferencesTree.addTreeSelectionListener(this);
 
       JScrollPane treeScrollPane = new JScrollPane(preferencesTree);
-      treeScrollPane.setPreferredSize(new Dimension(180, 315));
+      treeScrollPane.setPreferredSize(new Dimension(250, 315));
       treeScrollPane.setAutoscrolls(true);
 
       treePreferencesSelectionPanel.add(treeScrollPane);
