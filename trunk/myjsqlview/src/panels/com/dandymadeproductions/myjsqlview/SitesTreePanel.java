@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 4.1 01/27/2011
+// Version 4.2 02/04/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@
 //             Constructor, valueChanged(), addSite(), updateSiteNode(), &
 //             renameSite() Methods Effected.
 //         4.1 Increased the PreferredSize of the treeScrollPane Instance.
+//         4.2 Class Instance connectionManagerFrame Changed to loginManagerFrame.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,7 +117,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.1 01/27/2011
+ * @version 4.2 02/04/2011
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -124,7 +125,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    // Class Instances.
    private static final long serialVersionUID = -3291619646627993470L;
 
-   private ConnectionManagerFrame connectionManagerFrame;
+   private LoginManagerFrame loginManagerFrame;
    private DefaultMutableTreeNode sitesNode;
    private DefaultTreeModel treeModel;
    private JTree sitesTree;
@@ -139,12 +140,12 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    // SitesTreePanel Constructor
    //==============================================================
 
-   protected SitesTreePanel(ConnectionManagerFrame parent,
+   protected SitesTreePanel(LoginManagerFrame parent,
                             Hashtable <String, SiteParameters> sites,
                             StandardParametersPanel standardParametersPanel,
                             AdvancedParametersPanel advancedParametersPanel)
    {
-      this.connectionManagerFrame = parent;
+      this.loginManagerFrame = parent;
       this.sites = sites;
       this.standardParametersPanel = standardParametersPanel;
       this.advancedParametersPanel = advancedParametersPanel;
@@ -323,7 +324,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
          // System.out.println(siteName);
 
          SiteParameters selectedSite = sites.get(siteName);
-         connectionManagerFrame.setSelectedSite(selectedSite);
+         loginManagerFrame.setSelectedSite(selectedSite);
       }
    }
 
@@ -388,7 +389,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             resourceCancel = "Cancel";
 
          // Obtaining the new site name.
-         siteNameDialog = new InputDialog(connectionManagerFrame, resource, resourceOK, resourceCancel,
+         siteNameDialog = new InputDialog(loginManagerFrame, resource, resourceOK, resourceCancel,
                                           content, null);
          siteNameDialog.pack();
          siteNameDialog.center();
@@ -446,7 +447,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       newSiteParameters.setDatabase(standardParametersPanel.getDataBase());
       newSiteParameters.setUser(standardParametersPanel.getUser());
       newSiteParameters.setPassword(standardParametersPanel.getPassword());
-      newSiteParameters.setSsh(connectionManagerFrame.getSSH());
+      newSiteParameters.setSsh(loginManagerFrame.getSSH());
 
       child = standardParametersPanel.getDataBase();
       sites.put((parentNode + "#" + child), newSiteParameters);
@@ -512,7 +513,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
             newSiteParameters.setDatabase(standardParametersPanel.getDataBase());
             newSiteParameters.setUser(standardParametersPanel.getUser());
             newSiteParameters.setPassword(standardParametersPanel.getPassword());
-            newSiteParameters.setSsh(connectionManagerFrame.getSSH());
+            newSiteParameters.setSsh(loginManagerFrame.getSSH());
             newSiteParameters.setDriver(advancedParametersPanel.getDriver());
             newSiteParameters.setProtocol(advancedParametersPanel.getProtocol());
             newSiteParameters.setSubProtocol(advancedParametersPanel.getSubProtocol());
@@ -593,7 +594,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
          if (resourceCancel.equals(""))
             resourceCancel = "Cancel";
          
-         siteNameDialog = new InputDialog(connectionManagerFrame, resource, resourceOK, resourceCancel,
+         siteNameDialog = new InputDialog(loginManagerFrame, resource, resourceOK, resourceCancel,
                                           content, null);
          siteNameDialog.pack();
          siteNameDialog.center();
