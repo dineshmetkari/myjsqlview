@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.1 01/28/2011
+// Version 1.2 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,10 @@
 //=================================================================
 // Version 1.0 Initial ConnectionManager Class.
 //         1.1 Made Class Public Along With Class Method getConnectionProperties().
+//         1.2 Added static final Class Instances TABLE_CAT, TABLE_TYPE, TABLE_SCHEM,
+//             TABLE_NAME, REMARKS. Added Corresponding Class Methods Strings to
+//             loadDBTables(). Change of Class Identification for Class Methods
+//             get/closeConnection() to ConnectionManager.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +64,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/28/2011
+ * @version 1.2 02/03/2011
  */
 
 public class ConnectionManager
@@ -85,6 +89,12 @@ public class ConnectionManager
    public static final String HSQL = "hsql";
    public static final String ORACLE = "oracle";
    public static final String SQLITE = "sqlite";
+   
+   //private static final String TABLE_CAT = "TABLE_CAT";
+   private static final String TABLE_TYPE = "TABLE_TYPE";
+   private static final String TABLE_SCHEM = "TABLE_SCHEM";
+   private static final String TABLE_NAME = "TABLE_NAME";
+   //private static final String REMARKS = "REMARKS";
    
    //==============================================================
    // ConnectionManager Constructor
@@ -133,13 +143,13 @@ public class ConnectionManager
          // Create the appropriate connection as needed.
          
          // Oracle
-         if (subProtocol.indexOf("oracle") != -1)
+         if (subProtocol.indexOf(ORACLE) != -1)
             return DriverManager.getConnection(connectionString, user, passwordString);
          
          // HSQL & SQLite Memory Connections
          else if ((memoryConnection != null)
-                   && (subProtocol.equals("sqlite") && db.toLowerCase().equals(":memory:"))
-                       || (subProtocol.indexOf("hsql") != -1 && db.toLowerCase().indexOf("mem:") != -1))
+                   && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
+                       || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
             return memoryConnection;
          
          // All Others
@@ -148,7 +158,7 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "MyJSQLView_Access getConnection");
+         displaySQLErrors(e, "ConnectionManager getConnection");
          return null;
       }
    }
@@ -175,15 +185,15 @@ public class ConnectionManager
          
          // Close connection as needed.
          if ((memoryConnection != null)
-              && (subProtocol.equals("sqlite") && db.toLowerCase().equals(":memory:"))
-                  || (subProtocol.indexOf("hsql") != -1 && db.toLowerCase().indexOf("mem:") != -1))
+              && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
+                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
             return;
          else
             dbConnection.close();
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "MyJSQLView_Access closeConnection");
+         displaySQLErrors(e, "ConnectionManager closeConnection");
       }
    }
    
@@ -251,7 +261,7 @@ public class ConnectionManager
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
       
       // HSQL
-      if (subProtocol.indexOf("hsql") != -1)
+      if (subProtocol.indexOf(HSQL) != -1)
       {
          catalog = null;
          schemaPattern = "%";
@@ -260,7 +270,7 @@ public class ConnectionManager
          //db_resultSet = dbMetaData.getTables(null, "%", "%", tableTypes);
       }
       // Oracle
-      else if (subProtocol.indexOf("oracle") != -1)
+      else if (subProtocol.indexOf(ORACLE) != -1)
       {
          catalog = db;
          schemaPattern = "%";
@@ -269,19 +279,19 @@ public class ConnectionManager
          //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
       }
       // MySQL & PostgreSQL
-      else if (subProtocol.equals("mysql") || subProtocol.equals("postgresql"))
+      else if (subProtocol.equals(MYSQL) || subProtocol.equals(POSTGRESQL))
       {
          catalog = db;
          schemaPattern = "";
          tableNamePattern = "%";
-         if (subProtocol.equals("mysql"))
+         if (subProtocol.equals(MYSQL))
             dbType = "mysql";
          else
             dbType = "postgresql";
          //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
       }
       // SQLite
-      else if (subProtocol.equals("sqlite"))
+      else if (subProtocol.equals(SQLITE))
       {
          catalog = db;
          schemaPattern = null;
@@ -322,7 +332,7 @@ public class ConnectionManager
          while (db_resultSet.next())
          {
             // System.out.println("Table Types: " + db_resultSet.getString("TABLE_TYPE"));
-            tableTypes[i++] = db_resultSet.getString("TABLE_TYPE");
+            tableTypes[i++] = db_resultSet.getString(TABLE_TYPE);
          }
       }
       catch (SQLException e)
@@ -436,6 +446,9 @@ public class ConnectionManager
       ResultSet db_resultSet;
       HashSet<String> oracleSystemSchemaHash;
       String db, subProtocol;
+      String tableType, tableSchem, tableName;
+      //String tableCat, remarks;
+      String grantee, user;
       
       try
       {
@@ -478,29 +491,30 @@ public class ConnectionManager
          
          while (db_resultSet.next())
          {
+            //tableCat = db_resultSet.getString(TABLE_CAT);
+            tableType = db_resultSet.getString(TABLE_TYPE);
+            tableSchem = db_resultSet.getString(TABLE_SCHEM);
+            tableName = db_resultSet.getString(TABLE_NAME);
+            //remarks = db_resultSet.getString(REMARKS);
+            
             // All information, could be to much.
-            // System.out.println("Table CAT: " +
-             // db_resultSet.getString("TABLE_CAT") +
-             // " Table Schem: " + db_resultSet.getString("TABLE_SCHEM") +
-             // " Table Type: " + db_resultSet.getString("TABLE_TYPE") +
-             // " Table Name: " + db_resultSet.getString("TABLE_NAME") +
-             // " Remarks: " + db_resultSet.getString("REMARKS"));
+            // System.out.println("Table CAT: " + tableCat
+            //                   + " Table Schem: " + tableSchem
+            //                   + " Table Type: " + tableType
+            //                   + " Table Name: " + tableName
+            //                   + " Remarks: " + remarks);
 
             // Filter, only TABLEs & VIEWs allowed in MyJSQLView
             // application.
             
-            if (db_resultSet.getString("TABLE_TYPE") != null &&
-                !(db_resultSet.getString("TABLE_TYPE").indexOf("INDEX") != -1) &&
-                !(db_resultSet.getString("TABLE_TYPE").indexOf("SEQUENCE") != -1) &&
-                !(db_resultSet.getString("TABLE_TYPE").indexOf("SYNONYM") != -1) &&
-                (db_resultSet.getString("TABLE_TYPE").equals("TABLE") ||
-                 db_resultSet.getString("TABLE_TYPE").equals("VIEW") || !filter))
+            if (tableType != null && !(tableType.indexOf("INDEX") != -1)
+                && !(tableType.indexOf("SEQUENCE") != -1) && !(tableType.indexOf("SYNONYM") != -1)
+                && (tableType.equals("TABLE") || tableType.equals("VIEW") || !filter))
             {
                // Filter some more for Oracle.
-               if ((subProtocol.indexOf("oracle") != -1 && filter) &&
-                   (oracleSystemSchemaHash.contains(db_resultSet.getString("TABLE_SCHEM")) ||
-                    db_resultSet.getString("TABLE_SCHEM").indexOf("FLOWS") != -1 ||
-                    db_resultSet.getString("TABLE_NAME").indexOf("BIN$") != -1))
+               if ((subProtocol.indexOf(ORACLE) != -1 && filter)
+                     && (oracleSystemSchemaHash.contains(tableSchem) || tableSchem.indexOf("FLOWS") != -1 ||
+                         tableName.indexOf("BIN$") != -1))
                   continue;
 
                // Abreviated and filtered information.
@@ -508,14 +522,12 @@ public class ConnectionManager
                //                   + db_resultSet.getString("TABLE_SCHEM") + "."
                //                   + db_resultSet.getString("TABLE_NAME"));
 
-               if (db_resultSet.getString("TABLE_SCHEM") != null &&
-                   !db_resultSet.getString("TABLE_SCHEM").equals(""))
+               if (tableSchem != null && !tableSchem.equals(""))
                {
-                  tables.add(db_resultSet.getString("TABLE_SCHEM") + "."
-                             + db_resultSet.getString("TABLE_NAME"));
+                  tables.add(tableSchem + "." + tableName);
                }
                else
-                  tables.add(db_resultSet.getString("TABLE_NAME"));
+                  tables.add(tableName);
             }
          }
 
@@ -523,20 +535,19 @@ public class ConnectionManager
          // PostgreSQL databases may have schemas that limit access to
          // tables by users. So make a check and remove tables that are
          // not accessable by the user.
-         if (subProtocol.equals("postgresql"))
+         
+         if (subProtocol.equals(POSTGRESQL))
          {
             db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
             while (db_resultSet.next())
             {
-               String tableName, grantee, user;
-
-               tableName = db_resultSet.getString("TABLE_NAME");
+               tableName = db_resultSet.getString(TABLE_NAME);
                if (tables.contains(tableName))
                {
                   grantee = db_resultSet.getString("GRANTEE");
                   user = connectionProperties.getProperty(ConnectionProperties.USER);
-                  // System.out.println(tableName + " " + grantee + " " +
-                  // user);
+                  System.out.println(tableName + " " + grantee + " " +
+                  user);
 
                   if (tables.contains(tableName) && !grantee.equals(user))
                      tables.remove(tableName);
@@ -551,7 +562,7 @@ public class ConnectionManager
          
          while (tablesIterator.hasNext())
          {
-            String tableName = tablesIterator.next();
+            tableName = tablesIterator.next();
             
             if (tableName.indexOf(".") != -1)
             {
