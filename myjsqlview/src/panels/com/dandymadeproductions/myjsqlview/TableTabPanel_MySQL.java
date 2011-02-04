@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.34 01/26/2011
+// Version 11.35 02/04/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -459,6 +459,7 @@
 //       11.34 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
 //             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
 //             SQL Errors.
+//       11.35 Commented Out System.out in Class Method viewSelectedItem().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -483,7 +484,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.34 01/26/2011
+ * @version 11.35 02/04/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -1121,7 +1122,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
          }
          sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
-         System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
          db_resultSet = sqlStatement.executeQuery(sqlStatementString.toString());
          db_resultSet.next();
 
