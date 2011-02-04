@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.77 01/29/2011
+// Version 6.78 02/04/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -248,6 +248,8 @@
 //             Increased the Size of Frame Setting in actionPerformed().
 //        6.77 Added StringBuffer tempBuffer in Class Method accessCheck() to Build
 //             the passwordString.
+//        6.78 All References to Instances/Names of ConnectionManagerFrame Changed to
+//             LoginManagerFrame, LoginManager.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -282,7 +284,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.77 01/29/2011
+ * @version 6.78 02/04/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -290,7 +292,7 @@ public class LoginFrame extends JFrame implements ActionListener
    // Class Instances
    private static final long serialVersionUID = 9021939696353674626L;
 
-   private ConnectionManagerFrame connectionManagerFrame;
+   private LoginManagerFrame loginManagerFrame;
    private MyJSQLView_ResourceBundle resourceBundle;
    private JWindow splashWindow;
    private SplashPanel splashPanel;
@@ -298,7 +300,7 @@ public class LoginFrame extends JFrame implements ActionListener
    private String resource, fileSeparator;
    
    private JMenuBar accessDialogMenuBar;
-   private JButton connectionManagerFrame_AccessButton;
+   private JButton loginManagerFrame_AccessButton;
    private JButton advancedOptionsButton;
 
    private StandardParametersPanel standardParametersPanel;
@@ -315,7 +317,7 @@ public class LoginFrame extends JFrame implements ActionListener
    private transient SiteParameters lastSite;
    private transient XMLTranslator xmlTranslator;
    
-   private JButton connectionManagerFrame_SaveExitButton, connectionManagerFrame_CancelButton;
+   private JButton loginManagerFrame_SaveExitButton, loginManagerFrame_CancelButton;
 
    private boolean loggedIn = false;
    private boolean advancedOptionsShowing = false;
@@ -330,7 +332,7 @@ public class LoginFrame extends JFrame implements ActionListener
       
       // Constructor Instances.
       String iconsDirectory;
-      ImageIcon connectionManagerIcon, advancedConnectionsIcon;
+      ImageIcon loginManagerIcon, advancedConnectionsIcon;
       ImageIcon accessIcon, sshUpIcon, sshDownIcon;
       ImageIcon logoPanelIcon;
       JMenu siteSelectMenu;
@@ -366,7 +368,7 @@ public class LoginFrame extends JFrame implements ActionListener
       
       // Obtain & create Image Icons.
       
-      connectionManagerIcon = new ImageIcon(iconsDirectory + "connectionManagerIcon.png");
+      loginManagerIcon = new ImageIcon(iconsDirectory + "connectionManagerIcon.png");
       advancedConnectionsIcon = new ImageIcon(iconsDirectory + "advancedConnectionsIcon.png");
       
       SimpleDateFormat format = new SimpleDateFormat("k");
@@ -386,8 +388,7 @@ public class LoginFrame extends JFrame implements ActionListener
       sshDownIcon = new ImageIcon(iconsDirectory + "sshDownIcon.png");
       
       // Setting up the MenuBar for the access of the
-      // ConnectionManager, connection selection &
-      // advanced options.
+      // LoginFrame, connection selection & advanced options.
 
       accessDialogMenuBar = new JMenuBar();
       accessDialogMenuBar.setBorder(BorderFactory.createEtchedBorder());
@@ -417,22 +418,22 @@ public class LoginFrame extends JFrame implements ActionListener
       fillSiteDataStructures(siteSelectMenu);
       accessDialogMenuBar.add(siteSelectMenu);
 
-      // Connection Manager Frame Components.
-      connectionManagerFrame_AccessButton = new JButton(connectionManagerIcon);
-      connectionManagerFrame_AccessButton.setFocusable(false);
-      connectionManagerFrame_AccessButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("LoginFrame.tooltip.ConnectionManager");
+      // Login Manager Frame Components.
+      loginManagerFrame_AccessButton = new JButton(loginManagerIcon);
+      loginManagerFrame_AccessButton.setFocusable(false);
+      loginManagerFrame_AccessButton.setMargin(new Insets(0, 0, 0, 0));
+      resource = resourceBundle.getResource("LoginFrame.tooltip.LoginManager");
       if (resource.equals(""))
-         connectionManagerFrame_AccessButton.setToolTipText("Connection Manager");
+         loginManagerFrame_AccessButton.setToolTipText("Login Manager");
       else
-         connectionManagerFrame_AccessButton.setToolTipText(resource);
+         loginManagerFrame_AccessButton.setToolTipText(resource);
       
       if (xmlTranslator.getXMLTranslatorResult())
-         connectionManagerFrame_AccessButton.addActionListener(this);
+         loginManagerFrame_AccessButton.addActionListener(this);
       else
-         connectionManagerFrame_AccessButton.setEnabled(false);
+         loginManagerFrame_AccessButton.setEnabled(false);
       
-      accessDialogMenuBar.add(connectionManagerFrame_AccessButton);
+      accessDialogMenuBar.add(loginManagerFrame_AccessButton);
          
       // Advanced Options Selection
       advancedOptionsButton = new JButton(advancedConnectionsIcon);
@@ -529,19 +530,19 @@ public class LoginFrame extends JFrame implements ActionListener
       getContentPane().add(mainPanel);
       (this.getRootPane()).setDefaultButton(loginButton);
 
-      // Creating the ConnectionManager Action Buttons
+      // Creating the LoginManager Action Buttons
       resource = resourceBundle.getResource("LoginFrame.button.saveandexit");
       if (resource.equals(""))
-         connectionManagerFrame_SaveExitButton = new JButton("save and exit");
+         loginManagerFrame_SaveExitButton = new JButton("save and exit");
       else
-         connectionManagerFrame_SaveExitButton = new JButton(resource);
-      connectionManagerFrame_SaveExitButton.addActionListener(this);
+         loginManagerFrame_SaveExitButton = new JButton(resource);
+      loginManagerFrame_SaveExitButton.addActionListener(this);
       resource = resourceBundle.getResource("LoginFrame.button.cancel");
       if (resource.equals(""))
-         connectionManagerFrame_CancelButton = new JButton("cancel");
+         loginManagerFrame_CancelButton = new JButton("cancel");
       else
-         connectionManagerFrame_CancelButton = new JButton(resource);
-      connectionManagerFrame_CancelButton.addActionListener(this);
+         loginManagerFrame_CancelButton = new JButton(resource);
+      loginManagerFrame_CancelButton.addActionListener(this);
    }
 
    //==============================================================
@@ -559,12 +560,12 @@ public class LoginFrame extends JFrame implements ActionListener
       {
          JButton actionButton = (JButton) panelSource;
 
-         // ConnectionManager Option.
-         if (actionButton == connectionManagerFrame_AccessButton)
+         // LoginManager Option.
+         if (actionButton == loginManagerFrame_AccessButton)
          {
-            // Creation of the ConnectionManager Main Frame
+            // Creation of the LoginManager Main Frame
             // as required.
-            if (connectionManagerFrame == null)
+            if (loginManagerFrame == null)
             {
                StandardParametersPanel standardPanelClone = new StandardParametersPanel(resourceBundle,
                                                                                         hostList,
@@ -576,20 +577,20 @@ public class LoginFrame extends JFrame implements ActionListener
                                                                                         subProtocolList,
                                                                                         portList);
 
-               connectionManagerFrame = new ConnectionManagerFrame(resourceBundle, sites,
-                                                                    standardPanelClone, advancedPanelClone,
-                                                                    connectionManagerFrame_SaveExitButton,
-                                                                    connectionManagerFrame_CancelButton);
-               connectionManagerFrame.setSize(505, 345);
-               connectionManagerFrame.setResizable(false);
-               connectionManagerFrame.center(-50, 50);
-               connectionManagerFrame.setVisible(true);
+               loginManagerFrame = new LoginManagerFrame(resourceBundle, sites,
+                                                         standardPanelClone, advancedPanelClone,
+                                                         loginManagerFrame_SaveExitButton,
+                                                         loginManagerFrame_CancelButton);
+               loginManagerFrame.setSize(505, 345);
+               loginManagerFrame.setResizable(false);
+               loginManagerFrame.center(-50, 50);
+               loginManagerFrame.setVisible(true);
             }
             else
             {
-               connectionManagerFrame.setVisible(false);
-               connectionManagerFrame.dispose();
-               connectionManagerFrame = null;
+               loginManagerFrame.setVisible(false);
+               loginManagerFrame.dispose();
+               loginManagerFrame = null;
             }
          }
 
@@ -637,12 +638,12 @@ public class LoginFrame extends JFrame implements ActionListener
                   xmlTranslator.setLastSite(lastSite);
                }
 
-               // Making sure the ConnectionManager gets closed down.
-               if (connectionManagerFrame != null)
+               // Making sure the LoginManager gets closed down.
+               if (loginManagerFrame != null)
                {
-                  connectionManagerFrame.setVisible(false);
-                  connectionManagerFrame.dispose();
-                  connectionManagerFrame = null;
+                  loginManagerFrame.setVisible(false);
+                  loginManagerFrame.dispose();
+                  loginManagerFrame = null;
                }
                
                // Close Down the Splash Window.
@@ -676,11 +677,11 @@ public class LoginFrame extends JFrame implements ActionListener
             dispose();
          }
 
-         // ConnectionManager Save/Exit Action
-         else if (actionButton == connectionManagerFrame_SaveExitButton)
+         // LoginManager Save/Exit Action
+         else if (actionButton == loginManagerFrame_SaveExitButton)
          {
             // Collect the possibly modified sites.
-            sites = connectionManagerFrame.getSites();
+            sites = loginManagerFrame.getSites();
 
             // Temp debug.
             /*
@@ -690,11 +691,11 @@ public class LoginFrame extends JFrame implements ActionListener
              * System.out.println(currentKey); }
              */
 
-            // Closing out ConnectionManagerFrame and taking
+            // Closing out LoginManagerFrame and taking
             // action to update JMenu.
-            connectionManagerFrame.setVisible(false);
-            connectionManagerFrame.dispose();
-            connectionManagerFrame = null;
+            loginManagerFrame.setVisible(false);
+            loginManagerFrame.dispose();
+            loginManagerFrame = null;
 
             // Updating JMenuBar and ComboBoxes.
             JMenu siteSelectMenu;
@@ -717,14 +718,14 @@ public class LoginFrame extends JFrame implements ActionListener
             xmlTranslator.setSites(sites);
          }
 
-         // ConnectionManagerFrame Cancel Action
-         else if (actionButton == connectionManagerFrame_CancelButton)
+         // LoginManagerFrame Cancel Action
+         else if (actionButton == loginManagerFrame_CancelButton)
          {
             // Do take any action other than closing out
-            // ConnectionManagerFrame.
-            connectionManagerFrame.setVisible(false);
-            connectionManagerFrame.dispose();
-            connectionManagerFrame = null;
+            // LoginManagerFrame.
+            loginManagerFrame.setVisible(false);
+            loginManagerFrame.dispose();
+            loginManagerFrame = null;
          }
       }
       // JMenu Actions
