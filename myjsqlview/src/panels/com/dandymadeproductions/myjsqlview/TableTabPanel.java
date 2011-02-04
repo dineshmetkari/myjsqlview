@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.72 01/28/2011
+// Version 4.73 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -160,6 +160,7 @@
 //        4.72 Added Select Fields to Popup in createListTablePopup(). Added Action Event in
 //             actionPerformed() to Handle New Popup Menu Select Fields Along With New Method
 //             selectTableFields(). Removed resourceRowsOf in setRowsLabel().
+//        4.73 Class Method getTableFields() Check for fields NULL, Then Return.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -192,7 +193,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.72 01/28/2011
+ * @version 4.73 02/03/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2040,6 +2041,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public Vector<String> getTableFields()
    {
+      if (fields == null)
+         return null;
+      
       Vector<String> fieldsVector = new Vector <String>();
       Iterator<String> fieldsIterator = fields.iterator();
       
