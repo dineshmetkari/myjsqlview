@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.28 01/28/2011
+// Version 7.29 02/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -244,6 +244,7 @@
 //             Properties, database, in dataExportAction().
 //        7.28 Class Method actionSelection() Increased PreferencesFrame, editPreferences,
 //             Width Size.
+//        7.29 Class Method dataImportAction() insertUpdateDialog.pack() Instead of Sized.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -934,7 +935,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                   
                insertUpdateDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                      content, null);
-               insertUpdateDialog.setSize(300, 150);
+               insertUpdateDialog.pack();
                insertUpdateDialog.setResizable(false);
                insertUpdateDialog.center();
                insertUpdateDialog.setVisible(true);
