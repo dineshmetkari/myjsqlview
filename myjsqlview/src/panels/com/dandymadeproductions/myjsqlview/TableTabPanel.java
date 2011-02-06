@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.73 02/03/2011
+// Version 4.74 02/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -161,6 +161,8 @@
 //             actionPerformed() to Handle New Popup Menu Select Fields Along With New Method
 //             selectTableFields(). Removed resourceRowsOf in setRowsLabel().
 //        4.73 Class Method getTableFields() Check for fields NULL, Then Return.
+//        4.74 Class Method pasteClipboardContents() insertUpdateDialog.pack() Instead of
+//             Sized.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -193,7 +195,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.73 02/03/2011
+ * @version 4.74 02/05/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1953,7 +1955,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             insertUpdateDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
                                            content, deleteDataIcon);
          
-         insertUpdateDialog.setSize(300, 150);
+         insertUpdateDialog.pack();
          insertUpdateDialog.setResizable(false);
          insertUpdateDialog.center();
          insertUpdateDialog.setVisible(true);
