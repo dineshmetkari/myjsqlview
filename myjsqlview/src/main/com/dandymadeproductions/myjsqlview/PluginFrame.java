@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 01/26/2011
+// Version 1.4 02/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,10 @@
 //             Event Processing and Methods removePluginConfigurationsModule(),
 //             & installPlugin().
 //         1.3 Copyright Update.
+//         1.4 Added Loading Plugins Capability. Added Class Instances
+//             loadingPluginsList, loadingPluginViewTableData, tableModelLoadingPlugins,
+//             & loadingPluginViewTable. New Class Methods createLoadingPluginsViewPanel,
+//             & displayLoadingPluginsData(). 
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,6 +59,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -64,6 +69,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.table.TableColumn;
 import javax.swing.JTable;
 
@@ -72,7 +78,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.3 01/26/2011
+ * @version 1.4 02/05/2011
  */
 
 //=================================================================
@@ -88,12 +94,15 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    private MyJSQLView_Frame parentFrame;
    private JPanel mainPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
-   private ImageIcon defaultModuleIcon, removeIcon;
+   private ImageIcon statusWorkingIcon, defaultModuleIcon, removeIcon;
    private JButton installButton, closeButton;
    
+   private ArrayList<String> loadingPluginsList;
    private Object[][] pluginViewTableData;
-   private MyJSQLView_TableModel tableModel;
-   private JTable pluginViewTable;
+   private Object[][] loadingPluginViewTableData;
+   private MyJSQLView_TableModel tableModelPlugins;
+   private MyJSQLView_TableModel tableModelLoadingPlugins;
+   private JTable pluginViewTable, loadingPluginViewTable;
    private String fileSeparator, lastPluginDirectory;
    private String resourceAlert;
    
@@ -112,15 +121,19 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       
       // Constructor Instances.
       JPanel northInstallPanel, southButtonPanel;
+      JPanel pluginViewPanel, loadingViewPanel;
       String iconsDirectory, resource;
 
       // Setting up resources & instances.
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      
+      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
       removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
       defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
       
+      loadingPluginsList = new ArrayList <String>();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       lastPluginDirectory = "";
       
@@ -169,9 +182,16 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       mainPanel.add(northInstallPanel, BorderLayout.NORTH);
       
       // ======================================================
-      // Installed plugin view and removal objects.
+      // Installed plugin view, and loading view objects.
       
-      createInstalledPluginsViewPanel(MyJSQLView_Frame.getPlugins());
+      pluginViewPanel = createInstalledPluginsViewPanel(MyJSQLView_Frame.getPlugins());
+      loadingViewPanel = createLoadingPluginsViewPanel();
+      
+      JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, pluginViewPanel, loadingViewPanel);
+      splitPane.setOneTouchExpandable(true);
+      splitPane.setDividerLocation(200);
+      
+      mainPanel.add(splitPane, BorderLayout.CENTER);
       
       // ======================================================
       // Button to close down the frame.
@@ -230,9 +250,14 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          // MyJSQLView_Frame Tab Addition Notification.
          else if (frameSource == MyJSQLView_Frame.pluginFrameListenButton)
          {
+            // Update plugins list.
             MyJSQLView_Frame.pluginFrameListenButton.removeActionListener(this);
-            loadPluginsData(MyJSQLView_Frame.getPlugins());
-            tableModel.setValues(pluginViewTableData);
+            displayLoadedPluginsData(MyJSQLView_Frame.getPlugins());
+            tableModelPlugins.setValues(pluginViewTableData);
+            
+            // Update loading plugins list.
+            displayLoadingPluginsData();
+            tableModelLoadingPlugins.setValues(loadingPluginViewTableData);
          }
          // Must be action of Close buttton.
          else
@@ -295,8 +320,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          {
             removePluginConfigurationModule(tableRow);
             MyJSQLView_Frame.removeTab(tableRow);
-            loadPluginsData(MyJSQLView_Frame.getPlugins());
-            tableModel.setValues(pluginViewTableData);
+            displayLoadedPluginsData(MyJSQLView_Frame.getPlugins());
+            tableModelPlugins.setValues(pluginViewTableData);
          }
       }
    }
@@ -307,7 +332,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    // remove icon.
    //==============================================================
 
-   private void createInstalledPluginsViewPanel(Vector<MyJSQLView_PluginModule> loadedPlugins)
+   private JPanel createInstalledPluginsViewPanel(Vector<MyJSQLView_PluginModule> loadedPlugins)
    {
       // Class Method Instances
       JPanel pluginViewPanel;
@@ -348,12 +373,12 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       
       // Collect the plugin data.
       
-      loadPluginsData(loadedPlugins);
+      displayLoadedPluginsData(loadedPlugins);
           
       // Create the plugin table view and scrollpane.
       
-      tableModel = new MyJSQLView_TableModel(tableColumns, pluginViewTableData);
-      pluginViewTable = new JTable(tableModel);
+      tableModelPlugins = new MyJSQLView_TableModel(tableColumns, pluginViewTableData);
+      pluginViewTable = new JTable(tableModelPlugins);
       
       systemBoldFont = new Font(mainPanel.getFont().getName(), Font.BOLD, mainPanel.getFont().getSize());
       pluginViewTable.getTableHeader().setFont(systemBoldFont);
@@ -369,7 +394,64 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       pluginViewPanel = new JPanel(new GridLayout(1, 1, 0, 0));
       pluginViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       pluginViewPanel.add(tableScrollPane);
-      mainPanel.add(pluginViewPanel, BorderLayout.CENTER);
+      
+      return pluginViewPanel;
+   }
+   
+   //==============================================================
+   // Class Method for setting up the view of the plugins that are
+   // loading.
+   //==============================================================
+   
+   private JPanel createLoadingPluginsViewPanel()
+   {
+      // Class Method Instances
+      JPanel loadingViewPanel;
+      Vector<String> tableColumns;
+      Font systemBoldFont;
+      TableColumn tableColumn;
+      JScrollPane tableScrollPane;
+      String resource, resourceTabIcon;
+
+      // Setup the loading plugin items columns for the
+      // loading plugin table view.
+
+      tableColumns = new Vector<String>();
+      
+      resourceTabIcon = resourceBundle.getResource("PluginFrame.label.Status");
+      if (resourceTabIcon.equals(""))
+         tableColumns.add("Status");
+      else
+         tableColumns.add(resourceTabIcon);
+      
+      resource = resourceBundle.getResource("PluginFrame.label.Name");
+      if (resource.equals(""))
+         tableColumns.add("Name");
+      else
+         tableColumns.add(resource);
+      
+      // Collect the loading plugin data, should be
+      // none when this method called from constructor.
+      
+      displayLoadingPluginsData();
+          
+      // Create the plugin table view and scrollpane.
+      
+      tableModelLoadingPlugins = new MyJSQLView_TableModel(tableColumns, loadingPluginViewTableData);
+      loadingPluginViewTable = new JTable(tableModelLoadingPlugins);
+      
+      systemBoldFont = new Font(mainPanel.getFont().getName(), Font.BOLD, mainPanel.getFont().getSize());
+      loadingPluginViewTable.getTableHeader().setFont(systemBoldFont);
+      tableColumn = loadingPluginViewTable.getColumnModel().getColumn(TABICON_COLUMN);
+      tableColumn.setMaxWidth(200);
+      
+      tableScrollPane = new JScrollPane(loadingPluginViewTable);
+      
+      loadingViewPanel = new JPanel(new GridLayout(1, 1, 0, 0));
+      loadingViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      loadingViewPanel.add(tableScrollPane);
+      
+      return loadingViewPanel;
    }
    
    //==============================================================
@@ -461,10 +543,13 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    // name, etc. in the view table.
    //==============================================================
 
-   private void loadPluginsData(Vector<MyJSQLView_PluginModule> loadedPlugins)
+   private void displayLoadedPluginsData(Vector<MyJSQLView_PluginModule> loadedPlugins)
    {
+      // Method Instances.
+      String path;
+      
       pluginViewTableData = new Object[loadedPlugins.size()][4];
-       
+      
       for (int i = 0; i < loadedPlugins.size(); i++)
       {
          // Plugin tab icon, name, version and remove element.
@@ -477,6 +562,29 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          pluginViewTableData[i][NAME_COLUMN] = loadedPlugins.get(i).getName();
          pluginViewTableData[i][VERSION_COLUMN] = loadedPlugins.get(i).getVersion();
          pluginViewTableData[i][REMOVE_COLUMN] = removeIcon;
+         
+         // Remove plugins from loading list.
+         path = loadedPlugins.get(i).getPath_FileName().substring(0,
+                loadedPlugins.get(i).getPath_FileName().indexOf("<$$$>"));
+         
+         if (loadingPluginsList.contains(path))
+            loadingPluginsList.remove(path);
+      }
+   }
+   
+   //==============================================================
+   // Class Method for loading the loading plugin modules name. 
+   //==============================================================
+
+   private void displayLoadingPluginsData()
+   {
+      loadingPluginViewTableData = new Object[loadingPluginsList.size()][2];
+      
+      for (int i = 0; i < loadingPluginsList.size(); i++)
+      {
+         // Loading plugin status indicator, & name.   
+         loadingPluginViewTableData[i][TABICON_COLUMN] = statusWorkingIcon;
+         loadingPluginViewTableData[i][NAME_COLUMN] = loadingPluginsList.get(i);
       }
    }
    
@@ -512,9 +620,14 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          fileName = pluginFileChooser.getSelectedFile().getName();
          fileName = pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
 
-         // Try Loading the module..
+         // Add the module to the loading list & try Loading
+         // the module.
          if (!fileName.equals(""))
          {
+            loadingPluginsList.add(fileName);
+            displayLoadingPluginsData();
+            tableModelLoadingPlugins.setValues(loadingPluginViewTableData);
+            
             MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
             new PluginLoader(parentFrame, fileName);
          }
