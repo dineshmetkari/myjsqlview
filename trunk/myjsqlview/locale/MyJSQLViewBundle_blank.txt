@@ -233,6 +233,7 @@ PluginFrame.label.TabIcon =
 PluginFrame.label.Name = 
 PluginFrame.label.Version = 
 PluginFrame.label.Remove = 
+PluginFrame.label.Status = 
 PluginFrame.dialogmessage.SecurityException = 
 PluginFrame.dialogmessage.FileI/OProblem = 
 PluginFrame.dialogmessage.FileNOTFile = 
