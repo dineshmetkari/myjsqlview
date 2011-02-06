@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.3 01/26/2011
+// Version 6.4 02/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,7 @@
 //                        connectionProperties, hostName, & databaseName. Connection
 //                        Parameters Obtained From New Class ConnectionManager in
 //                        Constructor and actionPerformed().
+//         6.4 02/05/2011 Class Method actionPerformed() rowSizeDialog.pack() Instead of Sized.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -189,7 +190,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.3 01/26/2011
+ * @version 6.4 02/05/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -705,7 +706,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             
             InputDialog rowSizeDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                         content, null);
-            rowSizeDialog.setSize(300, 150);
+            rowSizeDialog.pack();
             rowSizeDialog.setResizable(false);
             rowSizeDialog.center();
             rowSizeDialog.setVisible(true);
