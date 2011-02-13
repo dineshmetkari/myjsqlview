@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.4 01/26/2011
+// Version 5.5 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,8 @@
 //             getConnection() to Connection.
 //         5.4 Added Instances connectionProperties, & subProtocol. Changes to Access
 //             Connections/Errors to the New Redefined Class ConnectionManager.
+//         5.5 Class Method separateTokens() Insured That Removing of Quote Characters
+//             Are NOT Removed if Present in delimiter.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -145,7 +147,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.4 01/26/2011
+ * @version 5.5 02/13/2011
  */
 
 class CSVDataImportThread implements Runnable
@@ -652,9 +654,14 @@ class CSVDataImportThread implements Runnable
       String delimiter = DBTablesPanel.getDataImportProperties().getDataDelimiter();
 
       // Check characters?
-      inputLine = inputLine.replaceAll("\"", "");
-      inputLine = inputLine.replaceAll("'", "''");
-      inputLine = inputLine.replaceAll("`", "''");
+      if (delimiter.indexOf("\"") == -1)
+         inputLine = inputLine.replaceAll("\"", "");
+      
+      if (delimiter.indexOf("'") == -1)
+         inputLine = inputLine.replaceAll("'", "''");
+      
+      if (delimiter.indexOf("`") == -1)
+         inputLine = inputLine.replaceAll("`", "''");
 
       String[] tokens;
       tokens = inputLine.split(delimiter, limit);
