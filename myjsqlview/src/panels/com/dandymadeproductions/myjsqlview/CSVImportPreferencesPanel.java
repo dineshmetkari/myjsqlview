@@ -66,6 +66,8 @@
 //         2.8 03/08/2010 Organized Imports.
 //         2.9 01/10/2011 Changed Format for Year From YYYY to yyyy for dateFormatOptions
 //                        in Constructor.
+//         3.0 02/13/2011 Added KeyListener to Detect When Changes Take Place in the
+//                        otherTextField.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -79,6 +81,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.*;
 
 /**
@@ -89,7 +94,7 @@ import javax.swing.*;
  * @version 2.9 01/10/2011
  */
 
-class CSVImportPreferencesPanel extends JPanel implements ActionListener
+class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
 {
    // Class Instances.
    private static final long serialVersionUID = -8955230851237916675L;
@@ -259,6 +264,37 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener
          }
       }
    }
+   
+   //==============================================================
+   // KeyEvent Listener method for detected key pressed events to
+   // full fill KeyListener Interface requirements.
+   //==============================================================
+
+   public void keyPressed(KeyEvent evt)
+   {
+      // Do Nothing
+   }
+
+   //==============================================================
+   // KeyEvent Listener method for detecting key released events
+   // to full fill KeyListener Interface requirements.
+   //==============================================================
+
+   public void keyReleased(KeyEvent evt)
+   {
+      // Do Nothing
+   }
+
+   //==============================================================
+   // KeyEvent Listener method for detecting key pressed event,
+   // in this case the otherTextField.
+   //==============================================================
+
+   public void keyTyped(KeyEvent evt)
+   {
+      if (evt.getSource() == otherTextField)
+         applyButton.setEnabled(true);
+   }
 
    //================================================================
    // Class Method to create the Delimiter Options Panel.
@@ -370,6 +406,7 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener
       checkBoxPanel.add(otherRadioButton);
 
       otherTextField = new JTextField(10);
+      otherTextField.addKeyListener(this);
       otherTextField.setEnabled(false);
 
       buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
