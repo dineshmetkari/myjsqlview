@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 2.8 01/10/2011
+// Version 2.9 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //         2.8 Class Method run() Change in the Handling of Date, DateTime,
 //             and Timestamp Output, By Formatting Through New Routines in
 //             MyJSQLView_Utils.
+//         2.9 Change in currentEntry Clipping by the delimiterString.length in run().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -85,7 +86,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 2.8 01/10/2011
+ * @version 2.9 02/13/2011
  */
 
 class DataTableDumpThread implements Runnable
@@ -154,7 +155,7 @@ class DataTableDumpThread implements Runnable
       }
       if (currentEntry.length() != 0)
       {
-         currentEntry.delete((currentEntry.length() - 1), currentEntry.length());
+         currentEntry.delete((currentEntry.length() - delimiterString.length()), currentEntry.length());
          currentEntry.append("\n");
       }
 
@@ -208,7 +209,7 @@ class DataTableDumpThread implements Runnable
                }
                currentEntry.append(currentString + delimiterString);
             }
-            currentEntry.delete((currentEntry.length() - 1), currentEntry.length());
+            currentEntry.delete((currentEntry.length() - delimiterString.length()), currentEntry.length());
             currentEntry.append("\n");
          }
          i++;
