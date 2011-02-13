@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.0 01/10/2011
+// Version 5.1 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,8 @@
 //         4.9 01/08/2011 Comment Changes and Update to Copyright.
 //         5.0 01/10/2011 Changed Format for Year From YYYY to yyyy for dateFormatOptions
 //                        in Constructor.
+//         5.1 02/13/2011 Added KeyListener to Detect When Changes Take Place in the
+//                        otherTextField.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,6 +114,9 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -122,10 +127,10 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.0 01/10/2011
+ * @version 5.1 02/13/2011
  */
 
-class CSVExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
+class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -6715093777643439840L;
@@ -303,6 +308,37 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
                otherTextField.setEnabled(false);
          }
       }
+   }
+   
+   //==============================================================
+   // KeyEvent Listener method for detected key pressed events to
+   // full fill KeyListener Interface requirements.
+   //==============================================================
+
+   public void keyPressed(KeyEvent evt)
+   {
+      // Do Nothing
+   }
+
+   //==============================================================
+   // KeyEvent Listener method for detecting key released events
+   // to full fill KeyListener Interface requirements.
+   //==============================================================
+
+   public void keyReleased(KeyEvent evt)
+   {
+      // Do Nothing
+   }
+
+   //==============================================================
+   // KeyEvent Listener method for detecting key pressed event,
+   // in this case the otherTextField.
+   //==============================================================
+
+   public void keyTyped(KeyEvent evt)
+   {
+      if (evt.getSource() == otherTextField)
+         applyButton.setEnabled(true);
    }
 
    //================================================================
@@ -488,6 +524,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, Change
       delimiterSelectionPanel.add(otherRadioButton);
 
       otherTextField = new JTextField(10);
+      otherTextField.addKeyListener(this);
       otherTextField.setEnabled(false);
 
       buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
