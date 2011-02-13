@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 5.9 01/26/2011
+// Version 6.0 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,7 @@
 //             to Collect Connections & Display SQL Errors. Also identifierQuoteString
 //             Collected From ConnectionManager. Added Method Instance subProtocol
 //             in run().
+//         6.0 Change in dataDump Clipping by the dataDelimiter.length in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -133,7 +134,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 5.9 01/26/2011
+ * @version 6.0 02/13/2011
  */
 
 class DataDumpThread implements Runnable
@@ -266,7 +267,8 @@ class DataDumpThread implements Runnable
          while (columnNamesIterator.hasNext())
             dumpData = (String) dumpData + tableColumnNamesHashMap.get(columnNamesIterator.next())
                        + dataDelimiter;
-         dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1) + "\n";
+         dumpData = ((String) dumpData).substring(0,
+                           ((String) dumpData).length() - dataDelimiter.length()) + "\n";
 
          // Constructing lines of data & progress bar.
          dumpProgressBar.setTaskLength(rowNumber);
@@ -402,7 +404,8 @@ class DataDumpThread implements Runnable
                
                i++;
             }
-            dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1) + "\n";
+            dumpData = ((String) dumpData).substring(0,
+                              ((String) dumpData).length() - dataDelimiter.length()) + "\n";
             currentRow++;
             // System.out.print(currentRow + " " + dumpData);
          }
