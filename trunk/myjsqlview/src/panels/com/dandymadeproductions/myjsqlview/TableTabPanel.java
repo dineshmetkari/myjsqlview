@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.74 02/05/2011
+// Version 4.75 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -163,6 +163,7 @@
 //        4.73 Class Method getTableFields() Check for fields NULL, Then Return.
 //        4.74 Class Method pasteClipboardContents() insertUpdateDialog.pack() Instead of
 //             Sized.
+//        4.75 Addition of Save As Image to createListTablePopup(). Handling in actionPerformed().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -195,7 +196,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.74 02/05/2011
+ * @version 4.75 02/13/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -217,6 +218,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected String sqlTable;
    protected String schemaTableName;
    private String saveFileName;
+   private String lastSaveDirectory;
    protected String lob_sqlTableFieldsString;
    protected String sqlTableFieldsString;
    protected String sqlTableStatement;
@@ -309,6 +311,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       tableRowLimit = 50;
 
       saveFileName = "";
+      lastSaveDirectory = "";
       fields = new Vector <String>();
       formFields = new Vector <String>();
       viewFormFields = new Vector <String>();
@@ -737,6 +740,18 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                // Paste
                else if (actionCommand.equals((String) TransferHandler.getPasteAction().getValue(Action.NAME)))
                   pasteClipboardContents();
+               else if (actionCommand.equals("Save As Image"))
+               {
+                  listTable.clearSelection();
+                  tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER);
+                  tableScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                  
+                  ImageUtil pieImageUtil = new ImageUtil(tableScrollPane, lastSaveDirectory, "png");
+                  lastSaveDirectory = pieImageUtil.getLastSaveDiretory();
+                  
+                  tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+                  tableScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+               }
                // ?
                else
                {
@@ -1331,6 +1346,18 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          menuItem.addActionListener(this);
          summaryTablePopupMenu.add(menuItem);
       }
+      
+      // Summary Table Save as Image, PNG.
+      
+      summaryTablePopupMenu.addSeparator();
+      
+      resource = resourceBundle.getResource("TableTabPanel.popup.SaveAsImage");
+      if (resource.equals(""))
+         menuItem = menuItem("Save As Image", "Save As Image");
+      else
+         menuItem = menuItem(resource, "Save As Image");
+      summaryTablePopupMenu.add(menuItem);
+      
 
       summaryTablePopupListener = new MyJSQLView_MouseAdapter(summaryTablePopupMenu);
    }
