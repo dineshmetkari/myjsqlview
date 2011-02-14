@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.75 02/13/2011
+// Version 4.76 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -164,6 +164,8 @@
 //        4.74 Class Method pasteClipboardContents() insertUpdateDialog.pack() Instead of
 //             Sized.
 //        4.75 Addition of Save As Image to createListTablePopup(). Handling in actionPerformed().
+//        4.76 Added columnSize Instance to Constructor. Set Minimum Table Column preferredSize
+//             to 45.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -196,7 +198,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.75 02/13/2011
+ * @version 4.76 02/13/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -504,12 +506,17 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // Sizing columns
       Iterator<String> headings = currentTableHeadings.iterator();
       TableColumn column = null;
+      int columnSize;
       int i = 0;
 
       while (headings.hasNext())
       {
          column = listTable.getColumnModel().getColumn(i++);
-         column.setPreferredWidth((preferredColumnSizeHashMap.get(headings.next())).intValue());
+         columnSize = preferredColumnSizeHashMap.get(headings.next()).intValue();
+         
+         if (columnSize < 20)
+            columnSize = 45;
+         column.setPreferredWidth(columnSize);
       }
 
       // Create a scrollpane for the summary table and
