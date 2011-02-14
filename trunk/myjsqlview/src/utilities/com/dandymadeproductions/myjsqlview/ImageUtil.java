@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Vivek Singh, Dana M. Proctor
-// Version 1.7 01/27/2011
+// Version 1.8 02/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,9 @@
 //         1.6 08/26/2010 Added Class Instance resourceBundle and Implemented
 //                        Internationalization.
 //         1.7 01/27/2011 Copyright Update.
+//         1.8 02/13/2011 Changed in Constructor and Method saveImage() of JComponent
+//                        to Component. Check of component Moved to Just Constructor
+//                        and Check for Width & Height.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +69,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.7 01/27/2011
+ * @version 1.8 02/13/2011
  */
 
 public class ImageUtil
@@ -79,10 +82,10 @@ public class ImageUtil
    // ImageUtil Constructor
    //==============================================================
 
-   public ImageUtil(JComponent component, String lastSaveDirectory, String imageType)
+   public ImageUtil(Component component, String lastSaveDirectory, String imageType)
    {
       // Do some checking and setup.
-      if (component == null)
+      if (component == null || component.getWidth() == 0 || component.getHeight() == 0)
          return;
       
       if (lastSaveDirectory == null)
@@ -100,7 +103,7 @@ public class ImageUtil
    // ImageUtil Constructor
    //==============================================================
 
-   private void saveImage(JComponent component, String itype)
+   private void saveImage(Component component, String itype)
    {
       // Method Instances
       int componentWidth, componentHeight, fileChooserResult;
@@ -113,10 +116,6 @@ public class ImageUtil
       GraphicsDevice graphicsDevice;
       GraphicsConfiguration graphicsConfiguration;
       BufferedImage bufferedImage;
-
-      // Check for valid component
-      if (component == null)
-         return;
 
       // Create a dialog for the user to save the image
       // file to a directory.
