@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.5 01/26/2011
+// Version 2.6 02/21/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,8 @@
 //             Redefined ConnectionManager to Derive Connections & Display SQL Errors.
 //             Also identifierQuoteString Collected From ConnectionManager. Changed
 //             dbType to subProtocol in Class Method createColumnSQLQuery().
+//         2.6 Class Method createColumnsSQLQuery() Corrections to Handle Date, Datetime,
+//             & Timestamp for searchQueryString.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -86,7 +88,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.4 01/15/2011
+ * @version 2.6 02/21/2011
  */
 
 class SearchDatabaseThread implements Runnable
@@ -330,21 +332,36 @@ class SearchDatabaseThread implements Runnable
                 && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
                 && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1)
             {
-               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+               // Convert date, datetime, timestamp search string
+               // to proper format.
+               if (columnType.equals("DATE"))
+                  searchQueryString = MyJSQLView_Utils.processDateFormatSearch(searchQueryString);
+               else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP") ||
+                        columnType.equals("TIMESTAMPTZ"))
                {
+                  if (searchQueryString.indexOf(" ") != -1)
+                     searchQueryString = MyJSQLView_Utils.processDateFormatSearch(
+                        searchQueryString.substring(0, searchQueryString.indexOf(" ")))
+                        + searchQueryString.substring(searchQueryString.indexOf(" "));
+                  else if (searchQueryString.indexOf("-") != -1 || searchQueryString.indexOf("/") != -1)
+                     searchQueryString = MyJSQLView_Utils.processDateFormatSearch(searchQueryString);
+               }
+               
+               // Create search query.
+               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                      + "::TEXT LIKE \'%" + searchQueryString + "%\' OR ");
-               }
-               else
+               else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                {
-                  if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && columnType.equals("DATE"))
+                  if (columnType.equals("DATE"))
                      columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                             + " LIKE TO_DATE(\'" + searchQueryString + "\', "
                                             + "\'MM-dd-YYYY\') OR ");
-                  else
-                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
-                                            + " LIKE \'%" + searchQueryString + "%\' OR ");   
                }
+               else
+                  columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                     + " LIKE \'%" + searchQueryString + "%\' OR ");
+                  
             }
          }
          sqlStatement.close();
