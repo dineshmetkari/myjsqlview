@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.4 01/26/2011
+// Version 1.5 02/21/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,8 @@
 //         1.4 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
 //             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
 //             SQL Errors.
+//         1.5 Corrections in Method loadTable to Properly Build searchTextString For Date,
+//             DateTime, & Timestamp When No Specific Column is Selected.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -72,7 +74,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/26/2011
+ * @version 1.5 02/21/2011
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -319,6 +321,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
          searchQueryString.append("'1' LIKE '%'");
       else
       {
+         // No field specified so build search for all.
          if (columnSearchString == null)
          {
             String[] tableColumns;
@@ -326,15 +329,31 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
             for (int i = 0; i < tableColumns.length; i++)
             {
+               columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
+               columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
+               
+               if (columnType.equals("DATE"))
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+               else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP")
+                        || columnType.equals("TIMESTAMPTZ"))
+               {
+                  if (searchTextString.indexOf(" ") != -1)
+                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                        searchTextString.substring(0, searchTextString.indexOf(" ")))
+                        + searchTextString.substring(searchTextString.indexOf(" "));
+                  else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+               }
+               
                if (i < tableColumns.length - 1)
                   searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
                else
                   searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%'");
             }
          }
+         // Field specified.
          else
          {
-            // Try and process Date/Datetime/TimeStamp Fields
             columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
             
             if (columnType.equals("DATE"))
