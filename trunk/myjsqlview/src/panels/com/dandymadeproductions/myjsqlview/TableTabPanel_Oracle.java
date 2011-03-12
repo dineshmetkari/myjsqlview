@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.0 01/26/2011
+// Version 10.1 03/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -245,6 +245,9 @@
 //        10.0 Changes to Class Methods getColumnNames(), loadTable(), viewSelectedItem(),
 //             & deleteSelectedItem() to Used Newly Redefined ConnectionManager to Display
 //             SQL Errors. Added Method Instance databaseName to getColumnNames().
+//        10.1 Corrections in Method loadTable to Properly Build searchTextString For Date,
+//             & Timestamp. Class Method viewSelectedItem() & editSelectedItem() to Display
+//             Date & Timestamp According to General Preferences Date Setting.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -277,7 +280,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.0 01/26/2011
+ * @version 10.1 03/10/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -581,7 +584,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       else
       {
          // No column specified so create WHERE for all except
-         // BFILE and LONG. Sepcial case with date.
+         // BFILE, LONG, and BLOB. Special case with Dates.
          
          if (columnSearchString == null)
          {
@@ -590,45 +593,60 @@ public class TableTabPanel_Oracle extends TableTabPanel
             
             for (int i = 0; i < tableColumns.length; i++)
             {
-               columnType = columnTypeHashMap.get((parseColumnNameField(tableColumns[i].
-                                                   replaceAll(identifierQuoteString, ""))).trim());
+               columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
+               columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
                
-               if (columnType.equals("BFILE") || columnType.equals("LONG"))
+               if (columnType.equals("BFILE") || columnType.equals("LONG")
+                   || columnType.equals("BLOB"))
                   continue;
                
-               if (columnType.equals("DATE") || columnType.indexOf("TIMESTAMP") != -1)
+               if (columnType.equals("DATE"))
                {
-                  if (columnType.equals("DATE"))
-                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
-                  else
-                  {
-                     if (searchTextString.indexOf(" ") != -1)
-                        searchTextString = MyJSQLView_Utils.processDateFormatSearch(
-                           searchTextString.substring(0, searchTextString.indexOf(" ")))
-                           + searchTextString.substring(searchTextString.indexOf(" "));
-                     else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
-                        searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
-                  }
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchTextString
+                                           + "', 'YYYY-MM-dd')");
                   
-                  //searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchTextString
-                  //                         + "', 'MM-dd-YYYY') OR");
+                  if (i < tableColumns.length - 1)
+                     searchQueryString.append(" OR");
                }
-               //else
-                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
+               else
+               {
+                  if (i < tableColumns.length - 1)
+                     searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%' OR");
+                  else
+                     searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%'");  
+               }
             }
-            if (searchQueryString.length() >= 3)
-               searchQueryString.delete((searchQueryString.length() - 3), searchQueryString.length());
          }
+         // Field specified.
          else
          {
             columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            
             if (columnType.equals("DATE"))
+            {
+               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
                searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                        + " LIKE TO_DATE('" + searchTextString + "', 'MM-dd-YYYY')");
+                                        + " LIKE TO_DATE('" + searchTextString + "', 'YYYY-MM-dd')");  
+            }
+            else if (columnType.equals("TIMESTAMP"))
+            {
+               if (searchTextString.indexOf(" ") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                     searchTextString.substring(0, searchTextString.indexOf(" ")))
+                     + searchTextString.substring(searchTextString.indexOf(" "));
+               else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+               
+               searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
+                                        + " LIKE TO_TIMESTAMP('" + searchTextString
+                                        + "', 'YYYY-MM-dd HH24:MI:SS') ");     
+            }
             else
                searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                         + " LIKE '%" + searchTextString + "%'");
          }
+         // System.out.println(searchQueryString);
       }
       
       // Connect to database to obtain the initial/new items set
@@ -820,9 +838,23 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   else if (columnType.equals("TIMESTAMPTZ"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
+                     
                      tableData[i][j++] = (new SimpleDateFormat(
                         DBTablesPanel.getGeneralProperties().getViewDateFormat()
                         + " HH:mm:ss Z").format(currentContentData));
+                  }
+                  
+                  else if (columnType.equals("TIMESTAMPLTZ"))
+                  {
+                     currentContentData = rs.getString(columnName);
+                     String timestampString = (String) currentContentData;
+                     
+                     if (timestampString.indexOf(" ") != -1)
+                        tableData[i][j++] = displayMyDateString(
+                                            timestampString.substring(0, timestampString.indexOf(" ")))
+                                            + timestampString.substring(timestampString.indexOf(" "));
+                     else
+                        tableData[i][j++] = timestampString;
                   }
 
                   // =============================================
@@ -1092,7 +1124,14 @@ public class TableTabPanel_Oracle extends TableTabPanel
                else if (currentColumnType.equals("TIMESTAMPLTZ"))
                {
                   currentContentData = db_resultSet.getString(currentDB_ColumnName);
-                  tableViewForm.setFormField(currentColumnName, currentContentData);
+                  String timestampString = (String) currentContentData;
+                  
+                  if (timestampString.indexOf(" ") != -1)
+                     timestampString = displayMyDateString(
+                                       timestampString.substring(0, timestampString.indexOf(" ")))
+                                       + timestampString.substring(timestampString.indexOf(" "));
+                  
+                  tableViewForm.setFormField(currentColumnName, timestampString);
                }
 
                // Blob/Raw Type Field
@@ -1456,7 +1495,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Timestamps With Time Zone Type Fields
@@ -1474,12 +1513,20 @@ public class TableTabPanel_Oracle extends TableTabPanel
                            + " HH:mm:ss Z").format(currentContentData)));
                   }
                   else
-                  
-                     editForm.setFormField(currentColumnName, currentContentData);
+                  {
+                     String timestampString = (String) currentContentData;
+                     
+                     if (timestampString.indexOf(" ") != -1)
+                        timestampString = displayMyDateString(
+                                          timestampString.substring(0, timestampString.indexOf(" ")))
+                                          + timestampString.substring(timestampString.indexOf(" "));
+                     
+                     editForm.setFormField(currentColumnName, (Object) timestampString);
+                  }
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Blob & Raw Type Field
