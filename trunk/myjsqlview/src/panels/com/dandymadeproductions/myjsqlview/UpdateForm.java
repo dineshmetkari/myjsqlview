@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.6 01/26/2011
+// Version 3.7 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,10 +96,12 @@
 //                        Properly Search Given Input for Date/DateTime/Timestamp Fields.
 //         3.5 01/15/2011 Class Method updateTable() Cast Object Returned by MyJSQLView_Access.
 //                        getConnection() to Connection.
-//         3.5 01/26/2011 Changes to Class Method updateTable() to Use Newly Redefined
+//         3.6 01/26/2011 Changes to Class Method updateTable() to Use Newly Redefined
 //                        ConnectionManager to Collect Connections & Display SQL Errors. Also
 //                        identifierQuoteString Collected From ConnectionManager. Added
 //                        Class Instance subProtocol.
+//         3.7 03/11/2011 Class Method getWhereSQLExpression() Minor Changes to Timestamp Type
+//                        sqlStatementString.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -132,7 +134,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.6 01/26/2011
+ * @version 3.7 03/11/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -1148,6 +1150,13 @@ class UpdateForm extends JFrame implements ActionListener
                   }
                   else if (columnTypeString.equals("DATETIME") || columnTypeString.indexOf("TIMESTAMP") != -1)
                   {
+                     if (tempSearchString.indexOf(" ") != -1)
+                        tempSearchString = MyJSQLView_Utils.processDateFormatSearch(
+                           tempSearchString.substring(0, tempSearchString.indexOf(" ")))
+                           + tempSearchString.substring(tempSearchString.indexOf(" "));
+                     else if (tempSearchString.indexOf("-") != -1 || tempSearchString.indexOf("/") != -1)
+                        tempSearchString = MyJSQLView_Utils.processDateFormatSearch(tempSearchString);
+                     
                      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
                      {
@@ -1158,13 +1167,6 @@ class UpdateForm extends JFrame implements ActionListener
                      }
                      else
                      {
-                        if (tempSearchString.indexOf(" ") != -1)
-                           tempSearchString = MyJSQLView_Utils.processDateFormatSearch(
-                              tempSearchString.substring(0, tempSearchString.indexOf(" ")))
-                              + tempSearchString.substring(tempSearchString.indexOf(" "));
-                        else if (tempSearchString.indexOf("-") != -1 || tempSearchString.indexOf("/") != -1)
-                           tempSearchString = MyJSQLView_Utils.processDateFormatSearch(tempSearchString);
-                        
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString + " '"
                                                   + tempSearchString + "' ");
