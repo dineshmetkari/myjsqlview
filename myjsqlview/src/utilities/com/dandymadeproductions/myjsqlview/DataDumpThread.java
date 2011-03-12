@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 6.0 02/13/2011
+// Version 6.1 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,7 @@
 //             Collected From ConnectionManager. Added Method Instance subProtocol
 //             in run().
 //         6.0 Change in dataDump Clipping by the dataDelimiter.length in run().
+//         6.1 Class Method Addition of Proper Processing for Oracle timestampLTZ.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -134,7 +135,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.0 02/13/2011
+ * @version 6.1 03/11/2011
  */
 
 class DataDumpThread implements Runnable
@@ -200,7 +201,7 @@ class DataDumpThread implements Runnable
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+                    ConnectionProperties.SUBPROTOCOL);
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
@@ -368,7 +369,8 @@ class DataDumpThread implements Runnable
                      if (columnType.equals("DATE"))
                      {
                         fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-                           dbResultSet.getDate(i) + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
+                                       dbResultSet.getDate(i)
+                                       + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
                      }
                      else
                      {  
@@ -376,20 +378,28 @@ class DataDumpThread implements Runnable
                         {
                            Object dateTime = dbResultSet.getTimestamp(i);
                            fieldContent = (new SimpleDateFormat(
-                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                              + " HH:mm:ss")).format(dateTime) + "";  
+                                            DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                            + " HH:mm:ss")).format(dateTime) + "";  
                         }
                         else if (columnType.equals("TIMESTAMPTZ"))
                         {
                            Object dateTime = dbResultSet.getTimestamp(i);
                            fieldContent = (new SimpleDateFormat(
-                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                              + " HH:mm:ss Z")).format(dateTime) + "";  
+                                            DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                            + " HH:mm:ss Z")).format(dateTime) + "";  
                         }
                         // TIMESTAMPLTZ, Oracle
                         else
                         {
-                           // Do Nothing. Who knows, just comes out in MM-dd-YY with the getString().
+                           String timestamp = dbResultSet.getString(i);
+                           
+                          if (timestamp.indexOf(" ") != -1)
+                                 fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                                                     timestamp.substring(0, timestamp.indexOf(" ")),
+                                                     DBTablesPanel.getDataExportProperties().getCSVDateFormat())
+                                                + timestamp.substring(timestamp.indexOf(" "));
+                          else
+                             fieldContent = timestamp;
                         }
                      }
                      dumpData = dumpData + fieldContent + dataDelimiter;  
