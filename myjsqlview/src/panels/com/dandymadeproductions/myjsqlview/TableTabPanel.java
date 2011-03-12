@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.76 02/13/2011
+// Version 4.78 03/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -166,6 +166,8 @@
 //        4.75 Addition of Save As Image to createListTablePopup(). Handling in actionPerformed().
 //        4.76 Added columnSize Instance to Constructor. Set Minimum Table Column preferredSize
 //             to 45.
+//        4.77 Added Class Instance stateDelimiter, Cleaned Up Some and Comment Changes.
+//        4.78 Minor Comment Changes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -198,7 +200,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.76 02/13/2011
+ * @version 4.78 03/10/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -216,6 +218,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    private boolean viewOnly;
    
    protected static final int maxPreferredColumnSize = 350;
+   private static final String stateDelimiter = "%;%";
 
    protected String sqlTable;
    protected String schemaTableName;
@@ -575,7 +578,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       actionButtonPanel = new JPanel();
       
       // No key then kind of hard to manipulate.
-      // Fix for 2.81++?
+      
       if (!primaryKeys.isEmpty())
       {
          // View Button
@@ -1215,7 +1218,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to obtain the column names from the table.
    // 
    //                          ******
-   // USE MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
+   // YOU MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
    //
    //==============================================================
    /*
@@ -1230,7 +1233,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to load the current table's data.
    //
    //                          ******
-   // USE MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
+   // YOU MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
    //
    //==============================================================
    /*
@@ -1417,7 +1420,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    }
 
    //=============================================================
-   // Class method for displaying the MyJSQLView standard date
+   // Class method for displaying the SQL Database standard date
    // format from a java.sql.date string. YYYY-MM-dd to the selected
    // MyJSQLView general date view preferences.
    //=============================================================
@@ -1507,7 +1510,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to view the current selected item in the table.
    //
    //                          ******
-   // USE MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
+   // YOU MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
    //
    //==============================================================
    /*
@@ -1521,7 +1524,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to add a table entry.
    //
    //                          ******
-   // USE MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
+   // YOU MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
    //
    //==============================================================
    /*
@@ -1535,7 +1538,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to edit the current selected item.
    //
    //                          ******
-   // USE MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
+   // YOU MUST OVERIDE THIS METHOD IN EACH DATABASE TableTabPanel.
    //
    //==============================================================
    /*
@@ -2189,8 +2192,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    }
 
    //==============================================================
-   //Class method to allow classes to obtain the number of valid
-   // rows of table data.
+   // Class method to allow classes to obtain the number of valid
+   // rows of summary table data.
    //==============================================================
 
    public int getValidDataRowCount()
@@ -2285,11 +2288,19 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       delimiter = getStateDelimiter();
 
       /*
-       * Components in TableTabPanel to save. 0. tableName 1. tableRowStart 2.
-       * tableRowLimit 3. currentTableHeadings 4. sqlTableStatement 5.
-       * advancedSortSearch 6. advancedSortSearchFrame stateComponents 7.
-       * ascSortRadioButton 8. descSortRadioButton 9. sortComboBox A.
-       * searchTextField B. searchComboBox
+       * Components in TableTabPanel to save.
+       * 0. tableName
+       * 1. tableRowStart
+       * 2. tableRowLimit
+       * 3. currentTableHeadings
+       * 4. sqlTableStatement
+       * 5. advancedSortSearch
+       * 6. advancedSortSearchFrame stateComponents
+       * 7. ascSortRadioButton
+       * 8. descSortRadioButton
+       * 9. sortComboBox
+       * A. searchTextField
+       * B. searchComboBox
        */
 
       // 0
@@ -2337,7 +2348,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public static String getStateDelimiter()
    {
-      return "%;%";
+      return stateDelimiter;
    }
    
    //==============================================================
@@ -2425,7 +2436,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       tableRowLimit = numberOfRows;
       setTableHeadings(getCurrentTableHeadings());
       setRowsLabel((tableRowStart + 1), (tableRowStart + tableRowLimit));
-      //rowsLabel.setText("Rows: " + (tableRowStart + 1) + " - " + (tableRowStart + tableRowLimit));
    }
 
    //==============================================================
@@ -2485,11 +2495,19 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       tableStates = stateString.split(delimiter);
 
       /*
-       * Components in TableTabPanel to save. 0. tableName 1. tableRowStart 2.
-       * tableRowLimit 3. currentTableHeadings 4. sqlTableStatement 5.
-       * advancedSortSearch 6. advancedSortSearchFrame stateComponents 7.
-       * ascSortRadioButton 8. descSortRadioButton 9. sortComboBox A.
-       * searchTextField B. searchComboBox
+       * Components in TableTabPanel to save.
+       * 0. tableName
+       * 1. tableRowStart
+       * 2. tableRowLimit
+       * 3. currentTableHeadings
+       * 4. sqlTableStatement
+       * 5. advancedSortSearch
+       * 6. advancedSortSearchFrame stateComponents
+       * 7. ascSortRadioButton
+       * 8. descSortRadioButton
+       * 9. sortComboBox
+       * A. searchTextField
+       * B. searchComboBox
        */
 
       if (tableStates.length == 12)
