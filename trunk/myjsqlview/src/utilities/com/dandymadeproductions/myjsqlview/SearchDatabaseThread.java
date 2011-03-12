@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.6 02/21/2011
+// Version 2.7 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,8 @@
 //             dbType to subProtocol in Class Method createColumnSQLQuery().
 //         2.6 Class Method createColumnsSQLQuery() Corrections to Handle Date, Datetime,
 //             & Timestamp for searchQueryString.
+//         2.7 Format Change in TO_DATE() Function for Oracle to YYYY-MM-dd in Class
+//             Method createColumnSQLQuery().
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -88,7 +90,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.6 02/21/2011
+ * @version 2.7 03/11/2011
  */
 
 class SearchDatabaseThread implements Runnable
@@ -356,7 +358,7 @@ class SearchDatabaseThread implements Runnable
                   if (columnType.equals("DATE"))
                      columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                             + " LIKE TO_DATE(\'" + searchQueryString + "\', "
-                                            + "\'MM-dd-YYYY\') OR ");
+                                            + "\'YYYY-MM-dd\') OR ");
                }
                else
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
