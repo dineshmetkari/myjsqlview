@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.5 02/13/2011
+// Version 5.6 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,8 @@
 //             Connections/Errors to the New Redefined Class ConnectionManager.
 //         5.5 Class Method separateTokens() Insured That Removing of Quote Characters
 //             Are NOT Removed if Present in delimiter.
+//         5.6 Correction in formatDateString Class Method for Condition Use of
+//             dateFormat.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -147,7 +149,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.5 02/13/2011
+ * @version 5.6 03/11/2011
  */
 
 class CSVDataImportThread implements Runnable
@@ -525,7 +527,7 @@ class CSVDataImportThread implements Runnable
                   }
 
                   sqlStatementString = sqlFieldNamesString.toString() + sqlValuesString.toString();
-                  //System.out.println(sqlStatementString);
+                  // System.out.println(sqlStatementString);
 
                   // Insert/Update current line's data.
                   sqlStatement.executeUpdate(sqlStatementString);
@@ -699,8 +701,8 @@ class CSVDataImportThread implements Runnable
       
       // Convert the input date string to the appropriate format.
       
-      // YYYY-MM-dd
-      if (dateFormat.equals("YYYY-MM-dd") || dateFormat.equals("YYYY/MM/dd"))
+      // yyyy-MM-dd
+      if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd"))
       {
          year = inputDateString.substring(0, firstDashIndex);
          month = inputDateString.substring(firstDashIndex + 1, lastDashIndex);
@@ -709,8 +711,8 @@ class CSVDataImportThread implements Runnable
          day = inputDateString.substring(lastDashIndex + 1);
       }
       
-      // dd-MM-YYYY
-      else if (dateFormat.equals("dd-MM-YYYY") || dateFormat.equals("dd/MM/YYYY"))
+      // dd-MM-yyyy
+      else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy"))
       {
          year = inputDateString.substring(lastDashIndex + 1);
          month = inputDateString.substring(firstDashIndex + 1, lastDashIndex);
@@ -719,7 +721,7 @@ class CSVDataImportThread implements Runnable
          day = inputDateString.substring(0, firstDashIndex);
       }
       
-      // MM-dd-YYYY
+      // MM-dd-yyyy
       else
       {  
          year = inputDateString.substring(lastDashIndex + 1);
