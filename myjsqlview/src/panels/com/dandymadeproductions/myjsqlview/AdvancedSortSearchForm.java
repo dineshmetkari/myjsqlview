@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.79 01/26/2011
+// Version 4.80 03/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,9 @@
 //        4.79 01/26/2011 Added Instances connectionProperties & subProtocol. Instantiated
 //                        in Constructor. Use and Change of Said in createSortSearchInterface(),
 //                        & getAdvancedSortSearchSQL().
+//        4.80 03/10/2011 Class Method getAdvancedSortSearch() Changes in sqlStatementString
+//                        to Properly Format Searches to Oracle Date & Timestamp Fields With
+//                        TO_DATE() & TO_TIMESTAMP().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -181,7 +184,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.79 01/26/2011
+ * @version 4.80 03/10/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -771,23 +774,23 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                   }
                   else if (columnTypeString.equals("DATETIME") || columnTypeString.indexOf("TIMESTAMP") != -1)
                   {
+                     if (searchString.indexOf(" ") != -1)
+                        searchString = MyJSQLView_Utils.processDateFormatSearch(
+                           searchString.substring(0, searchString.indexOf(" ")))
+                           + searchString.substring(searchString.indexOf(" "));
+                     else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
+                        searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
+                     
                      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                                 + identifierQuoteString + " " + operatorString
-                                                 + " TO_TIMESTAMP('" + searchString
-                                                 + "', 'MM-dd-YYYY HH24:MI:SS') ");
+                                                  + identifierQuoteString + " " + operatorString
+                                                  + " TO_TIMESTAMP('" + searchString
+                                                  + "', 'YYYY-MM-dd HH24:MI:SS') ");
                      }
                      else
                      {
-                        if (searchString.indexOf(" ") != -1)
-                           searchString = MyJSQLView_Utils.processDateFormatSearch(
-                              searchString.substring(0, searchString.indexOf(" ")))
-                              + searchString.substring(searchString.indexOf(" "));
-                        else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
-                           searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
-                        
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString + " '"
                                                   + searchString + "' ");
