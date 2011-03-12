@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.2 01/29/2011
+// Version 8.3 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -194,6 +194,7 @@
 //         8.1 Added Class Instance subProtocol. Constructor Obtained identifierQuoteString
 //             From New Class ConnectionManger Along With subProtocol.
 //         8.2 Removed resourceRowsOf in setRowsLabel().
+//         8.3 Class Method loadTable() Changes to Properly Search Date Field for Oracle.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -225,7 +226,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.2 01/29/2011
+ * @version 8.3 03/11/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1119,31 +1120,49 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             columnSearchString = "'1'";
       }
       else
+      {
          columnSearchString = identifierQuoteString + columnSearchString 
                               + identifierQuoteString;
-
-      if (searchTextString.equals(""))
-         searchTextString = "'%'";
-      else
-      {
-         // Try and process Date/Datetime/TimeStamp Fields
-         columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
-         
-         if (columnType.equals("DATE"))
-            searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
-         else if (columnType.equals("DATETIME") || columnType.indexOf("TIMESTAMP") != -1)
-         {
-            if (searchTextString.indexOf(" ") != -1)
-               searchTextString = MyJSQLView_Utils.processDateFormatSearch(
-                  searchTextString.substring(0, searchTextString.indexOf(" ")))
-                  + searchTextString.substring(searchTextString.indexOf(" "));
-            else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
-               searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
-         }
-         
-         searchTextString = "'%" + searchTextString + "%'";
       }
 
+      if (searchTextString.equals(""))
+         searchTextString = "LIKE '%'";
+      else
+      {
+         if (!columnSearchString.equals("TRUE") && !columnSearchString.equals("'1'"))
+         {
+            // Try and process Date/Datetime/TimeStamp Fields
+            columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
+            
+            if (columnType.equals("DATE"))
+            {
+               if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+               {
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  searchTextString = "LIKE TO_DATE('" + searchTextString + "', 'YYYY-MM-dd')";
+               }
+               else
+                  searchTextString = "LIKE '%"
+                                     + MyJSQLView_Utils.processDateFormatSearch(searchTextString) + "%'";
+            }
+            else if (columnType.equals("DATETIME") || columnType.indexOf("TIMESTAMP") != -1)
+            {
+               if (searchTextString.indexOf(" ") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(
+                     searchTextString.substring(0, searchTextString.indexOf(" ")))
+                     + searchTextString.substring(searchTextString.indexOf(" "));
+               else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
+                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+               
+               searchTextString = "LIKE '%" + searchTextString + "%'";
+            }
+            else
+               searchTextString = "LIKE '%" + searchTextString + "%'";
+         }
+         else
+            searchTextString = "LIKE '%" + searchTextString + "%'";
+      }
+      
       // Connect to database to create a temporary table to be used
       // for the initial/new items set and then sorting that set.
       try
@@ -1292,21 +1311,21 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
                      sqlStatementString = sqlStatementString.substring(0, orderIndex) 
                                           + " WHERE " + columnSearchString + " " 
-                                          + "LIKE " + searchTextString
+                                          + searchTextString + " "
                                           + sqlStatementString.substring(orderIndex);
                   }
                   // ORDER not present so add on WHERE
                   else
                   {
                      sqlStatementString += " WHERE " + columnSearchString + " " 
-                                           + "LIKE " + searchTextString + " ";
+                                           + searchTextString + " ";
                   }
                }
 
                // Adding ORDER as needed.
                if (sqlStatementString.toLowerCase().indexOf(" order") == -1)
                {
-                  sqlStatementString += " ORDER BY " + identifierQuoteString
+                  sqlStatementString += "ORDER BY " + identifierQuoteString
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString;
                }
@@ -1375,13 +1394,13 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                                     + identifierQuoteString + " " + ascDescString + ") " + "AS dmprownumber, "
                                     + sqlTableFieldsString + " " + "FROM " + identifierQuoteString
                                     + tempTable + identifierQuoteString + " " + "WHERE " + columnSearchString
-                                    + " " + "LIKE " + searchTextString + ") " + "WHERE dmprownumber BETWEEN "
+                                    + " " + searchTextString + ") " + "WHERE dmprownumber BETWEEN "
                                     + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
             }
             else
                sqlStatementString = "SELECT * " + "FROM " + identifierQuoteString + tempTable
                                     + identifierQuoteString + " " + "WHERE " + columnSearchString + " "
-                                    + "LIKE " + searchTextString + " " + "ORDER BY " + identifierQuoteString
+                                    + searchTextString + " " + "ORDER BY " + identifierQuoteString
                                     + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                     + identifierQuoteString + " " + ascDescString + " "
                                     + "LIMIT " + tableRowLimit + " " + "OFFSET " + tableRowStart;
