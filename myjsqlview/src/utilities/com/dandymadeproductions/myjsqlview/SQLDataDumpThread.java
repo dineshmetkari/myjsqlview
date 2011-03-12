@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 6.86 01/27/2011
+// Version 6.87 03/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -263,6 +263,8 @@
 //             Also identifierQuoteString Collected From ConnectionManager. Added
 //             Methods Instances connectionProperties, hostName & databaseName in
 //             generateHeaders().
+//        6.87 Class Methods explicitStatementData() and insertReplaceStatementData()
+//             Changes to Oracle TimestampLTZ to Output in YYYY-MM-DD Format.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -295,7 +297,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.86 01/27/2011
+ * @version 6.87 03/11/2011
  */
 
 class SQLDataDumpThread implements Runnable
@@ -690,7 +692,7 @@ class SQLDataDumpThread implements Runnable
              columnType.equals("TIMESTAMPLTZ"))
          {
             sqlStatementString += "TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                  + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
                                   + dbIdentifierQuoteString + tableColumnNames.get(field)
                                   + dbIdentifierQuoteString + ", ";
          }
@@ -913,7 +915,7 @@ class SQLDataDumpThread implements Runnable
                            if (oracleTimeStamp_LTZIndexes.contains(Integer.valueOf(i)) &&
                                !sqlDataExportOptions.getTimeStamp())
                               dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
-                                         + "', 'MM-DD-YYYY HH24:MI:SS TZH:TZM'), ";
+                                         + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                            else
                               dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
                         }
@@ -1027,7 +1029,7 @@ class SQLDataDumpThread implements Runnable
              && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
          {
             columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", 'MM-DD-YYYY HH24:MM:SS TZR') AS "
+                                  + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
                                   + dbIdentifierQuoteString + tableColumnNames.get(field)
                                   + dbIdentifierQuoteString + ", ");
          }
@@ -1147,7 +1149,9 @@ class SQLDataDumpThread implements Runnable
                         if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(identifierQuoteString, "");
+                           tableName = (schemaTableName.substring(
+                                            schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                 identifierQuoteString, "");
 
                            dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
                                       + "_seq\"'), ";
@@ -1156,7 +1160,8 @@ class SQLDataDumpThread implements Runnable
                         {
                            dumpData = dumpData
                                       + identifierQuoteString
-                                      + DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field) + identifierQuoteString + ".NEXTVAL, ";
+                                      + DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field)
+                                      + identifierQuoteString + ".NEXTVAL, ";
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -1280,7 +1285,7 @@ class SQLDataDumpThread implements Runnable
                            if (columnType.equals("TIMESTAMPLTZ") &&
                                subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
                               dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
-                                         + "', 'MM-DD-YYYY HH24:MI:SS TZH:TZM'), ";
+                                         + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                            else
                               dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
                         }
