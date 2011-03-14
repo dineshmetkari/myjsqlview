@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Advanced</h2></div>
-	<div style="font-size:16px"><center><b>September 13, 2010</b></center></div>
+	<div style="font-size:16px"><center><b>February 19, 2011</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -90,8 +90,8 @@
 //                    PluginModule.java 
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 09/07/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.7 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,8 @@
 //         1.6 Added Required Interface Argument String path to initPlugin().
 //             Modified in Same tabIcon Using path and Passed to TableFieldProfiler
 //             Class Constructor.
+//         1.7 Update to Reflect Change In MyJSQLView Connection Now All Derived
+//             From ConnectionManager Instead of MyJSQLView_Access.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -138,7 +140,7 @@ import javax.swing.JToolBar;
 import java.util.Vector;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 
@@ -147,7 +149,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 09/07/2010
+ * @version 1.7 01/28/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -176,7 +178,7 @@ public class PluginModule extends MyJSQLView_PluginModule
       String fileSeparator, iconsDirectory;
 
       // Main Class
-      dataProfiler = new TableFieldProfiler(mainFrame, path, MyJSQLView_Access.getTableNames());
+      dataProfiler = new TableFieldProfiler(mainFrame, path, ConnectionManager.getTableNames());
 
       // Plugin Tab Icon.
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -270,7 +272,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 				class objects dataProfiler and tabIcon. The first, dataProfiler, forms the
 				basis for the module and takes three arguments. The first two come directly
 				from the call to the initPlugin() method and are the MyJSQLView's main frame
-				and a path object. The third is a call to the MyJSQLView's class MyJSQLView_Access
+				and a path object. The third is a call to the MyJSQLView's class ConnectionManager
 				for the database tables associated with a connection. We will discuss shortly
 				more about the dataProfiler object, but first lets speak more of the path
 				argument because it is used in the creation of the tabIcon instance.<br /><br />
@@ -334,8 +336,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //                  TableFieldProfiler.java
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 09/07/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.2 02/03/2011
 //
 ~
 ~
@@ -363,6 +365,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //         3.0 Added Class Instance version and Method getVersion().
 //         3.1 Added Class Instance path and Assigned From New Constructor Argument of
 //             the Same.
+//         3.2 Modified Various Aspects to Accomodate Change of MyJSQLView_Access to
+//             ConnectionManager Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -402,7 +406,7 @@ class TableFieldProfiler
    private TableFieldAnalysisPanel tableFieldAnalysisPanel;
 
    private MyJSQLView_ResourceBundle resourceBundle;
-   private final static String version = "Version 3.1";
+   private final static String version = "Version 3.2";
 
    //==============================================================
    // TableFieldProfiler Constructor
@@ -411,7 +415,7 @@ class TableFieldProfiler
    TableFieldProfiler(MyJSQLView_Frame parent, String path, Vector tableNames)
    {
       this.path = path;
-
+      
       // Constructor Instances.
       String fileSeparator, localeDirectory;
       MenuActionListener pluginMenuListener;
@@ -420,7 +424,7 @@ class TableFieldProfiler
 
       profilerCardLayout = new CardLayout();
       dataProfilerMainPanel = new JPanel(profilerCardLayout);
-
+      
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       localeDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "locale";
       resourceBundle = new MyJSQLView_ResourceBundle(localeDirectory, "TableFieldProfiler",
@@ -488,7 +492,7 @@ class TableFieldProfiler
    protected void setDBTables(Vector tableNames)
    {
       // Create panels if needed.
-
+      
       if (tableFieldInformationPanel == null || tableFieldAnalysisPanel == null)
       {
          tableFieldInformationPanel = new TableFieldChartsPanel(path, resourceBundle, tableNames);
