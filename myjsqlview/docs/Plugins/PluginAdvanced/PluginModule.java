@@ -8,8 +8,8 @@
 //                   << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.6 09/07/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.7 01/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //         1.6 Added Required Interface Argument String path to initPlugin().
 //             Modified in Same tabIcon Using path and Passed to TableFieldProfiler
 //             Class Constructor.
+//         1.7 Update to Reflect Change In MyJSQLView Connection Now All Derived
+//             From ConnectionManager Instead of MyJSQLView_Access.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,7 +58,7 @@ import javax.swing.JToolBar;
 import java.util.Vector;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 
@@ -65,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 09/07/2010
+ * @version 1.7 01/28/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -94,7 +96,7 @@ public class PluginModule extends MyJSQLView_PluginModule
       String fileSeparator, iconsDirectory;
 
       // Main Class
-      dataProfiler = new TableFieldProfiler(mainFrame, path, MyJSQLView_Access.getTableNames());
+      dataProfiler = new TableFieldProfiler(mainFrame, path, ConnectionManager.getTableNames());
 
       // Plugin Tab Icon.
       fileSeparator = MyJSQLView_Utils.getFileSeparator();

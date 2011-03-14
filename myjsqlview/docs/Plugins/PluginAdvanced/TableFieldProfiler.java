@@ -9,8 +9,8 @@
 //                  << TableFieldProfiler.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 3.1 09/07/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 3.2 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         3.0 Added Class Instance version and Method getVersion().
 //         3.1 Added Class Instance path and Assigned From New Constructor Argument of
 //             the Same.
+//         3.2 Modified Various Aspects to Accomodate Change of MyJSQLView_Access to
+//             ConnectionManager Class.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +74,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * application.
  * 
  * @author Dana M. Proctor
- * @version 3.1 09/07/2010
+ * @version 3.2 02/03/2011
  */
 
 class TableFieldProfiler
@@ -87,7 +89,7 @@ class TableFieldProfiler
    private TableFieldAnalysisPanel tableFieldAnalysisPanel;
    
    private MyJSQLView_ResourceBundle resourceBundle;
-   private final static String version = "Version 3.1";
+   private final static String version = "Version 3.2";
    
    //==============================================================
    // TableFieldProfiler Constructor
