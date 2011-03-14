@@ -8,8 +8,8 @@
 //               << TableRecordCountPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 09/02/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.8 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,8 @@
 //             in Method executeRecordCount(). Removed Method Instance 
 //             identifierQuoteString.
 //         1.7 Added Class Instance version and Method getVersion().
+//         1.8 Change in MyJSQLView Package of MyJSQLView_Access Change to
+//             ConnectionManager. Changes to executeRecordCount().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +66,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
@@ -74,14 +76,14 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/02/2010
+ * @version 1.8 02/03/2011
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
-   private final static String version = "Version 1.7";
+   private final static String version = "Version 1.8";
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
@@ -168,7 +170,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
       // Get Connection to Database.
 
-      dbConnection = MyJSQLView_Access.getConnection("TableRecordCountPanel executeRecordCount()");
+      dbConnection = ConnectionManager.getConnection("TableRecordCountPanel executeRecordCount()");
 
       try
       {
@@ -213,7 +215,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableRecordCountPanel executeRecordCount()");
+         ConnectionManager.displaySQLErrors(e, "TableRecordCountPanel executeRecordCount()");
          recordCountLabel.setText("0");
          tableSelectionComboBox.setEnabled(true);
          disableActions = false;
@@ -221,7 +223,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       
       // Close connection to database.
       
-      MyJSQLView_Access.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
+      ConnectionManager.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
       tableSelectionComboBox.setEnabled(true);
       disableActions = false;
    }

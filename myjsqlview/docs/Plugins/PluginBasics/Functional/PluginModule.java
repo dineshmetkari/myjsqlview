@@ -8,8 +8,8 @@
 //                  << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.5 09/06/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 1.6 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,8 @@
 //             TableRecordCountPanel.getVersion().
 //         1.5 Added Required Interface Argument String path For Method
 //             initPlugin().
+//         1.6 Change in MyJSQLView Package of MyJSQLView_Access Change to
+//             ConnectionManager. 
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +54,7 @@ import javax.swing.JPanel;
 import java.util.Vector;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
 
 /**
@@ -83,7 +85,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
-      tableRecordCountPanel = new TableRecordCountPanel(MyJSQLView_Access.getTableNames());
+      tableRecordCountPanel = new TableRecordCountPanel(ConnectionManager.getTableNames());
    }
 
    //==============================================================
