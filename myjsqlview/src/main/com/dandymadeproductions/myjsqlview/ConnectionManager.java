@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.2 02/03/2011
+// Version 1.3 03/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //             TABLE_NAME, REMARKS. Added Corresponding Class Methods Strings to
 //             loadDBTables(). Change of Class Identification for Class Methods
 //             get/closeConnection() to ConnectionManager.
+//         1.3 Class Method loadDBTables(), PostgreSQL getTablePrivileges() Space
+//             for schemaPattern Because of a Bug in pgJDBC 9.0-801
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +66,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/03/2011
+ * @version 1.3 03/13/2011
  */
 
 public class ConnectionManager
@@ -538,7 +540,13 @@ public class ConnectionManager
          
          if (subProtocol.equals(POSTGRESQL))
          {
-            db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
+            // The PostgreSQL JDBC Driver for 9.0-801 Has a bug in it that
+            // will cause getTablePrivileges() with a "" for schemaPattern
+            // so for 3.25 release place a space, for now. Null throw error
+            // also.
+            
+            //db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
+            db_resultSet = dbMetaData.getTablePrivileges(db, " ", "%");
             while (db_resultSet.next())
             {
                tableName = db_resultSet.getString(TABLE_NAME);
@@ -554,6 +562,7 @@ public class ConnectionManager
                }
             }
          }
+         
          
          // ============================
          // Obtain the databases schemas.
