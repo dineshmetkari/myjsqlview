@@ -13,10 +13,10 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.23<br></u></b>
+			<b><u>MyJSQLView Version 3.26<br></u></b>
 		</p>
 		<p align="center">
-			Copyright 2005-2010<br>
+			Copyright 2005-2011<br>
 			by <a href="mailto:danap@dandymadeproductions.com">Dana Proctor</a><br>
 			<a href="http://dandymadeproductions.com">http://dandymadeproductions.com</a>
 		</p>
@@ -92,8 +92,8 @@
 			<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.3</font> (JDBC Integrated Into HSQLDB.jar)</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
-			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4.702</font>.</li>
-			<li>SQLite JDBC <font color="#ff0000">3.6.20 - 3.7.2</font>. Note, SQLite need not be installed on the system.</li>
+			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.0-801</font>.</li>
+			<li>Xerial SQLite JDBC <font color="#ff0000">3.6.20 - 3.7.2</font>. Note, SQLite need not be installed on the system.</li>
 			
 		</ul>
 		
@@ -117,8 +117,8 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.23</b> does, will have an example configuration
-			for the connection parameters of the advanced login. Likely changes will be
+			additional database, release <b>v3.26</b> does not, will have an example configuration
+			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
 			will be different for the various database servers. To gain access to any
@@ -228,6 +228,11 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.26</td>
+      				<td width="80%">Architectural modularization for core aspects relating to login and connection management.
+						Date display formatting preferences selection. PNG image output of summary table display.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.23</td>
       				<td width="80%">SQLite Access. Manual Plugin Management. Additional Internationalization Support.</td>
