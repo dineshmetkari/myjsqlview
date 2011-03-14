@@ -7,7 +7,7 @@
 	<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
 	<meta name="Description" content="MyJSQLView Plugin Basics">
 	<meta name="keywords" content="MyJSQLView, Plugin Basics, Documentation, Dana Proctor, Java, Tutorial, Database, HSQL, MySQL, Oracle, PostgreSQL, SQLite, Plugin">
-	<meta name="Copyright" content="2005-2010">
+	<meta name="Copyright" content="2005-2011">
 		
   	<title>MyJSQLView Plugin Tutorial Basics</title>
 	<link rel="stylesheet" type="text/css" href="default_developer.css" />	
@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>September 06, 2010</b></center></div>
+	<div style="font-size:16px"><center><b>February 19, 2011</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -90,8 +90,8 @@
 //              MyJSQLView_PluginModule.java 
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 2.3 09/06/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 2.4 01/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +135,7 @@
 //         2.1 Added Interface Method getVersion() and Class Instance version.
 //         2.2 Added Instance pathFileName and Protected Methods get/setPath_FileName().
 //         2.3 Added Argument String path to Method initPlugin().
+//         2.4 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -154,7 +155,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.3 09/06/2010
+ * @version 2.4 01/27/2011
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -496,7 +497,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 				created in the inputPlugin() method and takes an argument of the database's
 				tables in the form of a Vector. Here is the first illustration of a module
 				using the MyJSQLView public API to access the table names from MyJSQLView's
-				MyJSQLView_Access class.
+				ConnectionManager class.
 			</p>
 
 			<p>
@@ -519,8 +520,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //                   PluginModule.java 
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.5 09/06/2010
+// Copyright (C) 2006-2011 Dana M. Proctor
+// Version 1.6 02/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -552,6 +553,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //             TableRecordCountPanel.getVersion().
 //         1.5 Added Required Interface Argument String path For Method
 //             initPlugin().
+//         1.6 Change in MyJSQLView Package of MyJSQLView_Access Change to
+//             ConnectionManager.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -563,7 +566,7 @@ import javax.swing.JPanel;
 import java.util.Vector;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
 
 /**
@@ -571,7 +574,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.5 09/06/2010
+ * @version 1.6 02/03/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -594,7 +597,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
-      tableRecordCountPanel = new TableRecordCountPanel(MyJSQLView_Access.getTableNames());
+      tableRecordCountPanel = new TableRecordCountPanel(ConnectionManager.getTableNames());
    }
 
    //==============================================================
@@ -698,8 +701,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //               TableRecordCountPanel.java
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor
-// Version 1.7 09/02/2010
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.8 02/03/2011
 //
 ~
 ~
@@ -725,6 +728,8 @@ public class PluginModule extends MyJSQLView_PluginModule
 //             in Method executeRecordCount(). Removed Method Instance 
 //             identifierQuoteString.
 //         1.7 Added Class Instance version and Method getVersion().
+//         1.8 Change in MyJSQLView Package of MyJSQLView_Access Change to
+//             ConnectionManager. Changes to executeRecordCount().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -744,7 +749,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Access;
+import com.dandymadeproductions.myjsqlview.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
@@ -754,14 +759,14 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/02/2010
+ * @version 1.8 02/03/2011
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
-   private final static String version = "Version 1.7";
+   private final static String version = "Version 1.8";
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
@@ -822,7 +827,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 				a table name from the pull down menu in that ComboBox a thread is created in
 				the actionPerformed() method and forwards processing to the method exectueRecordCount().
 				In this method we do all the work for determining the record count for a table.
-				First a connection is obtained from the MyJSQLView MyJSQLView_Access class
+				First a connection is obtained from the MyJSQLView ConnectionManager class
 				public API getConnection(). Then a SQL statement object is created and the
 				defined schema name for the selected database table is determined from the
 				associated TableTabPanel in MyJSQLView. A TableTabPanel is created for each
@@ -887,7 +892,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
       // Get Connection to Database.
 
-      dbConnection = MyJSQLView_Access.getConnection("TableRecordCountPanel executeRecordCount()");
+      dbConnection = ConnectionManager.getConnection("TableRecordCountPanel executeRecordCount()");
 
       try
       {
@@ -911,7 +916,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
          // Collect the properly formatted schema table name with identifier
          // quotes for execution in a SQL statement. 
-
+         
          schemaTableName = MyJSQLView_Utils.getSchemaTableName(tableName);
          // System.out.println(schemaTableName);
 
@@ -932,15 +937,15 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       }
       catch (SQLException e)
       {
-         MyJSQLView_Access.displaySQLErrors(e, "TableRecordCountPanel executeRecordCount()");
+         ConnectionManager.displaySQLErrors(e, "TableRecordCountPanel executeRecordCount()");
          recordCountLabel.setText("0");
          tableSelectionComboBox.setEnabled(true);
          disableActions = false;
       }
-
+      
       // Close connection to database.
-
-      MyJSQLView_Access.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
+      
+      ConnectionManager.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
       tableSelectionComboBox.setEnabled(true);
       disableActions = false;
    }
