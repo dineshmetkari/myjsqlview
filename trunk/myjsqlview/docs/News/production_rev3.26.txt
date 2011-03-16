@@ -1,0 +1,45 @@
+MyJSQLView Version 3.26 Released
+
+The MyJSQLView project is pleased to provide the release of Version
+3.26 to the public. The release is minor in nature with changes mainly
+involving the modularization of core aspects of the architecture for
+login and connection code. An addition was also made to the Preferences
+Menu system for allowing the selection of the date format display.
+In that regard the application will now perform searches with the
+selected default date format. A number of other minor changes were
+accomplished that should enhance the visual aspect of certain parts
+of the application's interface.
+
+With the release of v3.26 of the MyJSQLView application the group
+would like to notify the PostgreSQL community of changes in that 
+organization's database and JDBC with version 9.0X that make prior
+versions of MyJSQLView non-functional. Please update MyJSQLView to
+v3.26 if you are using the latest release of PostgreSQL. A Report of
+the problem has been given specifically to the JDBC forum and has
+been addressed, but no new version of the JDBC has been issued as
+of the date of this news release.
+
+Users should also note that the changes in code for the login and
+connection management with v3.26 make prior plugins to this incompatible.
+A great deal of efforted was taken to try and make the initial plugin
+architecture stable and fixed, but sometimes even carefully conceived
+thought processes are lay to waste. With that note we have updated
+the tutorials at the Website to facilitate plugin development. The
+MyJSQLView group would like also to take this opportunity to inform
+the community that the next release of the application should be forth
+coming soon. This release of MyJSQLView was in small part stagnated
+because of a great deal of reflection that was taken on what needs to
+be done with the application to make it more versatile. Many hours
+were spent reviewing similar tools, vendors, and articles to scope
+the next stages of MyJSQLView. 
+ 
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. A
+query frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
