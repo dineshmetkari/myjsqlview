@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.29 02/05/2011
+// Version 7.30 03/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -245,6 +245,10 @@
 //        7.28 Class Method actionSelection() Increased PreferencesFrame, editPreferences,
 //             Width Size.
 //        7.29 Class Method dataImportAction() insertUpdateDialog.pack() Instead of Sized.
+//        7.30 Added Action for Tools SQL Query Bucket in actionSelection(). Also Class
+//             Method setSQLQueryBucketFrameNotVisible() in Addition Class Instance
+//             sqlQueryBucketFrameVisible. Increase of size of PreferencesFrame From 675x405
+//             to 700x435.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -277,13 +281,14 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.28 01/28/2011
+ * @version 7.30 03/17/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
 {
    // Class Instances
    private static boolean preferencesVisible = false;
+   private static boolean sqlQueryBucketFrameVisible = false;
    private static boolean queryFrameVisible = false;
    private static boolean searchFrameVisible = false;
    private static boolean pluginFrameVisible = false;
@@ -302,8 +307,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    //==============================================================
 
    protected static void actionsSelection(MyJSQLView_Frame parent, ActionEvent evt,
-                                          String webSiteString,
-                                          String[] myJSQLView_Version)
+                                          SQLQueryBucketFrame sqlQueryBucketFrame,
+                                          String[] myJSQLView_Version,
+                                          String webSiteString)
    {
       // Setting up some needed instance variables.
       String actionCommand;
@@ -312,6 +318,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
       // Initializing
+      
       item = evt.getSource();
 
       if (item instanceof JMenuItem)
@@ -379,7 +386,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       {
          // Showing the Edit Preferences Frame.
          PreferencesFrame editPreferences = new PreferencesFrame();
-         editPreferences.setSize(675, 405);
+         editPreferences.setSize(700, 430);
          editPreferences.setResizable(false);
          editPreferences.center();
          editPreferences.setVisible(true);
@@ -412,6 +419,23 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Tools Menu Item Selection Routing
       // ==================================
 
+      // SQL Query Bucket
+      if (actionCommand.equals(ACTION_SQL_QUERY_BUCKET))
+      {
+         if (!sqlQueryBucketFrameVisible)
+         {
+            sqlQueryBucketFrame.setVisible(true);
+            sqlQueryBucketFrameVisible = true;
+         }
+         else
+         {
+            sqlQueryBucketFrame.setVisible(false);
+            sqlQueryBucketFrameVisible = false;
+          
+         }
+         return;
+      }
+      
       // Query Frame
       if (actionCommand.equals(ACTION_QUERY_FRAME) && !queryFrameVisible)
       {
@@ -1202,6 +1226,16 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    protected static void setPreferencesNotVisisble()
    {
       preferencesVisible = false;
+   }
+   
+   //==============================================================
+   // Class Method to allow the setting the sqlQueryBucketFrameVisible
+   // instance.
+   //==============================================================
+   
+   protected static void setSQLQueryBucketFrameNotVisisble()
+   {
+      sqlQueryBucketFrameVisible = false;
    }
 
    //==============================================================
