@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 7.2 01/26/2011
+// Version 7.3 03/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,7 @@
 //         7.1 Constructor Resource Correction for flushButton.setToolTipText.
 //         7.2 Changes to Access Database Properties schemas and ConnectionProperties
 //             to the New Redefined Class ConnectionManager.
+//         7.3 Added Tools | SQL Query Bucket in Class Method createToolsMenu().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -146,7 +147,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.2 01/26/2011
+ * @version 7.3 03/17/2011
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -485,17 +486,26 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
          toolsMenu = new JMenu(resource);
       toolsMenu.setFont(toolsMenu.getFont().deriveFont(Font.BOLD));
       
-      // Query Frame, Reload Database, & Search Database.
+      // SQL Query Bucket, Query Frame, Reload Database, & Search Database.
+      
+      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.SQLQueryBucket");
+      if (resource.equals(""))
+         toolsMenu.add(menuItem("SQL Query Bucket", ACTION_SQL_QUERY_BUCKET));
+      else
+         toolsMenu.add(menuItem(resource, ACTION_SQL_QUERY_BUCKET));
+      
       resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.QueryFrame");
       if (resource.equals(""))
          toolsMenu.add(menuItem("Query Frame", ACTION_QUERY_FRAME));
       else
          toolsMenu.add(menuItem(resource, ACTION_QUERY_FRAME));
+      
       resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.ReloadDatabase");
       if (resource.equals(""))
          toolsMenu.add(menuItem("Reload Database", ACTION_RELOAD_DATABASE));
       else
          toolsMenu.add(menuItem(resource, ACTION_RELOAD_DATABASE));
+      
       resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.SearchDatabase");
       if (resource.equals(""))
          toolsMenu.add(menuItem("Search Database", ACTION_SEARCH_DATABASE));
