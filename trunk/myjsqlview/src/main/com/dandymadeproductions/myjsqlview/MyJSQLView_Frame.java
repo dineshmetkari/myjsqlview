@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.2 01/26/2011
+// Version 6.3 03/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,6 +158,9 @@
 //                        MyJSQLView_Access.getConnection() to Connection.
 //         6.2 01/26/2011 Change in Obtaining host and db For Frame Title. Changes to Access
 //                        Connections/Errors to the New Redefined Class ConnectionManager.
+//         6.3 03/17/2011 Added Class Instance sqlQueryBucketFrame, and Passed as Argument in
+//                        MyJSQLView_JMenuBarActions.actionsSelection() Called in actionPerformed().
+//                        Added Class Method getSQLBucket().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -184,7 +187,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.2 01/26/2011
+ * @version 6.3 03/17/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -195,6 +198,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private String[] myJSQLView_Version;
    private String webSiteString;
    private static ImageIcon databaseTablesIcon;
+   private static SQLQueryBucketFrame sqlQueryBucketFrame = new SQLQueryBucketFrame();
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
    private MyJSQLView_Top_JMenuBar topMenuBar;
    private static JPanel toolBarPanel;
@@ -222,6 +226,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
 
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
+      
+      sqlQueryBucketFrame.setSize(350, 450);
+      sqlQueryBucketFrame.center();
    }
 
    //==============================================================
@@ -344,7 +351,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
 
    public void actionPerformed(ActionEvent evt)
    {
-      MyJSQLView_JMenuBarActions.actionsSelection(this, evt, webSiteString, myJSQLView_Version);
+      MyJSQLView_JMenuBarActions.actionsSelection(this, evt, sqlQueryBucketFrame, myJSQLView_Version, webSiteString);
    }
    
    //==============================================================
@@ -451,6 +458,15 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    protected static Vector<MyJSQLView_PluginModule> getPlugins()
    {
       return loadedPluginModules;
+   }
+   
+   //==============================================================
+   // Class Method to return the SQL Bucket Frame.
+   //==============================================================
+   
+   public static SQLQueryBucketFrame getSQLBucket()
+   {
+      return sqlQueryBucketFrame;
    }
    
    //==============================================================
