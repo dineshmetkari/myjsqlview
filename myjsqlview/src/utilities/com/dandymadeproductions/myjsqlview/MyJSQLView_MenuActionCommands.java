@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 1.3 01/27/2011
+// Version 1.4 03/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 //         1.1 Added Interface Instance ACTION_EXPORT_PDF_SUMMARY_TABLE.
 //         1.2 Added Interface Instance ACTION_PLUGIN_MANAGEMENT.
 //         1.3 Copyright Update.
+//         1.4 Added Interface Instance ACTION_SQL_QUERY_BUCKET.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,7 +48,7 @@ package com.dandymadeproductions.myjsqlview;
  * menu system.  
  * 
  * @author Dana M. Proctor
- * @version 1.3 01/27/2011
+ * @version 1.4 03/17/2011
  */
 
 public interface MyJSQLView_MenuActionCommands
@@ -91,6 +92,9 @@ public interface MyJSQLView_MenuActionCommands
    
    // ===========
    // Tools Menu
+   
+   // SQL Query Bucket
+   public static final String ACTION_SQL_QUERY_BUCKET = "TSQB";
    
    // Query Frame
    public static final String ACTION_QUERY_FRAME = "TQF";
