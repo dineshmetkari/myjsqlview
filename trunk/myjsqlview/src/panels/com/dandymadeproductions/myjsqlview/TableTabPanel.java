@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.78 03/10/2011
+// Version 4.79 03/23/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -168,6 +168,7 @@
 //             to 45.
 //        4.77 Added Class Instance stateDelimiter, Cleaned Up Some and Comment Changes.
 //        4.78 Minor Comment Changes.
+//        4.79 Constuctor JTable listTable.setDragEnabled(true).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -200,7 +201,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.78 03/10/2011
+ * @version 4.79 03/23/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -502,6 +503,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                                    TransferHandler.getPasteAction());
       listTable.getTableHeader().setFont(new Font(this.getFont().getName(), Font.BOLD,
                                                   this.getFont().getSize()));
+      listTable.setDragEnabled(true);
       
       createListTablePopupMenu();
       listTable.addMouseListener(summaryTablePopupListener);
