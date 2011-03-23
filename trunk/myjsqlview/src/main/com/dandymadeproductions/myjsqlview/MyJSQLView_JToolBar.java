@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.3 01/26/2011
+// Version 2.4 03/23/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //         2.2 Corrected the Arrangement of the Data Export PDF Summary Table
 //             ToolBar Button.
 //         2.3 Copyright Update.
+//         2.4 Added Tools | SQL Query Bucket ToolBar Button.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +68,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.3 01/26/2011
+ * @version 2.4 03/23/2011
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
@@ -96,7 +97,8 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       ImageIcon pdfExportTabSummaryTableIcon;
       ImageIcon sqlExportTableIcon, sqlExportTabSummaryTableIcon;
       ImageIcon sqlExportDatabaseIcon, sqlExportDatabaseSchemeIcon;
-      ImageIcon queryFrameIcon, reloadDatabaseIcon, searchDatabaseIcon; 
+      ImageIcon sqlQueryBucketIcon, queryFrameIcon;
+      ImageIcon reloadDatabaseIcon, searchDatabaseIcon; 
       ImageIcon manualIcon; //legalIcon, releaseIcon, aboutIcon;
       
       MyJSQLView_ResourceBundle resourceBundle;
@@ -274,6 +276,15 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       
       // ===============
       // Tools Menu
+      
+      // SQL Query Bucket Frame
+      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "sqlQueryBucketIcon.png");
+      resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.SQLQueryBucket");
+      if (resource.equals(""))
+         buttonItem = buttonItem("SQL Query Bucket", sqlQueryBucketIcon, ACTION_SQL_QUERY_BUCKET);
+      else
+         buttonItem = buttonItem(resource, sqlQueryBucketIcon, ACTION_SQL_QUERY_BUCKET);
+      add(buttonItem);
       
       // Query Frame
       queryFrameIcon = new ImageIcon(iconsDirectory + "queryFrameIcon.png");
