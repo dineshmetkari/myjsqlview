@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.3 01/26/2011
+// Version 4.4 03/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,8 @@
 //         4.3 Class Method loadTable() Added Instances connectionProperties & subProtocol.
 //             Class Methods getTableTabPanel() and setSelectedTableTabPanel() Changes
 //             Collection/Closing Connection to Redefined ConnectionManager Class.
+//         4.4 Added Class Instance sqlQueryBucketButton, Constructor Instance sqlQueryBucketIcon,
+//             and Handling of the New Button's Actions in Method actionPerformed().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,6 +118,7 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
@@ -125,6 +128,7 @@ import java.util.LinkedList;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -137,7 +141,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.3 01/26/2011
+ * @version 4.4 03/24/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -152,6 +156,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    
    private static JLabel statusIndicator = new JLabel("", JLabel.LEFT);
    private static JTextField statusLabel = new JTextField("Idle", 8);
+   private JButton sqlQueryBucketButton;
    private static JComboBox tableSelectionComboBox = new JComboBox();;
    private static HashMap<String, TableTabPanel> tableTabHashMap = new HashMap <String, TableTabPanel>();
    private static boolean disableActions = false;
@@ -169,7 +174,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    DBTablesPanel(Connection dbConnection, Vector<String> tableNames)
    {  
       // Constructor Instances
-      ImageIcon statusIdleIcon, statusWorkingIcon;
+      ImageIcon statusIdleIcon, statusWorkingIcon, sqlQueryBucketIcon;
       JPanel statusControlPanel, statusPanel;
       String iconsDirectory, tableName;
 
@@ -179,19 +184,21 @@ public class DBTablesPanel extends JPanel implements ActionListener
       
       statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
       statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
+      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "addSQLQueryIcon.png");
       
       setLayout(new BorderLayout());
       
       // ===============================================
-      // Create the status indicator and table selection
-      // comboBox components. While at it load the first
-      // table that is available.
+      // Create the status indicator, SQL Query Bucket,
+      // and table selection comboBox components. While
+      // at it load the first table that is available.
       
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
       
       statusControlPanel = new JPanel(gridbag);
       
+      // Status Indicator
       statusPanel = new JPanel(gridbag);
       statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
                                                                BorderFactory.createEmptyBorder(0, 2, 0, 1)));
@@ -215,12 +222,28 @@ public class DBTablesPanel extends JPanel implements ActionListener
       gridbag.setConstraints(statusLabel, constraints);
       statusPanel.add(statusLabel);
       
-      buildConstraints(constraints, 0, 0, 1, 1, 4, 100);
+      buildConstraints(constraints, 0, 0, 1, 1, 6, 100);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(statusPanel, constraints);
       statusControlPanel.add(statusPanel);
       
+      // SQL Query Bucket Drop Button.
+      sqlQueryBucketButton = new JButton(sqlQueryBucketIcon);
+      sqlQueryBucketButton.setMargin(new Insets(0, 0, 0, 0));
+      sqlQueryBucketButton.setBorder(BorderFactory.createCompoundBorder(
+                                                    BorderFactory.createRaisedBevelBorder(),
+                                                    sqlQueryBucketButton.getBorder()));
+      sqlQueryBucketButton.setFocusPainted(false);
+      sqlQueryBucketButton.addActionListener(this); 
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 1, 100);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(sqlQueryBucketButton, constraints);
+      statusControlPanel.add(sqlQueryBucketButton);
+      
+      // Table Selector.
       tableSelectionComboBox.setBorder(BorderFactory.createRaisedBevelBorder());
       tableSelectionComboBox.addActionListener(this);
       tableSelectionComboBox.setEnabled(false);
@@ -233,8 +256,6 @@ public class DBTablesPanel extends JPanel implements ActionListener
          while (tableNamesIterator.hasNext())
             tableSelectionComboBox.addItem(tableNamesIterator.next());
          
-         //tableSelectionComboBox.addActionListener(this);
-         
          // Create the summary table of the first table in the
          // tables list of the database. All others are loaded
          // on the fly as needed.
@@ -245,7 +266,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
          tableSelectionComboBox.setEnabled(true);
       }
       
-      buildConstraints(constraints, 1, 0, 1, 1, 96, 100);
+      buildConstraints(constraints, 2, 0, 1, 1, 93, 100);
       constraints.fill = GridBagConstraints.HORIZONTAL;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(tableSelectionComboBox, constraints);
@@ -267,6 +288,20 @@ public class DBTablesPanel extends JPanel implements ActionListener
    public void actionPerformed(ActionEvent evt)
    {
       Object panelSource = evt.getSource();
+      
+      // Droping the selected summary table table SQL statement
+      // to the SQL Query Bucket.
+
+      if (panelSource instanceof JButton && !disableActions)
+      {
+         if (panelSource == sqlQueryBucketButton)
+         {
+            TableTabPanel selectedTableTabPanel = getSelectedTableTabPanel();
+            
+            if (selectedTableTabPanel != null)
+               MyJSQLView_Frame.getSQLBucket().addSQLStatement(selectedTableTabPanel.getTableSQLStatement());
+         }
+      }
      
       // Setting current Panel card to the selected table.
 
@@ -634,8 +669,6 @@ public class DBTablesPanel extends JPanel implements ActionListener
    protected static void setGeneralProperties(GeneralProperties newGeneralProperties)
    {
       // Method Instances
-      //String tableName;
-      //Iterator<String> tableNamesIterator;
       TableTabPanel currentTableTabPanel;
       
       // Set the properties
@@ -645,18 +678,6 @@ public class DBTablesPanel extends JPanel implements ActionListener
       
       currentTableTabPanel = getSelectedTableTabPanel();
       currentTableTabPanel.refreshButton.doClick();
-      
-      /*
-      if (!tableCards.isEmpty())
-      {
-         tableNamesIterator = tableCards.iterator();
-         while (tableNamesIterator.hasNext())
-         {
-            currentTableTabPanel = getTableTabPanel(tableNamesIterator.next());
-            currentTableTabPanel.refreshButton.doClick();
-         }  
-      }
-      */
    }
    
    //==============================================================
