@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.5 01/26/2011
+// Version 3.6 04/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,7 @@
 //             Constructor.
 //         3.5 Table Names Obtained From New Class ConnectionManager in Constructor
 //             and actionPerformed().
+//         3.6 Minor Comment Change.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +121,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.5 01/26/2011
+ * @version 3.6 04/03/2011
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -683,8 +684,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
    }
    
    //==============================================================
-   // Method used for creation of the tool bar that will be used
-   // with the frame.
+   // Method used for creation of a popup menu for the search
+   // results table in the frame.
    //==============================================================
 
    private void createPopupMenu()
