@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.5 01/27/2011
+// Version 1.6 04/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 //         1.3 Updated So Column 1 Gets the HTML Code Link.
 //         1.4 Formatted to Conform With Rest of Project & Organized Imports.
 //         1.5 Copyright Update.
+//         1.6 Minor Comment Change.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +53,7 @@ import javax.swing.table.DefaultTableCellRenderer;
  * table cell renderer component used in the SearchFrame JTable.
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/27/2011
+ * @version 1.6 04/03/2011
  */
 
 class SearchResultTableCellRenderer extends DefaultTableCellRenderer
@@ -70,7 +71,7 @@ class SearchResultTableCellRenderer extends DefaultTableCellRenderer
    }
 
    //==============================================================
-   // Class Method to set the columns default rendering scheme.
+   // Class Method to get the columns default rendering scheme.
    //==============================================================
 
    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected,
