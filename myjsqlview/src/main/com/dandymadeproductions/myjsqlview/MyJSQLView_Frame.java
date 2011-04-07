@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.3 03/17/2011
+// Version 6.4 04/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -161,6 +161,7 @@
 //         6.3 03/17/2011 Added Class Instance sqlQueryBucketFrame, and Passed as Argument in
 //                        MyJSQLView_JMenuBarActions.actionsSelection() Called in actionPerformed().
 //                        Added Class Method getSQLBucket().
+//         6.4 04/07/2011 Class Instance sqlQueryBucketFrame Size Change and setResizable(false).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -187,7 +188,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.3 03/17/2011
+ * @version 6.4 04/07/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -227,7 +228,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
       
-      sqlQueryBucketFrame.setSize(350, 450);
+      sqlQueryBucketFrame.setSize(500, 450);
+      sqlQueryBucketFrame.setResizable(false);
       sqlQueryBucketFrame.center();
    }
 
