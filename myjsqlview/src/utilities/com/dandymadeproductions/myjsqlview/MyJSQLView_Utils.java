@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.2 01/26/2011
+// Version 5.3 04/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,14 +32,14 @@
 //=================================================================
 // Version 1.0 Original Class to Provide Common Utilities.
 //         1.1 Main Class Name Change to MyJSQLView.
-//         1.2 Cleaned out. Left Only some of the class methods.
-//             Currently not being used by any classes, but wish
-//             to keep for possible future use.
+//         1.2 Cleaned out. Left Only some of the class methods. Currently not
+//             being used by any classes, but wish to keep for possible future
+//             use.
 //         1.3 Updated Comments.
 //         1.4 Cleaned Up Javadoc Comments.
 //         1.5 Header Update.
-//         1,6 Added Class Method setLocalTimeZone() For Oracle
-//             Sessions Editing TIMESTAMPLTZ Fields.
+//         1,6 Added Class Method setLocalTimeZone() For Oracle Sessions Editing
+//             TIMESTAMPLTZ Fields.
 //         1.7 MyJSQLView Project Common Source Code Formatting.
 //         1.8 Added Class Method nDigitChop().
 //         1.9 Added Class Method convertCharMonthToDecimal().
@@ -97,6 +97,8 @@
 //         5.2 Class Method getSchemaTableName() identifierQuoteString Obtained From
 //             Redefined ConnectionManager Class. Same for Class Method 
 //             setLocalTimeZone() Except for SQL Errors.
+//         5.3 Added Class Method getUnlimitedSQLStatementString(). Also Some Moving
+//             Methods Around to List Alphabetically.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -128,9 +130,8 @@ import java.sql.Statement;
  *    The MyJSQLView_Utils class provides various usedful methods
  * used in the MyJSQLView application.
  * 
- * MyJSQLView application.
  * @author Dana M. Proctor
- * @version 5.2 01/26/2011
+ * @version 5.3 04/07/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -522,6 +523,82 @@ public class MyJSQLView_Utils extends MyJSQLView
    protected static char[] getStandardCharacters()
    {
       return "k8^ef1209rEW-+$xB1aH".toCharArray();
+   }
+   
+   //==============================================================
+   // Class method to allow the parsing of the standard SQL
+   // statement string from a TableTabPanel to remove the LIMIT
+   // condition.
+   //==============================================================
+
+   protected static String getUnlimitedSQLStatementString(String sqlStatementString)
+   {
+      // Method Instances
+      String subProtocol;
+      int index1, index2, index3, index4, index5;
+      
+      // Collect the database protocol.
+      
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+                        ConnectionProperties.SUBPROTOCOL);
+      
+      // Parsing
+      
+      // Oracle
+      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      {
+         // Sample
+         // SELECT "PARENT_ID", "NAME" FROM (SELECT ROW_NUMBER() OVER (ORDER BY "PARENT_ID" ASC)
+         // AS dmprownumber, "PARENT_ID", "NAME" FROM "DANAP"."CHILD" WHERE '1' LIKE '%') WHERE
+         // dmprownumber BETWEEN 1 AND 50
+         
+         index1 = sqlStatementString.indexOf("(");
+         index2 = sqlStatementString.lastIndexOf("FROM");
+         index3 = sqlStatementString.lastIndexOf(")");
+         index4 = sqlStatementString.indexOf("ORDER");
+         index5 = sqlStatementString.indexOf("AS dmprownumber");
+         
+         sqlStatementString = sqlStatementString.substring(0, (index1 - 1))
+                              + sqlStatementString.substring((index2 + 4), index3)
+                              + " " + sqlStatementString.substring(index4, (index5 - 2));
+      }
+      // HSQL
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      {
+         // Sample
+         // SELECT LIMIT 0 50 "PARENT_ID", "NAME" FROM "PUBLIC"."CHILD" WHERE TRUE LIKE '%' ORDER
+         // BY "PARENT_ID" ASC
+         
+         if (sqlStatementString.indexOf("LIMIT") != -1)
+         {
+            index1 = sqlStatementString.indexOf("LIMIT");
+            index2 = sqlStatementString.indexOf(ConnectionManager.getIdentifierQuoteString());
+            
+            // Select string creation by if no criteral specified,
+            // HSQL LIMIT Problem.
+            
+            if (index1 < index2)
+               sqlStatementString = sqlStatementString.substring(0, index1)
+                                    + sqlStatementString.substring(index2);
+            // Same as MySQL, Postgresql, & SQLite.
+            else
+               sqlStatementString = sqlStatementString.substring(0, index1);
+         }
+      }
+      // MySQL, PostgreSQL, & SQLite.
+      else
+      {
+         // Sample
+         // SELECT `parent_id`, `name` FROM `child` WHERE '1' LIKE '%' ORDER BY `parent_id` ASC
+         // LIMIT 50 OFFSET 0
+         
+         if (sqlStatementString.indexOf("LIMIT") != -1)
+            sqlStatementString = sqlStatementString.substring(0, sqlStatementString.lastIndexOf("LIMIT"));
+      }
+      sqlStatementString = sqlStatementString.trim();
+      System.out.println(sqlStatementString);
+      
+      return sqlStatementString;
    }
    
    //==============================================================
@@ -942,6 +1019,35 @@ public class MyJSQLView_Utils extends MyJSQLView
    }
    
    //==============================================================
+   // Class method to set the Oracle sesion timezone.
+   //==============================================================
+
+   protected static void setLocalTimeZone(Statement sqlStatement)
+   {
+      // Method Instances
+      Calendar calendar;
+      String timeZone;
+
+      // Create a calendar and get the platforms timezone
+      // to be used for setting the session timezone.
+
+      calendar = Calendar.getInstance();
+      // 1s/1000ms x 1min/60s x 1hr/60min
+      timeZone = ((calendar.get(Calendar.ZONE_OFFSET)) / (60 * 60 * 1000)) + ":00";
+      // System.out.println(timeZone);
+
+      try
+      {
+         sqlStatement.executeUpdate("ALTER SESSION SET TIME_ZONE = '" + timeZone + "'");
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
+         return;
+      }
+   }
+   
+   //==============================================================
    // Method for converting an input byte array either extracting
    // or dumping per a determined conversion definition.
    //==============================================================
@@ -1021,35 +1127,6 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       else
          return "";
-   }
-
-   //==============================================================
-   // Class method to set the Oracle sesion timezone.
-   //==============================================================
-
-   protected static void setLocalTimeZone(Statement sqlStatement)
-   {
-      // Method Instances
-      Calendar calendar;
-      String timeZone;
-
-      // Create a calendar and get the platforms timezone
-      // to be used for setting the session timezone.
-
-      calendar = Calendar.getInstance();
-      // 1s/1000ms x 1min/60s x 1hr/60min
-      timeZone = ((calendar.get(Calendar.ZONE_OFFSET)) / (60 * 60 * 1000)) + ":00";
-      // System.out.println(timeZone);
-
-      try
-      {
-         sqlStatement.executeUpdate("ALTER SESSION SET TIME_ZONE = '" + timeZone + "'");
-      }
-      catch (SQLException e)
-      {
-         ConnectionManager.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
-         return;
-      }
    }
    
    //==============================================================
