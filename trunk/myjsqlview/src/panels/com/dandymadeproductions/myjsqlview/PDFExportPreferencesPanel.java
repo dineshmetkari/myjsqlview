@@ -39,6 +39,7 @@
 //                        titleDefaultRadioButton. Class Methods Effected fillHeaderPanel(),
 //                        getPDFExportOptions(), & setPDFExportOptions().
 //         1.4 01/27/2011 Copyright Update.
+//         1.5 04/07/2011 Moved Class Method createColorChooser() to MyJSQLView_Utils Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,8 +54,8 @@ import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -63,7 +64,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/27/2011
+ * @version 1.5 04/07/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -126,7 +127,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
                                BorderFactory.createLoweredBevelBorder()));
       centerPanel = new JPanel(gridbag);
 
-      createColorChooser();
+      panelColorChooser = MyJSQLView_Utils.createColorChooser(this);
       actionCommand = "";
 
       // ==================================================
@@ -694,26 +695,6 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(dateAlignmentComboBox, constraints);
       datePanel.add(dateAlignmentComboBox);
-   }
-
-   //==============================================================
-   // Class Method to create a color chooser used to select the
-   // color for the title, header, and border options.
-   //==============================================================
-
-   private void createColorChooser()
-   {
-      // Method Instances.
-      AbstractColorChooserPanel[] colorChooserPanels;
-
-      // Create color chooser.
-      panelColorChooser = new JColorChooser();
-      panelColorChooser.setBorder(BorderFactory.createTitledBorder("Color"));
-      panelColorChooser.setColor(this.getBackground());
-      colorChooserPanels = panelColorChooser.getChooserPanels();
-      panelColorChooser.removeChooserPanel(colorChooserPanels[0]);
-      panelColorChooser.removeChooserPanel(colorChooserPanels[2]);
-      panelColorChooser.setPreviewPanel(new JPanel());
    }
 
    //================================================================
