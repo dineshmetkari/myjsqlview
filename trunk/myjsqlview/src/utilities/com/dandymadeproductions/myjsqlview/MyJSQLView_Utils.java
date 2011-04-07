@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.3 04/07/2011
+// Version 5.4 04/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,7 @@
 //             setLocalTimeZone() Except for SQL Errors.
 //         5.3 Added Class Method getUnlimitedSQLStatementString(). Also Some Moving
 //             Methods Around to List Alphabetically.
+//         5.4 Added Class Method createColorChooser().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -116,13 +117,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import javax.sound.sampled.*;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
-import javax.swing.JOptionPane;
-import javax.swing.JFrame;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+
+import javax.swing.*;
+import javax.swing.colorchooser.AbstractColorChooserPanel;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -131,7 +129,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.3 04/07/2011
+ * @version 5.4 04/07/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -373,6 +371,29 @@ public class MyJSQLView_Utils extends MyJSQLView
          return "";
       else
          return passwordString.toString();
+   }
+   
+   //==============================================================
+   // Class Method to create a color chooser used to select the
+   // color for the title, header, and border options.
+   //==============================================================
+
+   public static JColorChooser createColorChooser(JComponent component)
+   {
+      // Method Instances.
+      AbstractColorChooserPanel[] colorChooserPanels;
+      JColorChooser colorChooser;
+
+      // Create color chooser.
+      colorChooser = new JColorChooser();
+      colorChooser.setBorder(BorderFactory.createTitledBorder("Color"));
+      colorChooser.setColor(component.getBackground());
+      colorChooserPanels = colorChooser.getChooserPanels();
+      colorChooser.removeChooserPanel(colorChooserPanels[0]);
+      colorChooser.removeChooserPanel(colorChooserPanels[2]);
+      colorChooser.setPreviewPanel(new JPanel());
+      
+      return colorChooser;
    }
    
    //==============================================================
