@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.4 04/07/2011
+// Version 5.5 04/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,8 @@
 //         5.3 Added Class Method getUnlimitedSQLStatementString(). Also Some Moving
 //             Methods Around to List Alphabetically.
 //         5.4 Added Class Method createColorChooser().
+//         5.5 Class Method createColorChooser() Argument JComponent Changed to Component.
+//             Class Method getUnlimitedSQLStatementString() Additional Fault Tolerance.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -129,7 +131,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.4 04/07/2011
+ * @version 5.5 04/08/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -378,7 +380,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // color for the title, header, and border options.
    //==============================================================
 
-   public static JColorChooser createColorChooser(JComponent component)
+   public static JColorChooser createColorChooser(Component component)
    {
       // Method Instances.
       AbstractColorChooserPanel[] colorChooserPanels;
@@ -558,11 +560,15 @@ public class MyJSQLView_Utils extends MyJSQLView
       String subProtocol;
       int index1, index2, index3, index4, index5;
       
+      // Check if process can be performed.
+      
+      if (sqlStatementString.indexOf("LIMIT") == -1)
+         return sqlStatementString;
+      
       // Collect the database protocol.
       
       subProtocol = ConnectionManager.getConnectionProperties().getProperty(
                         ConnectionProperties.SUBPROTOCOL);
-      
       // Parsing
       
       // Oracle
@@ -579,9 +585,12 @@ public class MyJSQLView_Utils extends MyJSQLView
          index4 = sqlStatementString.indexOf("ORDER");
          index5 = sqlStatementString.indexOf("AS dmprownumber");
          
-         sqlStatementString = sqlStatementString.substring(0, (index1 - 1))
-                              + sqlStatementString.substring((index2 + 4), index3)
-                              + " " + sqlStatementString.substring(index4, (index5 - 2));
+         if (index1 != -1 && index2 != -1 && index3 != -1 && index4 != -1 && index5 != -1)
+         {
+            sqlStatementString = sqlStatementString.substring(0, (index1 - 1))
+                                 + sqlStatementString.substring((index2 + 4), index3)
+                                 + " " + sqlStatementString.substring(index4, (index5 - 2));
+         }
       }
       // HSQL
       else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
@@ -617,7 +626,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             sqlStatementString = sqlStatementString.substring(0, sqlStatementString.lastIndexOf("LIMIT"));
       }
       sqlStatementString = sqlStatementString.trim();
-      System.out.println(sqlStatementString);
+      // System.out.println(sqlStatementString);
       
       return sqlStatementString;
    }
