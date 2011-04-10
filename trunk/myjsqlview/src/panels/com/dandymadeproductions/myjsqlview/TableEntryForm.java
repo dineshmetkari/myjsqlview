@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.77 01/26/2011
+// Version 8.78 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -320,6 +320,7 @@
 //        8.77 01/26/2011 Changes to Class Method addUpdateTableEntry() to Use Newly Redefined
 //                        ConnectionManager to Display SQL Errors. Also identifierQuoteString 
 //                        Collected From ConnectionManager. Added Class Instance subProtocol.
+//        8.78 04/09/2011 Moved Class Method createEditMenu() to MyJSQLView_Utils Class.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -330,11 +331,9 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.Component;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -348,14 +347,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 
 /**
  *    The TableEntryForm class is used to provide a form panel to add, or
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.77 01/26/2011
+ * @version 8.78 04/09/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -914,11 +912,13 @@ class TableEntryForm extends JFrame implements ActionListener
                   title = "Text Data";
                else
                   title = resource;
+               
                resource = resourceBundle.getResource("TableEntryForm.dialogbutton.Save");
                if (resource.equals(""))
                   buttonSave = "save";
                else
                   buttonSave = resource;
+               
                resource = resourceBundle.getResource("TableEntryForm.dialogbutton.Open");
                if (resource.equals(""))
                   buttonOpen = "open";
@@ -928,7 +928,7 @@ class TableEntryForm extends JFrame implements ActionListener
                textDialog = new InputDialog(null, title, buttonSave, buttonOpen, content, null);
 
                editorMenuBar = new JMenuBar();
-               editorMenuBar.add(createEditMenu());
+               editorMenuBar.add(MyJSQLView_Utils.createEditMenu(true));
                textDialog.setJMenuBar(editorMenuBar);
                textDialog.pack();
                textDialog.center();
@@ -2418,83 +2418,6 @@ class TableEntryForm extends JFrame implements ActionListener
          }
       }
       return sqlStatementString.toString();
-   }
-
-   //==============================================================
-   // Class method to create a JMenu for the Text, MediumText,
-   // LongText EditorPanes.
-   //==============================================================
-
-   private JMenu createEditMenu()
-   {
-      // Class Method Instances
-      JMenu editMenu;
-      JMenuItem menuItem;
-      JTextPane textComponent;
-      String resource;
-
-      // Create menu items cut, copy, paste, and
-      // select all.
-
-      resource = resourceBundle.getResource("TableEntryForm.menu.Edit");
-      if (resource.equals(""))
-         editMenu = new JMenu("Edit");
-      else
-         editMenu = new JMenu(resource);
-      editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
-
-      menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-      resource = resourceBundle.getResource("TableEntryForm.menu.Cut");
-      if (resource.equals(""))
-         menuItem.setText("Cut" + "          " + "Ctrl-x");
-      else
-         menuItem.setText(resource + "          " + "Ctrl-x");
-      menuItem.setMnemonic(KeyEvent.VK_X);
-      editMenu.add(menuItem);
-
-      menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("TableEntryForm.menu.Copy");
-      if (resource.equals(""))
-         menuItem.setText("Copy" + "       " + "Ctrl-c");
-      else
-         menuItem.setText(resource + "       " + "Ctrl-c");
-      menuItem.setMnemonic(KeyEvent.VK_C);
-      editMenu.add(menuItem);
-
-      menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-      resource = resourceBundle.getResource("TableEntryForm.menu.Paste");
-      if (resource.equals(""))
-         menuItem.setText("Paste" + "       " + "Ctrl-v");
-      else
-         menuItem.setText(resource + "       " + "Ctrl-v");
-      menuItem.setMnemonic(KeyEvent.VK_V);
-      editMenu.add(menuItem);
-
-      editMenu.addSeparator();
-
-      // Seems the DefaultEditorKit does not provide the ability
-      // to obtain the action command directly for select-all?
-      // editMenu.add(action.getActionByName(DefaultEditorKit.selectAllAction));
-
-      textComponent = new JTextPane();
-      Action[] textActionsArray = textComponent.getActions();
-      for (int i = 0; i < textActionsArray.length; i++)
-      {
-         Action currentAction = textActionsArray[i];
-         // System.out.println(a.getValue(Action.NAME));
-         if (currentAction.getValue(Action.NAME).equals("select-all"))
-         {
-            menuItem = new JMenuItem(currentAction);
-            resource = resourceBundle.getResource("TableEntryForm.menu.SelectAll");
-            if (resource.equals(""))
-               menuItem.setText("Select ALL");
-            else
-               menuItem.setText(resource);
-            editMenu.add(menuItem);
-         }
-      }
-      editMenu.add(menuItem);
-      return editMenu;
    }
 
    //==============================================================
