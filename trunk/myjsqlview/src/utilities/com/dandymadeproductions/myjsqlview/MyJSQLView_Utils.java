@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.5 04/08/2011
+// Version 5.6 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,7 @@
 //         5.4 Added Class Method createColorChooser().
 //         5.5 Class Method createColorChooser() Argument JComponent Changed to Component.
 //             Class Method getUnlimitedSQLStatementString() Additional Fault Tolerance.
+//         5.6 Added Class Method createEditMenu().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -110,6 +111,7 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.Calendar;
 import java.util.Vector;
 import java.io.BufferedInputStream;
@@ -122,6 +124,7 @@ import javax.sound.sampled.*;
 
 import javax.swing.*;
 import javax.swing.colorchooser.AbstractColorChooserPanel;
+import javax.swing.text.DefaultEditorKit;
 
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -131,7 +134,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.5 04/08/2011
+ * @version 5.6 04/09/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -396,6 +399,91 @@ public class MyJSQLView_Utils extends MyJSQLView
       colorChooser.setPreviewPanel(new JPanel());
       
       return colorChooser;
+   }
+   
+   //==============================================================
+   // Class method to create a JMenu for the a EditorPane. 
+   //==============================================================
+
+   public static JMenu createEditMenu(boolean typeEdit)
+   {
+      // Class Method Instances
+      JMenu editMenu;
+      JMenuItem menuItem;
+      JTextPane textComponent;
+      
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resource;
+
+      // Create menu items cut, copy, paste, and
+      // select all.
+      
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resource = resourceBundle.getResource("TableEntryForm.menu.Edit");
+      if (resource.equals(""))
+         editMenu = new JMenu("Edit");
+      else
+         editMenu = new JMenu(resource);
+      editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
+
+      if (typeEdit)
+      {
+         menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
+         resource = resourceBundle.getResource("TableEntryForm.menu.Cut");
+         if (resource.equals(""))
+            menuItem.setText("Cut" + "          " + "Ctrl-x");
+         else
+            menuItem.setText(resource + "          " + "Ctrl-x");
+         menuItem.setMnemonic(KeyEvent.VK_X);
+         editMenu.add(menuItem);
+      }
+
+      menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
+      resource = resourceBundle.getResource("TableEntryForm.menu.Copy");
+      if (resource.equals(""))
+         menuItem.setText("Copy" + "       " + "Ctrl-c");
+      else
+         menuItem.setText(resource + "       " + "Ctrl-c");
+      menuItem.setMnemonic(KeyEvent.VK_C);
+      editMenu.add(menuItem);
+
+      if (typeEdit)
+      {
+         menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
+         resource = resourceBundle.getResource("TableEntryForm.menu.Paste");
+         if (resource.equals(""))
+            menuItem.setText("Paste" + "       " + "Ctrl-v");
+         else
+            menuItem.setText(resource + "       " + "Ctrl-v");
+         menuItem.setMnemonic(KeyEvent.VK_V);
+         editMenu.add(menuItem);
+      }
+
+      editMenu.addSeparator();
+
+      // Seems the DefaultEditorKit does not provide the ability
+      // to obtain the action command directly for select-all?
+      // editMenu.add(action.getActionByName(DefaultEditorKit.selectAllAction));
+
+      textComponent = new JTextPane();
+      Action[] textActionsArray = textComponent.getActions();
+      for (int i = 0; i < textActionsArray.length; i++)
+      {
+         Action currentAction = textActionsArray[i];
+         // System.out.println(a.getValue(Action.NAME));
+         if (currentAction.getValue(Action.NAME).equals("select-all"))
+         {
+            menuItem = new JMenuItem(currentAction);
+            resource = resourceBundle.getResource("TableEntryForm.menu.SelectAll");
+            if (resource.equals(""))
+               menuItem.setText("Select ALL");
+            else
+               menuItem.setText(resource);
+            editMenu.add(menuItem);
+         }
+      }
+      editMenu.add(menuItem);
+      return editMenu;
    }
    
    //==============================================================
