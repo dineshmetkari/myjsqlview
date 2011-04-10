@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.6 04/09/2011
+// Version 5.7 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,8 @@
 //         5.5 Class Method createColorChooser() Argument JComponent Changed to Component.
 //             Class Method getUnlimitedSQLStatementString() Additional Fault Tolerance.
 //         5.6 Added Class Method createEditMenu().
+//         5.7 Added Class Method createTextDialog() and Modified createEditMenu()
+//             Method to Return JMenuBar.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -134,7 +136,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.6 04/09/2011
+ * @version 5.7 04/09/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -405,21 +407,76 @@ public class MyJSQLView_Utils extends MyJSQLView
    // Class method to create a JMenu for the a EditorPane. 
    //==============================================================
 
-   public static JMenu createEditMenu(boolean typeEdit)
+   public static InputDialog createTextDialog(boolean typeEdit, JEditorPane editorPane)
    {
-      // Class Method Instances
+      // Method Instances.
+      InputDialog textDialog;
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resourceTitle, resourceSave, resourceCloseOpen;
+
+      // Create an EditorPane with a ScrollPane to view
+      // the content.
+      
+      if (!typeEdit)
+         editorPane.setEditable(false);
+
+      JScrollPane scrollPane = new JScrollPane(editorPane);
+      scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+      scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      //scrollPane.setPreferredSize(new Dimension(500, 350));
+      //scrollPane.setMinimumSize(new Dimension(400, 200));
+
+      Object[] content = {scrollPane};
+
+      // Create a frame to show with menubar.
+      
+      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceTitle = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.TextData");
+      if (resourceTitle.equals(""))
+         resourceTitle = "Text Data";
+      
+      resourceSave = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Save");
+      if (resourceSave.equals(""))
+         resourceSave = "Save";
+      
+      if (typeEdit)
+      {
+         resourceCloseOpen = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Open");
+         if (resourceCloseOpen.equals(""))
+            resourceCloseOpen = "Open";
+      }
+      else
+      {
+         resourceCloseOpen = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Close");
+         if (resourceSave.equals(""))
+            resourceCloseOpen = "Close";
+      }
+      
+      textDialog = new InputDialog(null, resourceTitle, resourceSave, resourceCloseOpen, content, null);
+      return textDialog;
+   }
+   
+   //==============================================================
+   // Class method to create a Edit Menu Bar for an EditorPane. 
+   //==============================================================
+
+   public static JMenuBar createEditMenu(boolean typeEdit)
+   {
+      // Method Instances.
+      JMenuBar editorMenuBar;
       JMenu editMenu;
       JMenuItem menuItem;
       JTextPane textComponent;
-      
       MyJSQLView_ResourceBundle resourceBundle;
       String resource;
 
       // Create menu items cut, copy, paste, and
       // select all.
       
+      editorMenuBar = new JMenuBar();
+      
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-      resource = resourceBundle.getResource("TableEntryForm.menu.Edit");
+      resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Edit");
       if (resource.equals(""))
          editMenu = new JMenu("Edit");
       else
@@ -429,7 +486,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (typeEdit)
       {
          menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-         resource = resourceBundle.getResource("TableEntryForm.menu.Cut");
+         resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Cut");
          if (resource.equals(""))
             menuItem.setText("Cut" + "          " + "Ctrl-x");
          else
@@ -439,7 +496,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("TableEntryForm.menu.Copy");
+      resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Copy");
       if (resource.equals(""))
          menuItem.setText("Copy" + "       " + "Ctrl-c");
       else
@@ -450,7 +507,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (typeEdit)
       {
          menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-         resource = resourceBundle.getResource("TableEntryForm.menu.Paste");
+         resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Paste");
          if (resource.equals(""))
             menuItem.setText("Paste" + "       " + "Ctrl-v");
          else
@@ -474,7 +531,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          if (currentAction.getValue(Action.NAME).equals("select-all"))
          {
             menuItem = new JMenuItem(currentAction);
-            resource = resourceBundle.getResource("TableEntryForm.menu.SelectAll");
+            resource = resourceBundle.getResource("MyJSQLView_Utils.menu.SelectAll");
             if (resource.equals(""))
                menuItem.setText("Select ALL");
             else
@@ -483,7 +540,9 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
       }
       editMenu.add(menuItem);
-      return editMenu;
+      editorMenuBar.add(editMenu);
+      
+      return editorMenuBar;
    }
    
    //==============================================================
