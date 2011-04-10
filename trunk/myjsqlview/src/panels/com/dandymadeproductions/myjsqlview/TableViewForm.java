@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.8 01/27/2011
+// Version 5.9 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -138,6 +138,7 @@
 //         5.6 05/19/2010 Parameterized columnNamesIterator in Constructor.
 //         5.7 08/25/2010 Added Resource For Message Dialog in saveBlobTextField().
 //         5.8 01/27/2011 Copyright Update.
+//         5.9 04/09/2011 Moved Class Method createEditMenu() to MyJSQLView_Utils Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -157,7 +158,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
 
 /**
  *    The TableViewForm class provides a generic panel in the
@@ -165,7 +165,7 @@ import javax.swing.text.DefaultEditorKit;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.8 01/27/2011
+ * @version 5.9 04/09/2011
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -396,11 +396,11 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
                   resourceClose = "Close";
                
                textDialog = new InputDialog(null, resourceTitle, resourceSave, resourceClose, content, null);
+               
                editorMenuBar = new JMenuBar();
-               editorMenuBar.add(createEditMenu());
+               editorMenuBar.add(MyJSQLView_Utils.createEditMenu(false));
                textDialog.setJMenuBar(editorMenuBar);
                textDialog.pack();
-               textDialog.setSize(500, 400);
                textDialog.center();
                textDialog.setVisible(true);
 
@@ -564,62 +564,6 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       blobBytesHashMap = new HashMap <JButton, Object>();
    }
    
-   //==============================================================
-   // Class method to create a JMenu for the Text, MediumText,
-   // LongText EditorPanes.
-   //==============================================================
-
-   private JMenu createEditMenu()
-   {
-      // Class Method Instances
-      JMenu editMenu;
-      JMenuItem menuItem;
-      JTextPane textComponent;
-      String resource;
-
-      // Create menu items copy, & select all.
-      resource = resourceBundle.getResource("TableViewForm.menu.Edit");
-      if (resource.equals(""))
-         editMenu = new JMenu("Edit");
-      else
-         editMenu = new JMenu(resource);
-
-      menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("TableViewForm.menu.Copy");
-      if (resource.equals(""))
-         menuItem.setText("Copy" + "       " + "Ctrl-c");
-      else
-         menuItem.setText(resource + "       " + "Ctrl-c");
-      menuItem.setMnemonic(KeyEvent.VK_C);
-      editMenu.add(menuItem);
-
-      editMenu.addSeparator();
-
-      // Seems the DefaultEditorKit does not provide the ability
-      // to obtain the action command directly for select-all?
-      // editMenu.add(action.getActionByName(DefaultEditorKit.selectAllAction));
-
-      textComponent = new JTextPane();
-      Action[] textActionsArray = textComponent.getActions();
-      for (int i = 0; i < textActionsArray.length; i++)
-      {
-         Action currentAction = textActionsArray[i];
-         // System.out.println(a.getValue(Action.NAME));
-         if (currentAction.getValue(Action.NAME).equals("select-all"))
-         {
-            menuItem = new JMenuItem(currentAction);
-            resource = resourceBundle.getResource("TableViewForm.menu.SelectAll");
-            if (resource.equals(""))
-               menuItem.setText("Select ALL");
-            else
-               menuItem.setText(resource);
-            editMenu.add(menuItem);
-         }
-      }
-      editMenu.add(menuItem);
-      return editMenu;
-   }
-
    //==============================================================
    // Class method to place text content into a selected
    // TextField/JButton.
