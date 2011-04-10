@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.0 04/02/2011
+// Version 1.1 04/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 MyJSQLView Initial SQLQueryBucketListCellRenderer Class.
+//         1.1 Class Method getListCellRendererComponent() Added Instances
+//             buttonColor, & buttonFont. Set background() in Same. 
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -37,18 +39,21 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 
 import javax.swing.BorderFactory;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+
 
 /**
  *    The SQLQueryBucketListCellRenderer class is used to provide a custom
  * list cell renderer component used in the SQLQueryBucketFrame JList.
  * 
  * @author Dana M. Proctor
- * @version 1.0 04/02/2011
+ * @version 1.1 04/08/2011
  */
 
 class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements ListCellRenderer
@@ -75,11 +80,17 @@ class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements
    {
       // Method Instances.
       String buttonTextLabel;
+      Color buttonColor;
+      Font buttonFont;
       
-      // Set label, selection highlight, & font.
+      // Set label, background, selection highlight, & font.
       
       buttonTextLabel = ((SQLQueryBucketListObject) value).getText();
+      buttonColor = ((SQLQueryBucketListObject) value).getBackground();
+      buttonFont = list.getFont();
+      
       setText(buttonTextLabel);
+      setBackground(buttonColor);
 
       if (isSelected)
       {
@@ -91,7 +102,7 @@ class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements
       }
 
       setEnabled(list.isEnabled());
-      setFont(list.getFont());
+      setFont(buttonFont);
       setOpaque(true);
       return this;
    }
