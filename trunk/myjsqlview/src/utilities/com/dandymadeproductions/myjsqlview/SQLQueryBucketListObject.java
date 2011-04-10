@@ -10,7 +10,7 @@
 // 
 // Copyright (c) 2007, Sun Microsystems, Inc., Chet, Dana M. Proctor
 // All rights reserved.
-// Version 1.1 03/31/2011
+// Version 1.2 04/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,9 @@
 //=================================================================
 // Version 1.0 05/01/2007 Original Sun Microsystems, Inc TransparentButton Class.
 //         1.1 03/31/2011 Integration Into MyJSQLView as SQLQueryBucketListObject.
+//         1.2 04/10/2011 Class Method getSQLStatementString() Correction to NOT
+//                        Change the Object's sqlStatementString, but Just Return.
+//                        Also !isLimited.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,7 +59,7 @@ import javax.swing.JButton;
  * that exempts translucency.
  * 
  * @author Chet, Dana M. Proctor
- * @version 1.0 03/31/2011
+ * @version 1.2 04/10/2011
  */
 
 class SQLQueryBucketListObject extends JButton
@@ -135,9 +138,10 @@ class SQLQueryBucketListObject extends JButton
    
    public String getSQLStatementString()
    {
-      if (isLimited)
-         sqlStatementString = MyJSQLView_Utils.getUnlimitedSQLStatementString(sqlStatementString);
-      return sqlStatementString;
+      if (!isLimited)
+         return MyJSQLView_Utils.getUnlimitedSQLStatementString(sqlStatementString);
+      else
+         return sqlStatementString;
    }
    
    //==============================================================
