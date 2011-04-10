@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.78 04/09/2011
+// Version 8.79 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -321,6 +321,9 @@
 //                        ConnectionManager to Display SQL Errors. Also identifierQuoteString 
 //                        Collected From ConnectionManager. Added Class Instance subProtocol.
 //        8.78 04/09/2011 Moved Class Method createEditMenu() to MyJSQLView_Utils Class.
+//        8.79 04/09/2011 Class Method actionPerformed() Standardized Text Entry/File Opening via
+//                        the Help of New Methods MyJSQLView_Utils.createTextDialog() &
+//                        MyJSQLView_Utils.createEditMenu(true);
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -353,7 +356,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.78 04/09/2011
+ * @version 8.79 04/09/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -885,50 +888,20 @@ class TableEntryForm extends JFrame implements ActionListener
             // Open Text entry or open file if desired.
             else
             {
+               JEditorPane editorPane;
                InputDialog textDialog;
-               String textContent, resource;
-               String title, buttonSave, buttonOpen;
+               String textContent;
                JMenuBar editorMenuBar;
-
-               // Obtain content of text field
+               
+               // Create an EditorPane to view/edit content.
+               
                textContent = ((String) blobBytesHashMap.get((JButton) formSource));
-
-               // Create an EditorPane with Copy, Cut, Paste PopupMenu and a
-               // ScrollPane to view the content.
-               JEditorPane editorPane = new JEditorPane("text/plain", textContent);
+               editorPane = new JEditorPane("text/plain", textContent);
                editorPane.addMouseListener(MyJSQLView.getPopupMenuListener());
 
-               JScrollPane editorScrollPane = new JScrollPane(editorPane);
-               editorScrollPane.setSize(500, 350);
-               editorScrollPane.setPreferredSize(new Dimension(500, 350));
-               editorScrollPane.setMinimumSize(new Dimension(400, 200));
+               textDialog = MyJSQLView_Utils.createTextDialog(true, editorPane);
 
-               Object[] content = {editorScrollPane};
-
-               // Create a frame to show with menubar.
-
-               resource = resourceBundle.getResource("TableEntryForm.dialogtitle.TextData");
-               if (resource.equals(""))
-                  title = "Text Data";
-               else
-                  title = resource;
-               
-               resource = resourceBundle.getResource("TableEntryForm.dialogbutton.Save");
-               if (resource.equals(""))
-                  buttonSave = "save";
-               else
-                  buttonSave = resource;
-               
-               resource = resourceBundle.getResource("TableEntryForm.dialogbutton.Open");
-               if (resource.equals(""))
-                  buttonOpen = "open";
-               else
-                  buttonOpen = resource;
-
-               textDialog = new InputDialog(null, title, buttonSave, buttonOpen, content, null);
-
-               editorMenuBar = new JMenuBar();
-               editorMenuBar.add(MyJSQLView_Utils.createEditMenu(true));
+               editorMenuBar = MyJSQLView_Utils.createEditMenu(true);
                textDialog.setJMenuBar(editorMenuBar);
                textDialog.pack();
                textDialog.center();
