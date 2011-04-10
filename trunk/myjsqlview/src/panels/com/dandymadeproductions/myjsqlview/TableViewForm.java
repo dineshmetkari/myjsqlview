@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.9 04/09/2011
+// Version 6.0 04/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,9 @@
 //         5.7 08/25/2010 Added Resource For Message Dialog in saveBlobTextField().
 //         5.8 01/27/2011 Copyright Update.
 //         5.9 04/09/2011 Moved Class Method createEditMenu() to MyJSQLView_Utils Class.
+//         6.0 04/09/2011 Class Method actionPerformed() Standardized Text/Array Viewing
+//                        & Saving via the Help of New Methods MyJSQLView_Utils.createTextDialog()
+//                        & MyJSQLView_Utils.createEditMenu(true);
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -165,7 +168,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 5.9 04/09/2011
+ * @version 6.0 04/09/2011
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -359,51 +362,25 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
             // View Text/Array and Allow Saving if Desired.
             else
             {
+               JEditorPane editorPane;
                InputDialog textDialog;
                String textContent;
                JMenuBar editorMenuBar;
-               String resourceTitle, resourceSave, resourceClose;
-
-               // Obtain content of text field
+               
+               // Create an EditorPane to view/edit content.
                
                textContent = ((String) blobBytesHashMap.get((JButton) panelSource));
-
-               // Create an EditorPane and ScrollPane to view
-               // the content.
-               JEditorPane editorPane = new JEditorPane("text/plain", textContent);
+               editorPane = new JEditorPane("text/plain", textContent);
                editorPane.addMouseListener(MyJSQLView.getPopupMenuListener());
-               editorPane.setEditable(false);
 
-               JScrollPane scrollPane = new JScrollPane(editorPane);
-               scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-               scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-               scrollPane.setPreferredSize(new Dimension(600, 450));
-               scrollPane.setMinimumSize(new Dimension(100, 100));
+               textDialog = MyJSQLView_Utils.createTextDialog(false, editorPane);
 
-               Object[] content = {scrollPane};
-
-               // Create a frame to show.
-               resourceTitle = resourceBundle.getResource("TableViewForm.dialogtitle.TextData");
-               if (resourceTitle.equals(""))
-                  resourceTitle = "Text Data";
-               
-               resourceSave = resourceBundle.getResource("TableViewForm.dialogbutton.Save");
-               if (resourceSave.equals(""))
-                  resourceSave = "Save";
-               
-               resourceClose = resourceBundle.getResource("TableViewForm.dialogbutton.Close");
-               if (resourceSave.equals(""))
-                  resourceClose = "Close";
-               
-               textDialog = new InputDialog(null, resourceTitle, resourceSave, resourceClose, content, null);
-               
-               editorMenuBar = new JMenuBar();
-               editorMenuBar.add(MyJSQLView_Utils.createEditMenu(false));
+               editorMenuBar = MyJSQLView_Utils.createEditMenu(false);
                textDialog.setJMenuBar(editorMenuBar);
                textDialog.pack();
                textDialog.center();
                textDialog.setVisible(true);
-
+               
                // Check to see if save data is desired..
                if (textDialog.isActionResult())
                   saveBlobTextField(panelSource);
