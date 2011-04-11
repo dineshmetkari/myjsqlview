@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.7 04/09/2011
+// Version 5.8 04/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,8 @@
 //         5.6 Added Class Method createEditMenu().
 //         5.7 Added Class Method createTextDialog() and Modified createEditMenu()
 //             Method to Return JMenuBar.
+//         5.8 Class Method createTextDialog() setPreferred/MinimumSize() on JScrollPane.
+//             Correction in Same for resourceCloseOpen From resourceSave for typeEdit.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -136,7 +138,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.7 04/09/2011
+ * @version 5.8 04/10/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -423,8 +425,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       JScrollPane scrollPane = new JScrollPane(editorPane);
       scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
       scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-      //scrollPane.setPreferredSize(new Dimension(500, 350));
-      //scrollPane.setMinimumSize(new Dimension(400, 200));
+      scrollPane.setPreferredSize(new Dimension(500, 350));
+      scrollPane.setMinimumSize(new Dimension(400, 200));
 
       Object[] content = {scrollPane};
 
@@ -448,7 +450,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       else
       {
          resourceCloseOpen = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Close");
-         if (resourceSave.equals(""))
+         if (resourceCloseOpen.equals(""))
             resourceCloseOpen = "Close";
       }
       
