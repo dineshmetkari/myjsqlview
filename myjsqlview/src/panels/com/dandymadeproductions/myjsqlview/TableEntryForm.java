@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.79 04/09/2011
+// Version 8.80 04/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -324,6 +324,7 @@
 //        8.79 04/09/2011 Class Method actionPerformed() Standardized Text Entry/File Opening via
 //                        the Help of New Methods MyJSQLView_Utils.createTextDialog() &
 //                        MyJSQLView_Utils.createEditMenu(true);
+//        8.80 04/10/2011 Minor Cleanup.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -356,7 +357,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.79 04/09/2011
+ * @version 8.80 04/10/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1025,7 +1026,6 @@ class TableEntryForm extends JFrame implements ActionListener
       // Class Method Instance
       String fileName;
       byte[] inBytes;
-      ;
 
       // Choosing the file to import data from.
       JFileChooser importData = new JFileChooser();
