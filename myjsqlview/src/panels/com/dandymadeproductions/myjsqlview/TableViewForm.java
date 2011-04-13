@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.0 04/09/2011
+// Version 6.1 04/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,8 @@
 //         6.0 04/09/2011 Class Method actionPerformed() Standardized Text/Array Viewing
 //                        & Saving via the Help of New Methods MyJSQLView_Utils.createTextDialog()
 //                        & MyJSQLView_Utils.createEditMenu(true);
+//         6.1 04/11/2011 Correction in Class Method saveBlobTextField() When resourceMessage
+//                        is an Empty String.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -168,7 +170,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.0 04/09/2011
+ * @version 6.1 04/11/2011
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -514,7 +516,8 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
                if (resourceAlert.equals(""))
                   resourceAlert = "Alert";
                resourceMessage = resourceBundle.getResource("TableViewForm.dialogmessage.ErrorWritingDataFile");
-               if (resourceAlert.equals(""))
+               if (resourceMessage.equals(""))
+                  resourceMessage = "Error Writing Data File";
                
                JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);
