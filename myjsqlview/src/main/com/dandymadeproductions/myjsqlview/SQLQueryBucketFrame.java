@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.2 04/10/2011
+// Version 1.3 04/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,10 @@
 // Version 1.0 03/17/2011 Initial SQLQueryBucketFrame Class.
 //         1.1 04/07/2011 Basic Semi-Completed Outline of Functionality.
 //         1.2 04/10/2011 Majority of Functionality Completed.
+//         1.4 04/14/2011 Completed SQLQueryBucketFrame Class. Checked & Cleanedup.
+//                        Added List Item Moving and Correction for Editing SQL
+//                        Statements for Opening File When Added New Items. Corrected
+//                        List File Save/Opening Parameter Sequence.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,8 +48,10 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -60,7 +66,7 @@ import javax.swing.*;
  * Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.2 04/10/2011
+ * @version 1.4 04/14/2011
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -90,7 +96,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private SQLQueryBucketListObject processingBucketListObject;
    private JColorChooser panelColorChooser;
    private boolean processItem;
+   private boolean colorAction;
    private String lastActionCommand;
+   private int selectedListIndex;
    
    private static final String FILE_OPEN = "FO";
    private static final String FILE_SAVE = "FS";
@@ -129,6 +137,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
       lastOpenSaveDirectory = "";
       savedFileName = "";
+      selectedListIndex = -1;
+      colorAction = false;
       processItem = false;
       lastActionCommand = "";
 
@@ -182,7 +192,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       panelColorChooser = MyJSQLView_Utils.createColorChooser(this);
 
-      // SQL query drop container, JList and its popup menu.
+      // SQL query drop container, JList and its Popup Menu,
+      // Transfer Handler.
 
       listPanel = new ListHoldingPanel();
       listPanel.setLayout(new BorderLayout());
@@ -198,19 +209,105 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       sqlListPopupMenu = createPopupMenu();
       sqlQueryList.add(sqlListPopupMenu);
 
+      // ==================================================
+      // Transfer handler for moving items around in the
+      // list and allowing SQL Statement to be dropped into
+      // other applications, tabs/plugins.
+      // ==================================================
+      
       sqlQueryList.setTransferHandler(new TransferHandler()
       {
          private static final long serialVersionUID = 2558730071314905153L;
+         private boolean isThisDropping;
 
-         // No imports to list allowed.
+         // No imports to list allowed unless to itself.
          public boolean canImport(TransferHandler.TransferSupport info)
          {
-            return false;
+            // Method Instances.
+            JList.DropLocation dropLocation;
+            
+            // Setting up and checking to see if
+            // this is drop location.
+            
+            isThisDropping = false;
+            
+            if (info.getComponent().equals(sqlQueryList))
+            {
+               dropLocation = (JList.DropLocation) info.getDropLocation();
+               if (dropLocation.getIndex() == -1)
+                  return false;
+               else
+               {
+                  isThisDropping = true;
+                  return true;
+               }
+            }
+            else
+               return false;
          }
 
+         // This dropping.
          public boolean importData(TransferHandler.TransferSupport info)
          {
-            return false;
+            // Method Instances.
+            SQLQueryBucketListObject listObjectToBeDropped;
+            JList.DropLocation dropLocation;
+            DefaultListModel listModel;
+            int dropLocationIndex, listSize;
+            boolean isInsert;
+            
+            if (!info.isDrop() || !isThisDropping)
+            {
+               return false;
+            }
+            else
+            {
+               dropLocation = (JList.DropLocation) info.getDropLocation();
+               listModel = (DefaultListModel) sqlQueryList.getModel();
+               dropLocationIndex = dropLocation.getIndex();
+               isInsert = dropLocation.isInsert();
+               
+               // Get the current list object under the drop.
+               
+               listObjectToBeDropped = (SQLQueryBucketListObject) listModel.getElementAt(selectedListIndex);
+
+               // Inserting the object into the list.
+               if (isInsert)
+               {
+                  listSize = sqlQueryList.getModel().getSize();
+                  
+                  // Before
+                  if (dropLocationIndex == 0)
+                  {
+                     listModel.add(dropLocationIndex, listModel.getElementAt(selectedListIndex));
+                     listModel.remove(selectedListIndex + 1); 
+                  }
+                  // End
+                  else if (dropLocationIndex >= listSize)
+                  {
+                     listModel.addElement(listObjectToBeDropped);
+                     listModel.remove(selectedListIndex);
+                  }
+                  // In
+                  else
+                  {
+                     listModel.add(dropLocationIndex, listModel.getElementAt(selectedListIndex));
+                     if (dropLocationIndex < selectedListIndex)
+                        listModel.remove(selectedListIndex + 1); 
+                     else
+                        listModel.remove(selectedListIndex);      
+                  }
+               }
+               // Implemented if want replace. Must set sqlQueryList.setDropMode().
+               else
+               {
+                  //listModel.set(dropLocationIndex,
+                                //((DefaultListModel) sqlQueryList.getModel()).getElementAt(selectedListIndex));
+               }
+               selectedListIndex = -1;
+               isThisDropping = false;
+               return true;
+            }
          }
 
          // Handling of export of SQL statement.
@@ -227,7 +324,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             return new StringSelection(sqlStatement);
          }
       });
-
+      sqlQueryList.setDropMode(DropMode.INSERT);
       sqlQueryList.addMouseListener(this);
 
       JScrollPane scrollPane = new JScrollPane(sqlQueryList);
@@ -290,18 +387,18 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       getContentPane().add(mainPanel);
    }
 
-   // ==============================================================
+   //==============================================================
    // ActionEvent Listener method for detecting the user's selection
    // of various components in the frame and taking the appropriate
    // action as required.
-   // ==============================================================
+   //==============================================================
 
    public void actionPerformed(ActionEvent evt)
    {
       Object panelSource = evt.getSource();
       // System.out.println(panelSource);
 
-      // MenuBar Actions
+      // MenuBar, Popup, & Button Actions
       if (panelSource instanceof JMenuItem || panelSource instanceof JButton)
       {
          // Instances & Setting Up.
@@ -329,7 +426,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
          // Exit
          else if (actionCommand.equals(EXIT))
-            this.setVisible(false);
+         {
+            setVisible(false);
+            MyJSQLView_JMenuBarActions.setSQLQueryBucketFrameNotVisisble();
+         }
 
          // ====================================
          // Popup Menu & Button Selection Routing
@@ -405,11 +505,12 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             {
                if (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD))
                   processingBucketListObject.setSQLStatementString(editorPane.getText());
+               else
+                  saveSQLStatementFile();
             }
             else if (!textDialog.getActionResult().equals("close")
                      && (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD)))
             {
-               System.out.println("open file");
                openSQLStatementFile();
             }
 
@@ -419,8 +520,13 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          // SQL Object Color Setting
          else if (actionCommand.equals(DIALOG_COLOR))
          {
-            panelColorChooser.setBorder(BorderFactory.createTitledBorder("Item List Color"));
+            String resource = resourceBundle.getResource("SQLQueryBucketFrame.title.ItemListColor");
+            if (resource.equals(""))
+               resource = "Item List Color";
+            
+            panelColorChooser.setBorder(BorderFactory.createTitledBorder(resource));
             panelColorChooser.setColor(processingBucketListObject.getBackground());
+            colorAction = true;
 
             // Create the color chooser dialog.
             JDialog dialog;
@@ -433,15 +539,19 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          // Color Chooser Action
          else if (actionCommand.equals("OK"))
          {
-            dialog_colorButton.setBackground(panelColorChooser.getColor());
+            if (colorAction)
+            {
+               dialog_colorButton.setBackground(panelColorChooser.getColor());
+               colorAction = false;
+            }
          }
       }
    }
 
-   // ==============================================================
+   //==============================================================
    // MouseEvent Listener methods for detecting mouse events.
    // MounseListner Interface requirements.
-   // ==============================================================
+   //==============================================================
 
    public void mouseEntered(MouseEvent evt)
    {
@@ -457,6 +567,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    {
       if (evt.isPopupTrigger())
          sqlListPopupMenu.show(evt.getComponent(), evt.getX(), evt.getY());
+      else if (evt.getComponent().equals(sqlQueryList))
+      {
+         selectedListIndex = sqlQueryList.getSelectedIndex();
+         // System.out.println(selectedListIndex);
+      }
    }
 
    public void mouseReleased(MouseEvent evt)
@@ -470,10 +585,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
    }
    
-   // ==============================================================
+   //==============================================================
    // Method used for creation of the menu bar that will be used
    // with the frame.
-   // ==============================================================
+   //==============================================================
 
    private void createMenuBar(JMenuBar sqlBucketFrameMenuBar)
    {
@@ -534,10 +649,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       sqlBucketFrameMenuBar.add(logoIconItem);
    }
 
-   // ==============================================================
+   //==============================================================
    // Method used for the creation of a pop menu for the SQL Query
    // List in the frame.
-   // ==============================================================
+   //==============================================================
 
    private JPopupMenu createPopupMenu()
    {
@@ -579,9 +694,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       return sqlListPopupMenu;
    }
 
-   // ==============================================================
+   //==============================================================
    // Method used for the creation of menu bar items. Helper Method.
-   // ==============================================================
+   //==============================================================
 
    private JMenuItem menuItem(String label, String actionLabel)
    {
@@ -591,10 +706,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       return item;
    }
 
-   // ==============================================================
+   //==============================================================
    // Class Method to open a saved configuration state file for
    // a database table.
-   // ==============================================================
+   //==============================================================
 
    private void openAction(JFrame parent)
    {
@@ -646,16 +761,17 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                      // parameters then add to bucket list.
                      try
                      {
+                        // Name, SQL Statement, LIMIT, & Color.
                         currentLoadingSQLObject = new SQLQueryBucketListObject();
 
                         currentLoadingSQLObject.setText(sqlObjectParameters[0]);
-                        currentLoadingSQLObject.setBackground(new Color(Integer
-                              .parseInt(sqlObjectParameters[1])));
-                        currentLoadingSQLObject.setSQLStatementString(sqlObjectParameters[2]);
+                        currentLoadingSQLObject.setSQLStatementString(sqlObjectParameters[1]);
                         if (sqlObjectParameters[2].equals("true"))
                            currentLoadingSQLObject.setLimited(true);
                         else
                            currentLoadingSQLObject.setLimited(false);
+                        currentLoadingSQLObject.setBackground(new Color(Integer
+                                                   .parseInt(sqlObjectParameters[3])));
 
                         ((DefaultListModel) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
                      }
@@ -747,13 +863,14 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             {
                currentSQLBucketObject = (SQLQueryBucketListObject) listModel.getElementAt(i);
 
-               // Object's Visible Name, Color, SQL Statement, & Limited
+               // Object's Visible Name, SQL Statement, Limited, & Color
                // parameter.
 
                stringBuffer.append(currentSQLBucketObject.getText() + parameterDelimiter);
-               stringBuffer.append(currentSQLBucketObject.getBackground().getRGB() + parameterDelimiter);
                stringBuffer.append(currentSQLBucketObject.getSQLStatementString() + parameterDelimiter);
-               stringBuffer.append(currentSQLBucketObject.isLimited() + "\n");
+               stringBuffer.append(currentSQLBucketObject.isLimited() + parameterDelimiter);
+               stringBuffer.append(currentSQLBucketObject.getBackground().getRGB() + "\n");
+               
                i++;
             }
             // System.out.println(stringBuffer.toString());
@@ -808,7 +925,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    }
    
    //==============================================================
-   // Class Method to create a dialog needed view, add, or edit
+   // Class Method to create a dialog needed to view, add, or edit
    // the SQL Statement List objects.
    //==============================================================
 
@@ -846,6 +963,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       if (actionCommand.equals(VIEW) || actionCommand.equals(EDIT))
          listItemNameTextField.setText(processingBucketListObject.getText());
+      
+      if (actionCommand.equals(VIEW))
+         listItemNameTextField.setEnabled(false);
          
       namePanel.add(listItemNameTextField);
       
@@ -857,7 +977,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       // SQL Statement
       sqlStatementPanel = new JPanel(gridbag);
-      sqlStatementPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      sqlStatementPanel.getInsets(new Insets(1, 1, 1, 1));
+      sqlStatementPanel.setBorder(BorderFactory.createCompoundBorder(
+                             BorderFactory.createLoweredBevelBorder(),
+                             BorderFactory.createEmptyBorder(4, 1, 4, 1)));
       
       dialog_sqlStatementButton = new JButton(new ImageIcon(iconsDirectory + "editSQLQueryIcon.png"));
       dialog_sqlStatementButton.setFocusable(false);
@@ -887,8 +1010,12 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       limitCheckBox = new JCheckBox(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
       limitCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
       limitCheckBox.setPreferredSize(dialog_sqlStatementButton.getPreferredSize());
+      limitCheckBox.setMargin(new Insets(4, 1, 4, 1));
       limitCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
       limitCheckBox.setSelected(processingBucketListObject.isLimited());
+      
+      if (actionCommand.equals(VIEW))
+         limitCheckBox.setEnabled(false);
       
       buildConstraints(constraints, 0, 1, 1, 1, 0, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -914,7 +1041,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       dialog_colorButton.setFocusable(false);
       dialog_colorButton.setMargin(new Insets(0, 0, 0, 0));
       dialog_colorButton.setActionCommand(DIALOG_COLOR);
-      dialog_colorButton.addActionListener(this);
+      
+      if (actionCommand.equals(VIEW))
+         dialog_colorButton.setEnabled(false);
+      else
+         dialog_colorButton.addActionListener(this);
       
       buildConstraints(constraints, 0, 2, 1, 1, 0, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -968,9 +1099,13 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       {
          if (!actionCommand.equals(VIEW))
          {  
-            processingBucketListObject.setText(listItemNameTextField.getText());
+            if (listItemNameTextField.getText().equals(""))
+               processingBucketListObject.setText("");
+            else
+               processingBucketListObject.setText(listItemNameTextField.getText());
             
-            // Don't Set it here.
+            // Don't Set it here, already set or will be if edited
+            // via the Action Event DIALOG_STATEMENT.
             //processingBucketListObject.setSQLStatementString();
             
             processingBucketListObject.setLimited(limitCheckBox.isSelected());
@@ -982,8 +1117,81 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    }
    
    //==============================================================
-   // Class method to obtain a SQL Statement for the list bucket
-   // item from a selected input file.
+   // Class method to save a SQL Statement from an individual list
+   // bucket object to a selected output file.
+   //==============================================================
+
+   private void saveSQLStatementFile()
+   {
+      // Class Method Instance
+      String fileName;
+      byte[] buf;
+      JFileChooser exportDataChooser;
+      int resultsOfFileChooser;
+
+      // Setting up a file separator instance.
+      String fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      
+      buf = processingBucketListObject.getSQLStatementString().getBytes();
+
+      // Choosing the file to export data to.
+      exportDataChooser = new JFileChooser();
+      resultsOfFileChooser = MyJSQLView_Utils.processFileChooserSelection(null, exportDataChooser);
+
+      // Looks like might be good file name so lets check
+      // and then output the text data
+      
+      if (resultsOfFileChooser == JFileChooser.APPROVE_OPTION)
+      {
+         fileName = exportDataChooser.getSelectedFile().getName();
+         fileName = exportDataChooser.getCurrentDirectory() + fileSeparator + fileName;
+         // System.out.println(fileName);
+
+         if (!fileName.equals(""))
+         {
+            // Creating the buffered data of the text
+            // and outputing.
+            try
+            {
+               // Setting up OutputStream
+               FileOutputStream fileStream = new FileOutputStream(fileName);
+               BufferedOutputStream filebuff = new BufferedOutputStream(fileStream);
+
+               // Writing to the Specified Ouput File.
+               for (int i = 0; i < buf.length; i++)
+               {
+                  filebuff.write(buf[i]);
+                  // System.out.print(buf[i]);
+               }
+               filebuff.flush();
+               filebuff.close();
+            }
+            catch (IOException e)
+            {
+               String resourceMessage;
+               
+               resourceMessage = resourceBundle.getResource("SQLQueryBucketFrame.dialogmessage.ErrorWritingDataFile");
+               if (resourceMessage.equals(""))
+                  resourceMessage = "Error Writing Data File!";
+               
+               JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
+                  JOptionPane.ERROR_MESSAGE);
+            }
+         }
+         else
+         {
+            createUnableToReadFileDialog();
+         }
+      }
+      else
+      {
+         // System.out.println("File Selection Canceled");
+      }
+   }
+   
+   //==============================================================
+   // Class method to set a SQL Statement for the current editing
+   // list bucket item from a selected input file.
    //==============================================================
 
    private void openSQLStatementFile()
@@ -1063,8 +1271,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
    public void addSQLStatement(String sqlStatement)
    {
-      System.out.println(sqlStatement);
       setVisible(true);
+      // System.out.println(sqlStatement);
       
       processingBucketListObject = new SQLQueryBucketListObject();
       processingBucketListObject.setText("");
