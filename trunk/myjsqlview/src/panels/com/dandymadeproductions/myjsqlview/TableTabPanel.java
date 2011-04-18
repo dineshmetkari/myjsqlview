@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.79 03/23/2011
+// Version 4.80 04/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -169,6 +169,9 @@
 //        4.77 Added Class Instance stateDelimiter, Cleaned Up Some and Comment Changes.
 //        4.78 Minor Comment Changes.
 //        4.79 Constuctor JTable listTable.setDragEnabled(true).
+//        4.80 Implemented Table History Mechanism. Added Class Instances historyAction,
+//             stateHistoryLimit, previous/nextStateIcons previous/nextStateButton, &
+//             stateHistory. Added Class Methods saveHistory() & executeHistoryAction().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -189,6 +192,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.swing.*;
@@ -201,7 +205,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.79 03/23/2011
+ * @version 4.80 04/17/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -210,15 +214,18 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class Instances.
    private static final long serialVersionUID = 3857137515618481882L;
    
+   protected int stateHistoryIndex;
    private int selectedRow;
    private int horizontalScrollBarPosition, verticalScrollBarPosition;
    protected int tableRowStart, tableRowLimit;
    private Object panelSource;
+   protected boolean historyAction; 
    private boolean busyProcessing = false;
    private boolean settingState;
    private boolean viewOnly;
    
    protected static final int maxPreferredColumnSize = 350;
+   protected static final int stateHistoryLimit = 25;
    private static final String stateDelimiter = "%;%";
 
    protected String sqlTable;
@@ -234,12 +241,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected Vector<String> primaryKeys;
    private MyJSQLView_ResourceBundle resourceBundle;
 
+   private ImageIcon previousStateIcon, nextStateIcon;
    private ImageIcon ascUpIcon, ascDownIcon, descUpIcon, descDownIcon;
    private ImageIcon searchIcon, removeIcon, updateIcon, advancedSortSearchIcon;
    private ImageIcon previousViewIcon, nextViewIcon, refreshIcon;
    private ImageIcon previousTableRowsIcon, nextTableRowsIcon;
    private ImageIcon deleteDataIcon;
 
+   private JButton previousStateButton , nextStateButton;
    private JButton searchButton, clearSearchTextFieldButton;
    protected String ascDescString;
    private  JRadioButton ascSortRadioButton, descSortRadioButton;
@@ -264,6 +273,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected TableViewForm tableViewForm;
 
    protected Object[][] tableData;
+   protected LinkedList<String> stateHistory = new LinkedList <String>();
    protected HashMap<String, String> columnNamesHashMap;
    protected HashMap<String, String> columnClassHashMap;
    protected HashMap<String, String> columnTypeHashMap;
@@ -295,7 +305,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // Constructor Instances.
       String iconsDirectory, resource;
       
-      JPanel sortSearchPanel, sortPanel, sortOrderButtonPanel;
+      JPanel stateSortSearchPanel, statePanel, sortPanel, sortOrderButtonPanel;
       JPanel searchPanel, actionPanel, actionButtonPanel;
       JPanel tableControlIndicatorPanel, tableRowsIndicatorPanel, rowControlPanel;
       JLabel sortByLabel, searchLabel, searchForLabel;
@@ -310,6 +320,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // System.out.println(schemaTableName);
 
       // Initializing.
+      stateHistoryIndex = -1;
       selectedRow = -1;
       horizontalScrollBarPosition = -1;
       verticalScrollBarPosition = -1;
@@ -338,10 +349,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       keyLengthHashMap = new HashMap <String, Integer>();
       columnEnumHashMap = new HashMap <String, String>();
       columnSetHashMap = new HashMap <String, String>();
+      historyAction = false;
       advancedSortSearch = false;
       settingState = false;
       ascDescString = "ASC";
 
+      previousStateIcon = new ImageIcon(iconsDirectory + "previousStateIcon.png");
+      nextStateIcon = new ImageIcon(iconsDirectory + "nextStateIcon.png");
       ascUpIcon = new ImageIcon(iconsDirectory + "ascUpIcon.png");
       ascDownIcon = new ImageIcon(iconsDirectory + "ascDownIcon.png");
       descUpIcon = new ImageIcon(iconsDirectory + "descUpIcon.png");
@@ -368,11 +382,36 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
 
-      sortSearchPanel = new JPanel(gridbag);
-      sortSearchPanel.setBorder(BorderFactory.createEtchedBorder());
+      stateSortSearchPanel = new JPanel(gridbag);
+      stateSortSearchPanel.setBorder(BorderFactory.createEtchedBorder());
 
+      // State Interface
+
+      statePanel = new JPanel();
+      statePanel.setLayout(new BoxLayout(statePanel, BoxLayout.X_AXIS));
+      statePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
+                                                              BorderFactory.createEmptyBorder(0, 1, 0, 2)));
+      
+      previousStateButton = new JButton(previousStateIcon);
+      previousStateButton.setMargin(new Insets(0, 0, 0, 0));
+      previousStateButton.setEnabled(false);
+      previousStateButton.addActionListener(this);
+      statePanel.add(previousStateButton);
+      
+      nextStateButton = new JButton(nextStateIcon);
+      nextStateButton.setMargin(new Insets(0, 0, 0, 0));
+      nextStateButton.setEnabled(false);
+      nextStateButton.addActionListener(this);
+      statePanel.add(nextStateButton);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 1, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(statePanel, constraints);
+      stateSortSearchPanel.add(statePanel);
+      
       // Sort Interface
-
+      
       sortPanel = new JPanel();
       sortPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
@@ -401,8 +440,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       sortPanel.add(sortComboBox);
 
       sortOrderButtonPanel = new JPanel();
-      BoxLayout sortOrderLayout = new BoxLayout(sortOrderButtonPanel, BoxLayout.Y_AXIS);
-      sortOrderButtonPanel.setLayout(sortOrderLayout);
+      sortOrderButtonPanel.setLayout(new BoxLayout(sortOrderButtonPanel, BoxLayout.Y_AXIS));
       sortOrderButtonPanel.setBorder(BorderFactory.createEmptyBorder());
       ButtonGroup sortOrderButtonGroup = new ButtonGroup();
 
@@ -424,11 +462,11 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       sortOrderButtonPanel.add(descSortRadioButton);
       sortPanel.add(sortOrderButtonPanel);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
+      buildConstraints(constraints, 1, 0, 4, 1, 47, 100);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sortPanel, constraints);
-      sortSearchPanel.add(sortPanel);
+      stateSortSearchPanel.add(sortPanel);
 
       // Search Interface
 
@@ -472,13 +510,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       clearSearchTextFieldButton.addActionListener(this);
       searchPanel.add(clearSearchTextFieldButton);
 
-      buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
+      buildConstraints(constraints, 5, 0, 8, 1, 52, 100);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(searchPanel, constraints);
-      sortSearchPanel.add(searchPanel);
+      stateSortSearchPanel.add(searchPanel);
 
-      add(sortSearchPanel, BorderLayout.NORTH);
+      add(stateSortSearchPanel, BorderLayout.NORTH);
 
       // ==================================================
       // Setting up the Summary Table View.
@@ -777,11 +815,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                    || (panelSource instanceof JButton && panelSource == deleteAllButton)
                    || panelSource instanceof JRadioButton || panelSource instanceof JComboBox)
                {
-                  // These first three conditional sources need no database
-                  // connection processing so just execute.
-
+                  // History Action
+                  if (panelSource == previousStateButton || panelSource == nextStateButton)
+                  {   
+                     executeHistoryAction();
+                  }
                   // Search ComboBox Action
-                  if (panelSource instanceof JComboBox && panelSource == searchComboBox)
+                  else if (panelSource instanceof JComboBox && panelSource == searchComboBox)
                   {
                      searchTextField.grabFocus();
                      searchTextField.setCaretPosition(searchTextField.getText().length());
@@ -905,6 +945,64 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       if (selectFieldsDialog.isActionResult())
          tableFieldPreferences.updatePreferences();
    }
+   
+   //==============================================================
+   // Class method to control the history indexing and load table
+   // accordingly.
+   //==============================================================
+
+   private void executeHistoryAction()
+   {
+      // Method Instances.
+      String state;
+      
+      // Previouse History Action
+      if (panelSource == previousStateButton)
+      {
+         // Decrement and check lower bound.
+         stateHistoryIndex--;
+         if (stateHistoryIndex <= 0)
+         {
+            stateHistoryIndex = 0;
+            previousStateButton.setEnabled(false);
+         }
+      }
+      
+      // Next History Action
+      else if (panelSource == nextStateButton)
+      {
+         // Increment and check upper bound.
+         stateHistoryIndex++;
+         if (stateHistoryIndex > (stateHistoryLimit - 1))
+         {
+            stateHistoryIndex = (stateHistoryLimit - 1);
+            nextStateButton.setEnabled(false);
+         }
+      }
+      
+      // Check Overall movement of index against
+      // history buttons and bound as needed.
+      if (stateHistoryIndex == 0)
+         previousStateButton.setEnabled(false);
+      else
+         previousStateButton.setEnabled(true);
+      
+      if (stateHistoryIndex < (stateHistory.size() - 1))
+         nextStateButton.setEnabled(true);
+      else
+         nextStateButton.setEnabled(false);
+      
+      // Reload the table based on the history selection.
+      DBTablesPanel.startStatusTimer();
+      historyAction = true;
+      
+      state = MyJSQLView_Utils.stateConvert((stateHistory.get(stateHistoryIndex)).getBytes(), true);
+      setState(state);
+      setTableHeadings(getCurrentTableHeadings());
+      
+      historyAction = false;
+      DBTablesPanel.stopStatusTimer();
+   }
 
    //==============================================================
    // Class method to process the action events detected by the
@@ -913,6 +1011,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    private void executeActions()
    {
+      // Method Instances.
       Object id, columnName;
       int primaryKeyColumn = 0;
 
@@ -924,9 +1023,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
          if (work_dbConnection == null)
             return;
-
+         
          // Search Action.
-         if (panelSource == searchButton || panelSource == clearSearchTextFieldButton)
+         else if (panelSource == searchButton || panelSource == clearSearchTextFieldButton)
          {
             advancedSortSearch = false;
             tableRowStart = 0;
@@ -1507,6 +1606,32 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       gbc.weightx = wx;
       gbc.weighty = wy;
    }
+   
+   //==============================================================
+   // Class Method for saving the state history.
+   //==============================================================
+
+   public void saveHistory()
+   {  
+      // Save the state into the queue.
+      if (stateHistory.size() > stateHistoryLimit)
+         stateHistory.removeFirst();
+      
+      stateHistory.add(getState());
+      stateHistoryIndex++;
+      
+      // Check the previous/next button history.
+      if (stateHistoryIndex == 0)
+         previousStateButton.setEnabled(false);
+      else
+         previousStateButton.setEnabled(true);
+      
+      if (stateHistoryIndex < (stateHistory.size() - 1))
+         nextStateButton.setEnabled(true);
+      else
+         nextStateButton.setEnabled(false);
+   }
+   
 
    //==============================================================
    // Class method to view the current selected item in the table.
@@ -1630,7 +1755,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          ConnectionManager.displaySQLErrors(e, "TableTabPanel setSpecialFieldData()");
       }
    }
-
+   
    //==============================================================
    // Class method to delete table entry item(s) from the database.
    // Either single or multiple entries can be removed.
