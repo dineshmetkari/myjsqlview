@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.5 02/21/2011
+// Version 1.6 04/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //             SQL Errors.
 //         1.5 Corrections in Method loadTable to Properly Build searchTextString For Date,
 //             DateTime, & Timestamp When No Specific Column is Selected.
+//         1.6 Called saveHistory() in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -74,7 +75,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.5 02/21/2011
+ * @version 1.6 04/17/2011
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -312,9 +313,14 @@ public class TableTabPanel_SQLite extends TableTabPanel
       int columnSize, preferredColumnSize;
       Object currentContentData;
 
-      // Obtain search parameters column names as needed.
+      // Obtain search parameters column names as needed and
+      // saving state for history.
+      
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
+      
+      if (!historyAction)
+         saveHistory();
 
       searchQueryString = new StringBuffer();
       if (searchTextString.equals(""))

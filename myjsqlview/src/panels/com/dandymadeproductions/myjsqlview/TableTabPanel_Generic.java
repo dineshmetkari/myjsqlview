@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.4 02/21/2011
+// Version 9.5 04/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,7 @@
 //             SQL Errors.
 //         9.4 Corrections in Method loadTable to Properly Build searchTextString For Date,
 //             DateTime, & Timestamp When No Specific Column is Selected.
+//         9.5 Called saveHistory() in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -239,7 +240,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.4 02/21/2011
+ * @version 9.5 04/17/2011
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -486,9 +487,14 @@ public class TableTabPanel_Generic extends TableTabPanel
       Integer keyLength;
       Object currentContentData;
 
-      // Obtain search parameters column names as needed.
+      // Obtain search parameters column names as needed and
+      // saving state for history.
+      
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
+      
+      if (!historyAction)
+         saveHistory();
 
       searchQueryString = new StringBuffer();
       if (searchTextString.equals(""))
