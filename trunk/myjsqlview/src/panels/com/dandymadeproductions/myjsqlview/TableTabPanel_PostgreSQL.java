@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 12.4 02/21/2011
+// Version 12.5 04/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -289,6 +289,7 @@
 //             SQL Errors.
 //        12.4 Corrections in Method loadTable to Properly Build searchTextString For Date,
 //             DateTime, & Timestamp When No Specific Column is Selected.
+//        12.5 Called saveHistory() in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -314,7 +315,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.4 02/21/2011
+ * @version 12.5 04/17/2011
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -552,9 +553,14 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
       int columnSize, preferredColumnSize;
       Object currentContentData;
 
-      // Obtain search parameters column names as needed.
+      // Obtain search parameters column names as needed and
+      // saving state for history.
+      
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
+      
+      if (!historyAction)
+         saveHistory();
 
       searchQueryString = new StringBuffer();
       if (searchTextString.equals(""))

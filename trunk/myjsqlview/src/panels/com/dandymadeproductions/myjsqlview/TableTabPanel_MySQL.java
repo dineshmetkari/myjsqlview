@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.36 02/21/2011
+// Version 11.37 04/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -462,6 +462,7 @@
 //       11.35 Commented Out System.out in Class Method viewSelectedItem().
 //       11.36 Corrections in Method loadTable to Properly Build searchTextString For Date,
 //             DateTime, & Timestamp When No Specific Column is Selected.
+//       11.37 Called saveHistory() in Class Method loadTable().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -486,7 +487,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.36 02/21/2011
+ * @version 11.37 04/17/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -691,11 +692,16 @@ public class TableTabPanel_MySQL extends TableTabPanel
       Integer keyLength;
       int columnSize, preferredColumnSize;
       Object currentContentData;
-
-      // Obtain search parameters column names as needed.
+      
+      // Obtain search parameters column names as needed & saving
+      // state for history.
+      
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
-
+      
+      if (!historyAction)
+         saveHistory();
+      
       searchQueryString = new StringBuffer();
       if (searchTextString.equals(""))
          searchQueryString.append("'1' LIKE '%'");
