@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.80 04/17/2011
+// Version 4.81 04/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -172,6 +172,9 @@
 //        4.80 Implemented Table History Mechanism. Added Class Instances historyAction,
 //             stateHistoryLimit, previous/nextStateIcons previous/nextStateButton, &
 //             stateHistory. Added Class Methods saveHistory() & executeHistoryAction().
+//        4.81 Reversed the Logic of saveAction Class Instance and Used to Not Save
+//             State Changes During Add, Edit, Delete, DeleteAll, Refresh, & Row Increment/
+//             Decrements.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -205,7 +208,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.80 04/17/2011
+ * @version 4.81 04/19/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -349,7 +352,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       keyLengthHashMap = new HashMap <String, Integer>();
       columnEnumHashMap = new HashMap <String, String>();
       columnSetHashMap = new HashMap <String, String>();
-      historyAction = false;
+      historyAction = true;
       advancedSortSearch = false;
       settingState = false;
       ascDescString = "ASC";
@@ -871,8 +874,19 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                      horizontalScrollBarPosition = tableScrollPane.getHorizontalScrollBar().getValue();
                      verticalScrollBarPosition = tableScrollPane.getVerticalScrollBar().getValue();
 
-                     // Process the request.
+                     // Don't save history state for these actions.
 
+                     if (panelSource instanceof JButton)
+                     {
+                        if (panelSource == addButton || panelSource == editButton
+                            || panelSource == deleteButton || panelSource == deleteAllButton
+                            || panelSource == refreshButton || panelSource == previousTableRowsButton
+                            || panelSource == nextTableRowsButton)
+                           historyAction = false;
+                     }
+                     
+                     // Process the request.
+                     
                      DBTablesPanel.startStatusTimer();
                      busyProcessing = true;
 
@@ -883,6 +897,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                            executeActions();
                            DBTablesPanel.stopStatusTimer();
                            busyProcessing = false;
+                           historyAction = true;
                         }
                      }, "TableTabPanel.actionThread");
                      actionThread.start();
@@ -894,6 +909,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                   // occurs when the TableEntryForm fires
                   // the updateButton. Reload and resize
                   // list table & columns.
+                  
+                  historyAction = false;
                   setTableHeadings(getCurrentTableHeadings());
 
                   // Restore scrollpane window.
@@ -903,6 +920,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                      tableScrollPane.getHorizontalScrollBar().setValue(horizontalScrollBarPosition);
                   if (verticalScrollBarPosition != -1)
                      tableScrollPane.getVerticalScrollBar().setValue(verticalScrollBarPosition);
+                  
+                  historyAction = true;
                }
             }
          }
@@ -994,13 +1013,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       // Reload the table based on the history selection.
       DBTablesPanel.startStatusTimer();
-      historyAction = true;
+      historyAction = false;
       
       state = MyJSQLView_Utils.stateConvert((stateHistory.get(stateHistoryIndex)).getBytes(), true);
       setState(state);
       setTableHeadings(getCurrentTableHeadings());
       
-      historyAction = false;
+      historyAction = true;
       DBTablesPanel.stopStatusTimer();
    }
 
