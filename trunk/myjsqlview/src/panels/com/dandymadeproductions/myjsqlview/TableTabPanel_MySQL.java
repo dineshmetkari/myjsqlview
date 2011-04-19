@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.37 04/17/2011
+// Version 11.38 04/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -463,6 +463,7 @@
 //       11.36 Corrections in Method loadTable to Properly Build searchTextString For Date,
 //             DateTime, & Timestamp When No Specific Column is Selected.
 //       11.37 Called saveHistory() in Class Method loadTable().
+//       11.38 Changed the Conditional Check for saveAction by Removing the NOT Logic.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -487,7 +488,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.37 04/17/2011
+ * @version 11.38 04/19/2011
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -699,7 +700,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
       
-      if (!historyAction)
+      if (historyAction)
          saveHistory();
       
       searchQueryString = new StringBuffer();
