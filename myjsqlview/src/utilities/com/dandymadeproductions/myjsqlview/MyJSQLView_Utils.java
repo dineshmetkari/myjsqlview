@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.8 04/10/2011
+// Version 5.9 04/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,8 @@
 //             Method to Return JMenuBar.
 //         5.8 Class Method createTextDialog() setPreferred/MinimumSize() on JScrollPane.
 //             Correction in Same for resourceCloseOpen From resourceSave for typeEdit.
+//         5.9 Class Method getUnlimitedSQLStatementString() Correction to Check for
+//             Oracle SQL Statement BETWEEN.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -138,7 +140,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.8 04/10/2011
+ * @version 5.9 04/27/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -709,15 +711,20 @@ public class MyJSQLView_Utils extends MyJSQLView
       String subProtocol;
       int index1, index2, index3, index4, index5;
       
-      // Check if process can be performed.
-      
-      if (sqlStatementString.indexOf("LIMIT") == -1)
-         return sqlStatementString;
-      
       // Collect the database protocol.
       
       subProtocol = ConnectionManager.getConnectionProperties().getProperty(
                         ConnectionProperties.SUBPROTOCOL);
+      
+      // Check if process can be performed.
+      
+      if (((subProtocol.indexOf(ConnectionManager.ORACLE) == -1)
+            && (sqlStatementString.indexOf("LIMIT") == -1))
+          ||
+           ((subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+             && (sqlStatementString.indexOf("BETWEEN") == -1)))
+         return sqlStatementString;
+      
       // Parsing
       
       // Oracle
