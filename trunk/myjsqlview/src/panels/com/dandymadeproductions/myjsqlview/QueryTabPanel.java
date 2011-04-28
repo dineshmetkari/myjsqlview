@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.3 03/11/2011
+// Version 8.4 04/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -195,6 +195,9 @@
 //             From New Class ConnectionManger Along With subProtocol.
 //         8.2 Removed resourceRowsOf in setRowsLabel().
 //         8.3 Class Method loadTable() Changes to Properly Search Date Field for Oracle.
+//         8.4 Correction in Method loadTable() to Properly Add Space When Adding ORDER
+//             as needed. Class Method getColumnNames() ORDER Check When WHERE Present
+//             for Oracle to Properly Insert ROWNUM=1. 
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -226,7 +229,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.3 03/11/2011
+ * @version 8.4 04/27/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -972,10 +975,18 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             if (query.toUpperCase().indexOf("WHERE") != -1)
             {
                if (query.toUpperCase().indexOf("GROUP BY") != -1)
+               {
                   sqlStatementString = query.substring(0, query.indexOf("GROUP BY") - 1)
                                        + " AND ROWNUM=1 " + query.substring(query.indexOf("GROUP BY"));
+               }
                else
-                  sqlStatementString = query + " AND ROWNUM=1";
+               {
+                  if (query.toUpperCase().indexOf("ORDER BY") != -1)
+                     sqlStatementString = query.substring(0, query.indexOf("ORDER BY") - 1)
+                                          + " AND ROWNUM=1 " + query.substring(query.indexOf("ORDER BY"));
+                  else
+                     sqlStatementString = query + " AND ROWNUM=1";
+               }
             }
             else
             {
@@ -1325,7 +1336,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                // Adding ORDER as needed.
                if (sqlStatementString.toLowerCase().indexOf(" order") == -1)
                {
-                  sqlStatementString += "ORDER BY " + identifierQuoteString
+                  sqlStatementString += " ORDER BY " + identifierQuoteString
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString;
                }
