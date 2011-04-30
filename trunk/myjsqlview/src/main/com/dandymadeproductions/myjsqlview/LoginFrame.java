@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.78 02/04/2011
+// Version 6.79 04/30/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -250,6 +250,8 @@
 //             the passwordString.
 //        6.78 All References to Instances/Names of ConnectionManagerFrame Changed to
 //             LoginManagerFrame, LoginManager.
+//        6.79 Class Method accessCheck() Correction for HSQL Memory Detection of subProtocol
+//             for HSQL Not SQLite. System.out.println()s to connectionString.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -284,7 +286,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.78 02/04/2011
+ * @version 6.79 04/30/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1081,23 +1083,23 @@ public class LoginFrame extends JFrame implements ActionListener
                else
                   connectionString += subProtocol + ":@" + db;
 
-               // System.out.println(connectionProperties);
+               // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString, user, passwordString);
             }
             // SQLite
             else if (subProtocol.equals(ConnectionManager.SQLITE))
             {
                connectionString += subProtocol + ":" + db.replace("\\", "/");
-               // System.out.println(connectionProperties);
+               // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString);
             }
             // HSQL Memory
-            else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1 && db.indexOf("mem:") != -1)
+            else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 && db.indexOf("mem:") != -1)
             {
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
                connectionString += "hsqldb:" + db + "?user=" + user
                                        + "&password=" + passwordString + "&useSSL=" + ssh;
-               // System.out.println(connectionProperties);
+               // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString);
             }
             // MySQL, PostgreSQL, & HSQL
@@ -1111,7 +1113,7 @@ public class LoginFrame extends JFrame implements ActionListener
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
                connectionString += subProtocol + "://" + host + ":" + port + "/" + db + "?user=" + user
                                        + "&password=" + passwordString + "&useSSL=" + ssh;
-               // System.out.println(connectionProperties);
+               // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString);
             }
             
