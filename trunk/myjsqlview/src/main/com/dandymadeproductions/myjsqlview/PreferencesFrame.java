@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 8.1 01/28/2011
+// Version 8.2 05/28/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -163,6 +163,10 @@
 //         8.0 Class Methods createTableFieldsOptionPanel() & createTableRowsOptionPanel()
 //             Table Names Obtained From New ConnectionManager Class.
 //         8.1 Increased Width of treeScrollPane Preferred Size in Constructor.
+//         8.2 Changes to Pass TableTabPanel Argument to TableFieldSelectionPreferencesPanel
+//             in actionPerformed() & createTableFieldsOptionPanel(). Removed Ref. to
+//             DBTablesPanel.Start/StopStatusTimer() and Reloaded Selected Table in actionPerformed()
+//             on OK.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -192,7 +196,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.1 01/28/2011
+ * @version 8.2 05/02/2011
  */
 
 //=================================================================
@@ -569,11 +573,14 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
          if (frameSource == okButton)
          {
             // Update the selected preferences from the panels.
+            
+            DBTablesPanel.startStatusTimer();
+            
             cardsIterator = tableFieldCards.iterator();
-
+            
             while (cardsIterator.hasNext())
                (tableFieldPanelsHashtable.get(cardsIterator.next())).updatePreferences();
-           
+                 
             cardsIterator = tableRowCards.iterator();
 
             while (cardsIterator.hasNext())
@@ -584,6 +591,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
             DBTablesPanel.setDataExportProperties(pdfExportPanel.getPDFExportOptions());
             DBTablesPanel.setDataExportProperties(sqlExportPanel.getSQLExportOptions());
+            
+            DBTablesPanel.stopStatusTimer();
+            DBTablesPanel.setSelectedTableTabPanel((String) tableSelectionFieldsComboBox.getSelectedItem());
 
             MyJSQLView_JMenuBarActions.setPreferencesNotVisisble();
             preferencesTopPanel.suspendPanel(true);
@@ -647,9 +657,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
                   tableName = currentTableTabPanel.getTableName();
                   tableFieldCards.add(tableName);
 
-                  tableFieldPreferences = new TableFieldSelectionPreferencesPanel(tableName,
-                                              currentTableTabPanel.getAllTableHeadings(),
-                                              resourceBundle);
+                  tableFieldPreferences = new TableFieldSelectionPreferencesPanel(currentTableTabPanel, resourceBundle);
                   tableFieldsPanel.add(tableName, tableFieldPreferences);
                   tableFieldPanelsHashtable.put(tableName, tableFieldPreferences);
                   tableFieldCardLayout.show(tableFieldsPanel, tableName);
@@ -930,9 +938,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       tableFieldCards.add(tableName);
       tableSelectionFieldsComboBox.setSelectedItem(tableName);
 
-      tableFieldPreferences = new TableFieldSelectionPreferencesPanel(tableName,
-                                  currentTableTab.getAllTableHeadings(),
-                                  resourceBundle);
+      tableFieldPreferences = new TableFieldSelectionPreferencesPanel(currentTableTab, resourceBundle);
       tableFieldsPanel.add(tableName, tableFieldPreferences);
       tableFieldPanelsHashtable.put(tableName, tableFieldPreferences);
       
