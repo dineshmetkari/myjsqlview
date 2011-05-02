@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.81 04/19/2011
+// Version 4.82 05/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -175,6 +175,8 @@
 //        4.81 Reversed the Logic of saveAction Class Instance and Used to Not Save
 //             State Changes During Add, Edit, Delete, DeleteAll, Refresh, & Row Increment/
 //             Decrements.
+//        4.82 Class Method selectTableField() Passed this to Creation of
+//             TableFieldSelectionPreferencesPanel.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -208,7 +210,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.81 04/19/2011
+ * @version 4.82 05/02/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -951,8 +953,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       if (resourceCancel.equals(""))
          resourceCancel = "Cancel";
        
-      tableFieldPreferences = new TableFieldSelectionPreferencesPanel(sqlTable, getAllTableHeadings(),
-                                                                      resourceBundle);
+      tableFieldPreferences = new TableFieldSelectionPreferencesPanel(this, resourceBundle);
       Object[] content = {tableFieldPreferences};
       
       selectFieldsDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
