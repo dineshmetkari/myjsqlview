@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.1 01/27/2011
+// Version 4.2 05/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,10 @@
 //         4.0 Parameterized tableColumnNamesIterator in Constructor and
 //             currentFieldIterator in Class Method loadPreferences().
 //         4.1 Copyright Update.
+//         4.2 Removed Arguments tableName, and checkBoxFields in Constructor and
+//             Replaced With TableTabPanel. Removed Class Instance tableName added
+//             tablePanelPanel. Removed All References to DBTablesPanel, loadPreferences()
+//             & updatePreferences().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -113,7 +117,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.1 01/27/2011
+ * @version 4.2 05/02/2011
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -125,8 +129,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
 
    private static final long serialVersionUID = 188742030301366822L;
 
+   private TableTabPanel tableTabPanel;
    private Vector<String> checkBoxFields;
-   private String tableName;
    private JCheckBox[] columnNamesCheckBoxes;
    private HashMap<String, JCheckBox> checkBoxesHashMap;
    private HashMap<String, String> columnNamesHashMap;
@@ -137,12 +141,10 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    // TableFieldSelectionPreferencesPanel Constructor
    //==============================================================
 
-   TableFieldSelectionPreferencesPanel(String tableName, Vector<String> checkBoxFields,
-                                       MyJSQLView_ResourceBundle resourceBundle)
+   TableFieldSelectionPreferencesPanel(TableTabPanel tableTabPanel, MyJSQLView_ResourceBundle resourceBundle)
    {
-      this.tableName = tableName;
-      this.checkBoxFields = checkBoxFields;
-
+      this.tableTabPanel = tableTabPanel;
+      
       // Class Instances
       JPanel itemSelections, southButtonPanel;
       int rowNumber;
@@ -151,9 +153,11 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       // Setting up
       setLayout(new BorderLayout());
       checkBoxesHashMap = new HashMap <String, JCheckBox>();
-
+      
       // Setting up table column names' checkboxes that will be used
       // to select the desired tabel fields to be displayed.
+      
+      checkBoxFields = tableTabPanel.getAllTableHeadings();
 
       rowNumber = checkBoxFields.size() / 2;
       if (checkBoxFields.size() % 2 > 0)
@@ -165,8 +169,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       Iterator<String> tableColumnNamesIterator = checkBoxFields.iterator();
       columnNamesCheckBoxes = new JCheckBox[checkBoxFields.size()];
 
-      columnNamesHashMap = DBTablesPanel.getTableTabPanel(tableName).getColumnNamesHashMap();
-      primaryKeys = DBTablesPanel.getTableTabPanel(tableName).getPrimaryKeys();
+      columnNamesHashMap = tableTabPanel.getColumnNamesHashMap();
+      primaryKeys = tableTabPanel.getPrimaryKeys();
 
       int i = 0;
       while (tableColumnNamesIterator.hasNext())
@@ -296,7 +300,7 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       JCheckBox currentCheckBox;
 
       // Loading the current table fields.
-      tableHeadings = DBTablesPanel.getTableTabPanel(tableName).getCurrentTableHeadings();
+      tableHeadings = tableTabPanel.getCurrentTableHeadings();
 
       currentFieldIterator = checkBoxFields.iterator();
 
@@ -321,8 +325,6 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    {
       if (applyButton.isEnabled())
       {
-         DBTablesPanel.startStatusTimer();
-         
          Thread updateTableTabPanelFieldsThread = new Thread(new Runnable()
          {
             public void run()
@@ -340,13 +342,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
                   if (columnNamesCheckBoxes[i].isSelected())
                      newFields.add((String) columnNamesCheckBoxes[i].getText());
 
-               // Setting the new field preferences and calling main class
-               // to redisplay table tab.
-
-               (DBTablesPanel.getTableTabPanel(tableName)).setTableHeadings(newFields);
-               DBTablesPanel.setSelectedTableTabPanel(tableName);
-               
-               DBTablesPanel.stopStatusTimer();
+               // Setting the new field preferences.
+               tableTabPanel.setTableHeadings(newFields);
             }
          }, "TableFieldSelectionPreferencesPanel.updatetableTabPanelFieldsThread");
          updateTableTabPanelFieldsThread.start();
