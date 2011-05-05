@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 04/14/2011
+// Version 1.5 05/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 //                        Added List Item Moving and Correction for Editing SQL
 //                        Statements for Opening File When Added New Items. Corrected
 //                        List File Save/Opening Parameter Sequence.
+//         1.5 05/05/2011 Class Method actionPerformed() SQL Statement Editor Pane
+//                        Action, Filtered Line Feeds and Carriage-Returns.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import javax.swing.*;
  * Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.4 04/14/2011
+ * @version 1.5 05/05/2011
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -504,7 +506,14 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             if (textDialog.isActionResult())
             {
                if (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD))
-                  processingBucketListObject.setSQLStatementString(editorPane.getText());
+               {
+                  String editorPaneSQLStatement = editorPane.getText();
+                  
+                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\r\n", " ");
+                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\r", " ");
+                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\n", " ");
+                  processingBucketListObject.setSQLStatementString(editorPaneSQLStatement);
+               }
                else
                   saveSQLStatementFile();
             }
