@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.0 05/07/2011
+// Version 6.1 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -110,6 +110,8 @@
 //         5.9 Class Method getUnlimitedSQLStatementString() Correction to Check for
 //             Oracle SQL Statement BETWEEN.
 //         6.0 Added Class Method getCondtionString().
+//         6.1 Made Class Methods convertDBDateString_To_ViewDateString() and
+//             convertViewDateString_To_DBDateString().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -141,7 +143,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.0 05/07/2011
+ * @version 6.1 05/07/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -237,7 +239,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // database format, yyyy-MM-DD, to a selected view date string.
    //==============================================================
 
-   protected static String convertDBDateString_To_ViewDateString(String db_DateString, String dateFormat)
+   public static String convertDBDateString_To_ViewDateString(String db_DateString, String dateFormat)
    {
       // Method Instances
       String year, month, day;
@@ -311,7 +313,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // date format to the standard database format yyyy-MM-DD.
    //==============================================================
    
-   protected static String convertViewDateString_To_DBDateString(String view_DateString, String dateFormat)
+   public static String convertViewDateString_To_DBDateString(String view_DateString, String dateFormat)
    {
       // Method Instances.
       String year, month, day;
