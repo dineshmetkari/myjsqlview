@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.4 03/24/2011
+// Version 4.5 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,7 @@
 //             Collection/Closing Connection to Redefined ConnectionManager Class.
 //         4.4 Added Class Instance sqlQueryBucketButton, Constructor Instance sqlQueryBucketIcon,
 //             and Handling of the New Button's Actions in Method actionPerformed().
+//         4.5 Made Class Method getGeneralProperties() public.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -141,7 +142,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.4 03/24/2011
+ * @version 4.5 05/07/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -639,7 +640,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    // Class Method to return the current GeneralProperties.
    //==============================================================
 
-   protected static GeneralProperties getGeneralProperties()
+   public static GeneralProperties getGeneralProperties()
    {
       return generalProperties;
    }
