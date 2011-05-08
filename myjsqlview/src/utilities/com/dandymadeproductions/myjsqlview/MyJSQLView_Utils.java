@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.9 04/27/2011
+// Version 6.0 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -109,6 +109,7 @@
 //             Correction in Same for resourceCloseOpen From resourceSave for typeEdit.
 //         5.9 Class Method getUnlimitedSQLStatementString() Correction to Check for
 //             Oracle SQL Statement BETWEEN.
+//         6.0 Added Class Method getCondtionString().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -140,7 +141,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 5.9 04/27/2011
+ * @version 6.0 05/07/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -625,6 +626,47 @@ public class MyJSQLView_Utils extends MyJSQLView
          // System.out.println("IO Exception in InputStream.\n" + e);
          return null;
       }
+   }
+   
+   //==============================================================
+   // Class Method to parse the WHERE condition given a SQL query
+   // statement.
+   //==============================================================
+
+   public static String getConditionString(String query)
+   {
+      // Method Instances.
+      String subProtocol, conditionString;
+      
+      conditionString = "";
+      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
+                                            ConnectionProperties.SUBPROTOCOL);
+      
+      if (query.toUpperCase().indexOf("WHERE") == -1)
+         return conditionString;
+      
+      query = query.toUpperCase().replaceAll("WHERE", "WHERE");
+      
+      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      {
+         conditionString = query.substring(query.indexOf("WHERE"));
+         conditionString = conditionString.substring(0, conditionString.indexOf(")"));
+      }
+      else
+      {
+         if (query.toUpperCase().indexOf("ORDER") != -1)
+            conditionString = query.substring(query.indexOf("WHERE"),
+                                      query.toUpperCase().indexOf(" ORDER BY "));
+         else
+         {
+            if (query.toUpperCase().indexOf("LIMIT") != -1)
+               conditionString = query.substring(query.indexOf("WHERE"),
+                                      query.toUpperCase().indexOf(" LIMIT"));
+            else
+               conditionString = query.substring(query.indexOf("WHERE"));
+         }
+      }
+      return conditionString;
    }
    
    //==============================================================
