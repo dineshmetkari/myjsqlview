@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.6 05/07/2011
+// Version 1.7 05/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //             MyJSQLView_Utils.
 //         1.6 Made Class Public & Check for tableColumnTypeHashMap Being NULL
 //             in Method run().
+//         1.7 Backed Out Making the Class Public.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -77,10 +78,10 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.6 05/07/2011
+ * @version 1.7 05/08/2011
  */
 
-public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
+class PDFDataTableDumpThread implements PdfPageEvent, Runnable
 {
    // Class Instances
    Thread t;
@@ -99,7 +100,7 @@ public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
    // PDFDataDumpThread Constructor.
    //==============================================================
 
-   public PDFDataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnTypeHashMap,
+   PDFDataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnTypeHashMap,
                           String exportedTable, String fileName)
    {
       this.summaryListTable = summaryListTable;
