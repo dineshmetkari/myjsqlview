@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.1 05/07/2011
+// Version 6.2 05/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,7 @@
 //         6.0 Added Class Method getCondtionString().
 //         6.1 Made Class Methods convertDBDateString_To_ViewDateString() and
 //             convertViewDateString_To_DBDateString().
+//         6.2 Added Class Method processTableData_To_PDFOutput().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -122,6 +123,7 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Vector;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -143,7 +145,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.1 05/07/2011
+ * @version 6.2 05/08/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1246,6 +1248,20 @@ public class MyJSQLView_Utils extends MyJSQLView
 
       // System.out.println(localeString);
       return localeString;
+   }
+   
+   //==============================================================
+   // Class method for allowing access to the MyJSQLView PDF table
+   // dump thread class.
+   //==============================================================
+
+   public static void processTableData_To_PDFOutput(JTable summaryListTable, HashMap<String,
+                                                    String> tableColumnTypeHashMap,
+                                                    String exportedTable, String fileName)
+   {
+      if (summaryListTable != null)
+         new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
+                                    exportedTable, fileName); 
    }
    
    //==============================================================
