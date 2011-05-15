@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.2 05/08/2011
+// Version 6.3 05/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,8 @@
 //         6.1 Made Class Methods convertDBDateString_To_ViewDateString() and
 //             convertViewDateString_To_DBDateString().
 //         6.2 Added Class Method processTableData_To_PDFOutput().
+//         6.3 Class Method getConditionString() Changes to Check if Oracle Has BETWEEN
+//             So That Can Remove Limits.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -145,7 +147,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.2 05/08/2011
+ * @version 6.3 05/14/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -653,8 +655,14 @@ public class MyJSQLView_Utils extends MyJSQLView
       
       if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
       {
-         conditionString = query.substring(query.indexOf("WHERE"));
-         conditionString = conditionString.substring(0, conditionString.indexOf(")"));
+         if (query.toUpperCase().indexOf("BETWEEN") != -1)
+            query = getUnlimitedSQLStatementString(query);
+         
+         if (query.toUpperCase().indexOf("ORDER") != -1)
+            conditionString = query.substring(query.indexOf("WHERE"),
+                                      query.toUpperCase().indexOf(" ORDER BY "));
+         else
+            conditionString = query.substring(query.indexOf("WHERE"));
       }
       else
       {
@@ -750,7 +758,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // statement string from a TableTabPanel to remove the LIMIT
    // condition.
    //==============================================================
-
+   
    protected static String getUnlimitedSQLStatementString(String sqlStatementString)
    {
       // Method Instances
@@ -785,7 +793,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          index2 = sqlStatementString.lastIndexOf("FROM");
          index3 = sqlStatementString.lastIndexOf(")");
          index4 = sqlStatementString.indexOf("ORDER");
-         index5 = sqlStatementString.indexOf("AS dmprownumber");
+         index5 = sqlStatementString.toUpperCase().indexOf("AS DMPROWNUMBER");
          
          if (index1 != -1 && index2 != -1 && index3 != -1 && index4 != -1 && index5 != -1)
          {
