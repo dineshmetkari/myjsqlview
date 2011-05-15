@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.26 03/14/2011
+// Version 3.27 05/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -182,6 +182,8 @@
 //         3.25 01/27/2011 Increased The Width for the Sizing of the loginFrame in Constructor.
 //         3.26 03/14/2011 Class Instance myJSQLView_Version Update for Release
 //                         3.26.
+//         3.27 05/11/2011 Made Class Instance myJSQLViewPopupListner Public Along With
+//                         Class Method getPopupMenuListener().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -215,7 +217,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.26 03/14/2011
+ * @version 3.27 05/11/2011
  */
 
 public class MyJSQLView implements ActionListener
@@ -233,11 +235,11 @@ public class MyJSQLView implements ActionListener
    private ConnectionManager connectionManager;
    private LoginFrame loginFrame;
    protected MyJSQLView_Frame myJSQLViewFrame;
-   private static MouseListener myJSQLViewPopupListener;
+   public static MouseListener myJSQLViewPopupListener;
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.26", "Build ID: 20110314"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.27", "Build ID: 20110514"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -448,7 +450,7 @@ public class MyJSQLView implements ActionListener
    // cutting, coping, and pasteing.
    //==============================================================
 
-   protected static MouseListener getPopupMenuListener()
+   public static MouseListener getPopupMenuListener()
    {
       return myJSQLViewPopupListener;
    }
