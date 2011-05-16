@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2011 Dana M. Proctor
-// Version 2.2 01/26/2011
+// Version 2.3 05/16/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //             of Content Loading a Little More Robust With OptionPanes to
 //             Display Error Information.
 //         2.2 Copyright Update.
+//         2.3 Made Class, Constructor, Method center() public.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,10 +74,10 @@ import java.io.IOException;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.2 01/26/2011
+ * @version 2.3 05/16/2011
  */
 
-class HelpFrame extends JFrame
+public class HelpFrame extends JFrame
 {
    // Instance variables as needed.
    private static final long serialVersionUID = -4143035957786665080L;
@@ -90,7 +91,7 @@ class HelpFrame extends JFrame
    // HelpFrame Constructor.
    //==============================================================
 
-   protected HelpFrame(String frameTitle, String htmlFile, JButton closeButton)
+   public HelpFrame(String frameTitle, String htmlFile, JButton closeButton)
    {
       // Setting the Frame Title.
       super(frameTitle);
@@ -185,7 +186,7 @@ class HelpFrame extends JFrame
    // Class method to center the frame.
    //==============================================================
 
-   protected void center()
+   public void center()
    {
       Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
       Dimension us = getSize();
