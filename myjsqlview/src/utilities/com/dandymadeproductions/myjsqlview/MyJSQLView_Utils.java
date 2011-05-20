@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.3 05/14/2011
+// Version 6.4 05/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -115,6 +115,8 @@
 //         6.2 Added Class Method processTableData_To_PDFOutput().
 //         6.3 Class Method getConditionString() Changes to Check if Oracle Has BETWEEN
 //             So That Can Remove Limits.
+//         6.4 Correction in Class Method getConditionString() to Pattern Match replaceAll()
+//             in query to be Non-Case Sensitive for WHERE.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -147,7 +149,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.3 05/14/2011
+ * @version 6.4 05/19/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -651,14 +653,14 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (query.toUpperCase().indexOf("WHERE") == -1)
          return conditionString;
       
-      query = query.toUpperCase().replaceAll("WHERE", "WHERE");
+      query = query.replaceAll("(?i)where", "WHERE");
       
       if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
       {
          if (query.toUpperCase().indexOf("BETWEEN") != -1)
             query = getUnlimitedSQLStatementString(query);
          
-         if (query.toUpperCase().indexOf("ORDER") != -1)
+         if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
             conditionString = query.substring(query.indexOf("WHERE"),
                                       query.toUpperCase().indexOf(" ORDER BY "));
          else
@@ -666,7 +668,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       else
       {
-         if (query.toUpperCase().indexOf("ORDER") != -1)
+         if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
             conditionString = query.substring(query.indexOf("WHERE"),
                                       query.toUpperCase().indexOf(" ORDER BY "));
          else
