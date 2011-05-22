@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.1 04/08/2011
+// Version 1.2 05/22/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,7 +31,8 @@
 //=================================================================
 // Version 1.0 MyJSQLView Initial SQLQueryBucketListCellRenderer Class.
 //         1.1 Class Method getListCellRendererComponent() Added Instances
-//             buttonColor, & buttonFont. Set background() in Same. 
+//             buttonColor, & buttonFont. Set background() in Same.
+//         1.2 Set the Font to BOLD in getListCellRendererComponent().
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import javax.swing.ListCellRenderer;
  * list cell renderer component used in the SQLQueryBucketFrame JList.
  * 
  * @author Dana M. Proctor
- * @version 1.1 04/08/2011
+ * @version 1.2 05/22/2011
  */
 
 class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements ListCellRenderer
@@ -102,7 +103,7 @@ class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements
       }
 
       setEnabled(list.isEnabled());
-      setFont(buttonFont);
+      setFont(buttonFont.deriveFont(Font.BOLD));
       setOpaque(true);
       return this;
    }
