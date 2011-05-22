@@ -1,4 +1,4 @@
-MyJSQLView Version 3.26
+MyJSQLView Version 3.29
 
 Copyright 2005-2011
 by Dana Proctor
@@ -29,8 +29,8 @@ a much quicker access/update to a database than a web based interface frontend
 and MyJSQLView supports transaction locking. If your small business, scientific
 community, government agency, or educational institute wants to quickly access
 either a HSQL, MySQL, Oracle, PostgreSQL, or SQLite database for viewing, adding,
-editing, and searching data MyJSQLView provides an alternative that is simple
-and easy to use.
+editing, searching, and analyzing data MyJSQLView provides an alternative that
+is simple and easy to use.
 
    Dana M. Proctor
    Project Manager 
@@ -58,6 +58,7 @@ Features:
    * Export of SQL Current Open Database/Scheme.
    * Import of SQL Statement File.
    * Import of CSV data File Into Selected Database Table via Insert/Update.
+   * Query Bucket for Storing/Organizing SQL Statements.
    * Query Frame for Building Complex Select SQL Statements.
    * Search Frame for Running Generic LIKE Queries on All Tables in Database.
    * Simple Easy to Use Interface.
@@ -93,7 +94,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.26 does not, will have an example configuration
+additional database, release v3.29 does not, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
@@ -200,6 +201,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 3.29 Summary Table sort/search history implementation and addition of
+                  Query Bucket for query storage, organizing, and drops to plugins.
    * Version 3.26 Architectural modularization for core aspects relating to login
                   and connection management. Date display formatting preferences
                   selection. PNG image output of summary table display.
