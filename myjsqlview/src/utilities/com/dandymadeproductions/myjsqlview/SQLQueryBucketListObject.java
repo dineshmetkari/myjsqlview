@@ -8,9 +8,9 @@
 //
 //=================================================================
 // 
-// Copyright (c) 2007, Sun Microsystems, Inc., Chet, Dana M. Proctor
+// Copyright (c) 2007-2011, Sun Microsystems, Inc., Chet, Dana M. Proctor
 // All rights reserved.
-// Version 1.2 04/10/2011
+// Version 1.3 05/21/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //         1.2 04/10/2011 Class Method getSQLStatementString() Correction to NOT
 //                        Change the Object's sqlStatementString, but Just Return.
 //                        Also !isLimited.
+//         1.3 05/21/2011 Class Method constructionSQLQueryBucketListObject() Set the
+//                        Button's Derived Font to BOLD. Also Increased Value of alphaValue.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,6 +46,7 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.AlphaComposite;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -55,18 +58,18 @@ import javax.swing.JButton;
 //=================================================================
 
 /**
- * The SQLQueryBucketListObject class is used to a variant from a standard Swing button
- * that exempts translucency.
+ *    The SQLQueryBucketListObject class is used to a variant from a standard
+ * Swing button that exempts translucency.
  * 
  * @author Chet, Dana M. Proctor
- * @version 1.2 04/10/2011
+ * @version 1.3 05/21/2011
  */
 
 class SQLQueryBucketListObject extends JButton
 {
    // Class Instances.
    private static final long serialVersionUID = -3584530005550405169L;
-   private static final float alphaValue = 0.75f;
+   private static final float alphaValue = 0.76f;
    
    private BufferedImage buttonImage = null;
    private String sqlStatementString;
@@ -90,6 +93,7 @@ class SQLQueryBucketListObject extends JButton
    
    private void constructSQLQueryBucketListObject()
    {
+      setFont(getFont().deriveFont(Font.BOLD));
       isLimited = false;
       setOpaque(false);
    }
