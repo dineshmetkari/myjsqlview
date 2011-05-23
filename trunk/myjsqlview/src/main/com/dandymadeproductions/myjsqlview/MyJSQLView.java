@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.28 05/14/2011
+// Version 3.29 05/22/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -185,6 +185,8 @@
 //         3.27 05/11/2011 Made Class Instance myJSQLViewPopupListner Public Along With
 //                         Class Method getPopupMenuListener().
 //         3.28 05/14/2011 Changed Class Instance myJSQLViewPopupListener Back to private.
+//         3.29 05/22/2011 Class Instance myJSQLView_Version Update for Release
+//                         3.29.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -218,7 +220,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.28 05/14/2011
+ * @version 3.29 05/22/2011
  */
 
 public class MyJSQLView implements ActionListener
@@ -240,7 +242,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.28", "Build ID: 20110514"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.29", "Build ID: 20110522"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
