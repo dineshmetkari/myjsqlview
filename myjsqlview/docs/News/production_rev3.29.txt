@@ -1,0 +1,28 @@
+MyJSQLView Version 3.29 Released
+
+The MyJSQLView project is pleased to provide the release of Version
+3.29 to the public. The release provides two additional features
+for the application with regard to table state history and a query
+bucket. The table state history provides a standard mechanism just
+like a web browser where sort/searches for table data is accessible
+for previous/next states relative to a queue position. The query
+bucket allows table states to be saved into a handy frame that can
+be used in a drag and drop method to set SQL statements into alternate
+receptive applications and MyJSQLView's own plugins.
+
+Plugins are going to become a major feature for MyJSQLView in the
+future. With that said the Table Field Profiler that is included
+with the application has been updated and modified to take advantage
+of the new Query Bucket asset of MyJSQLView. Documentation is available
+both at the project's website and with the MyJSQLView download to
+help developers in creating their own plugins for the application.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. A
+query frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
