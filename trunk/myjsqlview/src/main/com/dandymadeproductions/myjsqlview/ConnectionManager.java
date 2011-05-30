@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 03/13/2011
+// Version 1.4 05/30/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@
 //             get/closeConnection() to ConnectionManager.
 //         1.3 Class Method loadDBTables(), PostgreSQL getTablePrivileges() Space
 //             for schemaPattern Because of a Bug in pgJDBC 9.0-801
+//         1.4 Class Methods loadDBParameters() & loadDBTables() Created Additional
+//             Information in catch() by Creating new SQLException().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.3 03/13/2011
+ * @version 1.4 05/30/2011
  */
 
 public class ConnectionManager
@@ -339,7 +341,7 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         throw e;
+         throw new SQLException("ConnectionManager loadDBParameters() " + e);
       }
       
       //==============================================================
@@ -588,7 +590,7 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         throw e;
+         throw new SQLException("ConnectionManager loadDBTables() " + e);
       }
    }
    
