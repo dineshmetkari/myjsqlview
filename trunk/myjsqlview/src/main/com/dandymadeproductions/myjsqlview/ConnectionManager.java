@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.4 05/30/2011
+// Version 1.5 05/30/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,9 @@
 //             for schemaPattern Because of a Bug in pgJDBC 9.0-801
 //         1.4 Class Methods loadDBParameters() & loadDBTables() Created Additional
 //             Information in catch() by Creating new SQLException().
+//         1.5 Modified the Way System.outs Handle Content by Not Using ResultSet
+//             But Rather by Instances Variables That Were Already Available. Class
+//             Methods loadDBParameters() & loadDBTables().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +71,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.4 05/30/2011
+ * @version 1.5 05/30/2011
  */
 
 public class ConnectionManager
@@ -335,8 +338,9 @@ public class ConnectionManager
          db_resultSet = dbMetaData.getTableTypes();
          while (db_resultSet.next())
          {
-            // System.out.println("Table Types: " + db_resultSet.getString("TABLE_TYPE"));
-            tableTypes[i++] = db_resultSet.getString(TABLE_TYPE);
+            tableTypes[i] = db_resultSet.getString(TABLE_TYPE);
+            // System.out.println("Table Types: " + tableTypes[i]);
+            i++;
          }
       }
       catch (SQLException e)
@@ -522,9 +526,7 @@ public class ConnectionManager
                   continue;
 
                // Abreviated and filtered information.
-               //System.out.println(db_resultSet.getString("TABLE_TYPE") + " "
-               //                   + db_resultSet.getString("TABLE_SCHEM") + "."
-               //                   + db_resultSet.getString("TABLE_NAME"));
+               // System.out.println(tableType + " " + tableSchem + "." + tableName);
 
                if (tableSchem != null && !tableSchem.equals(""))
                {
