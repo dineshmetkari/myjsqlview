@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 12.6 04/17/2011
+// Version 12.7 06/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -291,6 +291,8 @@
 //             DateTime, & Timestamp When No Specific Column is Selected.
 //        12.5 Called saveHistory() in Class Method loadTable().
 //        12.6 Changed the Conditional Check for saveAction by Removing the NOT Logic.
+//        12.7 Correction in loadTable() for Not Modifiying searchTextString
+//             During Composition When No Field Specified.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -316,7 +318,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.6 04/19/2011
+ * @version 12.7 06/05/2011
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -579,22 +581,24 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
                columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
                
+               String searchString = searchTextString;
+               
                if (columnType.equals("DATE"))
-                  searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ"))
                {
-                  if (searchTextString.indexOf(" ") != -1)
-                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(
-                        searchTextString.substring(0, searchTextString.indexOf(" ")))
-                        + searchTextString.substring(searchTextString.indexOf(" "));
-                  else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
-                     searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
+                  if (searchString.indexOf(" ") != -1)
+                     searchString = MyJSQLView_Utils.processDateFormatSearch(
+                        searchString.substring(0, searchString.indexOf(" ")))
+                        + searchString.substring(searchString.indexOf(" "));
+                  else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
+                     searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                }
                
                if (i < tableColumns.length - 1)
-                  searchQueryString.append(tableColumns[i] + "::TEXT LIKE '%" + searchTextString + "%' OR");
+                  searchQueryString.append(tableColumns[i] + "::TEXT LIKE '%" + searchString + "%' OR");
                else
-                  searchQueryString.append(tableColumns[i] + "::TEXT LIKE '%" + searchTextString + "%'");
+                  searchQueryString.append(tableColumns[i] + "::TEXT LIKE '%" + searchString + "%'");
             }
          }
          // Field specified.
