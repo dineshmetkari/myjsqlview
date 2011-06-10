@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.82 05/02/2011
+// Version 4.83 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,11 @@
 //             Decrements.
 //        4.82 Class Method selectTableField() Passed this to Creation of
 //             TableFieldSelectionPreferencesPanel.
+//        4.83 Correction in Class Method setSpecialFieldData for Checking for Index of
+//             Parenthsis of listStrings. Class Method deleteSelectedItems() &
+//             deleteAllItems() Changed in BEGIN Statement Addition for TRUE Conditional.
+//             Class Method deleteSelectedItem() Added Method Instance currentColumnClass,
+//             & Exclusion of Quoting Numeric Fields for Key Validation for MS Access.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -210,7 +215,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.82 05/02/2011
+ * @version 4.83 06/10/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1751,7 +1756,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             // The format is ('a','b','c'), so just extracting
             // the indiviual elements.
 
-            listStrings = listStrings.substring(listStrings.indexOf("(") + 1, listStrings.lastIndexOf(")"));
+            if (listStrings.indexOf("(") != -1 && listStrings.indexOf(")") != -1)
+               listStrings = listStrings.substring(listStrings.indexOf("(") + 1, listStrings.lastIndexOf(")"));
             listStrings = listStrings.replaceAll(",", "");
             listStrings = listStrings.replaceAll("''", "'");
             String[] enumSetString = listStrings.split("\\'");
@@ -1790,7 +1796,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       JLabel message;
       InputDialog deleteDialog;
-      String subProtocol, currentDB_ColumnName, currentColumnType;
+      String subProtocol, currentDB_ColumnName, currentColumnClass, currentColumnType;
       String  resourceMessage, resourceTitle, resourceCancel, resourceOK;
       Object currentContentData;
       int keyColumn = 0;
@@ -1838,9 +1844,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                subProtocol = ConnectionManager.getConnectionProperties().getProperty(
                   ConnectionProperties.SUBPROTOCOL);
                
-               if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
-                   && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
-                   && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+               if (subProtocol.equals(ConnectionManager.MYSQL)
+                   || subProtocol.equals(ConnectionManager.POSTGRESQL))
                   sqlStatement.executeUpdate("BEGIN");
 
                // Begin the SQL statement(s) creation.
@@ -1861,6 +1866,11 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                      while (keyIterator.hasNext())
                      {
                         currentDB_ColumnName = keyIterator.next();
+                        currentColumnType = columnTypeHashMap.get(
+                                     parseColumnNameField(currentDB_ColumnName));
+                        currentColumnClass = columnClassHashMap.get(
+                                     parseColumnNameField(currentDB_ColumnName));
+                        
                         for (int j = 0; j < listTable.getColumnCount(); j++)
                            if (listTable.getColumnName(j).equals(parseColumnNameField(currentDB_ColumnName)))
                               keyColumn = j;
@@ -1887,8 +1897,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                               currentContentData = ((String) currentContentData).replaceAll("'", "''");
 
                            // Reformat date keys.
-                           currentColumnType = columnTypeHashMap
-                                 .get(parseColumnNameField(currentDB_ColumnName));
+                           
+                           
                            if (currentColumnType.equals("DATE"))
                            {
                               // MySQL & Oracle Require Special Handling.
@@ -1921,9 +1931,22 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                               }
                            }
                            else
-                              sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                                        + identifierQuoteString + "='" + currentContentData
-                                                        + "' AND ");
+                           {
+                              // Character data gets single quotes for some databases,
+                              // not numbers though.
+                              
+                              if (subProtocol.equals(ConnectionManager.MSACCESS)
+                                  && currentColumnClass.toLowerCase().indexOf("string") == -1)
+                              {
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "="
+                                                           + currentContentData + " AND ");
+                              }
+                              else
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "='"
+                                                           + currentContentData + "' AND ");
+                           }
                         }
                      }
                      sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
@@ -2019,9 +2042,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             subProtocol = ConnectionManager.getConnectionProperties().getProperty(
                ConnectionProperties.SUBPROTOCOL);
             
-            if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
-                && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
-                && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+            if (subProtocol.equals(ConnectionManager.MYSQL)
+                || subProtocol.equals(ConnectionManager.POSTGRESQL))
                sqlStatement.executeUpdate("BEGIN");
 
             // SQL statement creation.
