@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.79 04/30/2011
+// Version 6.80 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,9 @@
 //             LoginManagerFrame, LoginManager.
 //        6.79 Class Method accessCheck() Correction for HSQL Memory Detection of subProtocol
 //             for HSQL Not SQLite. System.out.println()s to connectionString.
+//        6.80 Class Method fillSiteDefaults() Added MS Access to Default String Arrays.
+//             Class Method accessCheck() Addition of connectionString & dbProductNameVersion
+//             Entries for MS Access.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -286,7 +289,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.79 04/30/2011
+ * @version 6.80 06/10/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -864,11 +867,12 @@ public class LoginFrame extends JFrame implements ActionListener
       
       // Example defaults database settings.
       String[] defaultDrivers = {"com.mysql.jdbc.Driver", "org.postgresql.Driver", "org.hsqldb.jdbcDriver",
-                                 "oracle.jdbc.driver.OracleDriver", "org.sqlite.JDBC"};
-      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin", "sqlite"};
+                                 "oracle.jdbc.driver.OracleDriver", "org.sqlite.JDBC",
+                                 "sun.jdbc.odbc.JdbcOdbcDriver"};
+      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin", "sqlite", "odbc"};
       
-      String[] defaultPorts = {"3306", "5432", "9001", "1521", "0000"};
-      String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite.db"};
+      String[] defaultPorts = {"3306", "5432", "9001", "1521", "0000", "0000"};
+      String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite.db", "ms_access"};
       
       // Clear contents to start anewed.
       driverList.removeAllElements();
@@ -1102,6 +1106,13 @@ public class LoginFrame extends JFrame implements ActionListener
                // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString);
             }
+            // MS Access
+            else if (subProtocol.equals(ConnectionManager.MSACCESS))
+            {
+               connectionString += subProtocol + ":" + db;
+               // System.out.println(connectionString);
+               dbConnection = DriverManager.getConnection(connectionString, user, passwordString);
+            }
             // MySQL, PostgreSQL, & HSQL
             else
             {
@@ -1156,6 +1167,8 @@ public class LoginFrame extends JFrame implements ActionListener
                   dbProductNameVersion = "Oracle ";
                else if (subProtocol.equals(ConnectionManager.SQLITE))
                   dbProductNameVersion = "SQLite ";
+               else if (subProtocol.equals(ConnectionManager.MSACCESS))
+                  dbProductNameVersion = "MS Access ";
                else
                   dbProductNameVersion = "Unknown Data Source ";
             }
