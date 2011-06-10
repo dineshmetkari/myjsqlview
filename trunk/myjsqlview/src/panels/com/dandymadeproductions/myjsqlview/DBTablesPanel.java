@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.5 05/07/2011
+// Version 4.6 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -108,6 +108,8 @@
 //         4.4 Added Class Instance sqlQueryBucketButton, Constructor Instance sqlQueryBucketIcon,
 //             and Handling of the New Button's Actions in Method actionPerformed().
 //         4.5 Made Class Method getGeneralProperties() public.
+//         4.6 Class Method loadTable() Addition for Loading tableTabPanel,
+//             TableTabPanel_MSAccess.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -142,7 +144,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.5 05/07/2011
+ * @version 4.6 06/10/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -389,8 +391,11 @@ public class DBTablesPanel extends JPanel implements ActionListener
       else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection, false);
       // SQLite
-      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
+      else if (subProtocol.equals(ConnectionManager.SQLITE))
          tableTabPanel = new TableTabPanel_SQLite(tableName, dbConnection, false);
+      // MS Access
+      else if (subProtocol.equals(ConnectionManager.MSACCESS))
+         tableTabPanel = new TableTabPanel_MSAccess(tableName, dbConnection, false);
       // Generic
       else
          tableTabPanel = new TableTabPanel_Generic(tableName, dbConnection, false);
