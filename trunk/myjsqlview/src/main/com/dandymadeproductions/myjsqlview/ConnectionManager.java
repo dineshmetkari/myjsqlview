@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.5 05/30/2011
+// Version 1.6 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 //         1.5 Modified the Way System.outs Handle Content by Not Using ResultSet
 //             But Rather by Instances Variables That Were Already Available. Class
 //             Methods loadDBParameters() & loadDBTables().
+//         1.6 Added Static Class Instance MSACCESS & Method getDataSourceType().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +72,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.5 05/30/2011
+ * @version 1.6 06/10/2011
  */
 
 public class ConnectionManager
@@ -96,6 +97,7 @@ public class ConnectionManager
    public static final String HSQL = "hsql";
    public static final String ORACLE = "oracle";
    public static final String SQLITE = "sqlite";
+   public static final String MSACCESS = "odbc";
    
    //private static final String TABLE_CAT = "TABLE_CAT";
    private static final String TABLE_TYPE = "TABLE_TYPE";
@@ -567,7 +569,6 @@ public class ConnectionManager
             }
          }
          
-         
          // ============================
          // Obtain the databases schemas.
          
@@ -597,13 +598,39 @@ public class ConnectionManager
    }
    
    //==============================================================
-   // Class method to set the current database product name &
-   // version.
+   // Class method to get the current connection properties.
    //==============================================================
 
    public static ConnectionProperties getConnectionProperties()
    {
       return connectionProperties;
+   }
+   
+   //==============================================================
+   // Class method to get the current data source type.
+   //==============================================================
+
+   public static String getDataSourceType()
+   {
+      // Method Instances.
+      String subProtocol;
+      
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      
+      if (subProtocol.equals(MYSQL))
+         return MYSQL;
+      else if (subProtocol.equals(POSTGRESQL))
+         return POSTGRESQL;
+      else if (subProtocol.indexOf(HSQL) != -1)
+         return HSQL;
+      else if (subProtocol.indexOf(ORACLE) != -1)
+         return ORACLE;
+      else if (subProtocol.equals(SQLITE))
+         return SQLITE;
+      else if (subProtocol.equals(MSACCESS))
+         return MSACCESS;
+      else
+         return "other"; 
    }
    
    //==============================================================
