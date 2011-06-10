@@ -7,6 +7,7 @@
 <Site Name="LocalHost_Oracle" Driver="oracle.jdbc.driver.OracleDriver" Protocol="jdbc" SubProtocol="oracle:thin" Host="127.0.0.1" Port="1521" Database="oracle" User="" Password="" SSH="0" />
 <Site Name="LocalHost_SQLite" Driver="org.sqlite.JDBC" Protocol="jdbc" SubProtocol="sqlite" Host="127.0.0.1" Port="0000" Database="test/sqliteTypes_test.db" User="" Password="" SSH="0" />
 <Site Name="LocalHost_SQLite" Driver="org.sqlite.JDBC" Protocol="jdbc" SubProtocol="sqlite" Host="127.0.0.1" Port="0000" Database=":memory:" User="" Password="" SSH="0" />
+<Site Name="LocalHost_MS_Access" Driver="sun.jdbc.odbc.JdbcOdbcDriver" Protocol="jdbc" SubProtocol="odbc" Host="127.0.0.1" Port="0000" Database="ms_access" User="" Password="" SSH="0" />
 </Sites>
 <Settings>
 <Item name="Last Server Name" type="string">Last Site</Item>
