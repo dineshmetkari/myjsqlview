@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.30 03/17/2011
+// Version 7.31 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -249,6 +249,8 @@
 //             Method setSQLQueryBucketFrameNotVisible() in Addition Class Instance
 //             sqlQueryBucketFrameVisible. Increase of size of PreferencesFrame From 675x405
 //             to 700x435.
+//        7.31 Class Method actionSelection() Replacement of Instance subProtocol With
+//             dataSourceType and Derivation from ConnectionManager.getDataSourceType().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -281,7 +283,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.30 03/17/2011
+ * @version 7.31 06/11/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -501,13 +503,15 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          actionCommand = ((JRadioButtonMenuItem) item).getActionCommand();
          if (actionCommand.equals("All"))
          {
-            String subProtocol = ConnectionManager.getConnectionProperties()
-                                 .getProperty(ConnectionProperties.SUBPROTOCOL);
-            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
-                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+            String dataSourceType = ConnectionManager.getDataSourceType();
+            
+            //String subProtocol = ConnectionManager.getConnectionProperties()
+            //                     .getProperty(ConnectionProperties.SUBPROTOCOL);
+            if (dataSourceType.equals(ConnectionManager.HSQL)
+                || dataSourceType.equals(ConnectionManager.ORACLE))
                actionCommand = "%";
-            else if (subProtocol.equals(ConnectionManager.MYSQL)
-                     || subProtocol.equals(ConnectionManager.POSTGRESQL))
+            else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                     || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                actionCommand = "";
             else
                actionCommand = null;
