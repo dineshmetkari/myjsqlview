@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.80 03/10/2011
+// Version 4.81 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -155,6 +155,10 @@
 //        4.80 03/10/2011 Class Method getAdvancedSortSearch() Changes in sqlStatementString
 //                        to Properly Format Searches to Oracle Date & Timestamp Fields With
 //                        TO_DATE() & TO_TIMESTAMP().
+//        4.81 06/10/2011 Added Argument columnClassHashMap to Constructor. Class Method 
+//                        getAdvancedSortSearchSQL() Added Method Instance columnClassString,
+//                        & Exclusion of Quoting Numeric Fields for Key Validation for MS
+//                        Access. In Same Method & DB Removal of LIMIT to SQL Statement. 
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -184,7 +188,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.80 03/10/2011
+ * @version 4.81 06/10/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -195,6 +199,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private String sqlTable;
    private String subProtocol, identifierQuoteString;
    private HashMap<String, String> columnNamesHashMap;
+   private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypesHashMap;
    private Vector<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
@@ -222,12 +227,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
    protected AdvancedSortSearchForm(String table, MyJSQLView_ResourceBundle resourceBundle,
                                     HashMap<String, String> columnNamesHashMap,
+                                    HashMap<String, String> columnClassHashMap,
                                     HashMap<String, String> columnTypesHashMap,
                                     Vector<String> comboBoxColumnNames)
    {
       sqlTable = table;
       this.resourceBundle = resourceBundle;
       this.columnNamesHashMap = columnNamesHashMap;
+      this.columnClassHashMap = columnClassHashMap;
       this.columnTypesHashMap = columnTypesHashMap;
       this.comboBoxColumnNames = comboBoxColumnNames;
 
@@ -707,7 +714,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Method Instances
       StringBuffer sqlStatementString;
       String whereString, unionString, ascDescString;
-      String columnNameString, columnTypeString;
+      String columnNameString, columnClassString, columnTypeString;
       String operatorString, searchString;
       boolean notFieldSort;
 
@@ -731,6 +738,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       do
       {
          columnNameString = columnNamesHashMap.get(searchComboBox[i].getSelectedItem());
+         columnClassString = columnClassHashMap.get(searchComboBox[i].getSelectedItem());
          columnTypeString = columnTypesHashMap.get(searchComboBox[i].getSelectedItem());
          operatorString = (String) operatorComboBox[i].getSelectedItem();
          searchString = searchTextField[i].getText();
@@ -797,9 +805,20 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                      }
                   }
                   else
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString + " '"
-                                               + searchString + "' ");
+                  {
+                     // Character data gets single quotes for some databases,
+                     // not numbers though.
+                          
+                     if (subProtocol.equals(ConnectionManager.MSACCESS)
+                         && columnClassString.toLowerCase().indexOf("string") == -1)
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " "
+                                                  + searchString + " ");
+                     else
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + searchString + "' ");
+                  }
                }
             }
             
@@ -851,7 +870,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // ========================================
       // Adding the LIMIT option.
 
-      sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
+      if (!subProtocol.equals(ConnectionManager.MSACCESS))
+         sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
 
       // Return the resultant query.
 
