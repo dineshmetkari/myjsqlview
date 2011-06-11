@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 7.3 03/17/2011
+// Version 7.4 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,8 @@
 //         7.2 Changes to Access Database Properties schemas and ConnectionProperties
 //             to the New Redefined Class ConnectionManager.
 //         7.3 Added Tools | SQL Query Bucket in Class Method createToolsMenu().
+//         7.4 Change in Constructor for ConnectionManager.getDataSourceType()
+//             From getConnectionProperties().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -147,7 +149,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.3 03/17/2011
+ * @version 7.4 06/11/2011
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -197,8 +199,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       add(Box.createHorizontalGlue());
 
       // Root User Flush Privileges Button
-      if (ConnectionManager.getConnectionProperties().getProperty(
-                         ConnectionProperties.SUBPROTOCOL).equals(ConnectionManager.MYSQL)
+      if (ConnectionManager.getDataSourceType().equals(ConnectionManager.MYSQL)
            && ConnectionManager.getConnectionProperties().getProperty(
                          ConnectionProperties.USER).equals("root"))
       {
