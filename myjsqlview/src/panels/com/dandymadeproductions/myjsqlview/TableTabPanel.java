@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.83 06/10/2011
+// Version 4.84 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -182,6 +182,8 @@
 //             deleteAllItems() Changed in BEGIN Statement Addition for TRUE Conditional.
 //             Class Method deleteSelectedItem() Added Method Instance currentColumnClass,
 //             & Exclusion of Quoting Numeric Fields for Key Validation for MS Access.
+//        4.84 Method createAdvancedSortSearchFrame Addition of columnClassHashMap to
+//             Argument for AdvancedSortSearchForm.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -215,7 +217,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.83 06/10/2011
+ * @version 4.84 06/10/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1505,8 +1507,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    public void createAdvancedSortSearchFrame()
    {
       advancedSortSearchFrame = new AdvancedSortSearchForm(schemaTableName, resourceBundle,
-                                                           columnNamesHashMap, columnTypeHashMap,
-                                                           comboBoxFields);
+                                                           columnNamesHashMap, columnClassHashMap,
+                                                           columnTypeHashMap, comboBoxFields);
       advancedSortButton = advancedSortSearchFrame.sortButton;
       advancedSortButton.addActionListener(this);
       advancedSearchButton = advancedSortSearchFrame.searchButton;
