@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.4 04/27/2011
+// Version 8.5 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -197,7 +197,9 @@
 //         8.3 Class Method loadTable() Changes to Properly Search Date Field for Oracle.
 //         8.4 Correction in Method loadTable() to Properly Add Space When Adding ORDER
 //             as needed. Class Method getColumnNames() ORDER Check When WHERE Present
-//             for Oracle to Properly Insert ROWNUM=1. 
+//             for Oracle to Properly Insert ROWNUM=1.
+//         8.5 Method actionPerformed() Addition of columnClassHashMap to Argument for
+//             AdvancedSortSearchForm.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -229,7 +231,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.4 04/27/2011
+ * @version 8.5 06/10/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -712,7 +714,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                advancedSortSearchFrame = new AdvancedSortSearchForm(identifierQuoteString
                                                                     + sqlTable + identifierQuoteString,
                                                                     resourceBundle, columnNamesHashMap,
-                                                                    columnTypeHashMap, comboBoxFields);
+                                                                    columnClassHashMap, columnTypeHashMap,
+                                                                    comboBoxFields);
 
                advancedSortButton = advancedSortSearchFrame.sortButton;
                advancedSortButton.addActionListener(this);
