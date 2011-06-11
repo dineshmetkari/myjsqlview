@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.80 04/10/2011
+// Version 8.81 06/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -325,6 +325,9 @@
 //                        the Help of New Methods MyJSQLView_Utils.createTextDialog() &
 //                        MyJSQLView_Utils.createEditMenu(true);
 //        8.80 04/10/2011 Minor Cleanup.
+//        8.81 06/10/2011 Implmented Support for MS Access Database. Changes Localized to the Method
+//                        addUpdateTableEntry(). Also Fix in Same Method for Handling NULL Content
+//                        Properly, With IS NULL for Keys.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -357,7 +360,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.80 04/10/2011
+ * @version 8.81 06/10/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1155,10 +1158,9 @@ class TableEntryForm extends JFrame implements ActionListener
          sqlStatement = db_Connection.createStatement();
          sqlStatementString = new StringBuffer();
 
-         // HSQL & Oracle does not support.
-         if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
-             && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
-             && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+         // Only MySQL & PostgreSQL support.
+         if (subProtocol.equals(ConnectionManager.MYSQL)
+             || subProtocol.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
          // ====================
@@ -1197,10 +1199,12 @@ class TableEntryForm extends JFrame implements ActionListener
                // consideration
                // for certain types of entries/fields.
 
-               // Empty entry field.
+               // Empty entry field, or MS Access Autoincrement field.
 
-               if (!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName)
-                   && getFormField(columnName).equals(""))
+               if ((!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName))
+                   && ((getFormField(columnName).equals(""))
+                        || (subProtocol.equals(ConnectionManager.MSACCESS) && 
+                            getFormField(columnName).toLowerCase().equals("auto"))))
                {
                   // Do Nothing, Field Takes Default.
                }
@@ -1258,7 +1262,6 @@ class TableEntryForm extends JFrame implements ActionListener
                         else
                            sqlValuesString += "null, ";
                      }
-
                      else
                         sqlValuesString += "?, ";
                   }
@@ -1285,6 +1288,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
                            && !subProtocol.equals(ConnectionManager.MYSQL)
+                           && !subProtocol.equals(ConnectionManager.MSACCESS)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlValuesString += "B'" + getFormField(columnName) + "', ";
@@ -1476,8 +1480,12 @@ class TableEntryForm extends JFrame implements ActionListener
                                                      + identifierQuoteString + "=null, ");
                      }
                      else
-                        sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
-                                                  + identifierQuoteString + "=?, ");
+                     {
+                        // Can't Update autoincrement in MS Access.
+                        if (!subProtocol.equals(ConnectionManager.MSACCESS))
+                           sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                                     + identifierQuoteString + "=?, ");
+                     }
                   }
 
                   // Special fields that can not be represented
@@ -1494,6 +1502,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
                            && !subProtocol.equals(ConnectionManager.MYSQL)
+                           && !subProtocol.equals(ConnectionManager.MSACCESS)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
@@ -1618,37 +1627,67 @@ class TableEntryForm extends JFrame implements ActionListener
                // Normal key.
                else
                {
-                  // Escape single quotes.
-                  columnClass = columnClassHashMap.get(selectedTableTabPanel
-                        .parseColumnNameField(currentKey_ColumnName));
-                  if (columnClass.indexOf("String") != -1)
-                     currentContentData = ((String) currentContentData).replaceAll("'", "''");
-
-                  columnType = columnTypeHashMap.get(selectedTableTabPanel
-                        .parseColumnNameField(currentKey_ColumnName));
-                  if (columnType.indexOf("DATE") != -1)
+                  // Handle null content properly.
+                  if ((currentContentData + "").toLowerCase().equals("null"))
                   {
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
-                     {
-                        currentContentData = "TO_DATE('"
-                           + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                              currentContentData + "",
-                              DBTablesPanel.getGeneralProperties().getViewDateFormat())
-                              + "', 'YYYY-MM-dd')";
-                     }
-                     else
-                        currentContentData = "'" + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                           currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
-                           + "'";
-                     
+                     currentContentData = "IS NULL";
                      sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
-                                               + identifierQuoteString + "="
-                                               + currentContentData + " AND ");
+                                               + identifierQuoteString + " " + currentContentData
+                                               + " AND ");
                   }
                   else
-                     sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
-                                               + identifierQuoteString + "='" + currentContentData
-                                               + "' AND ");
+                  {
+                     // Escape single quotes.
+                     columnClass = columnClassHashMap.get(selectedTableTabPanel
+                           .parseColumnNameField(currentKey_ColumnName));
+                     if (columnClass.indexOf("String") != -1)
+                        currentContentData = ((String) currentContentData).replaceAll("'", "''");
+
+                     columnType = columnTypeHashMap.get(selectedTableTabPanel
+                           .parseColumnNameField(currentKey_ColumnName));
+                     
+                     if (columnType.indexOf("DATE") != -1)
+                     {
+                        if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                        {
+                           currentContentData = "TO_DATE('"
+                              + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                 currentContentData + "",
+                                 DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                 + "', 'YYYY-MM-dd')";
+                        }
+                        else
+                           currentContentData = "'" + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                              currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                              + "'";
+                        
+                        sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                                                  + identifierQuoteString + "="
+                                                  + currentContentData + " AND ");
+                     }
+                     else
+                     {
+                        // Character data gets single quotes for some databases,
+                        // not numbers though.
+                        
+                        if (subProtocol.equals("odbc"))
+                        {
+                           if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
+                              sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                                                        + identifierQuoteString + "='"
+                                                        + currentContentData + "' AND ");
+                           else
+                              sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                                 + identifierQuoteString + "="
+                                 + currentContentData + " AND ");
+                              
+                        }
+                        else
+                           sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
+                              + identifierQuoteString + "='"
+                              + currentContentData + "' AND ");
+                     }  
+                  }
                }
             }
             sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
@@ -1719,7 +1758,7 @@ class TableEntryForm extends JFrame implements ActionListener
             isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                            && columnType.indexOf("_") != -1;
             // System.out.println(i + " " + columnName + " " + columnClass + " "
-            // + columnType);
+            //                   + columnType + ": " + getFormField(columnName));
 
             // Validating input and setting content to fields
 
@@ -1727,8 +1766,10 @@ class TableEntryForm extends JFrame implements ActionListener
             if ((!isTextField && !isBlobField)
                 && !isArrayField
                 && (getFormField(columnName).equals("")
-                    || getFormField(columnName).toLowerCase().equals("null") || getFormField(columnName)
-                      .toLowerCase().equals("default")))
+                    || getFormField(columnName).toLowerCase().equals("null")
+                    || getFormField(columnName).toLowerCase().equals("default")
+                    || (autoIncrementHashMap.containsKey(columnName)
+                        && subProtocol.equals(ConnectionManager.MSACCESS))))
             {
                // Do Nothing, Field Already Set.
             }
