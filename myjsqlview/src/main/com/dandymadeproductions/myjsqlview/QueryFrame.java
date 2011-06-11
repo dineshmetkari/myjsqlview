@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.5 04/27/2011
+// Version 6.6 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,9 @@
 //                        Constructor and actionPerformed().
 //         6.4 02/05/2011 Class Method actionPerformed() rowSizeDialog.pack() Instead of Sized.
 //         6.5 04/27/2011 Class Instance queryTextArea.setDragEnabled(true) in Constructor.
+//         6.6 06/11/2011 Removed Class Instance subProtocol and Replaced With dataSourceType.
+//                        Derivation in Constructor From ConnectionManager.getDataSourceType().
+//                        Effected queryFrameListener, & Method actionPerformed(). 
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -191,7 +194,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.5 04/27/2011
+ * @version 6.6 06/11/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -221,7 +224,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static JTextArea queryResultTextArea = new JTextArea(4, 40);
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourceAlert, resourceFileNOTFound;
-   private String subProtocol, fileSeparator, iconsDirectory;
+   private String dataSourceType, fileSeparator, iconsDirectory;
    private String lastDirectory;
    
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
@@ -249,7 +252,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
       connectionProperties = ConnectionManager.getConnectionProperties();
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       hostName = connectionProperties.getProperty(ConnectionProperties.HOST);
       databaseName = connectionProperties.getProperty(ConnectionProperties.DB);
       
@@ -291,8 +294,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          public void windowClosing(WindowEvent e)
          {
             // Remove Memory/Temporary Table(s) for HSQL & Oracle
-            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
-                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+            if (dataSourceType.equals(ConnectionManager.HSQL)
+                || dataSourceType.equals(ConnectionManager.ORACLE))
                new TableClearingThread(queryTabsPane.getTabCount());
 
             // Clear out any query tab panes.
@@ -642,8 +645,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          if (actionCommand.equals("FE"))
          {
             // Remove Memory/Temp Table(s) for HSQL & Oracle
-            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
-                || subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+            if (dataSourceType.equals(ConnectionManager.HSQL)
+                || dataSourceType.equals(ConnectionManager.ORACLE))
                new TableClearingThread(queryTabsPane.getTabCount());
 
             // Clear out any query tab panes.
