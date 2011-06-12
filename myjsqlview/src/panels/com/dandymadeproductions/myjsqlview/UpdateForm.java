@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.7 03/11/2011
+// Version 3.8 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -102,6 +102,8 @@
 //                        Class Instance subProtocol.
 //         3.7 03/11/2011 Class Method getWhereSQLExpression() Minor Changes to Timestamp Type
 //                        sqlStatementString.
+//         3.8 06/11/2011 Replaced Class Instance subProtocol With dataSourceType. Methods Effected
+//                        createUpdateWhereInterface(), updateTable(), & getWhereSQLExpression().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +136,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.7 03/11/2011
+ * @version 3.8 06/11/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -143,7 +145,7 @@ class UpdateForm extends JFrame implements ActionListener
    private static final long serialVersionUID = -3252154506926965611L;
 
    private String sqlTable;
-   private String subProtocol;
+   private String dataSourceType;
    private String identifierQuoteString;
    private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnClassHashMap;
@@ -212,8 +214,7 @@ class UpdateForm extends JFrame implements ActionListener
       else
          setTitle(resource + " : " + table);
 
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
@@ -562,13 +563,13 @@ class UpdateForm extends JFrame implements ActionListener
 
       // Assigning the appropriate string array WHERE operators.
 
-      if (subProtocol.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL))
          whereOperators = mysqlWhereOperators;
-      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          whereOperators = postgreSQLWhereOperators;
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
          whereOperators = oracleWhereOperators;
-      else if (subProtocol.equals(ConnectionManager.SQLITE))
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
          whereOperators = sqliteWhereOperators;
       // Make HSQL Default
       else
@@ -823,10 +824,9 @@ class UpdateForm extends JFrame implements ActionListener
                dbConnection.setAutoCommit(false);
                tryingUpdate = true;
 
-               // HSQL & Oracle does not support.
-               if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
-                   && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
-                   && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+               // Only MySQL & PostgreSQL support.
+               if (dataSourceType.equals(ConnectionManager.MYSQL)
+                    || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   sqlStatement.executeUpdate("BEGIN");
 
                // Setup some instances needed for processing.
@@ -875,7 +875,7 @@ class UpdateForm extends JFrame implements ActionListener
                            dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                               dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
                            
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
                               updateString = "TO_DATE('" + dateString + "', 'YYYY-MM-dd')";
                               quoteCheckBox.setSelected(false);
@@ -977,7 +977,7 @@ class UpdateForm extends JFrame implements ActionListener
 
                               dateTimeValue = new Timestamp(dateParse.getTime());
                               
-                              if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                              if (dataSourceType.equals(ConnectionManager.ORACLE))
                               {
                                  updateString ="TO_TIMESTAMP('" + dateTimeValue.toString()
                                                 + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
@@ -1024,7 +1024,7 @@ class UpdateForm extends JFrame implements ActionListener
                   // Bit Types
                   else if (columnType.equals("BIT"))
                   {
-                     if (subProtocol.equals(ConnectionManager.MYSQL))
+                     if (dataSourceType.equals(ConnectionManager.MYSQL))
                      {
                         updateString = "B'" + updateTextString + "'";
                         quoteCheckBox.setSelected(false);
@@ -1130,7 +1130,7 @@ class UpdateForm extends JFrame implements ActionListener
                {
                   if (columnTypeString.equals("DATE"))
                   {
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                     if (dataSourceType.equals(ConnectionManager.ORACLE))
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString
@@ -1157,7 +1157,7 @@ class UpdateForm extends JFrame implements ActionListener
                      else if (tempSearchString.indexOf("-") != -1 || tempSearchString.indexOf("/") != -1)
                         tempSearchString = MyJSQLView_Utils.processDateFormatSearch(tempSearchString);
                      
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 
+                     if (dataSourceType.equals(ConnectionManager.ORACLE) 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
