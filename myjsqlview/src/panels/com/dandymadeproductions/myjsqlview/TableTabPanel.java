@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.84 06/10/2011
+// Version 4.85 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -184,6 +184,8 @@
 //             & Exclusion of Quoting Numeric Fields for Key Validation for MS Access.
 //        4.84 Method createAdvancedSortSearchFrame Addition of columnClassHashMap to
 //             Argument for AdvancedSortSearchForm.
+//        4.85 Class Methods deleteSelectedItem() & deleteAllItems() Changed Instance
+//             subProtocol with dataSourceType.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -217,7 +219,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.84 06/10/2011
+ * @version 4.85 06/11/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1798,7 +1800,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       JLabel message;
       InputDialog deleteDialog;
-      String subProtocol, currentDB_ColumnName, currentColumnClass, currentColumnType;
+      String dataSourceType, currentDB_ColumnName, currentColumnClass, currentColumnType;
       String  resourceMessage, resourceTitle, resourceCancel, resourceOK;
       Object currentContentData;
       int keyColumn = 0;
@@ -1843,11 +1845,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                sqlStatement = dbConnection.createStatement();
 
                // HSQL, Oracle, & SQLite does not support.
-               subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-                  ConnectionProperties.SUBPROTOCOL);
+               dataSourceType = ConnectionManager.getDataSourceType();
                
-               if (subProtocol.equals(ConnectionManager.MYSQL)
-                   || subProtocol.equals(ConnectionManager.POSTGRESQL))
+               if (dataSourceType.equals(ConnectionManager.MYSQL)
+                   || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   sqlStatement.executeUpdate("BEGIN");
 
                // Begin the SQL statement(s) creation.
@@ -1904,7 +1905,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                            if (currentColumnType.equals("DATE"))
                            {
                               // MySQL & Oracle Require Special Handling.
-                              if (subProtocol.indexOf(ConnectionManager.MYSQL) != -1)
+                              if (dataSourceType.equals(ConnectionManager.MYSQL))
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "=STR_TO_DATE('"
@@ -1913,7 +1914,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                                                               DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                                            + "', '%Y-%m-%d') AND ");
                               }
-                              else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                              else if (dataSourceType.equals(ConnectionManager.ORACLE))
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "=TO_DATE('"
@@ -1937,7 +1938,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                               // Character data gets single quotes for some databases,
                               // not numbers though.
                               
-                              if (subProtocol.equals(ConnectionManager.MSACCESS)
+                              if (dataSourceType.equals(ConnectionManager.MSACCESS)
                                   && currentColumnClass.toLowerCase().indexOf("string") == -1)
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
@@ -1994,7 +1995,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       JLabel message;
       InputDialog deleteAllDialog;
       JCheckBox confirmCheckbox;
-      String subProtocol;
+      String dataSourceType;
       String resource, resourceMessage;
       String resourceTitle, resourceCancel, resourceOK;
 
@@ -2041,11 +2042,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
             // HSQL & Oracle does not support.
             
-            subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-               ConnectionProperties.SUBPROTOCOL);
+            dataSourceType = ConnectionManager.getDataSourceType();
             
-            if (subProtocol.equals(ConnectionManager.MYSQL)
-                || subProtocol.equals(ConnectionManager.POSTGRESQL))
+            if (dataSourceType.equals(ConnectionManager.MYSQL)
+                || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                sqlStatement.executeUpdate("BEGIN");
 
             // SQL statement creation.
