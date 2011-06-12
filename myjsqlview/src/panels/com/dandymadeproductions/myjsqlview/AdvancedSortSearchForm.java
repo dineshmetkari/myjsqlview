@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.81 06/10/2011
+// Version 4.82 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,7 +158,11 @@
 //        4.81 06/10/2011 Added Argument columnClassHashMap to Constructor. Class Method 
 //                        getAdvancedSortSearchSQL() Added Method Instance columnClassString,
 //                        & Exclusion of Quoting Numeric Fields for Key Validation for MS
-//                        Access. In Same Method & DB Removal of LIMIT to SQL Statement. 
+//                        Access. In Same Method & DB Removal of LIMIT to SQL Statement.
+//        4.82 06/11/2011 Changed Class Instance subProtocol to dataSourceType. Derivation
+//                        in Constructor From ConnectionManager.getDataSourceType(). Class
+//                        Methods Effected createSortSearchInterface() & getAdvancedSortSearchSQL().
+//                        Removed in Constructor Instance connectionProperties.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -188,7 +192,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.81 06/10/2011
+ * @version 4.82 06/11/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -197,7 +201,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private static final long serialVersionUID = -2663401193471271657L;
 
    private String sqlTable;
-   private String subProtocol, identifierQuoteString;
+   private String dataSourceType, identifierQuoteString;
    private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypesHashMap;
@@ -239,7 +243,6 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       this.comboBoxColumnNames = comboBoxColumnNames;
 
       // Constructor Instances
-      ConnectionProperties connectionProperties;
       JPanel mainPanel, formPanel, northPanel, selectTypePanel;
       JPanel helpPanel, southPanel, actionButtonPanel, clearPanel;
       JLabel selectTypeLabel;
@@ -249,8 +252,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Setting up a icons directory and other instances.
       
-      connectionProperties = ConnectionManager.getConnectionProperties();
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       
       resource = resourceBundle.getResource("AdvancedSortSearchForm.message.Title");
       if (resource.equals(""))
@@ -535,13 +537,13 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Assigning the appropriate string array WHERE operators.
       
-      if (subProtocol.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL))
          whereOperators = mysqlWhereOperators;
-      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          whereOperators = postgreSQLWhereOperators;
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
          whereOperators = oracleWhereOperators;
-      else if (subProtocol.equals(ConnectionManager.SQLITE))
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
          whereOperators = sqliteWhereOperators;
       // Make HSQL Default
       else
@@ -762,7 +764,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                {
                   if (columnTypeString.equals("DATE"))
                   {
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                     if (dataSourceType.equals(ConnectionManager.ORACLE))
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString
@@ -789,7 +791,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                      else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
                         searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                      
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 
+                     if (dataSourceType.equals(ConnectionManager.ORACLE) 
                            && columnTypeString.indexOf("TIMESTAMP") != -1)
                      {
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
@@ -809,7 +811,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                      // Character data gets single quotes for some databases,
                      // not numbers though.
                           
-                     if (subProtocol.equals(ConnectionManager.MSACCESS)
+                     if (dataSourceType.equals(ConnectionManager.MSACCESS)
                          && columnClassString.toLowerCase().indexOf("string") == -1)
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString + " "
@@ -870,7 +872,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // ========================================
       // Adding the LIMIT option.
 
-      if (!subProtocol.equals(ConnectionManager.MSACCESS))
+      if (!dataSourceType.equals(ConnectionManager.MSACCESS))
          sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
 
       // Return the resultant query.
