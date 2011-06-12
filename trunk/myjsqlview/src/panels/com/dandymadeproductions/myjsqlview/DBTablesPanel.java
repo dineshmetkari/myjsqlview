@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.6 06/10/2011
+// Version 4.7 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -110,6 +110,8 @@
 //         4.5 Made Class Method getGeneralProperties() public.
 //         4.6 Class Method loadTable() Addition for Loading tableTabPanel,
 //             TableTabPanel_MSAccess.
+//         4.7 Removed Method Instance connectionProperties in loadTable() & Replaced
+//             subProtocol With dataSourceType.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,7 +146,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.6 06/10/2011
+ * @version 4.7 06/11/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -371,30 +373,28 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static void loadTable(String tableName, Connection dbConnection)
    {
       // Method Instances
-      ConnectionProperties connectionProperties;
-      String subProtocol;
+      String dataSourceType;
       TableTabPanel tableTabPanel;
       
-      connectionProperties = ConnectionManager.getConnectionProperties();
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
 
       // MySQL
-      if (subProtocol.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL))
          tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection, false);
       // PostgreSQL
-      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          tableTabPanel = new TableTabPanel_PostgreSQL(tableName, dbConnection, false);
       // HSQL
-      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      else if (dataSourceType.equals(ConnectionManager.HSQL))
          tableTabPanel = new TableTabPanel_HSQL(tableName, dbConnection, false);
       // Oracle
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
          tableTabPanel = new TableTabPanel_Oracle(tableName, dbConnection, false);
       // SQLite
-      else if (subProtocol.equals(ConnectionManager.SQLITE))
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
          tableTabPanel = new TableTabPanel_SQLite(tableName, dbConnection, false);
       // MS Access
-      else if (subProtocol.equals(ConnectionManager.MSACCESS))
+      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          tableTabPanel = new TableTabPanel_MSAccess(tableName, dbConnection, false);
       // Generic
       else
