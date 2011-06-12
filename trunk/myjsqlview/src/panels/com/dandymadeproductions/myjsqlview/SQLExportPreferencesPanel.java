@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.0 01/26/2011
+// Version 4.1 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,9 @@
 //                        Constructor By Obtaining Contents From New ConnectionManager
 //                        Class. Class Method actionPerformed() identifierQuoteString
 //                        Also Obtained From ConnectionManager.
+//         4.1 06/11/2011 Replaced Class Instance subProtocol With dataSourceType.
+//                        Constructor and Class Methods createInsert/UpdateOptionsPanel()
+//                        Effected.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,7 +115,7 @@ import javax.swing.*;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.0 01/26/2011
+ * @version 4.1 06/11/2011
  */
 
 class SQLExportPreferencesPanel extends JPanel implements ActionListener
@@ -134,7 +137,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    private JTextField identifierQuoteTextField;
 
    private JButton restoreDefaultsButton, applyButton;
-   private String subProtocol;
+   private String dataSourceType;
 
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -161,8 +164,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
       
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
 
       // SQL Main Panel & Components
       sqlExportPanel = new JPanel(new BorderLayout());
@@ -268,7 +270,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Insert/Replace ComboBox
       insertReplaceUpdateComboBox = new JComboBox();
       insertReplaceUpdateComboBox.addItem("Insert");
-      if (!subProtocol.equals(ConnectionManager.POSTGRESQL))
+      if (!dataSourceType.equals(ConnectionManager.POSTGRESQL)
+            && !dataSourceType.equals(ConnectionManager.MSACCESS))
          insertReplaceUpdateComboBox.addItem("Replace");
       insertReplaceUpdateComboBox.addItem("Update");
       insertReplaceUpdateComboBox.addActionListener(this);
@@ -381,8 +384,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
             updateLockTableCheckBox.setSelected(true);
             autoIncrementCheckBox.setSelected(false);
             timeStampCheckBox.setSelected(false);
-            if (subProtocol.equals(ConnectionManager.MYSQL) ||
-                subProtocol.equals(ConnectionManager.POSTGRESQL))
+            if (dataSourceType.equals(ConnectionManager.MYSQL) ||
+                dataSourceType.equals(ConnectionManager.POSTGRESQL))
             {
                insertExpressionComboBox.setSelectedItem("Plural");
                replaceExpressionComboBox.setSelectedItem("Plural");
@@ -592,7 +595,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       insertTypeCheckBox.setFocusPainted(false);
       insertTypeCheckBox.addActionListener(this);
 
-      if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          insertTypeCheckBox.setEnabled(false);
 
       buildConstraints(constraints, 1, 4, 1, 1, 100, 100);
@@ -734,7 +737,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       updateTypeCheckBox.setFocusPainted(false);
       updateTypeCheckBox.addActionListener(this);
 
-      if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          updateTypeCheckBox.setEnabled(false);
 
       buildConstraints(constraints, 1, 1, 1, 1, 100, 100);
