@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.81 06/10/2011
+// Version 8.82 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -328,6 +328,9 @@
 //        8.81 06/10/2011 Implmented Support for MS Access Database. Changes Localized to the Method
 //                        addUpdateTableEntry(). Also Fix in Same Method for Handling NULL Content
 //                        Properly, With IS NULL for Keys.
+//        8.82 06/11/2011 Replaced Class Instance subProtocol With dataSourceType. Class Methods
+//                        Effected addUpdateTableEntry() & selectFunctionsOperations(). Added
+//                        Functions File for MSAccess in selectFunctionsOperations().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -360,7 +363,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.81 06/10/2011
+ * @version 8.82 06/11/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -386,7 +389,7 @@ class TableEntryForm extends JFrame implements ActionListener
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private String sqlTable;
-   private String subProtocol;
+   private String dataSourceType;
    private String iconsDirectory;
    private String identifierQuoteString;
    private String resourceInvalidInput, resourceType, resourceAlert;
@@ -460,8 +463,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // Setting up a icons directory identifier quote character,
       // & other instances.
       
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
@@ -1159,8 +1161,8 @@ class TableEntryForm extends JFrame implements ActionListener
          sqlStatementString = new StringBuffer();
 
          // Only MySQL & PostgreSQL support.
-         if (subProtocol.equals(ConnectionManager.MYSQL)
-             || subProtocol.equals(ConnectionManager.POSTGRESQL))
+         if (dataSourceType.equals(ConnectionManager.MYSQL)
+             || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
          // ====================
@@ -1203,7 +1205,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                if ((!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName))
                    && ((getFormField(columnName).equals(""))
-                        || (subProtocol.equals(ConnectionManager.MSACCESS) && 
+                        || (dataSourceType.equals(ConnectionManager.MSACCESS) && 
                             getFormField(columnName).toLowerCase().equals("auto"))))
                {
                   // Do Nothing, Field Takes Default.
@@ -1242,7 +1244,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      if (getFormField(columnName).toLowerCase().equals("auto"))
                      {
-                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1251,7 +1253,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            sqlValuesString += "nextval('" + schemaName + tableName + "_"
                                               + columnNamesHashMap.get(columnName) + "_seq\"'), ";
                         }
-                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1270,7 +1272,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
                            || columnType.equals("TIMESTAMPLTZ"))
                   {
-                     if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                     if (dataSourceType.equals(ConnectionManager.ORACLE))
                         sqlValuesString += "SYSTIMESTAMP, ";
                      else
                         sqlValuesString += "NOW(), ";
@@ -1287,8 +1289,8 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !subProtocol.equals(ConnectionManager.MYSQL)
-                           && !subProtocol.equals(ConnectionManager.MSACCESS)
+                           && !dataSourceType.equals(ConnectionManager.MYSQL)
+                           && !dataSourceType.equals(ConnectionManager.MSACCESS)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlValuesString += "B'" + getFormField(columnName) + "', ";
@@ -1458,7 +1460,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   {
                      if (getFormField(columnName).toLowerCase().equals("AUTO".toLowerCase()))
                      {
-                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1467,7 +1469,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            sqlStatementString.append("nextval('" + schemaName + tableName + "_"
                                                      + columnNamesHashMap.get(columnName) + "_seq\"'), ");
                         }
-                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
                            schemaName = sqlTable.substring(0, sqlTable.indexOf(".") + 2);
                            tableName = (sqlTable.substring(sqlTable.indexOf(".") + 1)).replaceAll(
@@ -1482,7 +1484,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      else
                      {
                         // Can't Update autoincrement in MS Access.
-                        if (!subProtocol.equals(ConnectionManager.MSACCESS))
+                        if (!dataSourceType.equals(ConnectionManager.MSACCESS))
                            sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
                                                      + identifierQuoteString + "=?, ");
                      }
@@ -1501,8 +1503,8 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !subProtocol.equals(ConnectionManager.MYSQL)
-                           && !subProtocol.equals(ConnectionManager.MSACCESS)
+                           && !dataSourceType.equals(ConnectionManager.MYSQL)
+                           && !dataSourceType.equals(ConnectionManager.MSACCESS)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
@@ -1648,7 +1650,7 @@ class TableEntryForm extends JFrame implements ActionListener
                      
                      if (columnType.indexOf("DATE") != -1)
                      {
-                        if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                        if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
                            currentContentData = "TO_DATE('"
                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
@@ -1670,7 +1672,7 @@ class TableEntryForm extends JFrame implements ActionListener
                         // Character data gets single quotes for some databases,
                         // not numbers though.
                         
-                        if (subProtocol.equals("odbc"))
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
                         {
                            if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
                               sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
@@ -1693,7 +1695,7 @@ class TableEntryForm extends JFrame implements ActionListener
             sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
 
             // Adding LIMIT expression for supported databases.
-            if (subProtocol.equals(ConnectionManager.MYSQL))
+            if (dataSourceType.equals(ConnectionManager.MYSQL))
             {
                if (limitCheckBox.isSelected())
                {
@@ -1769,7 +1771,7 @@ class TableEntryForm extends JFrame implements ActionListener
                     || getFormField(columnName).toLowerCase().equals("null")
                     || getFormField(columnName).toLowerCase().equals("default")
                     || (autoIncrementHashMap.containsKey(columnName)
-                        && subProtocol.equals(ConnectionManager.MSACCESS))))
+                        && dataSourceType.equals(ConnectionManager.MSACCESS))))
             {
                // Do Nothing, Field Already Set.
             }
@@ -2113,7 +2115,7 @@ class TableEntryForm extends JFrame implements ActionListener
             // Bit Type Fields
             else if (columnType.indexOf("BIT") != -1 && columnType.indexOf("_") == -1)
             {
-               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+               if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                {
                   // Do Nothing. Already set since undefined type.
                }
@@ -2248,14 +2250,16 @@ class TableEntryForm extends JFrame implements ActionListener
       // as needed.
 
       // Select database appropriate functions file.
-      if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          functionsFileName = "postgresql_" + functionsFileName;
-      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      else if (dataSourceType.equals(ConnectionManager.HSQL))
          functionsFileName = "hsql_" + functionsFileName;
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
          functionsFileName = "oracle_" + functionsFileName;
-      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
          functionsFileName = "sqlite_" + functionsFileName;
+      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+         functionsFileName = "msaccess_" + functionsFileName;
       else
          functionsFileName = "mysql_" + functionsFileName;
 
