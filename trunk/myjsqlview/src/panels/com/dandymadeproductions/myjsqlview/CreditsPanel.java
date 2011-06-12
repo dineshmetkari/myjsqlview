@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.3 01/26/2011
+// Version 3.4 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,7 +60,9 @@
 //         3.0 Changed Package to Reflect Dandy Made Productions Code.
 //         3.1 Organized Imports.
 //         3.2 SQLite Database Background Image Addition.
-//         3.3 Added Method subProtocol to Constructor.
+//         3.3 Added Method Instance subProtocol to Constructor.
+//         3.4 Replaced Method Instance subProtocol With dataSourceType in the
+//             Constructor. Added backgroundImage key for MSAccess.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -88,7 +90,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.3 01/26/2011
+ * @version 3.4 06/11/2011
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -123,23 +125,24 @@ class CreditsPanel extends JPanel implements Runnable
       this.webSiteString = webSiteString;
 
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      String subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      String dataSourceType = ConnectionManager.getDataSourceType();
       
       runThread = true;
 
       // Get the corresponding background image.
 
-      if (subProtocol.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "dolphin.jpg")).getImage();
-      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "elephant.jpg")).getImage();
-      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      else if (dataSourceType.equals(ConnectionManager.HSQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "spiral.jpg")).getImage();
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "letterO.jpg")).getImage();
-      else if (subProtocol.equals(ConnectionManager.SQLITE))
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "feather.jpg")).getImage();
+      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+         backgroundImage = (new ImageIcon("images" + fileSeparator + "key.jpg")).getImage();
       else
          backgroundImage = (new ImageIcon("images" + fileSeparator + "battleship.jpg")).getImage();
 
