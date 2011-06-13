@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 6.1 03/11/2011
+// Version 6.2 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,7 @@
 //             in run().
 //         6.0 Change in dataDump Clipping by the dataDelimiter.length in run().
 //         6.1 Class Method Addition of Proper Processing for Oracle timestampLTZ.
+//         6.2 Replaced Method Instance subProtocol in run() With dataSourceType.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -135,7 +136,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.1 03/11/2011
+ * @version 6.2 06/11/2011
  */
 
 class DataDumpThread implements Runnable
@@ -186,7 +187,7 @@ class DataDumpThread implements Runnable
       MyJSQLView_ProgressBar dumpProgressBar;
       Iterator<String> columnNamesIterator;
       StringBuffer columnNames_String;
-      String subProtocol, schemaTableName;
+      String dataSourceType, schemaTableName;
       String columnClass, columnType, dataDelimiter;
       String identifierQuoteString;
       String fieldContent;
@@ -200,8 +201,7 @@ class DataDumpThread implements Runnable
       rowNumber = 0;
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-                    ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
@@ -237,7 +237,7 @@ class DataDumpThread implements Runnable
             // Oracle TIMESTAMPLTZ handled differently to remove the
             // need to SET SESSION.
 
-            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1
+            if (dataSourceType.equals(ConnectionManager.ORACLE)
                 && (tableColumnTypeHashMap.get(columnNameString)).equals("TIMESTAMPLTZ"))
             {
                columnNames_String.append("TO_CHAR(" + identifierQuoteString
@@ -336,7 +336,7 @@ class DataDumpThread implements Runnable
 
                   // Convert MySQL Bit Fields to Such, Since they will
                   // be returned in base 10.
-                  else if (subProtocol.equals(ConnectionManager.MYSQL)
+                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("BIT") != -1)
                   {
                      try
@@ -351,7 +351,7 @@ class DataDumpThread implements Runnable
                   }
 
                   // Insure MySQL Date/Year fields are chopped to only 4 digits.
-                  else if (subProtocol.equals(ConnectionManager.MYSQL)
+                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
                            && columnType.indexOf("YEAR") != -1)
                   {
                      String yearString = fieldContent.trim();
