@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.7 03/11/2011
+// Version 2.8 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,8 @@
 //             & Timestamp for searchQueryString.
 //         2.7 Format Change in TO_DATE() Function for Oracle to YYYY-MM-dd in Class
 //             Method createColumnSQLQuery().
+//         2.8 Class Method createColumnsSQLQuery() Replaced Instance subProtocol With
+//             dataSourceType.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -90,7 +92,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.7 03/11/2011
+ * @version 2.8 06/11/2011
  */
 
 class SearchDatabaseThread implements Runnable
@@ -287,7 +289,7 @@ class SearchDatabaseThread implements Runnable
       ResultSetMetaData tableMetaData;
 
       StringBuffer columnsSQLQuery;
-      String subProtocol, sqlColumnSelectString;
+      String dataSourceType, sqlColumnSelectString;
       String identifierQuoteString;
 
       // Setting up.
@@ -301,15 +303,17 @@ class SearchDatabaseThread implements Runnable
          sqlStatement = dbConnection.createStatement();
 
          // Create query to obtain the tables Table Meta Data.
-         subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-            ConnectionProperties.SUBPROTOCOL);
-
+         dataSourceType = ConnectionManager.getDataSourceType();
+         
          // HSQL
-         if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+         if (dataSourceType.equals(ConnectionManager.HSQL))
             sqlColumnSelectString = "SELECT LIMIT 0 1 * FROM " + tableName;
          // Oracle
-         else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+         else if (dataSourceType.equals(ConnectionManager.ORACLE))
             sqlColumnSelectString = "SELECT * FROM " + tableName + " WHERE ROWNUM=1";
+         // MS Access
+         else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+            sqlColumnSelectString = "SELECT * FROM " + tableName;
          // MySQL, PostgreSQL, & Others
          else
             sqlColumnSelectString = "SELECT * FROM " + tableName + " LIMIT 1";
@@ -350,10 +354,10 @@ class SearchDatabaseThread implements Runnable
                }
                
                // Create search query.
-               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+               if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                      + "::TEXT LIKE \'%" + searchQueryString + "%\' OR ");
-               else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+               else if (dataSourceType.equals(ConnectionManager.ORACLE))
                {
                   if (columnType.equals("DATE"))
                      columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
