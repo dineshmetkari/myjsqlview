@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.8 06/11/2011
+// Version 3.9 06/12/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,10 @@
 //                        sqlStatementString.
 //         3.8 06/11/2011 Replaced Class Instance subProtocol With dataSourceType. Methods Effected
 //                        createUpdateWhereInterface(), updateTable(), & getWhereSQLExpression().
+//         3.9 06/12/2011 Class Method getWhereSQLExpression() Add Method Instance columnClassString.
+//                        Also in Same the Exclusion of Quoting for Keys That Are Numeric for 
+//                        MS Access Database. Class Method updateTable() Closed sqlStatement
+//                        Before Continuing With Processing Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -136,7 +140,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.8 06/11/2011
+ * @version 3.9 06/12/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -779,6 +783,7 @@ class UpdateForm extends JFrame implements ActionListener
          db_resultSet.next();
          updateRowCount = db_resultSet.getInt(1);
          db_resultSet.close();
+         sqlStatement.close();
 
          // Show dialog as needed.
          if (updateRowCount != 0)
@@ -821,6 +826,7 @@ class UpdateForm extends JFrame implements ActionListener
 
             if (updateDialog.isActionResult())
             {
+               sqlStatement = dbConnection.createStatement();
                dbConnection.setAutoCommit(false);
                tryingUpdate = true;
 
@@ -835,7 +841,7 @@ class UpdateForm extends JFrame implements ActionListener
                columnClass = columnClassHashMap.get(columnName);
                columnType = columnTypeHashMap.get(columnName);
                columnSize = (columnSizeHashMap.get(columnName)).intValue();
-               //System.out.println(updateTextString + " " + columnName + " " + columnClass + " " + columnType
+               // System.out.println(updateTextString + " " + columnName + " " + columnClass + " " + columnType
                //                   + " " + columnSize);
 
                // Create basic initial SQL.
@@ -903,7 +909,7 @@ class UpdateForm extends JFrame implements ActionListener
                         // DateTime
                         else if (columnType.equals("DATETIME"))
                         {
-                           Timestamp dateTimeValue;
+                           java.sql.Timestamp dateTimeValue;
                            dateString = "";
                            timeString = "";
                            updateTextString = updateTextString.trim();
@@ -913,13 +919,16 @@ class UpdateForm extends JFrame implements ActionListener
                               java.sql.Date.valueOf("error");
                         
                            // Process
-                           dateString = dateString.substring(0, updateTextString.indexOf(" "));
+                           dateString = updateTextString.substring(0, updateTextString.indexOf(" "));
                            dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                               dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
                            
                            timeString = updateTextString.substring(updateTextString.indexOf(" "));
-                           dateTimeValue = Timestamp.valueOf(dateString + timeString);
+                           dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
                            updateString = dateTimeValue.toString();
+                           
+                           if (updateString.indexOf(".") != -1)
+                              updateString = updateString.substring(0, updateString.indexOf("."));
                         }
                         // Timestamp
                         else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
@@ -1092,7 +1101,7 @@ class UpdateForm extends JFrame implements ActionListener
       // Method Instances
       StringBuffer sqlStatementString;
       String whereString;
-      String columnNameString, columnTypeString;
+      String columnNameString, columnClassString, columnTypeString;
       String operatorString, tempSearchString;
       String unionString;
 
@@ -1107,6 +1116,7 @@ class UpdateForm extends JFrame implements ActionListener
       do
       {
          columnNameString = columnNamesHashMap.get(whereComboBox[i].getSelectedItem());
+         columnClassString = columnClassHashMap.get(whereComboBox[i].getSelectedItem());
          columnTypeString = columnTypeHashMap.get(whereComboBox[i].getSelectedItem());
          operatorString = (String) operatorComboBox[i].getSelectedItem();
          tempSearchString = whereTextField[i].getText();
@@ -1167,15 +1177,31 @@ class UpdateForm extends JFrame implements ActionListener
                      }
                      else
                      {
-                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                                  + identifierQuoteString + " " + operatorString + " '"
-                                                  + tempSearchString + "' ");
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                           sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                     + identifierQuoteString + " " + operatorString + " #"
+                                                     + tempSearchString + "# ");
+                        else
+                           sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                     + identifierQuoteString + " " + operatorString + " '"
+                                                     + tempSearchString + "' ");
                      }
                   }
                   else
-                     sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                               + identifierQuoteString + " " + operatorString + " '"
-                                               + tempSearchString + "' ");
+                  {
+                     // Character data gets single quotes for some databases,
+                     // not numbers though.
+                          
+                     if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                         && columnClassString.toLowerCase().indexOf("string") == -1)
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " "
+                                                  + tempSearchString + " ");
+                     else
+                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                  + identifierQuoteString + " " + operatorString + " '"
+                                                  + tempSearchString + "' ");
+                  }
                }
             }
 
