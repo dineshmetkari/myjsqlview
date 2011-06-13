@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.0 01/27/2011
+// Version 4.1 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,8 @@
 //             getConnection() to Connection.
 //         4.0 Class Method importSQL() Added Instance subProtocol and Collected
 //             Connections and Displayed SQL Errors via the New Class ConnectionManager.
+//         4.1 Removed From Method importSQLFile() Instance subProtocol & Replaced
+//             With dataSourceType.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -111,7 +113,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.0 01/27/2011
+ * @version 4.1 06/11/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -183,7 +185,7 @@ class SQLDataDumpImportThread implements Runnable
       Connection dbConnection;
       Statement sqlStatement;
 
-      String subProtocol;
+      String dataSourceType;
       String sqlDump;
       String[] queries;
       int currentLine = 0;
@@ -209,8 +211,7 @@ class SQLDataDumpImportThread implements Runnable
          }
 
          sqlDumpProgressBar = new MyJSQLView_ProgressBar("SQL Import");
-         subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-            ConnectionProperties.SUBPROTOCOL);
+         dataSourceType = ConnectionManager.getDataSourceType();
          sqlDump = new String(dump);
          // System.out.println(sqlDump);
 
@@ -221,11 +222,9 @@ class SQLDataDumpImportThread implements Runnable
             dbConnection.setAutoCommit(false);
             sqlStatement = dbConnection.createStatement();
 
-            // HSQL, Oracle, & SQLite does not support.
-            
-            if (subProtocol.indexOf(ConnectionManager.HSQL) == -1 &&
-                subProtocol.indexOf(ConnectionManager.ORACLE) == -1 &&
-                subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+            // Only MySQL & PostgreSQL support.
+            if (dataSourceType.equals(ConnectionManager.MYSQL)
+                  || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                sqlStatement.executeUpdate("BEGIN");
 
             // Creating seperate queries and beginning
@@ -273,7 +272,7 @@ class SQLDataDumpImportThread implements Runnable
                   // Oracle SQL statements and bypassing any single commented
                   // SQL statement lines in Same Also.
                   
-                  if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                  if (dataSourceType.equals(ConnectionManager.ORACLE))
                   {
                      if ((queries[i].substring(0, 2)).matches("^-{2}?") && queries[i].indexOf("\n") == -1)
                          continue;
