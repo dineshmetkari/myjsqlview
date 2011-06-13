@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.6 01/27/2011
+// Version 1.7 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             Changed the Collection of Connections and Displaying SQL Errors
 //             from New Class ConnectionManager. Also identifierQuoteString in Method
 //             clearHSQL/OracleDBMemoryTables(). Added Instance subProtocol to run().
+//         1.7 Replaced Method Instance subProtocol in run() With dataSourceType.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -59,7 +60,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.6 01/27/2011
+ * @version 1.7 06/11/2011
  */
 
 class TableClearingThread implements Runnable
@@ -90,7 +91,7 @@ class TableClearingThread implements Runnable
    public void run()
    {
       // Method Instances.
-      String subProtocol;
+      String dataSourceType;
       
       // Get Connection to Database & Export Options.
       Connection dbConnection = (Connection) ConnectionManager.getConnection("ClearingTableThread run()");
@@ -98,13 +99,12 @@ class TableClearingThread implements Runnable
       // Remove the appropriate Memory/Temporary Table(s) for HSQL
       // or Oracle databases.
       
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       
-      if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      if (dataSourceType.equals(ConnectionManager.HSQL))
          clearHSQLDBMemoryTables(dbConnection);
 
-      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      if (dataSourceType.equals(ConnectionManager.ORACLE))
          clearOracleDBTemporaryTables(dbConnection);
 
       // Closing down.
