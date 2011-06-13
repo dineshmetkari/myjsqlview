@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 6.87 03/11/2011
+// Version 6.88 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -265,6 +265,9 @@
 //             generateHeaders().
 //        6.87 Class Methods explicitStatementData() and insertReplaceStatementData()
 //             Changes to Oracle TimestampLTZ to Output in YYYY-MM-DD Format.
+//        6.88 Replaced Class Instance subProtocol With dataSourceType. Intialized
+//             in Constructors and Implemented in run(), insertReplaceStatementData(),
+//             explicitStatementData(), & dumpBinaryData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -297,7 +300,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.87 03/11/2011
+ * @version 6.88 06/11/2011
  */
 
 class SQLDataDumpThread implements Runnable
@@ -311,7 +314,7 @@ class SQLDataDumpThread implements Runnable
    private HashMap<String, String> tableColumnClassHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
    private String fileName;
-   private String subProtocol, schemaName, tableName;
+   private String dataSourceType, schemaName, tableName;
    private String dbSchemaTableName, schemaTableName;
    private String dbIdentifierQuoteString, identifierQuoteString;
    private String[] myJSQLView_Version;
@@ -330,8 +333,7 @@ class SQLDataDumpThread implements Runnable
       this.myJSQLView_Version = myJSQLView_Version;
 
       // Setup export options & identifer String.
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
@@ -358,8 +360,7 @@ class SQLDataDumpThread implements Runnable
       insertReplaceDump = false;
 
       // Setup export options, & identifier String.
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
@@ -472,7 +473,7 @@ class SQLDataDumpThread implements Runnable
          {
             sqlStatement = dbConnection.createStatement();
 
-            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+            if (dataSourceType.equals(ConnectionManager.ORACLE))
                rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " WHERE ROWNUM=1");
             else
                rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t LIMIT 1");
@@ -482,13 +483,13 @@ class SQLDataDumpThread implements Runnable
                // Lock.
                if (sqlDataExportOptions.getLock())
                {
-                  if (subProtocol.equals(ConnectionManager.MYSQL))
+                  if (dataSourceType.equals(ConnectionManager.MYSQL))
                   {
                      dumpData = dumpData + ("/*!40000 ALTER TABLE " 
                                 + schemaTableName + " DISABLE KEYS */;\n");
                      dumpData = dumpData + ("LOCK TABLES " + schemaTableName + " WRITE;\n");
                   }
-                  else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                  else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                      dumpData = dumpData + ("LOCK TABLE " + schemaTableName + ";\n");
                }
 
@@ -520,7 +521,7 @@ class SQLDataDumpThread implements Runnable
                // Finishing up.
                if (sqlDataExportOptions.getLock())
                {
-                  if (subProtocol.equals(ConnectionManager.MYSQL))
+                  if (dataSourceType.equals(ConnectionManager.MYSQL))
                   {
                      dumpData = dumpData + "UNLOCK TABLES;\n";
                      dumpData = dumpData + "/*!40000 ALTER TABLE " + schemaTableName 
@@ -627,7 +628,7 @@ class SQLDataDumpThread implements Runnable
          // Save the index of autoIncrement entries.
          if (DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().containsKey(field))
          {
-            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+            if (dataSourceType.equals(ConnectionManager.ORACLE))
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1),
                                              DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field));
             else
@@ -656,14 +657,14 @@ class SQLDataDumpThread implements Runnable
          }
 
          // Save the index of Oracle TimeStamp(TZ) Fields.
-         if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 &&
+         if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")))
          {
             oracleTimeStamp_TZIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of Oracle TimeStamp(LTZ) Fields.
-         if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 &&
+         if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              columnType.equals("TIMESTAMPLTZ"))
          {
             oracleTimeStamp_LTZIndexes.add(Integer.valueOf(columnsCount + 1));
@@ -688,7 +689,7 @@ class SQLDataDumpThread implements Runnable
          }
 
          // Modify Statement as needed for Oracle TIMESTAMPLTZ Fields.
-         if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 &&
+         if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              columnType.equals("TIMESTAMPLTZ"))
          {
             sqlStatementString += "TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
@@ -766,13 +767,13 @@ class SQLDataDumpThread implements Runnable
 
                   if (theBytes != null)
                   {
-                     if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                     if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         dumpData = dumpData + "E'";
-                     else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+                     else if (dataSourceType.equals(ConnectionManager.HSQL))
                         dumpData = dumpData + "'";
-                     else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                     else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         dumpData = dumpData + "HEXTORAW('";
-                     else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
+                     else if (dataSourceType.equals(ConnectionManager.SQLITE))
                         dumpData = dumpData + "x'";
                      else
                         dumpData = dumpData + "0x";
@@ -791,7 +792,7 @@ class SQLDataDumpThread implements Runnable
                   if (autoIncrementFieldIndexes.containsKey(Integer.valueOf(i))
                       && sqlDataExportOptions.getAutoIncrement())
                   {
-                     if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                     if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                      {
                         schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
                         tableName = (schemaTableName.substring(schemaTableName.indexOf(".") 
@@ -800,7 +801,7 @@ class SQLDataDumpThread implements Runnable
                         dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
                                    + autoIncrementFieldIndexes.get(Integer.valueOf(i)) + "_seq\"'), ";
                      }
-                     else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                     else if (dataSourceType.equals(ConnectionManager.ORACLE))
                      {
                         dumpData = dumpData + identifierQuoteString
                                    + autoIncrementFieldIndexes.get(Integer.valueOf(i)) 
@@ -818,7 +819,7 @@ class SQLDataDumpThread implements Runnable
                            dumpData = dumpData + "'{NOW()}', ";
                         else
                         {
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                               dumpData = dumpData + "SYSTIMESTAMP, ";
                            else
                               dumpData = dumpData + "NOW(), ";
@@ -844,7 +845,7 @@ class SQLDataDumpThread implements Runnable
                      {
                         if (rs.getString(i) != null)
                         {
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                               dumpData = dumpData + "TO_DATE('" + rs.getDate(i) + "', 'YYYY-MM-DD'), ";
                            else
                               dumpData = dumpData + "'" + addEscapes(rs.getString(i) + "") + "', ";
@@ -876,7 +877,7 @@ class SQLDataDumpThread implements Runnable
                      {
                         if (rs.getString(i) != null)
                         {
-                           if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            {
                               if (arrayIndexes.contains(Integer.valueOf(i)))
                                  dumpData = dumpData + "'" + rs.getString(i) + "', ";
@@ -1025,7 +1026,7 @@ class SQLDataDumpThread implements Runnable
       {
          field = (String) columnNamesIterator.next();
 
-         if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1
+         if (dataSourceType.equals(ConnectionManager.ORACLE)
              && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
          {
             columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
@@ -1120,13 +1121,13 @@ class SQLDataDumpThread implements Runnable
                         // convert
                         // these from Oracle to MySQL.
 
-                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            dumpData = dumpData + "E'";
-                        else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+                        else if (dataSourceType.equals(ConnectionManager.HSQL))
                            dumpData = dumpData + "'";
-                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && updateDump)
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
                            dumpData = dumpData + "HEXTORAW('";
-                        else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1 && updateDump)
+                        else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
                            dumpData = dumpData + "x'";
                         else
                            dumpData = dumpData + "0x";
@@ -1146,7 +1147,7 @@ class SQLDataDumpThread implements Runnable
                            .containsKey(field)
                          && sqlDataExportOptions.getAutoIncrement())
                      {
-                        if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
                            tableName = (schemaTableName.substring(
@@ -1156,7 +1157,7 @@ class SQLDataDumpThread implements Runnable
                            dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
                                       + "_seq\"'), ";
                         }
-                        else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
                            dumpData = dumpData
                                       + identifierQuoteString
@@ -1174,7 +1175,7 @@ class SQLDataDumpThread implements Runnable
                            dumpData = dumpData + "'{NOW()}'. ";
                         else
                         {
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                               dumpData = dumpData + "SYSTIMESTAMP, ";
                            else
                               dumpData = dumpData + "NOW(), ";
@@ -1183,7 +1184,7 @@ class SQLDataDumpThread implements Runnable
 
                      // Setting Oracle TimeStamp(TZ)
                      else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")) &&
-                              subProtocol.indexOf(ConnectionManager.ORACLE) != -1 &&
+                              dataSourceType.equals(ConnectionManager.ORACLE) &&
                               !sqlDataExportOptions.getTimeStamp())
                      {
                         if (rs.getTimestamp(tableColumnNames.get(field)) != null)
@@ -1201,7 +1202,7 @@ class SQLDataDumpThread implements Runnable
                      {
                         if (rs.getString(tableColumnNames.get(field)) != null)
                         {
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                               dumpData = dumpData + "TO_DATE('"
                                          + rs.getDate(tableColumnNames.get(field))
                                          + "', 'YYYY-MM-DD'), ";
@@ -1241,7 +1242,7 @@ class SQLDataDumpThread implements Runnable
                      {
                         if (rs.getString(tableColumnNames.get(field)) != null)
                         {
-                           if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            {
                               if (columnType.indexOf("_") != -1)
                                  dumpData = dumpData + "'"
@@ -1283,7 +1284,7 @@ class SQLDataDumpThread implements Runnable
                         if (contentString != null)
                         {
                            if (columnType.equals("TIMESTAMPLTZ") &&
-                               subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                               dataSourceType.equals(ConnectionManager.ORACLE))
                               dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
                                          + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                            else
@@ -1402,7 +1403,7 @@ class SQLDataDumpThread implements Runnable
             while ((b = in.read()) != -1)
             {
                // Dump as octal data.
-               if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+               if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                {
                   octalString = Integer.toString(b, 8);
                   if (octalString.length() == 1)
@@ -1426,11 +1427,11 @@ class SQLDataDumpThread implements Runnable
                   dumpData = "";
                }
             }
-            if (subProtocol.equals(ConnectionManager.POSTGRESQL) ||
-                subProtocol.indexOf(ConnectionManager.HSQL) != -1 ||
-                subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
+            if (dataSourceType.equals(ConnectionManager.POSTGRESQL) ||
+                dataSourceType.equals(ConnectionManager.HSQL) ||
+                dataSourceType.equals(ConnectionManager.SQLITE))
                dumpData = dumpData + "', ";
-            else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1 &&
+            else if (dataSourceType.equals(ConnectionManager.ORACLE) &&
                      (updateDump || insertReplaceDump))
                dumpData = dumpData + "'), ";
             else
