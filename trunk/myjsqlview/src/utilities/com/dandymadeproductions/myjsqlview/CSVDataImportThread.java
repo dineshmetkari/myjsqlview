@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.6 03/11/2011
+// Version 5.7 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,8 @@
 //             Are NOT Removed if Present in delimiter.
 //         5.6 Correction in formatDateString Class Method for Condition Use of
 //             dateFormat.
+//         5.7 Removed Instance connectionProperties in Consructor. Replaced Class
+//             Instance subProtocol With dataSourceType.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -149,14 +151,14 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.6 03/11/2011
+ * @version 5.7 06/11/2011
  */
 
 class CSVDataImportThread implements Runnable
 {
    // Class Instance Fields.
    Thread importThread;
-   String subProtocol, fileName, csvOption;
+   String dataSourceType, fileName, csvOption;
    boolean validImport, temporaryDataFile;
 
    //==============================================================
@@ -166,14 +168,12 @@ class CSVDataImportThread implements Runnable
    CSVDataImportThread(String fileName, String csvOption, boolean temporaryDataFile)
    {
       // Constructor Instances
-      ConnectionProperties connectionProperties;
       
       this.fileName = fileName;
       this.csvOption = csvOption;
       this.temporaryDataFile = temporaryDataFile;
       
-      connectionProperties = ConnectionManager.getConnectionProperties();
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
 
       importThread = new Thread(this, "CSVDataImportThread");
       importThread.start();
@@ -289,10 +289,9 @@ class CSVDataImportThread implements Runnable
          dbConnection.setAutoCommit(false);
          sqlStatement = dbConnection.createStatement();
 
-         // HSQL & Oracle does not support.
-         if (subProtocol.indexOf(ConnectionManager.HSQL) == -1
-             && subProtocol.indexOf(ConnectionManager.ORACLE) == -1
-             && subProtocol.indexOf(ConnectionManager.SQLITE) == -1)
+         // Only MySQL & PostgreSQL supports.
+         if (dataSourceType.equals(ConnectionManager.MYSQL)
+               || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
          try
@@ -405,7 +404,7 @@ class CSVDataImportThread implements Runnable
                      
                      // MySQL Bit Fields
                      
-                     else if (subProtocol.equals(ConnectionManager.MYSQL) &&
+                     else if (dataSourceType.equals(ConnectionManager.MYSQL) &&
                               columnType != null && columnType.indexOf("BIT") != -1)
                      {
                         lineContent[i] = "B'" + lineContent[i] + "'";
@@ -413,7 +412,7 @@ class CSVDataImportThread implements Runnable
                      
                      // PostgreSQL Geometric Fields
                      
-                     else if (subProtocol.equals(ConnectionManager.POSTGRESQL) &&
+                     else if (dataSourceType.equals(ConnectionManager.POSTGRESQL) &&
                               columnClass != null && columnClass.indexOf("geometric") != -1)
                      {
                         lineContent[i] = "'" + lineContent[i] + "'::" + columnType;
@@ -427,7 +426,7 @@ class CSVDataImportThread implements Runnable
                      {
                         if (columnType.equals("DATE"))
                         {
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                               lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i]) + "', 'YYYY-MM-DD')";
                            else
                               lineContent[i] = "'" + formatDateString(lineContent[i]) + "'";
@@ -453,7 +452,7 @@ class CSVDataImportThread implements Runnable
                            // Process accordingly.
                            
                            // Oracle Timestamps
-                           if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
                               if (columnType.equals("TIMESTAMP"))
                                  lineContent[i] = "TO_TIMESTAMP('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
