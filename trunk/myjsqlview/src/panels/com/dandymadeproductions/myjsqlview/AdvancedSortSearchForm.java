@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.82 06/11/2011
+// Version 4.83 06/12/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -163,6 +163,8 @@
 //                        in Constructor From ConnectionManager.getDataSourceType(). Class
 //                        Methods Effected createSortSearchInterface() & getAdvancedSortSearchSQL().
 //                        Removed in Constructor Instance connectionProperties.
+//        4.83 06/12/2011 Class Method getAdvancedSortSearchSQL() Implements Quotes of # for
+//                        MS Access Datetime Fields Keys.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -192,7 +194,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.82 06/11/2011
+ * @version 4.83 06/12/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -801,9 +803,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                      }
                      else
                      {
-                        sqlStatementString.append(whereString + identifierQuoteString + columnNameString
-                                                  + identifierQuoteString + " " + operatorString + " '"
-                                                  + searchString + "' ");
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                           sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                     + identifierQuoteString + " " + operatorString + " #"
+                                                     + searchString + "# ");
+                        else
+                           sqlStatementString.append(whereString + identifierQuoteString + columnNameString
+                                                     + identifierQuoteString + " " + operatorString + " '"
+                                                     + searchString + "' ");
                      }
                   }
                   else
