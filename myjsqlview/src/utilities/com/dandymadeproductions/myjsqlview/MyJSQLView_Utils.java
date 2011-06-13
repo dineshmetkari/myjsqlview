@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.4 05/19/2011
+// Version 6.5 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,6 +117,8 @@
 //             So That Can Remove Limits.
 //         6.4 Correction in Class Method getConditionString() to Pattern Match replaceAll()
 //             in query to be Non-Case Sensitive for WHERE.
+//         6.5 Class Methods getConditionString() & getUnlimitedSQLStatementString()
+//             Replace Instance subProtocol With dataSourceType.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -149,7 +151,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.4 05/19/2011
+ * @version 6.5 06/11/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -644,18 +646,17 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static String getConditionString(String query)
    {
       // Method Instances.
-      String subProtocol, conditionString;
+      String dataSourceType, conditionString;
       
       conditionString = "";
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-                                            ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       
       if (query.toUpperCase().indexOf("WHERE") == -1)
          return conditionString;
       
       query = query.replaceAll("(?i)where", "WHERE");
       
-      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      if (dataSourceType.equals(ConnectionManager.ORACLE))
       {
          if (query.toUpperCase().indexOf("BETWEEN") != -1)
             query = getUnlimitedSQLStatementString(query);
@@ -764,27 +765,26 @@ public class MyJSQLView_Utils extends MyJSQLView
    protected static String getUnlimitedSQLStatementString(String sqlStatementString)
    {
       // Method Instances
-      String subProtocol;
+      String dataSourceType;
       int index1, index2, index3, index4, index5;
       
       // Collect the database protocol.
       
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-                        ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
       
       // Check if process can be performed.
       
-      if (((subProtocol.indexOf(ConnectionManager.ORACLE) == -1)
+      if (((!dataSourceType.equals(ConnectionManager.ORACLE))
             && (sqlStatementString.indexOf("LIMIT") == -1))
           ||
-           ((subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+           ((dataSourceType.equals(ConnectionManager.ORACLE))
              && (sqlStatementString.indexOf("BETWEEN") == -1)))
          return sqlStatementString;
       
       // Parsing
       
       // Oracle
-      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      if (dataSourceType.equals(ConnectionManager.ORACLE))
       {
          // Sample
          // SELECT "PARENT_ID", "NAME" FROM (SELECT ROW_NUMBER() OVER (ORDER BY "PARENT_ID" ASC)
@@ -805,7 +805,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
       }
       // HSQL
-      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      else if (dataSourceType.equals(ConnectionManager.HSQL))
       {
          // Sample
          // SELECT LIMIT 0 50 "PARENT_ID", "NAME" FROM "PUBLIC"."CHILD" WHERE TRUE LIKE '%' ORDER
