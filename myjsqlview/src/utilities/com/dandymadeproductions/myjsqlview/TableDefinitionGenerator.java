@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.0 01/27/2011
+// Version 4.1 06/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -109,6 +109,8 @@
 //         4.0 Added Class Instance databaseName. All createTableDefintion() Methods the
 //             Display of SQL Errors Directed to New Class ConnectionManager. Class Method
 //             getTableDefinition() Added Instance subProtocol.
+//         4.1 Replaced Method Instance subProtocol in getTableDefinition() With
+//             dataSourceType.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -130,7 +132,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.0 01/27/2011
+ * @version 4.1 06/11/2011
  */
 
 class TableDefinitionGenerator
@@ -1280,41 +1282,40 @@ class TableDefinitionGenerator
    protected String getTableDefinition()
    {
       // Method Instances.
-      String subProtocol;
+      String dataSourceType;
       
       // Determine the correct table structure method to
       // apply and proceed with creating a string of
       // the table definition.
       
-      subProtocol = ConnectionManager.getConnectionProperties().getProperty(
-         ConnectionProperties.SUBPROTOCOL);
+      dataSourceType = ConnectionManager.getDataSourceType();
 
       // MySQL
-      if (subProtocol.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL))
       {
          return createMySQLTableDefinition();
       }
 
       // PostgreSQL
-      else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
       {
          return createPostgreSQLTableDefinition();
       }
 
       // HSQL
-      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      else if (dataSourceType.equals(ConnectionManager.HSQL))
       {
          return createHSQLTableDefinition();
       }
 
       // Oracle
-      else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
       {
          return createOracleTableDefinition();
       }
       
       // SQLite
-      else if (subProtocol.indexOf(ConnectionManager.SQLITE) != -1)
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
       {
          return createSQLiteTableDefinition();
       }
