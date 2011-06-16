@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.6 06/10/2011
+// Version 1.7 06/16/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //             But Rather by Instances Variables That Were Already Available. Class
 //             Methods loadDBParameters() & loadDBTables().
 //         1.6 Added Static Class Instance MSACCESS & Method getDataSourceType().
+//         1.7 Change in Class Method getConnection() to Pass user & passwordString
+//             to Creation of DriverManager.getConnection().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +74,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.6 06/10/2011
+ * @version 1.7 06/16/2011
  */
 
 public class ConnectionManager
@@ -151,8 +153,8 @@ public class ConnectionManager
          
          // Create the appropriate connection as needed.
          
-         // Oracle
-         if (subProtocol.indexOf(ORACLE) != -1)
+         // Oracle & MS Access
+         if (subProtocol.indexOf(ORACLE) != -1 || subProtocol.equals(MSACCESS))
             return DriverManager.getConnection(connectionString, user, passwordString);
          
          // HSQL & SQLite Memory Connections
