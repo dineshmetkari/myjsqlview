@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 7.4 06/11/2011
+// Version 7.5 06/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -189,6 +189,11 @@
 //         7.4 Replaced Class Instance subProtocol With dataSourceType. Class Methods
 //             Effected run(), insertReplaceStatementData(), explicitStatementData(),
 //             & dumpBinaryData().
+//         7.5 Method run() Change for SELECT to Exclude LIMIT Aspect of SQL Statement
+//             for MS Access. Class Methods insertReplace/explicitStatementData()
+//             Removal of Multiple Accesses of the ResultSet, rs, More Than Once
+//             for Each Field. Several Accomodations for Properly Dumping Data for
+//             MS Access Databases and Fix for BLOB/Binary, 0 Bytes, for Same and MySQL.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -220,7 +225,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.4 06/11/2011
+ * @version 7.5 06/18/2011
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -412,6 +417,8 @@ class SQLDatabaseDumpThread implements Runnable
 
                if (dataSourceType.equals(ConnectionManager.ORACLE))
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " WHERE ROWNUM=1");
+               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                  rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t");
                else
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t LIMIT 1");
 
@@ -568,8 +575,8 @@ class SQLDatabaseDumpThread implements Runnable
          field = columnNamesIterator.next();
          columnClass = tableColumnClassHashMap.get(field);
          columnType = tableColumnTypeHashMap.get(field);
-         //System.out.println("field:" + field + " class:" + columnClass
-         //                   + "type:" + columnType);
+         // System.out.println("field:" + field + " class:" + columnClass +
+         //                   "type:" + columnType);
 
          // Save the index of autoIncrement field.
          if (currentTableTabPanel.getAutoIncrementHashMap().containsKey(field))
@@ -585,7 +592,7 @@ class SQLDatabaseDumpThread implements Runnable
          if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
              (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
              (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-             (columnType.indexOf("RAW") != -1))
+             (columnType.indexOf("IMAGE")!= -1) || (columnType.indexOf("RAW") != -1))
          {
             blobFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
@@ -593,7 +600,8 @@ class SQLDatabaseDumpThread implements Runnable
          // Save the index of bit entries.
          if (columnType.indexOf("BIT") != -1)
          {
-            bitFieldIndexes.add(Integer.valueOf(columnsCount + 1));
+            if (!dataSourceType.equals(ConnectionManager.MSACCESS))
+               bitFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the indox of TimeStamp Fields.
@@ -609,7 +617,7 @@ class SQLDatabaseDumpThread implements Runnable
             oracleTimeStamp_TZIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
-         // Save the index of Oracle TimeStamp(TZ) Fields.
+         // Save the index of Oracle TimeStamp(LTZ) Fields.
          if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              columnType.equals("TIMESTAMPLTZ"))
          {
@@ -714,7 +722,12 @@ class SQLDatabaseDumpThread implements Runnable
                      else if (dataSourceType.equals(ConnectionManager.SQLITE))
                         dumpData = dumpData + "x'";
                      else
-                        dumpData = dumpData + "0x";
+                     {
+                        if (theBytes.length != 0)
+                           dumpData = dumpData + "0x";
+                        else
+                           dumpData = dumpData + "''";
+                     }
 
                      // Go convert to hexadecimal/octal values
                      // and dump data as we go for blob/bytea.
@@ -768,12 +781,11 @@ class SQLDatabaseDumpThread implements Runnable
                      else if (oracleTimeStamp_TZIndexes.contains(Integer.valueOf(i))
                               && !sqlDataExportOptions.getTimeStamp())
                      {
-                        if (rs.getTimestamp(i) != null)
-                        {
-                           Object currentData = rs.getTimestamp(i);
+                        Object currentData = rs.getTimestamp(i);
+                        
+                        if (currentData != null)
                            dumpData = dumpData + "TO_TIMESTAMP('" + currentData
                                       + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
-                        }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
@@ -781,15 +793,24 @@ class SQLDatabaseDumpThread implements Runnable
                      // Check for a Date
                      else if (dateIndexes.contains(Integer.valueOf(i)))
                      {
-                        if (rs.getString(i) != null)
+                        if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
-                           if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              dumpData = dumpData + "TO_DATE('" + rs.getDate(i) + "', 'YYYY-MM-DD'), ";
+                           java.sql.Date dateValue = rs.getDate(i);
+                           
+                           if (dateValue != null)
+                              dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
                            else
-                              dumpData = dumpData + "'" + addEscapes(rs.getString(i) + "") + "', ";
+                              dumpData = dumpData + "NULL, ";
                         }
                         else
-                           dumpData = dumpData + "NULL, ";
+                        {
+                           String dateString = rs.getString(i);
+                           
+                           if (dateString != null)
+                              dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
+                           else
+                              dumpData = dumpData + "NULL, ";     
+                        }
                      }
 
                      // Check for a Year
@@ -799,12 +820,15 @@ class SQLDatabaseDumpThread implements Runnable
                         // a whole date YYYY-MM-DD. Don't know what else
                         // to do it hangs my imports, but works with
                         // mysql console.
-                        if (rs.getString(i) != null)
+                        
+                        String yearValue = rs.getString(i);
+                        
+                        if (yearValue != null)
                         {
-                           if (rs.getString(i).length() > 4)
-                              dumpData = dumpData + "'" + addEscapes(rs.getString(i).substring(0, 4)) + "', ";
+                           if (yearValue.length() > 4)
+                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
                            else
-                              dumpData = dumpData + "'" + addEscapes(rs.getString(i)) + "', ";
+                              dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -813,21 +837,23 @@ class SQLDatabaseDumpThread implements Runnable
                      // Check for Bit fields.
                      else if (bitFieldIndexes.contains(Integer.valueOf(i)))
                      {
-                        if (rs.getString(i) != null)
+                        String bitValue = rs.getString(i);
+                        
+                        if (bitValue != null)
                         {
                            if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            {
                               if (arrayIndexes.contains(Integer.valueOf(i)))
-                                 dumpData = dumpData + "'" + rs.getString(i) + "', ";
+                                 dumpData = dumpData + "'" + bitValue + "', ";
                               else
-                                 dumpData = dumpData + "B'" + rs.getString(i) + "', ";
+                                 dumpData = dumpData + "B'" + bitValue + "', ";
                            }
                            else
                            {
                               try
                               {
                                  dumpData = dumpData + "B'"
-                                            + Integer.toBinaryString(Integer.parseInt(rs.getString(i)))
+                                            + Integer.toBinaryString(Integer.parseInt(bitValue))
                                             + "', ";
                               }
                               catch (NumberFormatException e)
@@ -853,8 +879,8 @@ class SQLDatabaseDumpThread implements Runnable
                            // Check for Oracle TimeStampLTZ
                            if (oracleTimeStamp_LTZIndexes.contains(Integer.valueOf(i)) &&
                                !sqlDataExportOptions.getTimeStamp())
-                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" 
-                                         + contentString + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
+                                         + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                            else
                               dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
                         }
@@ -957,7 +983,6 @@ class SQLDatabaseDumpThread implements Runnable
       // Obtain the table fields and create select statement
       // to obtain the data.
 
-      
       sqlStatementString = "SELECT ";
       columnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
@@ -1014,20 +1039,30 @@ class SQLDatabaseDumpThread implements Runnable
                columnClass = tableColumnClassHashMap.get(field);
                columnType = tableColumnTypeHashMap.get(field);
                // System.out.println("field:" + field + " class:" + columnClass
-               // + " type:" + columnType);
+               //                   + " type:" + columnType);
 
                // Setting up WHERE Statement for Update Dump.
                if (keys.contains(tableColumnNames.get(field)) && updateDump)
                {
-                  keyStringStatement.append(identifierQuoteString
-                                            + tableColumnNames.get(field) 
+                  keyStringStatement.append(identifierQuoteString + tableColumnNames.get(field) 
                                             + identifierQuoteString + "=");
 
-                  if (rs.getString((String) tableColumnNames.get(field)) != null)
+                  String keyValue = rs.getString(tableColumnNames.get(field));
+                  
+                  if (keyValue != null)
                   {
-                     keyStringStatement.append("'"
-                                               + rs.getString(tableColumnNames.get(field)) 
-                                               + "' AND ");
+                     // Character data gets single quotes for some databases,
+                     // not numbers though.
+                     
+                     if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                     {
+                        if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
+                           keyStringStatement.append("'" + keyValue + "' AND ");
+                        else
+                           keyStringStatement.append(keyValue + " AND ");     
+                     }
+                     else
+                        keyStringStatement.append("'" + keyValue + "' AND ");
                   }
                   else
                      keyStringStatement.append("NULL AND ");
@@ -1041,17 +1076,15 @@ class SQLDatabaseDumpThread implements Runnable
                   if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("RAW") != -1))
+                      (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("RAW") != -1))
                   {
                      byte[] theBytes = rs.getBytes(tableColumnNames.get(field));
 
                      if (theBytes != null)
                      {
-                        // Let Oracle RAW & BLOB fall through if not update
-                        // since
-                        // an explicit statement is not supported. Allows to
-                        // convert
-                        // these from Oracle to MySQL.
+                        // Let Oracle & SQLite LOBs fall through if not update
+                        // since an explicit statement is not supported. Allows
+                        // to convert these to MySQL compatible dump.
 
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            dumpData = dumpData + "E'";
@@ -1059,10 +1092,15 @@ class SQLDatabaseDumpThread implements Runnable
                            dumpData = dumpData + "'";
                         else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
                            dumpData = dumpData + "HEXTORAW('";
-                        else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                        else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
                            dumpData = dumpData + "x'";
                         else
-                           dumpData = dumpData + "0x";
+                        {
+                           if (theBytes.length != 0)
+                              dumpData = dumpData + "0x";
+                           else
+                              dumpData = dumpData + "''";
+                        }
 
                         // Go convert to hexadecimal/octal values
                         // and dump data as we go for blob/bytea.
@@ -1081,7 +1119,8 @@ class SQLDatabaseDumpThread implements Runnable
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(identifierQuoteString, "");
+                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                                  identifierQuoteString, "");
 
                            dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
                                       + "_seq\"'), ";
@@ -1116,12 +1155,11 @@ class SQLDatabaseDumpThread implements Runnable
                               dataSourceType.equals(ConnectionManager.ORACLE) &&
                               !sqlDataExportOptions.getTimeStamp())
                      {
-                        if (rs.getTimestamp(tableColumnNames.get(field)) != null)
-                        {
-                           Object currentData = rs.getTimestamp(tableColumnNames.get(field));
+                        Object currentData = rs.getTimestamp(tableColumnNames.get(field));
+                        
+                        if (currentData != null)
                            dumpData = dumpData + "TO_TIMESTAMP('" + currentData
                                       + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
-                        }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
@@ -1129,19 +1167,24 @@ class SQLDatabaseDumpThread implements Runnable
                      // Setting Date Fields
                      else if (columnType.equals("DATE"))
                      {
-                        if (rs.getString(tableColumnNames.get(field)) != null)
+                        if (dataSourceType.equals(ConnectionManager.ORACLE))
                         {
-                           if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              dumpData = dumpData + "TO_DATE('"
-                                         + rs.getDate(tableColumnNames.get(field))
-                                         + "', 'YYYY-MM-DD'), ";
+                           java.sql.Date dateValue = rs.getDate(tableColumnNames.get(field));
+                           
+                           if (dateValue != null)
+                              dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
                            else
-                              dumpData = dumpData + "'"
-                                         + addEscapes(rs.getString(tableColumnNames.get(field)))
-                                         + "', ";
+                              dumpData = dumpData + "NULL, ";   
                         }
                         else
-                           dumpData = dumpData + "NULL, ";
+                        {
+                           String dateString = rs.getString(tableColumnNames.get(field));
+                           
+                           if (dateString != null)
+                              dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
+                           else
+                              dumpData = dumpData + "NULL, ";    
+                        }
                      }
 
                      // Fix for a bug in connectorJ, I think, that returns
@@ -1150,16 +1193,14 @@ class SQLDatabaseDumpThread implements Runnable
                      // mysql console.
                      else if (columnType.equals("YEAR"))
                      {
-                        if (rs.getString(tableColumnNames.get(field)) != null)
+                        String yearValue = rs.getString(tableColumnNames.get(field));
+                        
+                        if (yearValue != null)
                         {
-                           if (rs.getString(tableColumnNames.get(field)).length() > 4)
-                              dumpData = dumpData + "'"
-                                         + addEscapes(rs.getString(tableColumnNames.get(field)).substring(0, 4)) 
-                                         + "', ";
+                           if (yearValue.length() > 4)
+                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
                            else
-                              dumpData = dumpData + "'"
-                                         + addEscapes(rs.getString(tableColumnNames.get(field)))
-                                         + "', ";
+                              dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -1168,24 +1209,27 @@ class SQLDatabaseDumpThread implements Runnable
                      // Setting Bit Fields
                      else if (columnType.indexOf("BIT") != -1)
                      {
-                        if (rs.getString(tableColumnNames.get(field)) != null)
+                        String bitValue = rs.getString(tableColumnNames.get(field));
+                        
+                        if (bitValue != null)
                         {
                            if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            {
                               if (columnType.indexOf("_") != -1)
-                                 dumpData = dumpData + "'"
-                                            + rs.getString(tableColumnNames.get(field)) + "', ";
+                                 dumpData = dumpData + "'" + bitValue + "', ";
                               else
-                                 dumpData = dumpData + "B'"
-                                            + rs.getString(tableColumnNames.get(field)) + "', ";
+                                 dumpData = dumpData + "B'" + bitValue + "', ";
+                           }
+                           else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                           {
+                              dumpData = dumpData + "'" + bitValue + "', ";
                            }
                            else
                            {
                               try
                               {
                                  dumpData = dumpData + "B'"
-                                            + Integer.toBinaryString(Integer.parseInt(rs.getString(tableColumnNames.get(field)))) 
-                                            + "', ";
+                                            + Integer.toBinaryString(Integer.parseInt(bitValue)) + "', ";
                               }
                               catch (NumberFormatException e)
                               {
@@ -1235,7 +1279,7 @@ class SQLDatabaseDumpThread implements Runnable
                   dumpData = (String) dumpData
                              + keyStringStatement.delete((keyStringStatement.length() - 5),
                                                           keyStringStatement.length())
-                             + (";\n");
+                             + ";\n";
                else
                   dumpData = dumpData + (";\n");
 
@@ -1354,12 +1398,12 @@ class SQLDatabaseDumpThread implements Runnable
                   dumpData = "";
                }
             }
-            if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
-                || dataSourceType.equals(ConnectionManager.HSQL)
-                || dataSourceType.equals(ConnectionManager.SQLITE))
+            if (dataSourceType.equals(ConnectionManager.POSTGRESQL) ||
+                dataSourceType.equals(ConnectionManager.HSQL) ||
+                dataSourceType.equals(ConnectionManager.SQLITE))
                dumpData = dumpData + "', ";
-            else if (dataSourceType.equals(ConnectionManager.ORACLE)
-                     && (updateDump || insertReplaceDump))
+            else if (dataSourceType.equals(ConnectionManager.ORACLE) &&
+                     (updateDump || insertReplaceDump))
                dumpData = dumpData + "'), ";
             else
                dumpData = dumpData + ", ";
@@ -1408,7 +1452,7 @@ class SQLDatabaseDumpThread implements Runnable
    }
 
    //==============================================================
-   // Class method for generating
+   // Class method for generating comment separator.
    //==============================================================
 
    protected String genCommentSep(String str)
@@ -1421,8 +1465,7 @@ class SQLDatabaseDumpThread implements Runnable
    }
 
    //==============================================================
-   // Class method for escaping a string with backslash before
-   // quotes (')
+   // Class method for escaping a string.
    //==============================================================
 
    private String addEscapes(String str)
