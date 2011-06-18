@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.1 06/11/2011
+// Version 4.2 06/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,6 +91,8 @@
 //             Connections and Displayed SQL Errors via the New Class ConnectionManager.
 //         4.1 Removed From Method importSQLFile() Instance subProtocol & Replaced
 //             With dataSourceType.
+//         4.2 Class Method importSQLFile() Chopped Out Any Comments From Statements
+//             & Only Allow SubString Containing INSERT | UPDATE For MS Access.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -113,7 +115,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.1 06/11/2011
+ * @version 4.2 06/17/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -268,9 +270,10 @@ class SQLDataDumpImportThread implements Runnable
                   else
                      failedQuery = queries[i];
 
-                  // Process the query. Remove any ending semicolons for
-                  // Oracle SQL statements and bypassing any single commented
-                  // SQL statement lines in Same Also.
+                  // Process the query.
+                  
+                  // In Oracle statements bypassing any single commented SQL
+                  // lines and removing ending semicolons.
                   
                   if (dataSourceType.equals(ConnectionManager.ORACLE))
                   {
@@ -279,6 +282,19 @@ class SQLDataDumpImportThread implements Runnable
                      else
                         if (queries[i].endsWith(";"))
                            queries[i] = (queries[i].substring(0, queries[i].length() -1));
+                  }
+                  
+                  // MS Access does not except commented lines, --, so just
+                  // submitt the statements with INSERT & UPDATE.
+                  
+                  if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                  {
+                     if (queries[i].toUpperCase().indexOf("INSERT") != -1)
+                        queries[i] = queries[i].substring(queries[i].toUpperCase().indexOf("INSERT"));
+                     else if (queries[i].indexOf("UPDATE") != -1)
+                        queries[i] = queries[i].substring(queries[i].toUpperCase().indexOf("UPDATE"));
+                     else
+                        continue;
                   }
                   sqlStatement.execute(queries[i]);
                }
