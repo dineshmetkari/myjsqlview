@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 6.89 06/17/2011
+// Version 6.90 06/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -273,6 +273,7 @@
 //             Removal of Multiple Accesses of the ResultSet, rs, More Than Once
 //             for Each Field. Several Accomodations for Properly Dumping Data for
 //             MS Access Databases and Fix for BLOB/Binary, 0 Bytes, for Same and MySQL.
+//        6.90 Code Cleanup & Minor Corrections.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -305,7 +306,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.89 06/17/2011
+ * @version 6.90 06/18/2011
  */
 
 class SQLDataDumpThread implements Runnable
@@ -626,7 +627,7 @@ class SQLDataDumpThread implements Runnable
 
       while (columnNamesIterator.hasNext())
       {
-         field = (String) columnNamesIterator.next();
+         field = columnNamesIterator.next();
          columnClass = tableColumnClassHashMap.get(field);
          columnType = tableColumnTypeHashMap.get(field);
          // System.out.println("field:" + field + " class:" + columnClass +
@@ -808,8 +809,8 @@ class SQLDataDumpThread implements Runnable
                      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                      {
                         schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                        tableName = (schemaTableName.substring(schemaTableName.indexOf(".") 
-                                    + 1)).replaceAll(identifierQuoteString, "");
+                        tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                               identifierQuoteString, "");
 
                         dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
                                    + autoIncrementFieldIndexes.get(Integer.valueOf(i)) + "_seq\"'), ";
@@ -846,10 +847,8 @@ class SQLDataDumpThread implements Runnable
                         Object currentData = rs.getTimestamp(i);
                         
                         if (currentData != null)
-                        {
                            dumpData = dumpData + "TO_TIMESTAMP('" + currentData
                                       + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
-                        }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
@@ -885,14 +884,14 @@ class SQLDataDumpThread implements Runnable
                         // to do it hangs my imports, but works with
                         // mysql console.
                         
-                        String year = rs.getString(i);
+                        String yearValue = rs.getString(i);
                         
-                        if (year != null)
+                        if (yearValue != null)
                         {
-                           if (year.length() > 4)
-                              dumpData = dumpData + "'" + addEscapes(year.substring(0, 4)) + "', ";
+                           if (yearValue.length() > 4)
+                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
                            else
-                              dumpData = dumpData + "'" + addEscapes(year) + "', ";
+                              dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -946,7 +945,7 @@ class SQLDataDumpThread implements Runnable
                               dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
                                          + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                            else
-                              dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
+                              dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -1027,6 +1026,7 @@ class SQLDataDumpThread implements Runnable
 
       // Setting up the initial dump data string with insert/replace/update,
       // type, and table.
+      
       dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
       dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
 
@@ -1052,7 +1052,7 @@ class SQLDataDumpThread implements Runnable
 
       while (columnNamesIterator.hasNext())
       {
-         field = (String) columnNamesIterator.next();
+         field = columnNamesIterator.next();
 
          if (dataSourceType.equals(ConnectionManager.ORACLE)
              && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
@@ -1111,7 +1111,7 @@ class SQLDataDumpThread implements Runnable
                columnClass = tableColumnClassHashMap.get(field);
                columnType = tableColumnTypeHashMap.get(field);
                // System.out.println("field:" + field + " class:" + columnClass
-               // + " type:" + columnType);
+               //                   + " type:" + columnType);
 
                // Setting up WHERE Statement for Update Dump.
                if (keys.contains(tableColumnNames.get(field)) && updateDump)
@@ -1125,38 +1125,38 @@ class SQLDataDumpThread implements Runnable
                   {
                      // Character data gets single quotes for some databases,
                      // not numbers though.
+                     
                      if (dataSourceType.equals(ConnectionManager.MSACCESS))
                      {
                         if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
                            keyStringStatement.append("'" + keyValue + "' AND ");
                         else
-                           keyStringStatement.append("" + keyValue + " AND ");   
+                           keyStringStatement.append(keyValue + " AND ");   
                      }
+                     else
+                        keyStringStatement.append("'" + keyValue + "' AND ");    
                   }
                   else
                      keyStringStatement.append("NULL AND ");
                }
                else
                {
-                  dumpData = dumpData + identifierQuoteString 
-                             + (tableColumnNames.get(field))
+                  dumpData = dumpData + identifierQuoteString + (tableColumnNames.get(field))
                              + identifierQuoteString + "=";
 
                   // Blob/Bytea/Binary data adding
                   if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("RAW") != -1))
+                      (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("RAW") != -1))
                   {
                      byte[] theBytes = rs.getBytes(tableColumnNames.get(field));
 
                      if (theBytes != null)
                      {
-                        // Let Oracle RAW & BLOB fall through if not update
-                        // since
-                        // an explicit statement is not supported. Allows to
-                        // convert
-                        // these from Oracle to MySQL.
+                        // Let Oracle & SQLite LOBs fall through if not update
+                        // since an explicit statement is not supported. Allows
+                        // to convert these to MySQL compatible dump.
 
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            dumpData = dumpData + "E'";
@@ -1167,7 +1167,12 @@ class SQLDataDumpThread implements Runnable
                         else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
                            dumpData = dumpData + "x'";
                         else
-                           dumpData = dumpData + "0x";
+                        {
+                           if (theBytes.length != 0)
+                              dumpData = dumpData + "0x";
+                           else
+                              dumpData = dumpData + "''";
+                        }
 
                         // Go convert to hexadecimal/octal values
                         // and dump data as we go for blob/bytea.
@@ -1187,9 +1192,8 @@ class SQLDataDumpThread implements Runnable
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
                            schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                           tableName = (schemaTableName.substring(
-                                            schemaTableName.indexOf(".") + 1)).replaceAll(
-                                                 identifierQuoteString, "");
+                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                                  identifierQuoteString, "");
 
                            dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
                                       + "_seq\"'), ";
@@ -1227,10 +1231,8 @@ class SQLDataDumpThread implements Runnable
                         Object currentData = rs.getTimestamp(tableColumnNames.get(field));
                         
                         if (currentData != null)
-                        {
                            dumpData = dumpData + "TO_TIMESTAMP('" + currentData
                                       + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
-                        }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
@@ -1269,9 +1271,7 @@ class SQLDataDumpThread implements Runnable
                         if (yearValue != null)
                         {
                            if (yearValue.length() > 4)
-                              dumpData = dumpData
-                                         + "'"
-                                         + addEscapes(yearValue.substring(0, 4)) + "', ";
+                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
                            else
                               dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
                         }
@@ -1301,8 +1301,7 @@ class SQLDataDumpThread implements Runnable
                            {
                               try
                               {
-                                 dumpData = dumpData
-                                            + "B'"
+                                 dumpData = dumpData + "B'"
                                             + Integer.toBinaryString(Integer.parseInt(bitValue)) + "', ";
                               }
                               catch (NumberFormatException e)
@@ -1350,7 +1349,7 @@ class SQLDataDumpThread implements Runnable
                dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
 
                if (updateDump && !keys.isEmpty())
-                  dumpData = (String)dumpData
+                  dumpData = (String) dumpData
                              + keyStringStatement.delete((keyStringStatement.length() - 5),
                                                           keyStringStatement.length())
                              + ";\n";
@@ -1527,7 +1526,7 @@ class SQLDataDumpThread implements Runnable
    }
 
    //==============================================================
-   // Class method for generating
+   // Class method for generating comment separator.
    //==============================================================
 
    protected String genCommentSep(String str)
