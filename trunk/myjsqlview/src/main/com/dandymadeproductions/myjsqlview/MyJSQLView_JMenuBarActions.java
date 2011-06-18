@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.31 06/11/2011
+// Version 7.32 06/16/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -251,6 +251,7 @@
 //             to 700x435.
 //        7.31 Class Method actionSelection() Replacement of Instance subProtocol With
 //             dataSourceType and Derivation from ConnectionManager.getDataSourceType().
+//        7.32 Added Class Instances DATA_EXPORT_CSV, DATA_EXPORT_PDF, & DATA_EXPORT_SQL.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -283,7 +284,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.31 06/11/2011
+ * @version 7.32 06/16/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -298,6 +299,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    private static String lastImportDirectory = "";
    private static String lastExportDirectory = "";
    private static String fileSeparator;
+   
+   private static String DATA_EXPORT_CSV = "DECSV";
+   private static String DATA_EXPORT_PDF = "DEPDF";
+   private static String DATA_EXPORT_SQL = "DESQL";
 
    // Print instances.
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
@@ -409,8 +414,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       }
 
       // Data Export
-      if ((actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DEPDF") != -1
-           || actionCommand.indexOf("DESQL") != -1)
+      if ((actionCommand.indexOf(DATA_EXPORT_CSV) != -1 || actionCommand.indexOf(DATA_EXPORT_PDF) != -1
+            || actionCommand.indexOf(DATA_EXPORT_SQL) != -1)
            && DBTablesPanel.getTableCount() != 0)
       {
          dataExportAction(parent, actionCommand, myJSQLView_Version);
@@ -1043,10 +1048,11 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
       fileName += "_" + dateFormat.format(new Date());
 
-      if (actionCommand.indexOf("DECSV") != -1)
-         fileName += ".txt";
-      else if (actionCommand.indexOf("DEPDF") != -1)
+      if (actionCommand.indexOf(DATA_EXPORT_CSV) != -1)
+         fileName += ".csv";
+      else if (actionCommand.indexOf(DATA_EXPORT_PDF) != -1)
          fileName += ".pdf";
+      // DATA_EXPORT_SQL
       else
          fileName += ".sql";
 
