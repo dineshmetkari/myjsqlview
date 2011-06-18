@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.7 06/11/2011
+// Version 4.8 06/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,8 @@
 //             TableTabPanel_MSAccess.
 //         4.7 Removed Method Instance connectionProperties in loadTable() & Replaced
 //             subProtocol With dataSourceType.
+//         4.8 The Loading of a HSQL TableTabPanel for Any IndexOf of Such for the
+//             dataSourceType in Method loadTable().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -146,7 +148,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.7 06/11/2011
+ * @version 4.8 06/18/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -385,7 +387,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          tableTabPanel = new TableTabPanel_PostgreSQL(tableName, dbConnection, false);
       // HSQL
-      else if (dataSourceType.equals(ConnectionManager.HSQL))
+      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
          tableTabPanel = new TableTabPanel_HSQL(tableName, dbConnection, false);
       // Oracle
       else if (dataSourceType.equals(ConnectionManager.ORACLE))
