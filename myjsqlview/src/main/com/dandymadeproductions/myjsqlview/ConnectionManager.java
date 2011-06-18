@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.7 06/16/2011
+// Version 1.8 06/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.6 Added Static Class Instance MSACCESS & Method getDataSourceType().
 //         1.7 Change in Class Method getConnection() to Pass user & passwordString
 //             to Creation of DriverManager.getConnection().
+//         1.8 Added Static Class Instance HSQL2 & Returning As Such As Required
+//             in Class Method getDataSourceType().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +76,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.7 06/16/2011
+ * @version 1.8 06/18/2011
  */
 
 public class ConnectionManager
@@ -97,6 +99,7 @@ public class ConnectionManager
    public static final String MYSQL = "mysql";
    public static final String POSTGRESQL = "postgresql";
    public static final String HSQL = "hsql";
+   public static final String HSQL2 = "hsql2";
    public static final String ORACLE = "oracle";
    public static final String SQLITE = "sqlite";
    public static final String MSACCESS = "odbc";
@@ -624,7 +627,12 @@ public class ConnectionManager
       else if (subProtocol.equals(POSTGRESQL))
          return POSTGRESQL;
       else if (subProtocol.indexOf(HSQL) != -1)
-         return HSQL;
+      {
+         if (dbProductNameVersion.indexOf(" 2.") != -1)
+            return HSQL2;
+         else
+            return HSQL;
+      }
       else if (subProtocol.indexOf(ORACLE) != -1)
          return ORACLE;
       else if (subProtocol.equals(SQLITE))
