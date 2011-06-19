@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.4 06/05/2011
+// Version 10.5 06/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -234,6 +234,9 @@
 //        10.3 Changed the Conditional Check for saveAction by Removing the NOT Logic.
 //        10.4 Correction in loadTable() for Not Modifiying searchTextString
 //             During Composition When No Field Specified.
+//        10.5 Replaced tableMetaData.getCatalogName(1) With NULL in Method getColumnNames().
+//             Class Method loadTable() Conditional Check for HSQL2 With the Replacement
+//             of WHERE TRUE With WHERE 1.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -259,7 +262,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.4 06/05/2011
+ * @version 10.5 06/19/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -320,9 +323,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
 
-         rs = dbMetaData.getPrimaryKeys(tableMetaData.getCatalogName(1),
-                                        tableMetaData.getSchemaName(1),
-                                        tableMetaData.getTableName(1));
+         rs = dbMetaData.getPrimaryKeys(null, tableMetaData.getSchemaName(1), tableMetaData.getTableName(1));
+
          while (rs.next())
          {
             if (rs.getString("COLUMN_NAME").indexOf("chunk") == -1
@@ -335,8 +337,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          // Additional Indexes
 
-         rs = dbMetaData.getIndexInfo(tableMetaData.getCatalogName(1),
-                                      tableMetaData.getSchemaName(1),
+         rs = dbMetaData.getIndexInfo(null, tableMetaData.getSchemaName(1),
                                       tableMetaData.getTableName(1), false, false);
          while (rs.next())
          {
@@ -349,7 +350,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                }
             }
          }
-         
+
          // Column Names, Form Fields, ComboBox Text, Special Fields,
          // and HashMaps.
 
@@ -404,7 +405,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
                lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
             }
-            
+
             // Special Column Fields.
             if (columnClass.indexOf("Boolean") != -1)
                columnEnumHashMap.put(parseColumnNameField(colNameString), columnType);
@@ -434,8 +435,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          if (primaryKeys.isEmpty())
          {
-            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1), tableMetaData.getSchemaName(1),
-               tableMetaData.getTableName(1));
+            rs = dbMetaData.getImportedKeys(null, tableMetaData.getSchemaName(1),
+                                            tableMetaData.getTableName(1));
 
             while (rs.next())
             {
@@ -450,7 +451,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                }
             }
          }
-         
+
          // Debug for key resolution varification.
          /*
          System.out.print(sqlTable + ": ");
@@ -498,16 +499,21 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
       // Obtain search parameters column names as needed and
       // saving state for history.
-      
+
       columnSearchString = columnNamesHashMap.get(searchComboBox.getSelectedItem());
       searchTextString = searchTextField.getText();
-      
+
       if (historyAction)
          saveHistory();
 
       searchQueryString = new StringBuffer();
       if (searchTextString.equals(""))
-         searchQueryString.append("TRUE LIKE '%'");
+      {
+         if (ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL))
+            searchQueryString.append("TRUE LIKE '%'");
+         else
+            searchQueryString.append("'1' LIKE '%'");
+      }
       else
       {
          // No field specified so build search for all.
@@ -520,9 +526,9 @@ public class TableTabPanel_HSQL extends TableTabPanel
             {
                columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
                columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
-               
+
                String searchString = searchTextString;
-               
+
                if (columnType.equals("DATE"))
                   searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                else if (columnType.equals("TIMESTAMP"))
@@ -534,7 +540,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   else if (searchString.indexOf("-") != -1 || searchString.indexOf("/") != -1)
                      searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                }
-               
+
                if (i < tableColumns.length - 1)
                   searchQueryString.append(tableColumns[i] + " LIKE '%" + searchString + "%' OR");
                else
@@ -545,7 +551,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          else
          {
             columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
-            
+
             if (columnType.equals("DATE"))
                searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
             else if (columnType.equals("TIMESTAMP"))
@@ -557,7 +563,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                else if (searchTextString.indexOf("-") != -1 || searchTextString.indexOf("/") != -1)
                   searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
             }
-            
+
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                      + " LIKE '%" + searchTextString + "%'");
          }
@@ -569,16 +575,16 @@ public class TableTabPanel_HSQL extends TableTabPanel
       try
       {
          sqlStatement = dbConnection.createStatement();
-         
+
          lobLessFieldsString = sqlTableFieldsString;
-         
+ 
          if (!lob_sqlTableFieldsString.equals(""))
          {
             String[]  lobColumns = lob_sqlTableFieldsString.split(" ");
 
             for (int i = 0; i < lobColumns.length; i++)
                lobLessFieldsString = lobLessFieldsString.replace(lobColumns[i], "");
-            
+
             // All fields maybe lobs, so just include all. Network
             // performance hit.
             if (lobLessFieldsString.indexOf(identifierQuoteString) != -1)
@@ -586,7 +592,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                                                           identifierQuoteString));
             else
                lobLessFieldsString = sqlTableFieldsString;
-            
+
             lobLessFieldsString = lobLessFieldsString.replaceAll(" ,", "");
             if (lobLessFieldsString.endsWith(", "))
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
@@ -597,7 +603,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
             // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit);
-            
+
             // Clean up if no criteral specified, HSQL LIMIT Problem.
             if (sqlStatementString.indexOf("ORDER") == -1 && sqlStatementString.indexOf("WHERE") == -1)
             {
@@ -607,11 +613,11 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                                                     + tableRowStart
                                                                     + " " + tableRowLimit);
             }
-            
+
             // Summary Table Without LOBs
             lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
                                                     tableRowStart, tableRowLimit);
-            
+
             // Clean up if no criteral specified, HSQL LIMIT Problem.
             if (lobLessSQLStatementString.indexOf("ORDER") == -1
                 && lobLessSQLStatementString.indexOf("WHERE") == -1)
@@ -632,7 +638,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString;
-            
+
             lobLessSQLStatementString = "SELECT LIMIT " + tableRowStart + " " + tableRowLimit + " " 
                                         + lobLessFieldsString + " FROM " + schemaTableName + " "
                                         + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
@@ -650,7 +656,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          int i = 0;
          int j = 0;
-         
+
          tableData = new Object[tableRowLimit][currentTableHeadings.size()];
 
          while (rs.next())
@@ -674,7 +680,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                // Storing data appropriately. If you have some date
                // or other formating, for a field here is where you
                // can take care of it.
-               
+
                if (lobDataTypesHashMap.containsKey(currentHeading))
                   currentContentData = "lob";
                else
@@ -711,7 +717,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   else if (columnType.indexOf("BINARY") != -1)
                   {
                      // Handles a key Binary,
-                     
+
                      if (keyLength != null)
                      {
                         BlobTextKey currentBlobElement = new BlobTextKey();
@@ -742,7 +748,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                            && columnSize > 255)
                   {
                      String stringName;
-                     
+
                      if (columnType.equals("VARCHAR"))
                      {
                         stringName = (String) currentContentData;
@@ -754,7 +760,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                      }
                      else
                         stringName = ("Long Text");
-                     
+
                      // Handles a key String
                      if (keyLength != null && columnType.equals("LONGVARCHAR"))
                      {
@@ -1204,7 +1210,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                         .get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
-                  
+
                   // Reformat date keys.
                   currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
