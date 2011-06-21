@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.7 06/11/2011
+// Version 1.8 06/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //             from New Class ConnectionManager. Also identifierQuoteString in Method
 //             clearHSQL/OracleDBMemoryTables(). Added Instance subProtocol to run().
 //         1.7 Replaced Method Instance subProtocol in run() With dataSourceType.
+//         1.8 Change for HSQL Conditional Check in run() from equals to indexOf. 
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.7 06/11/2011
+ * @version 1.8 06/19/2011
  */
 
 class TableClearingThread implements Runnable
@@ -101,7 +102,7 @@ class TableClearingThread implements Runnable
       
       dataSourceType = ConnectionManager.getDataSourceType();
       
-      if (dataSourceType.equals(ConnectionManager.HSQL))
+      if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
          clearHSQLDBMemoryTables(dbConnection);
 
       if (dataSourceType.equals(ConnectionManager.ORACLE))
