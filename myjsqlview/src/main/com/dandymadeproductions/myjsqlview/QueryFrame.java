@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.6 06/11/2011
+// Version 6.7 06/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,7 +156,11 @@
 //         6.5 04/27/2011 Class Instance queryTextArea.setDragEnabled(true) in Constructor.
 //         6.6 06/11/2011 Removed Class Instance subProtocol and Replaced With dataSourceType.
 //                        Derivation in Constructor From ConnectionManager.getDataSourceType().
-//                        Effected queryFrameListener, & Method actionPerformed(). 
+//                        Effected queryFrameListener, & Method actionPerformed().
+//         6.7 06/19/2011 Class Method actionPerformed() and queryFrameListener Change
+//                        in Conditional for HSQL to Check for indexOf Instead of equals.
+//                        Added Static Class Instances to Handle the Action Events From the
+//                        Menu/ToolBar.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -194,7 +198,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.6 06/11/2011
+ * @version 6.7 06/19/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -229,6 +233,18 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
    private static PageFormat mPageFormat = currentPrintJob.defaultPage();
+   
+   private static String FILE_OPEN_SCRIPT = "FOS";
+   private static String FILE_SAVE_SCRIPT = "FSS";
+   private static String FILE_PRINT = "FP";
+   private static String FILE_PAGE_FORMAT = "FPG";
+   private static String FILE_EXIT = "FE";
+   
+   private static String EDITPREFERENCES_TABLE_ROWS = "EPTR";
+   
+   private static String DATAEXPORT_CSV_TABLE = "DECSVT";
+   private static String DATAEXPORT_CSV_SUMMARY_TABLE = "DECSVTST";
+   private static String DATAEXPORT_PDF_SUMMARY_TABLE = "DEPDFTST";
 
    //==============================================================
    // QueryFrame Constructor
@@ -294,7 +310,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          public void windowClosing(WindowEvent e)
          {
             // Remove Memory/Temporary Table(s) for HSQL & Oracle
-            if (dataSourceType.equals(ConnectionManager.HSQL)
+            if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1
                 || dataSourceType.equals(ConnectionManager.ORACLE))
                new TableClearingThread(queryTabsPane.getTabCount());
 
@@ -507,7 +523,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          // ==================================
 
          // Open Script
-         if (actionCommand.equals("FOS"))
+         if (actionCommand.equals(FILE_OPEN_SCRIPT))
          {
             // Choosing the file to import data from.
             JFileChooser openScriptFileChooser;
@@ -566,7 +582,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          }
 
          // Save Script
-         if (actionCommand.equals("FSS"))
+         if (actionCommand.equals(FILE_SAVE_SCRIPT))
          {  
             // Setup a file chooser and showing.
             JFileChooser saveScriptFileChooser;
@@ -595,7 +611,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          }
 
          // Print
-         if (actionCommand.equals("FP"))
+         if (actionCommand.equals(FILE_PRINT))
          {
             // Setting up the printing.
 
@@ -635,17 +651,17 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          }
 
          // Print PageFormat Dialog
-         if (actionCommand.equals("FPG"))
+         if (actionCommand.equals(FILE_PAGE_FORMAT))
          {
             PrinterJob pj = PrinterJob.getPrinterJob();
             mPageFormat = pj.pageDialog(mPageFormat);
          }
 
          // Exit
-         if (actionCommand.equals("FE"))
+         if (actionCommand.equals(FILE_EXIT))
          {
             // Remove Memory/Temp Table(s) for HSQL & Oracle
-            if (dataSourceType.equals(ConnectionManager.HSQL)
+            if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1
                 || dataSourceType.equals(ConnectionManager.ORACLE))
                new TableClearingThread(queryTabsPane.getTabCount());
 
@@ -668,7 +684,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          // ==================================
 
          // Table Row Preferences
-         if (actionCommand.equals("EPTR") && queryTabsPane.getSelectedComponent() != null)
+         if (actionCommand.equals(EDITPREFERENCES_TABLE_ROWS)
+               && queryTabsPane.getSelectedComponent() != null)
          {
             // Setup and display a option pane to collect the new
             // summary table row size.
@@ -768,7 +785,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             ;
 
             if (actionCommand.indexOf("DECSV") != -1)
-               fileName += ".txt";
+               fileName += ".csv";
             else if (actionCommand.indexOf("DEPDF") != -1)
                fileName += ".pdf";
             else
@@ -804,7 +821,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                   // Only in 2.72, 2.76.
 
                   // Data Export CVS Table
-                  if (actionCommand.equals("DECSVT"))
+                  if (actionCommand.equals(DATAEXPORT_CSV_TABLE))
                   {
                      new DataDumpThread(columnNameFields, tableColumnNamesHashMap,
                                         tableColumnClassHashMap, tableColumnTypeHashMap,
@@ -813,7 +830,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                   }
 
                   // Data Export CVS Tab Summary Table
-                  else if (actionCommand.equals("DECSVTST"))
+                  else if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
                   {
                      JTable summaryListTable = (getSelectedTab()).getListTable();
                      if (summaryListTable != null)
@@ -823,7 +840,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                   }
                   
                   // Data Export PDF Summary Table
-                  else if (actionCommand.equals("DEPDFTST"))
+                  else if (actionCommand.equals(DATAEXPORT_PDF_SUMMARY_TABLE))
                   {
                      JTable summaryListTable = (getSelectedTab()).getListTable();
                      if (summaryListTable != null)
@@ -918,35 +935,35 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       resource = resourceBundle.getResource("QueryFrame.menu.OpenScript");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Open Script", "FOS"));
+         fileMenu.add(menuItem("Open Script", FILE_OPEN_SCRIPT));
       else
-         fileMenu.add(menuItem(resource, "FOS"));
+         fileMenu.add(menuItem(resource, FILE_OPEN_SCRIPT));
       
       resource = resourceBundle.getResource("QueryFrame.menu.SaveScript");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Save Script", "FSS"));
+         fileMenu.add(menuItem("Save Script", FILE_SAVE_SCRIPT));
       else
-         fileMenu.add(menuItem(resource, "FSS"));
+         fileMenu.add(menuItem(resource, FILE_SAVE_SCRIPT));
       fileMenu.addSeparator();
       
       resource = resourceBundle.getResource("QueryFrame.menu.Print");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Print", "FP"));
+         fileMenu.add(menuItem("Print", FILE_PRINT));
       else
-         fileMenu.add(menuItem(resource, "FP"));
+         fileMenu.add(menuItem(resource, FILE_PRINT));
       
       resource = resourceBundle.getResource("QueryFrame.menu.PageFormat");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Page Format", "FPG"));
+         fileMenu.add(menuItem("Page Format", FILE_PAGE_FORMAT));
       else
-         fileMenu.add(menuItem(resource, "FPG"));
+         fileMenu.add(menuItem(resource, FILE_PAGE_FORMAT));
       fileMenu.addSeparator();
       
       resource = resourceBundle.getResource("QueryFrame.menu.Exit");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", "FE"));
+         fileMenu.add(menuItem("Exit", FILE_EXIT));
       else
-         fileMenu.add(menuItem(resource, "FE"));
+         fileMenu.add(menuItem(resource, FILE_EXIT));
       queryFrameMenuBar.add(fileMenu);
 
       // ===============
@@ -996,9 +1013,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       resource = resourceBundle.getResource("QueryFrame.menu.TableRows");
       if (resource.equals(""))
-         preferencesMenu.add(menuItem("Table Rows", "EPTR"));
+         preferencesMenu.add(menuItem("Table Rows", EDITPREFERENCES_TABLE_ROWS));
       else
-         preferencesMenu.add(menuItem(resource, "EPTR"));
+         preferencesMenu.add(menuItem(resource, EDITPREFERENCES_TABLE_ROWS));
 
       resource = resourceBundle.getResource("QueryFrame.menu.ShowQuery");
       if (resource.equals(""))
@@ -1042,16 +1059,16 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       /*
       resource = resourceBundle.getResource("QueryFrame.menu.CSVTable");
       if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Table", "DECSVT"));
+         exportCVSMenu.add(menuItem("Table", DATAEXPORT_CSV_TABLE));
       else
-         exportCVSMenu.add(menuItem(resource, "DECSVT"));
+         exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_TABLE));
       */
       
       resource = resourceBundle.getResource("QueryFrame.menu.CSVSummaryTable");
       if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Summary Table", "DECSVTST"));
+         exportCVSMenu.add(menuItem("Summary Table", DATAEXPORT_CSV_SUMMARY_TABLE));
       else
-         exportCVSMenu.add(menuItem(resource, "DECSVTST"));
+         exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
       
       resource = resourceBundle.getResource("QueryFrame.menu.ExportPDF");
@@ -1062,12 +1079,12 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       resource = resourceBundle.getResource("QueryFrame.menu.PDFSummaryTable");
       if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Summary Table", "DEPDFTST"));
+         exportCVSMenu.add(menuItem("Summary Table", DATAEXPORT_PDF_SUMMARY_TABLE));
       else
-         exportCVSMenu.add(menuItem(resource, "DEPDFTST"));
+         exportCVSMenu.add(menuItem(resource, DATAEXPORT_PDF_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
 
-      // JMenu exportSQLMenu = new JMenu("SQL Format");
+      // JMenu exportSQLMenu = new JMenu("SQL");
       // exportSQLMenu.add(menuItem("Table", "DESQLT"));
       // exportSQLMenu.add(menuItem("Tab Summary Table", "DESQLTST"));
       // exportMenu.add(exportSQLMenu);
@@ -1109,45 +1126,45 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       openScriptIcon = new ImageIcon(iconsDirectory + "openScriptIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.OpenScript");
       if (resource.equals(""))
-         buttonItem = buttonItem("Open Script", openScriptIcon, "FOS");
+         buttonItem = buttonItem("Open Script", openScriptIcon, FILE_OPEN_SCRIPT);
       else
-         buttonItem = buttonItem(resource, openScriptIcon, "FOS");
+         buttonItem = buttonItem(resource, openScriptIcon, FILE_OPEN_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // Save Script
       saveScriptIcon = new ImageIcon(iconsDirectory + "saveScriptIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.SaveScript");
       if (resource.equals(""))
-         buttonItem = buttonItem("Save Script", saveScriptIcon, "FSS");
+         buttonItem = buttonItem("Save Script", saveScriptIcon, FILE_SAVE_SCRIPT);
       else
-         buttonItem = buttonItem(resource, saveScriptIcon, "FSS");
+         buttonItem = buttonItem(resource, saveScriptIcon, FILE_SAVE_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // File Print
       printIcon = new ImageIcon(iconsDirectory + "printIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.Print");
       if (resource.equals(""))
-         buttonItem = buttonItem("Print", printIcon, "FP");
+         buttonItem = buttonItem("Print", printIcon, FILE_PRINT);
       else
-         buttonItem = buttonItem(resource, printIcon, "FP");
+         buttonItem = buttonItem(resource, printIcon, FILE_PRINT);
       queryFrameToolBar.add(buttonItem);
       
       // Page Format
       pageFormatIcon = new ImageIcon(iconsDirectory + "pageFormatIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.PageFormat");
       if (resource.equals(""))
-         buttonItem = buttonItem("Page Format", pageFormatIcon, "FPG");
+         buttonItem = buttonItem("Page Format", pageFormatIcon, FILE_PAGE_FORMAT);
       else
-         buttonItem = buttonItem(resource, pageFormatIcon, "FPG");
+         buttonItem = buttonItem(resource, pageFormatIcon, FILE_PAGE_FORMAT);
       queryFrameToolBar.add(buttonItem);
       
       // Exit
       exitIcon = new ImageIcon(iconsDirectory + "exitIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.Exit");
       if (resource.equals(""))
-         buttonItem = buttonItem("Exit", exitIcon, "FE");
+         buttonItem = buttonItem("Exit", exitIcon, FILE_EXIT);
       else
-         buttonItem = buttonItem(resource, exitIcon, "FE");
+         buttonItem = buttonItem(resource, exitIcon, FILE_EXIT);
       queryFrameToolBar.add(buttonItem);
       
       queryFrameToolBar.addSeparator();
@@ -1159,9 +1176,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       tableRowsIcon = new ImageIcon(iconsDirectory + "tableRowsIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.TableRows");
       if (resource.equals(""))
-         buttonItem = buttonItem("Table Rows", tableRowsIcon, "EPTR");
+         buttonItem = buttonItem("Table Rows", tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
       else
-         buttonItem = buttonItem(resource, tableRowsIcon, "EPTR");
+         buttonItem = buttonItem(resource, tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
       queryFrameToolBar.add(buttonItem);
       
       queryFrameToolBar.addSeparator();
@@ -1173,18 +1190,20 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       csvExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "csvExportSummaryTableIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.ExportCSVSummaryTable");
       if (resource.equals(""))
-         buttonItem = buttonItem("Export CSV Tab Summary Table", csvExportTabSummaryTableIcon, "DECSVTST");
+         buttonItem = buttonItem("Export CSV Tab Summary Table", csvExportTabSummaryTableIcon,
+                                 DATAEXPORT_CSV_SUMMARY_TABLE);
       else
-         buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, "DECSVTST");
+         buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
       queryFrameToolBar.add(buttonItem);
       
       // Export PDF Summary Table
       pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
       resource = resourceBundle.getResource("QueryFrame.tooltip.ExportPDFSummaryTable");
       if (resource.equals(""))
-         buttonItem = buttonItem("Export CSV Tab Summary Table", pdfExportTabSummaryTableIcon, "DEPDFTST");
+         buttonItem = buttonItem("Export PDF Tab Summary Table", pdfExportTabSummaryTableIcon,
+                                 DATAEXPORT_PDF_SUMMARY_TABLE);
       else
-         buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, "DEPDFTST");
+         buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
       queryFrameToolBar.add(buttonItem);
    }
 
