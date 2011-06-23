@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.4 06/11/2011
+// Version 3.5 06/20/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //         3.3 Added Method Instance subProtocol to Constructor.
 //         3.4 Replaced Method Instance subProtocol With dataSourceType in the
 //             Constructor. Added backgroundImage key for MSAccess.
+//         3.5 Constructor Conditional Check for HSQL Changed From equals to
+//             indexOf.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -90,7 +92,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.4 06/11/2011
+ * @version 3.5 06/20/2011
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -135,7 +137,7 @@ class CreditsPanel extends JPanel implements Runnable
          backgroundImage = (new ImageIcon("images" + fileSeparator + "dolphin.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "elephant.jpg")).getImage();
-      else if (dataSourceType.equals(ConnectionManager.HSQL))
+      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
          backgroundImage = (new ImageIcon("images" + fileSeparator + "spiral.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.ORACLE))
          backgroundImage = (new ImageIcon("images" + fileSeparator + "letterO.jpg")).getImage();
