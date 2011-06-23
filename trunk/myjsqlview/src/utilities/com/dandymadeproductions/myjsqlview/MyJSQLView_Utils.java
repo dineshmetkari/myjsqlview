@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.5 06/11/2011
+// Version 6.6 06/21/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,8 @@
 //             in query to be Non-Case Sensitive for WHERE.
 //         6.5 Class Methods getConditionString() & getUnlimitedSQLStatementString()
 //             Replace Instance subProtocol With dataSourceType.
+//         6.6 Class Method getUnlimitedSQLStatement Inclusion of HSQL2 With HSQL for
+//             Processing LIMIT Keyword.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -151,7 +153,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.5 06/11/2011
+ * @version 6.6 06/21/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -804,8 +806,9 @@ public class MyJSQLView_Utils extends MyJSQLView
                                  + " " + sqlStatementString.substring(index4, (index5 - 2));
          }
       }
-      // HSQL
-      else if (dataSourceType.equals(ConnectionManager.HSQL))
+      // HSQL, & HSQL2
+      else if (dataSourceType.equals(ConnectionManager.HSQL)
+               || dataSourceType.equals(ConnectionManager.HSQL2))
       {
          // Sample
          // SELECT LIMIT 0 50 "PARENT_ID", "NAME" FROM "PUBLIC"."CHILD" WHERE TRUE LIKE '%' ORDER
