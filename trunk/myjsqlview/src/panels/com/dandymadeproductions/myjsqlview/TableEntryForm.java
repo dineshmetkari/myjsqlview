@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.82 06/11/2011
+// Version 8.83 06/21/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -331,6 +331,11 @@
 //        8.82 06/11/2011 Replaced Class Instance subProtocol With dataSourceType. Class Methods
 //                        Effected addUpdateTableEntry() & selectFunctionsOperations(). Added
 //                        Functions File for MSAccess in selectFunctionsOperations().
+//        8.83 06/21/2011 Class Method selectFuctionOperator() Change for HSQL Conditional Check
+//                        for Loading Functions File From equals to indexOf. Addition of Image
+//                        columnType to BLOB Type Processing in addUpdateTableEntry(), create
+//                        FunctionSQLStatement(), etc. Change in Conditional Check for PostgreSQL
+//                        BIT Types in addUpdateTableEntry().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -363,7 +368,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.82 06/11/2011
+ * @version 8.83 06/21/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -616,11 +621,12 @@ class TableEntryForm extends JFrame implements ActionListener
             formPanel.add((JTextField) currentField);
          }
 
-         // BLOB, BYTEA, BINARY, RAW, & CLOB Type Fields
+         // BLOB, BYTEA, BINARY, RAW, CLOB, IMAGE Type Fields
          else if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                   || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                   || (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1)
-                  || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1))
+                  || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1)
+                  || (columnType.indexOf("IMAGE") != -1))
          {
             // Place the remove checkbox for eliminating
             // existing data as desired during edit.
@@ -865,7 +871,8 @@ class TableEntryForm extends JFrame implements ActionListener
                       .get(columnName)).indexOf("BLOB") != -1)
                 || ((columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
                 || ((columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
-                || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
+                || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1)
+                || ((columnTypeHashMap.get(columnName)).indexOf("IMAGE") != -1))
             {
                String resource, message;
 
@@ -888,7 +895,8 @@ class TableEntryForm extends JFrame implements ActionListener
                 || ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("RAW") != -1
-                || ((JButton) evt.getSource()).getText().indexOf("CLOB") != -1)
+                || ((JButton) evt.getSource()).getText().indexOf("CLOB") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("IMAGE") != -1)
                openBlobTextField(formSource);
 
             // Open Text entry or open file if desired.
@@ -1052,7 +1060,8 @@ class TableEntryForm extends JFrame implements ActionListener
                if (((JButton) formSource).getText().indexOf("BLOB") != -1
                    || ((JButton) formSource).getText().indexOf("BYTEA") != -1
                    || ((JButton) formSource).getText().indexOf("BINARY") != -1
-                   || ((JButton) formSource).getText().indexOf("RAW") != -1)
+                   || ((JButton) formSource).getText().indexOf("RAW") != -1
+                   || ((JButton) formSource).getText().indexOf("IMAGE") != -1)
                {
                   // Setting up InputStreams
                   FileInputStream fileStream = new FileInputStream(fileName);
@@ -1070,8 +1079,10 @@ class TableEntryForm extends JFrame implements ActionListener
                      ((JButton) formSource).setText("BYTEA " + inBytes.length + " Bytes");
                   else if (((JButton) formSource).getText().indexOf("BINARY") != -1)
                      ((JButton) formSource).setText("BINARY " + inBytes.length + " Bytes");
-                  else
+                  else if (((JButton) formSource).getText().indexOf("RAW") != -1)
                      ((JButton) formSource).setText("RAW " + inBytes.length + " Bytes");
+                  else
+                     ((JButton) formSource).setText("IMAGE " + inBytes.length + " Bytes");
                   // Closing up.
                   filebuff.close();
                   fileStream.close();
@@ -1193,7 +1204,7 @@ class TableEntryForm extends JFrame implements ActionListener
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                              || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                             || columnType.indexOf("RAW") != -1;
+                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
                isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                               && columnType.indexOf("_") != -1;
 
@@ -1289,8 +1300,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !dataSourceType.equals(ConnectionManager.MYSQL)
-                           && !dataSourceType.equals(ConnectionManager.MSACCESS)
+                           && dataSourceType.equals(ConnectionManager.POSTGRESQL)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlValuesString += "B'" + getFormField(columnName) + "', ";
@@ -1421,7 +1431,7 @@ class TableEntryForm extends JFrame implements ActionListener
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                              || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                             || columnType.indexOf("RAW") != -1;
+                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
                isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                               && columnType.indexOf("_") != -1;
 
@@ -1503,8 +1513,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
                   // PostgreSQL Bit fields.
                   else if (columnType.indexOf("BIT") != -1
-                           && !dataSourceType.equals(ConnectionManager.MYSQL)
-                           && !dataSourceType.equals(ConnectionManager.MSACCESS)
+                           && dataSourceType.equals(ConnectionManager.POSTGRESQL)
                            && columnType.indexOf("_") == -1)
                   {
                      sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
@@ -1756,7 +1765,7 @@ class TableEntryForm extends JFrame implements ActionListener
             isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                           || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                           || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                          || columnType.indexOf("RAW") != -1;
+                          || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
             isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                            && columnType.indexOf("_") != -1;
             // System.out.println(i + " " + columnName + " " + columnClass + " "
@@ -2252,7 +2261,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // Select database appropriate functions file.
       if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          functionsFileName = "postgresql_" + functionsFileName;
-      else if (dataSourceType.equals(ConnectionManager.HSQL))
+      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
          functionsFileName = "hsql_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.ORACLE))
          functionsFileName = "oracle_" + functionsFileName;
@@ -2398,17 +2407,17 @@ class TableEntryForm extends JFrame implements ActionListener
       }
       // What needs fixed here? What does it mean to apply a function on a
       // binary field. The Java 6.0 API allow a change of binary data to a
-      // string
-      // of characters, but what operation would be performed? The current 1.4
-      // API
-      // kept here just returns a pointer to the object. Broken.
+      // string of characters, but what operation would be performed? The
+      // current 1.4 API kept here just returns a pointer to the object. Broken.
+      
       else if (((columnClassHashMap.get(columnName)).indexOf("String") == -1 && (columnTypeHashMap
             .get(columnName)).indexOf("BLOB") != -1)
                || ((columnClassHashMap.get(columnName)).indexOf("BLOB") != -1 && (columnTypeHashMap
                      .get(columnName)).indexOf("BLOB") != -1)
                || ((columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
                || ((columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
-               || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1))
+               || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1)
+               || ((columnTypeHashMap.get(columnName)).indexOf("IMAGE") != -1))
       {
          if (getFormField(columnName) == null || getFormFieldBlob(columnName).length == 0)
             sqlStatementString.append("(), ");
@@ -2507,7 +2516,8 @@ class TableEntryForm extends JFrame implements ActionListener
          if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
              || (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1)
-             || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1))
+             || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1)
+             || (columnType.indexOf("IMAGE") != -1))
             ((JButton) fieldHashMap.get(columnName)).setText((String) content);
 
          // Text Button
