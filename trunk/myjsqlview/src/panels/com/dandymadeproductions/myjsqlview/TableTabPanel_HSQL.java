@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.5 06/19/2011
+// Version 10.6 06/22/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,6 +237,7 @@
 //        10.5 Replaced tableMetaData.getCatalogName(1) With NULL in Method getColumnNames().
 //             Class Method loadTable() Conditional Check for HSQL2 With the Replacement
 //             of WHERE TRUE With WHERE 1.
+//        10.6 Commented Out System.out in loadTable().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -262,7 +263,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.5 06/19/2011
+ * @version 10.6 06/22/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
