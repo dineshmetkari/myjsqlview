@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 6.90 06/18/2011
+// Version 6.91 06/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -274,6 +274,8 @@
 //             for Each Field. Several Accomodations for Properly Dumping Data for
 //             MS Access Databases and Fix for BLOB/Binary, 0 Bytes, for Same and MySQL.
 //        6.90 Code Cleanup & Minor Corrections.
+//        6.91 Class Methods insert/explicitStatementData() & dumpBinaryData() Replaced
+//             HSQL Conditional Check from equals to indexOf to Pickup HSQL2.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -306,7 +308,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.90 06/18/2011
+ * @version 6.91 06/27/2011
  */
 
 class SQLDataDumpThread implements Runnable
@@ -778,7 +780,7 @@ class SQLDataDumpThread implements Runnable
                   {
                      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         dumpData = dumpData + "E'";
-                     else if (dataSourceType.equals(ConnectionManager.HSQL))
+                     else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
                         dumpData = dumpData + "'";
                      else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         dumpData = dumpData + "HEXTORAW('";
@@ -1160,7 +1162,7 @@ class SQLDataDumpThread implements Runnable
 
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            dumpData = dumpData + "E'";
-                        else if (dataSourceType.equals(ConnectionManager.HSQL))
+                        else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
                            dumpData = dumpData + "'";
                         else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
                            dumpData = dumpData + "HEXTORAW('";
@@ -1472,7 +1474,7 @@ class SQLDataDumpThread implements Runnable
                }
             }
             if (dataSourceType.equals(ConnectionManager.POSTGRESQL) ||
-                dataSourceType.equals(ConnectionManager.HSQL) ||
+                dataSourceType.indexOf(ConnectionManager.HSQL) != -1 ||
                 dataSourceType.equals(ConnectionManager.SQLITE))
                dumpData = dumpData + "', ";
             else if (dataSourceType.equals(ConnectionManager.ORACLE) &&
