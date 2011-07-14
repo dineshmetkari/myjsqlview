@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.6 06/21/2011
+// Version 6.7 07/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,8 @@
 //             Replace Instance subProtocol With dataSourceType.
 //         6.6 Class Method getUnlimitedSQLStatement Inclusion of HSQL2 With HSQL for
 //             Processing LIMIT Keyword.
+//         6.7 Class Method getSchemaTableName() Replaced Hard Coded Period With the
+//             catalogSeparator.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -153,7 +155,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.6 06/21/2011
+ * @version 6.7 07/14/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -730,16 +732,18 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static String getSchemaTableName(String sqlTable)
    {
       String schemaTableName;
+      String catalogSeparator;
       String identifierQuoteString;
       
+      catalogSeparator = ConnectionManager.getCatalogSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
-      if (sqlTable.indexOf(".") != -1)
+      if (sqlTable.indexOf(catalogSeparator) != -1)
       {
          schemaTableName = identifierQuoteString
-                           + sqlTable.substring(0, sqlTable.indexOf("."))
-                           + identifierQuoteString + "." + identifierQuoteString
-                           + sqlTable.substring(sqlTable.indexOf(".") + 1)
+                           + sqlTable.substring(0, sqlTable.indexOf(catalogSeparator))
+                           + identifierQuoteString + catalogSeparator + identifierQuoteString
+                           + sqlTable.substring(sqlTable.indexOf(catalogSeparator) + 1)
                            + identifierQuoteString;
       }
       else
