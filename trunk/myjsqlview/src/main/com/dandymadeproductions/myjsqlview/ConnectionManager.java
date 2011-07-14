@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 06/18/2011
+// Version 1.9 07/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //             to Creation of DriverManager.getConnection().
 //         1.8 Added Static Class Instance HSQL2 & Returning As Such As Required
 //             in Class Method getDataSourceType().
+//         1.9 Added Static Class Instance catalogSeparator and Getter/Setter Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -76,7 +77,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.8 06/18/2011
+ * @version 1.9 07/14/2011
  */
 
 public class ConnectionManager
@@ -92,6 +93,7 @@ public class ConnectionManager
    private static Vector<String> schemas = new Vector <String>();
    private static Vector<String> tables = new Vector <String>();
    
+   private static String catalogSeparator;
    private static String identifierQuoteString;
    private static Clip errorSoundClip;
    private static boolean filter = true;
@@ -603,6 +605,15 @@ public class ConnectionManager
    }
    
    //==============================================================
+   // Class method to get the current database catalog separator.
+   //==============================================================
+
+   protected static String getCatalogSeparator()
+   {
+      return catalogSeparator;
+   }
+   
+   //==============================================================
    // Class method to get the current connection properties.
    //==============================================================
 
@@ -693,6 +704,15 @@ public class ConnectionManager
          tablesVector.addElement(tablesIterator.next());
       
       return tablesVector;
+   }
+   
+   //==============================================================
+   // Class method to set the current database catalog separator.
+   //==============================================================
+
+   protected static void setCatalogSeparator(String separator)
+   {
+      catalogSeparator = separator;
    }
    
    //==============================================================
