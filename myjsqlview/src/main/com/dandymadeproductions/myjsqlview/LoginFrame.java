@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.80 06/10/2011
+// Version 6.81 07/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -255,6 +255,8 @@
 //        6.80 Class Method fillSiteDefaults() Added MS Access to Default String Arrays.
 //             Class Method accessCheck() Addition of connectionString & dbProductNameVersion
 //             Entries for MS Access.
+//        6.81 Class Method accessCheck() Added Instance catalogSeparator and Collected
+//             in Same Along With Setting in ConnectionManager. Additional Comments.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -289,7 +291,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.80 06/10/2011
+ * @version 6.81 07/14/2011
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -978,6 +980,7 @@ public class LoginFrame extends JFrame implements ActionListener
       String driver, protocol, subProtocol, host, port, db, user, passwordString, ssh;
       char[] passwordCharacters;
       String dbProductNameVersion;
+      String catalogSeparator;
       String identifierQuoteString;
       
       DatabaseMetaData dbMetaData;
@@ -1152,7 +1155,9 @@ public class LoginFrame extends JFrame implements ActionListener
             
             dbMetaData = dbConnection.getMetaData();
 
-            // Obtain Database Product Name & Version for Later Use.
+            // =======================
+            // Database Product Name & Version
+            
             if (dbMetaData.getDatabaseProductName() != null)
                dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
             else
@@ -1211,17 +1216,23 @@ public class LoginFrame extends JFrame implements ActionListener
                System.out.println("Table Scheme: " + db_resultSet.getString(1));
             */
             
-            // ======================
-            // Catalog Separator & Identifier Quote String
-            // Identifier will be used, do not comment.
+            // =======================
+            // Catalog Separator
             
-            // System.out.println("Catalog Separator: " + dbMetaData.getCatalogSeparator());
-            // System.out.println("Identifier Quote String: " + dbMetaData.getIdentifierQuoteString());
-             
+            catalogSeparator = dbMetaData.getCatalogSeparator();
+            if (catalogSeparator == null || catalogSeparator.equals(""))
+               catalogSeparator = ".";
+            ConnectionManager.setCatalogSeparator(catalogSeparator);
+            // System.out.println("Catalog Separator: " + catalogSeparator);
+            
+            // =======================
+            // SQL Identifier
+            
             identifierQuoteString = dbMetaData.getIdentifierQuoteString();
             if (identifierQuoteString == null || identifierQuoteString.equals(" "))
                identifierQuoteString = "";
             ConnectionManager.setIdentifierQuoteString(identifierQuoteString);
+            // System.out.println("Identifier Quote String: " + identifierQuoteString);
 
             // Load parameters and the databases tables.
             ConnectionManager.loadDBParameters(dbConnection);
