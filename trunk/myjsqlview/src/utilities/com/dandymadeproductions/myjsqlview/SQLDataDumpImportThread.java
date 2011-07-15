@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.2 06/17/2011
+// Version 4.3 07/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -93,6 +93,10 @@
 //             With dataSourceType.
 //         4.2 Class Method importSQLFile() Chopped Out Any Comments From Statements
 //             & Only Allow SubString Containing INSERT | UPDATE For MS Access.
+//         4.3 Addressed Commented Input Lines More Fully Since 4.2 Addressed This
+//             for MS Access and HSQLDB 2.x Does Not Allow. Modifications to importSQLFile()
+//             Method to Parse Commented Lines Out of Queries. Commented Lines are
+//             Identified by '--', and May Need to be Addressed Again.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -115,7 +119,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.2 06/17/2011
+ * @version 4.3 07/14/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -189,6 +193,7 @@ class SQLDataDumpImportThread implements Runnable
 
       String dataSourceType;
       String sqlDump;
+      String[] multiLineQueries;
       String[] queries;
       int currentLine = 0;
       byte[] dump;
@@ -215,7 +220,6 @@ class SQLDataDumpImportThread implements Runnable
          sqlDumpProgressBar = new MyJSQLView_ProgressBar("SQL Import");
          dataSourceType = ConnectionManager.getDataSourceType();
          sqlDump = new String(dump);
-         // System.out.println(sqlDump);
 
          try
          {
@@ -241,12 +245,10 @@ class SQLDataDumpImportThread implements Runnable
 
             // Cycle through the queries and execute
             // the SQL statement. Note commented queries
-            // will probably throw an exception if on
-            // their own. This is relatively easily fixed
-            // here, but the questions then lies in what
-            // chararcters represent a comment for a
-            // line. Preferences? Addressed this slightly,
-            // 3.5, For Oracle Only.
+            // are now handled in 2.29++, but still
+            // the question remains what characters
+            // represent a comment. Presently '--' is
+            // recognized as a commented line.
 
             for (int i = 0; i < queries.length; i++)
             {
@@ -264,6 +266,30 @@ class SQLDataDumpImportThread implements Runnable
 
                if (!queries[i].equals(""))
                {
+                  // Parse the query further to remove commented
+                  // lines as needed.
+                  
+                  multiLineQueries = queries[i].split("\n");
+                  
+                  if (multiLineQueries.length > 1)
+                  {
+                     int j = 0;
+                     queries[i] = "";
+                     
+                     while (j < multiLineQueries.length)
+                     {
+                        multiLineQueries[j] = multiLineQueries[j].trim();
+                        
+                        if (!multiLineQueries[j].isEmpty() &&
+                             !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
+                           queries[i] = queries[i] + " " + multiLineQueries[j];
+                        j++;
+                     }
+                  }
+                  
+                  if (queries[i].equals(""))
+                     continue;
+                  
                   // Save the query in case exception thrown.
                   if (queries[i].length() > 50)
                      failedQuery = queries[i].substring(0, 50);
@@ -272,30 +298,7 @@ class SQLDataDumpImportThread implements Runnable
 
                   // Process the query.
                   
-                  // In Oracle statements bypassing any single commented SQL
-                  // lines and removing ending semicolons.
-                  
-                  if (dataSourceType.equals(ConnectionManager.ORACLE))
-                  {
-                     if ((queries[i].substring(0, 2)).matches("^-{2}?") && queries[i].indexOf("\n") == -1)
-                         continue;
-                     else
-                        if (queries[i].endsWith(";"))
-                           queries[i] = (queries[i].substring(0, queries[i].length() -1));
-                  }
-                  
-                  // MS Access does not except commented lines, --, so just
-                  // submitt the statements with INSERT & UPDATE.
-                  
-                  if (dataSourceType.equals(ConnectionManager.MSACCESS))
-                  {
-                     if (queries[i].toUpperCase().indexOf("INSERT") != -1)
-                        queries[i] = queries[i].substring(queries[i].toUpperCase().indexOf("INSERT"));
-                     else if (queries[i].indexOf("UPDATE") != -1)
-                        queries[i] = queries[i].substring(queries[i].toUpperCase().indexOf("UPDATE"));
-                     else
-                        continue;
-                  }
+                  // System.out.println(queries[i]);
                   sqlStatement.execute(queries[i]);
                }
             }
