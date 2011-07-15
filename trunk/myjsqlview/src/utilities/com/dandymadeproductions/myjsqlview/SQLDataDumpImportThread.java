@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.3 07/14/2011
+// Version 4.4 07/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,8 @@
 //             Identified by '--', and May Need to be Addressed Again.
 //         4.4 Minor Correction in Parsing From 4.3 to Accept Lines That Are Less Than
 //             Two Characters.
+//         4.5 Changed in Method importSQLFile() to Remove Empty Lines and Added
+//             Lines That Contain One Character.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -121,7 +123,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.4 07/14/2011
+ * @version 4.5 07/15/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -283,14 +285,18 @@ class SQLDataDumpImportThread implements Runnable
                         multiLineQueries[j] = multiLineQueries[j].trim();
                         // System.out.println("multi: " + multiLineQueries[j]);
                         
-                        if (multiLineQueries[j].length() < 2)
+                        if (multiLineQueries[j].length() < 2 && !multiLineQueries[j].isEmpty())
                            queries[i] = queries[i] + multiLineQueries[j] + "\n";
                         else
                         {
                            if (!multiLineQueries[j].isEmpty())
-                              if (multiLineQueries[j].length() > 2 &&
+                           {
+                              if (multiLineQueries[j].length() >= 2 &&
                                   !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
-                                 queries[i] = queries[i] + multiLineQueries[j] + "\n"; 
+                              {
+                                 queries[i] = queries[i] + multiLineQueries[j] + "\n";
+                              }
+                           }
                         }
                         j++;
                      }
