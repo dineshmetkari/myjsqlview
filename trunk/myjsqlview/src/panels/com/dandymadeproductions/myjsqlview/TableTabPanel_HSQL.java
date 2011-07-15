@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.6 06/22/2011
+// Version 10.8 07/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -241,6 +241,7 @@
 //        10.7 Changed Hard Coded NULL From 10.5 to Conditional Check on getCatalogName()
 //             in getColumnNames() to Properly Assign if it is Not an Empty String. Fix for
 //             HSQL2.x.
+//        10.8 Removed System.out.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -266,7 +267,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.7 07/14/2011
+ * @version 10.8 07/14/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -329,7 +330,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          
          // Fix for HSQLDB 2.x
          catalogName = tableMetaData.getCatalogName(1);
-         System.out.println("Catalog Name: " + catalogName);
+         
          if (catalogName != null)
             if (catalogName.equals(""))
                catalogName = null;
