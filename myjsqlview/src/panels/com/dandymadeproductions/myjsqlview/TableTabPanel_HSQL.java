@@ -238,6 +238,9 @@
 //             Class Method loadTable() Conditional Check for HSQL2 With the Replacement
 //             of WHERE TRUE With WHERE 1.
 //        10.6 Commented Out System.out in loadTable().
+//        10.7 Changed Hard Coded NULL From 10.5 to Conditional Check on getCatalogName()
+//             in getColumnNames() to Properly Assign if it is Not an Empty String. Fix for
+//             HSQL2.x.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -263,7 +266,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.6 06/22/2011
+ * @version 10.7 07/14/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -296,7 +299,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       DatabaseMetaData dbMetaData;
       ResultSetMetaData tableMetaData;
 
-      String tableName;
+      String catalogName, tableName;
       String colNameString, comboBoxNameString;
       String columnClass, columnType;
       Integer columnSize;
@@ -323,8 +326,15 @@ public class TableTabPanel_HSQL extends TableTabPanel
          // Primary Key(s)
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
+         
+         // Fix for HSQLDB 2.x
+         catalogName = tableMetaData.getCatalogName(1);
+         System.out.println("Catalog Name: " + catalogName);
+         if (catalogName != null)
+            if (catalogName.equals(""))
+               catalogName = null;
 
-         rs = dbMetaData.getPrimaryKeys(null, tableMetaData.getSchemaName(1), tableMetaData.getTableName(1));
+         rs = dbMetaData.getPrimaryKeys(catalogName, tableMetaData.getSchemaName(1), tableMetaData.getTableName(1));
 
          while (rs.next())
          {
@@ -338,7 +348,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          // Additional Indexes
 
-         rs = dbMetaData.getIndexInfo(null, tableMetaData.getSchemaName(1),
+         rs = dbMetaData.getIndexInfo(catalogName, tableMetaData.getSchemaName(1),
                                       tableMetaData.getTableName(1), false, false);
          while (rs.next())
          {
@@ -436,7 +446,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          if (primaryKeys.isEmpty())
          {
-            rs = dbMetaData.getImportedKeys(null, tableMetaData.getSchemaName(1),
+            rs = dbMetaData.getImportedKeys(catalogName, tableMetaData.getSchemaName(1),
                                             tableMetaData.getTableName(1));
 
             while (rs.next())
