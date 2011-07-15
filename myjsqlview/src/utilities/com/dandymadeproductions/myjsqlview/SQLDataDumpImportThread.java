@@ -97,6 +97,8 @@
 //             for MS Access and HSQLDB 2.x Does Not Allow. Modifications to importSQLFile()
 //             Method to Parse Commented Lines Out of Queries. Commented Lines are
 //             Identified by '--', and May Need to be Addressed Again.
+//         4.4 Minor Correction in Parsing From 4.3 to Accept Lines That Are Less Than
+//             Two Characters.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -119,7 +121,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.3 07/14/2011
+ * @version 4.4 07/14/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -279,10 +281,17 @@ class SQLDataDumpImportThread implements Runnable
                      while (j < multiLineQueries.length)
                      {
                         multiLineQueries[j] = multiLineQueries[j].trim();
+                        // System.out.println("multi: " + multiLineQueries[j]);
                         
-                        if (!multiLineQueries[j].isEmpty() &&
-                             !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
-                           queries[i] = queries[i] + " " + multiLineQueries[j];
+                        if (multiLineQueries[j].length() < 2)
+                           queries[i] = queries[i] + multiLineQueries[j] + "\n";
+                        else
+                        {
+                           if (!multiLineQueries[j].isEmpty())
+                              if (multiLineQueries[j].length() > 2 &&
+                                  !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
+                                 queries[i] = queries[i] + multiLineQueries[j] + "\n"; 
+                        }
                         j++;
                      }
                   }
@@ -298,7 +307,7 @@ class SQLDataDumpImportThread implements Runnable
 
                   // Process the query.
                   
-                  // System.out.println(queries[i]);
+                  // System.out.println("query: " + queries[i]);
                   sqlStatement.execute(queries[i]);
                }
             }
