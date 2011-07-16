@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.1 06/11/2011
+// Version 4.2 07/15/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,11 @@
 //             getTableDefinition() Added Instance subProtocol.
 //         4.1 Replaced Method Instance subProtocol in getTableDefinition() With
 //             dataSourceType.
+//         4.2 Changed Conditional Check for HSQL from equals() to indexOf() in
+//             getTableDefinition() Method. Added catalogName Method Instance in
+//             createHSQLTableDefinition(). Addition of Sizing Data For Binary Types
+//             With HSQL2.x in Method createHSQLTableDefinition() Along With Other
+//             Modifications to Accomodate the Newer Version.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -132,7 +137,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.1 06/11/2011
+ * @version 4.2 07/15/2011
  */
 
 class TableDefinitionGenerator
@@ -572,6 +577,7 @@ class TableDefinitionGenerator
       // Class Method Instances.
       StringBuffer tableDefinition = new StringBuffer();
       String tableType;
+      String catalogName;
       String autoIncrementColumnName;
       String columnName, columnType;
       StringBuffer uniqueKeys;
@@ -653,8 +659,15 @@ class TableDefinitionGenerator
 
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
+         
+         // Fix for HSQLDB 2.x
+         catalogName = tableMetaData.getCatalogName(1);
+         
+         if (catalogName != null)
+            if (catalogName.equals(""))
+               catalogName = null;
 
-         resultSet = dbMetaData.getColumns(tableMetaData.getCatalogName(1),
+         resultSet = dbMetaData.getColumns(catalogName,
                                            tableMetaData.getSchemaName(1),
                                            tableMetaData.getTableName(1), "%");
 
@@ -683,13 +696,39 @@ class TableDefinitionGenerator
             // Character Types
             if (columnType.indexOf("CHAR") != -1)
             {
-               if (columnType.equals("CHAR"))
+               if (columnType.equals("CHAR") || columnType.equals("CHARACTER"))
                   tableDefinition.append("CHAR(" + resultSet.getString("COLUMN_SIZE") + ")");
-               else if (columnType.equals("VARCHAR") || columnType.equals("VARCHAR_IGNORECASE"))
-                  tableDefinition.append("VARCHAR(" + resultSet.getString("COLUMN_SIZE") + ")");
                else
-                  tableDefinition.append(columnType);
-
+               {
+                  if (ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL))
+                  {
+                     if (columnType.equals("VARCHAR") || columnType.equals("VARCHAR_IGNORECASE"))
+                        tableDefinition.append("VARCHAR(" + resultSet.getString("COLUMN_SIZE") + ")");
+                     else
+                        tableDefinition.append(columnType);
+                  }
+                  else
+                  {
+                     if (resultSet.getString("COLUMN_SIZE").equals("16777216"))
+                        tableDefinition.append("LONGVARCHAR");
+                     else
+                        tableDefinition.append("VARCHAR(" + resultSet.getString("COLUMN_SIZE") + ")");      
+                  }
+               }
+            }
+            // HSQL 2.x Binary Types
+            else if (columnType.indexOf("BINARY") != -1 &&
+                     ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL2))
+            {
+               if (columnType.equals("BINARY"))
+                  tableDefinition.append("BINARY(" + resultSet.getString("COLUMN_SIZE") + ")");
+               else
+               {
+                  if (resultSet.getString("COLUMN_SIZE").equals("16777216"))
+                     tableDefinition.append("LONGVARBINARY");
+                  else
+                     tableDefinition.append("VARBINARY(" + resultSet.getString("COLUMN_SIZE") + ")");     
+               }
             }
             // Integer/BigInt Types
             else if (columnType.equals("INTEGER") || columnType.equals("BIGINT"))
@@ -707,15 +746,8 @@ class TableDefinitionGenerator
                // can not create DOUBLE(p).
                tableDefinition.append(columnType);
             }
-            // Numeric Types
-            else if (columnType.equals("NUMERIC"))
-            {
-               // Manual Indicates a precision, takes,
-               // but SYSTEM_COLUMNS gives not clue to precision.
-               tableDefinition.append(columnType);
-            }
-            // Decimal Types
-            else if (columnType.equals("DECIMAL"))
+            // Decimal & Numeric Types
+            else if (columnType.equals("DECIMAL") || columnType.equals("NUMERIC"))
             {
                tableDefinition.append(columnType + "(" + resultSet.getString("COLUMN_SIZE")
                                       + "," + resultSet.getString("DECIMAL_DIGITS") + ")");
@@ -731,7 +763,19 @@ class TableDefinitionGenerator
                else
                   tableDefinition.append(columnType);
             }
-            // Integer, Float, Real, Boolean, Bit, Date, Time
+            // Interval
+            else if (columnType.equals("interval") && resultSet.getString("datetime_precision") != null)
+            {
+               tableDefinition.append(columnType + "(" + resultSet.getString("datetime_precision") + ")");
+            }
+            // Bit Varying
+            else if (columnType.equals("BIT VARYING")
+                     && resultSet.getString("COLUMN_SIZE") != null)
+            {
+               tableDefinition.append(columnType + "(" + resultSet.getString("COLUMN_SIZE")
+                                      + ")");
+            }
+            // Boolean, Date, & Binary for HSQL 1.x
             else
             {
                tableDefinition.append(columnType);
@@ -781,18 +825,19 @@ class TableDefinitionGenerator
          onDeleteRule = "";
 
          // Primary Keys
-         resultSet = dbMetaData.getPrimaryKeys(tableMetaData.getCatalogName(1),
+         resultSet = dbMetaData.getPrimaryKeys(catalogName,
                                                tableMetaData.getSchemaName(1),
                                                tableMetaData.getTableName(1));
          while (resultSet.next())
          {
             columnName = resultSet.getString("COLUMN_NAME");
-
-            primaryKeys += identifierQuoteString + columnName + identifierQuoteString + ",";
+            
+            if (!columnName.equals(autoIncrementColumnName))
+               primaryKeys += identifierQuoteString + columnName + identifierQuoteString + ",";
          }
 
          // Unique Keys
-         resultSet = dbMetaData.getIndexInfo(tableMetaData.getCatalogName(1),
+         resultSet = dbMetaData.getIndexInfo(catalogName,
                                              tableMetaData.getSchemaName(1),
                                              tableMetaData.getTableName(1), true, false);
          while (resultSet.next())
@@ -800,7 +845,7 @@ class TableDefinitionGenerator
             columnName = resultSet.getString("COLUMN_NAME");
 
             // Only place unidentitied keys in uniqe string.
-            if (primaryKeys.indexOf(columnName) == -1)
+            if (primaryKeys.indexOf(columnName) == -1 && !columnName.equals(autoIncrementColumnName))
                uniqueKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
          }
 
@@ -816,7 +861,7 @@ class TableDefinitionGenerator
                                    + "),\n    ");
 
          // Foreign Keys
-         resultSet = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
+         resultSet = dbMetaData.getImportedKeys(catalogName,
                                                 tableMetaData.getSchemaName(1),
                                                 tableMetaData.getTableName(1));
          while (resultSet.next())
@@ -1303,7 +1348,7 @@ class TableDefinitionGenerator
       }
 
       // HSQL
-      else if (dataSourceType.equals(ConnectionManager.HSQL))
+      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
       {
          return createHSQLTableDefinition();
       }
