@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.1 04/11/2011
+// Version 6.2 07/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -144,6 +144,8 @@
 //                        & MyJSQLView_Utils.createEditMenu(true);
 //         6.1 04/11/2011 Correction in Class Method saveBlobTextField() When resourceMessage
 //                        is an Empty String.
+//         6.2 07/25/2011 Clob Types Treated as Text, Character, Data. Class Methods
+//                        Effected actionPerformed() & saveBlobTextField().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -170,7 +172,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.1 04/11/2011
+ * @version 6.2 07/25/2011
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -357,8 +359,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
             if (((JButton) evt.getSource()).getText().indexOf("BLOB") != -1 ||
                 ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1 ||
                 ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1 ||
-                ((JButton) evt.getSource()).getText().indexOf("RAW") != -1 ||
-                ((JButton) evt.getSource()).getText().indexOf("CLOB") != -1)
+                ((JButton) evt.getSource()).getText().indexOf("RAW") != -1)
                saveBlobTextField(panelSource);
 
             // View Text/Array and Allow Saving if Desired.
@@ -470,8 +471,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
       if (((JButton) panelSource).getText().indexOf("BLOB") != -1 ||
           ((JButton) panelSource).getText().indexOf("BYTEA") != -1 ||
           ((JButton) panelSource).getText().indexOf("BINARY") != -1 ||
-          ((JButton) panelSource).getText().indexOf("RAW") != -1 ||
-          ((JButton) panelSource).getText().indexOf("CLOB") != -1)
+          ((JButton) panelSource).getText().indexOf("RAW") != -1)
 
          buf = (byte[]) blobBytesHashMap.get((JButton) panelSource);
       else
