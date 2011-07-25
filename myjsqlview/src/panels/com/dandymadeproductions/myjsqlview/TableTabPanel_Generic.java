@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.7 06/05/2011
+// Version 9.8 07/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -219,6 +219,8 @@
 //         9.7 Correction in editSelectedItem() for Assignment of currentContentData for
 //             DATE Types. Correction in loadTable() for Not Modifiying searchTextString
 //             During Composition When No Field Specified.
+//         9.8 Class Methods viewSelectedItem(), addItem(), & editSelectedItem() Added
+//             the Processing of Data Types Clob to be Treated Like Text, LongVarCharacters.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -244,7 +246,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.7 06/05/2011
+ * @version 9.8 07/25/2011
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -1002,9 +1004,10 @@ public class TableTabPanel_Generic extends TableTabPanel
                   }
                }
 
-               // Text, Fields
-               else if (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
-                        && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+               // Text, & Clob Fields
+               else if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+                         && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+                        || currentColumnType.indexOf("CLOB") != -1)
                {
                   if (((String) currentContentData).getBytes().length != 0)
                   {
@@ -1154,8 +1157,9 @@ public class TableTabPanel_Generic extends TableTabPanel
          }
 
          // All TEXT, MEDIUMTEXT & LONGTEXT Type Field
-         if (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
-             && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+         if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+              && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+             || (currentColumnType.indexOf("CLOB") != -1))
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
          }
@@ -1409,9 +1413,10 @@ public class TableTabPanel_Generic extends TableTabPanel
                   editForm.setFormField(currentColumnName, (Object) (binaryType + " NULL"));
             }
 
-            // All Text But TinyText Type Field
-            else if (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
-                     && currentColumnSize > 255)
+            // All Text But TinyText & Clob Type Fields
+            else if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+                      && currentColumnSize > 255)
+                     || currentColumnType.indexOf("CLOB") != -1)
             {
                if (currentContentData != null)
                {
