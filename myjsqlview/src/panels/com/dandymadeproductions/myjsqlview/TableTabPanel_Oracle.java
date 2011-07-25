@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.4 06/05/2011
+// Version 10.5 07/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,8 @@
 //        10.3 Changed the Conditional Check for saveAction by Removing the NOT Logic.
 //        10.4 Correction in loadTable() for Not Modifiying searchTextString
 //             During Composition When No Field Specified.
+//        10.5 Class Methods viewSelectedItems(), & addItem() Changed the Processing of Clob
+//             Types to be Treated Like Text, Long, Types. 
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -284,7 +286,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.4 06/05/2011
+ * @version 10.5 07/25/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -1182,8 +1184,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
                      int size = ((String) currentContentData).getBytes().length;
 
                      tableViewForm.setFormField(currentColumnName, (Object) ("CLOB " + size + " Bytes"));
-                     tableViewForm.setFormFieldBlob(currentColumnName,
-                                                    ((String) currentContentData).getBytes());
+                     tableViewForm.setFormFieldText(currentColumnName,
+                                                    (String) currentContentData);
                   }
                   else
                      tableViewForm.setFormField(currentColumnName, (Object) "CLOB 0 Bytes");
@@ -1301,29 +1303,26 @@ public class TableTabPanel_Oracle extends TableTabPanel
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
-         // BLOB, RAW, & CLOB Type Field
-         if (currentColumnType.equals("BLOB") || currentColumnType.indexOf("RAW") != -1
-             || currentColumnType.indexOf("CLOB") != -1)
+         // BLOB, & RAW Type Field
+         if (currentColumnType.equals("BLOB") || currentColumnType.indexOf("RAW") != -1)
          {
             if (currentColumnType.equals("BLOB"))
                addForm.setFormField(currentColumnName, (Object) ("BLOB Browse"));
-            else if (currentColumnType.indexOf("RAW") != -1)
-               addForm.setFormField(currentColumnName, (Object) ("RAW Browse"));
             else
-               addForm.setFormField(currentColumnName, (Object) ("CLOB Browse"));
+               addForm.setFormField(currentColumnName, (Object) ("RAW Browse"));
          }
 
-         // BLOB, RAW, & CLOB Type Field
+         // BFILE Field
          if (currentColumnType.equals("BFILE"))
          {
             addForm.setFormField(currentColumnName, (Object) ("DIRECTORY OBJECT, FILENAME"));
          }
 
-         // VARCHAR, & LONG Type Field
-         if ((currentColumnClass.indexOf("String") != -1 &&
-             !currentColumnType.equals("CHAR") &&
-             (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
-             || (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
+         // VARCHAR, LONG, & CLOB Type Field
+         if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+              && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+             || (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG"))
+             || currentColumnType.indexOf("CLOB") != -1)
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
          }
