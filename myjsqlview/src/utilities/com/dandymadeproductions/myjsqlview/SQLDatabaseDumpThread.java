@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 7.6 06/27/2011
+// Version 7.7 07/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -196,6 +196,9 @@
 //             MS Access Databases and Fix for BLOB/Binary, 0 Bytes, for Same and MySQL.
 //         7.6 Class Methods run() insertReplace/explicitStatementData(), & dumpBinaryData()
 //             Replaced for HSQL Conditional Check of equals to indexOf to Pickup HSQL2.
+//         7.7 Change in the Format for Dump of Binary Data for HSQL2 in Class Methods
+//             insertReplace/explicitStatementData(). Same Methods the Addition of
+//             Processing for Bit Varying Data Types.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -227,7 +230,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.6 06/27/2011
+ * @version 7.7 07/26/2011
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -717,8 +720,10 @@ class SQLDatabaseDumpThread implements Runnable
                   {
                      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         dumpData = dumpData + "E'";
-                     else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
+                     else if (dataSourceType.equals(ConnectionManager.HSQL))
                         dumpData = dumpData + "'";
+                     else if (dataSourceType.equals(ConnectionManager.HSQL2))
+                        dumpData = dumpData + "x'";
                      else if (dataSourceType.equals(ConnectionManager.ORACLE))
                         dumpData = dumpData + "HEXTORAW('";
                      else if (dataSourceType.equals(ConnectionManager.SQLITE))
@@ -843,7 +848,8 @@ class SQLDatabaseDumpThread implements Runnable
                         
                         if (bitValue != null)
                         {
-                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                               || dataSourceType.equals(ConnectionManager.HSQL2))
                            {
                               if (arrayIndexes.contains(Integer.valueOf(i)))
                                  dumpData = dumpData + "'" + bitValue + "', ";
@@ -1090,8 +1096,10 @@ class SQLDatabaseDumpThread implements Runnable
 
                         if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                            dumpData = dumpData + "E'";
-                        else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
+                        else if (dataSourceType.equals(ConnectionManager.HSQL))
                            dumpData = dumpData + "'";
+                        else if (dataSourceType.equals(ConnectionManager.HSQL2))
+                           dumpData = dumpData + "x'";
                         else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
                            dumpData = dumpData + "HEXTORAW('";
                         else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
@@ -1215,7 +1223,8 @@ class SQLDatabaseDumpThread implements Runnable
                         
                         if (bitValue != null)
                         {
-                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                               || dataSourceType.equals(ConnectionManager.HSQL2))
                            {
                               if (columnType.indexOf("_") != -1)
                                  dumpData = dumpData + "'" + bitValue + "', ";
