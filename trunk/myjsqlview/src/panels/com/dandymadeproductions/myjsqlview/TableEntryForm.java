@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.83 06/21/2011
+// Version 8.84 07/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -312,7 +312,7 @@
 //                        Execution for SQLite Database.
 //        8.74 07/28/2010 Class Method selectFunctionOperator() Added SQLite Function Selection
 //                        File Loading.
-//        8.75 01/11/2010 Class Method addUpdateTableEntry() Change to Convert Date/DateTime/Timestamp
+//        8.75 01/11/2011 Class Method addUpdateTableEntry() Change to Convert Date/DateTime/Timestamp
 //                        Entries According to the GeneralPreferences.getViewDateFormat(). Conversion
 //                        via MyJSQLView_Utils.convertViewDateString_To_DBDateString().
 //        8.76 01/15/2011 Class Method addUpdateTableEntry() Cast Object Returned by MyJSQLView_Access.
@@ -336,6 +336,10 @@
 //                        columnType to BLOB Type Processing in addUpdateTableEntry(), create
 //                        FunctionSQLStatement(), etc. Change in Conditional Check for PostgreSQL
 //                        BIT Types in addUpdateTableEntry().
+//        8.84 07/26/2011 Implementation of HSQLDB2 Support, for Blob, Clob, Timestamp With Time
+//                        Zone, Time With Time Zone, & Bit Varying. Changes in Constructor for
+//                        Blob, actionPerformed() for Clob, Processing in addUpdateTableEntry()
+//                        for Timestamp and Time With Time Zone & Bit Varying.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -361,6 +365,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
+import javax.sql.rowset.serial.SerialBlob;
 import javax.swing.*;
 
 /**
@@ -368,7 +373,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.83 06/21/2011
+ * @version 8.84 07/26/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -706,7 +711,7 @@ class TableEntryForm extends JFrame implements ActionListener
 
          // TIMESTAMP Type Fields.
          else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
-                  || columnType.equals("TIMESTAMPLTZ"))
+                  || columnType.equals("TIMESTAMPLTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
          {
             currentField = new JTextField();
             if (addItem)
@@ -890,12 +895,11 @@ class TableEntryForm extends JFrame implements ActionListener
          // Blob, Text, MediumText, & LongText Button Actions
          else if (fieldHashMap.containsValue((JButton) formSource))
          {
-            // Open Blob, Raw, & Clob File Directly.
+            // Open Blob, Raw, & Image File Directly.
             if (((JButton) evt.getSource()).getText().indexOf("BLOB") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("RAW") != -1
-                || ((JButton) evt.getSource()).getText().indexOf("CLOB") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("IMAGE") != -1)
                openBlobTextField(formSource);
 
@@ -927,6 +931,8 @@ class TableEntryForm extends JFrame implements ActionListener
                   blobBytesHashMap.put((JButton) formSource, editorPane.getText());
                   if (((JButton) evt.getSource()).getText().indexOf("TEXT") != -1)
                      ((JButton) formSource).setText("TEXT " + editorPane.getText().length() + " Bytes");
+                  else if (((JButton) evt.getSource()).getText().indexOf("CLOB") != -1)
+                     ((JButton) formSource).setText("CLOB " + editorPane.getText().length() + " Bytes");
                   // Array
                   else
                      ((JButton) formSource).setText("ARRAY Data");
@@ -1280,8 +1286,7 @@ class TableEntryForm extends JFrame implements ActionListener
                   }
 
                   // TimeStamp fields.
-                  else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
-                           || columnType.equals("TIMESTAMPLTZ"))
+                  else if (columnType.indexOf("TIMESTAMP") != -1)
                   {
                      if (dataSourceType.equals(ConnectionManager.ORACLE))
                         sqlValuesString += "SYSTIMESTAMP, ";
@@ -1298,10 +1303,12 @@ class TableEntryForm extends JFrame implements ActionListener
                      sqlValuesString += "'" + getFormField(columnName) + "', ";
                   }
 
-                  // PostgreSQL Bit fields.
-                  else if (columnType.indexOf("BIT") != -1
-                           && dataSourceType.equals(ConnectionManager.POSTGRESQL)
-                           && columnType.indexOf("_") == -1)
+                  // PostgreSQL Bit & HSQL2 Bit Varying fields.
+                  else if ((columnType.indexOf("BIT") != -1
+                            && dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                            && columnType.indexOf("_") == -1)
+                           || (columnType.equals("BIT VARYING")
+                               && dataSourceType.equals(ConnectionManager.HSQL2)))
                   {
                      sqlValuesString += "B'" + getFormField(columnName) + "', ";
                   }
@@ -1511,10 +1518,12 @@ class TableEntryForm extends JFrame implements ActionListener
                                                + "', ");
                   }
 
-                  // PostgreSQL Bit fields.
-                  else if (columnType.indexOf("BIT") != -1
-                           && dataSourceType.equals(ConnectionManager.POSTGRESQL)
-                           && columnType.indexOf("_") == -1)
+                  // PostgreSQL Bit & HSQL2 Bit Varying fields.
+                  else if ((columnType.indexOf("BIT") != -1
+                            && dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                            && columnType.indexOf("_") == -1)
+                            || (columnType.equals("BIT VARYING")
+                                  && dataSourceType.equals(ConnectionManager.HSQL2)))
                   {
                      sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
                                                + identifierQuoteString + "=B'" + getFormField(columnName)
@@ -1769,7 +1778,7 @@ class TableEntryForm extends JFrame implements ActionListener
             isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                            && columnType.indexOf("_") != -1;
             // System.out.println(i + " " + columnName + " " + columnClass + " "
-            //                   + columnType + ": " + getFormField(columnName));
+            //                   + columnType);
 
             // Validating input and setting content to fields
 
@@ -1900,7 +1909,7 @@ class TableEntryForm extends JFrame implements ActionListener
                }
             }
 
-            // Date Type Fields
+            // Date, Time, DateTime, Timestamp, & Year Type Fields
             else if (columnClass.indexOf("Date") != -1 || (columnClass.toUpperCase()).indexOf("TIME") != -1)
             {
                String dateTimeFormString = getFormField(columnName).trim();
@@ -1922,7 +1931,8 @@ class TableEntryForm extends JFrame implements ActionListener
                      prepared_sqlStatement.setDate(i++, dateValue);
                   }
                   // Time
-                  else if (columnType.equals("TIME") || columnType.equals("TIMETZ"))
+                  else if (columnType.equals("TIME") || columnType.equals("TIMETZ")
+                           || columnType.equals("TIME WITH TIME ZONE"))
                   {
                      java.sql.Time timeValue;
 
@@ -1930,8 +1940,14 @@ class TableEntryForm extends JFrame implements ActionListener
                      if (dateTimeFormString.length() < 8)
                         timeValue = Time.valueOf("error");
 
-                     timeValue = java.sql.Time.valueOf(dateTimeFormString.substring(0, 7));
-                     prepared_sqlStatement.setTime(i++, timeValue);
+                     // HSQL2
+                     if (columnType.equals("TIME WITH TIME ZONE"))
+                        prepared_sqlStatement.setString(i++, dateTimeFormString);
+                     else
+                     {
+                        timeValue = java.sql.Time.valueOf(dateTimeFormString.substring(0, 7));
+                        prepared_sqlStatement.setTime(i++, timeValue);
+                     }
                   }
                   // DateTime
                   else if (columnType.equals("DATETIME"))
@@ -1952,8 +1968,8 @@ class TableEntryForm extends JFrame implements ActionListener
                      prepared_sqlStatement.setTimestamp(i++, dateTimeValue);
                   }
                   // Timestamp
-                  else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
-                           || columnType.equals("TIMESTAMPLTZ"))
+                  else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                           || columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMPLTZ"))
                   {
                      if (columnType.equals("TIMESTAMPLTZ"))
                         MyJSQLView_Utils.setLocalTimeZone(sqlStatement);
@@ -2078,10 +2094,21 @@ class TableEntryForm extends JFrame implements ActionListener
                         if (currentRemoveBlobCheckBox.isSelected())
                            prepared_sqlStatement.setBytes(i++, null);
                         else
+                        {
                            prepared_sqlStatement.setBytes(i++, (getFormFieldBlob(columnName)));
+                        }
                      }
                      else
-                        prepared_sqlStatement.setBytes(i++, (getFormFieldBlob(columnName)));
+                     {
+                        if (dataSourceType.equals(ConnectionManager.HSQL2))
+                        {
+                           SerialBlob blobData = new SerialBlob(getFormFieldBlob(columnName));
+                           prepared_sqlStatement.setBlob(i++, blobData);
+                           
+                        }
+                        else
+                           prepared_sqlStatement.setBytes(i++, (getFormFieldBlob(columnName)));
+                     }
                   }
                   else
                      prepared_sqlStatement.setBytes(i++, null);
@@ -2124,7 +2151,8 @@ class TableEntryForm extends JFrame implements ActionListener
             // Bit Type Fields
             else if (columnType.indexOf("BIT") != -1 && columnType.indexOf("_") == -1)
             {
-               if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+               if ((dataSourceType.equals(ConnectionManager.POSTGRESQL)) ||
+                   (dataSourceType.equals(ConnectionManager.HSQL2) && columnType.equals("BIT VARYING")))
                {
                   // Do Nothing. Already set since undefined type.
                }
