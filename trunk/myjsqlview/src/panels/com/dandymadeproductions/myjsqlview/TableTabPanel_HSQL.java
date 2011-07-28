@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.8 07/14/2011
+// Version 10.9 07/26/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -242,6 +242,10 @@
 //             in getColumnNames() to Properly Assign if it is Not an Empty String. Fix for
 //             HSQL2.x.
 //        10.8 Removed System.out.
+//        10.9 Addition of Clob & Blob Types to LOBs in getColumnNames(). Changes in
+//             Processing for HSQLDB2 New Data Types Clob, Blob, Time/Timestamp With
+//             Time Zone, & Bit Varying in Class Methods loadTable(), viewSelectedItem(),
+//             addItem(), & editSelectedItem().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -267,7 +271,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.8 07/14/2011
+ * @version 10.9 07/26/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -380,9 +384,9 @@ public class TableTabPanel_HSQL extends TableTabPanel
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            // comboBoxNameString + " " +
-            // columnClass + " " + columnType + " " +
-            // columnSize);
+            //                    comboBoxNameString + " " +
+            //                    columnClass + " " + columnType + " " +
+            //                    columnSize);
 
             // This going to be a problem so skip this column.
 
@@ -411,6 +415,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
             // Collect LOBs.
             if (((columnType.toUpperCase().indexOf("BINARY") != -1)
+                 || (columnType.toUpperCase().indexOf("BLOB") != -1)
+                 || (columnType.toUpperCase().indexOf("CLOB") != -1)
                  || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
                      && columnSize.intValue() > 65535)) && !primaryKeys.contains(colNameString))
             {
@@ -723,17 +729,31 @@ public class TableTabPanel_HSQL extends TableTabPanel
                         DBTablesPanel.getGeneralProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
+                  
+                  else if (columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                  {
+                     currentContentData = rs.getTimestamp(columnName);
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss z").format(currentContentData));
+                  }
 
                   // =============================================
-                  // BINARY
-                  else if (columnType.indexOf("BINARY") != -1)
+                  // BINARY & BLOB
+                  else if (columnType.indexOf("BINARY") != -1 || columnType.equals("BLOB"))
                   {
                      // Handles a key Binary,
+                     String binaryName;
+                     
+                     if (columnType.indexOf("BINARY") != -1)
+                        binaryName = "Binary";
+                     else
+                        binaryName = "Blob";
 
                      if (keyLength != null)
                      {
                         BlobTextKey currentBlobElement = new BlobTextKey();
-                        currentBlobElement.setName("Binary");
+                        currentBlobElement.setName(binaryName);
                         String content = rs.getString(columnName);
                         if (content.length() > keyLength.intValue())
                            content = content.substring(0, keyLength.intValue());
@@ -742,7 +762,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                      }
                      else
                      {
-                        tableData[i][j++] = "Binary";
+                        tableData[i][j++] = binaryName;
                      }
                   }
 
@@ -755,9 +775,10 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   }
 
                   // =============================================
-                  // LongVarChar, Text
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
-                           && columnSize > 255)
+                  // LongVarChar, Clob, & Text
+                  else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                            && columnSize > 255)
+                           || columnType.equals("CLOB"))
                   {
                      String stringName;
 
@@ -771,10 +792,16 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
                      }
                      else
-                        stringName = ("Long Text");
+                     {
+                        if (columnType.equals("CLOB"))
+                           stringName = "Clob";
+                        else
+                           stringName = "Long Text";
+                     }
 
                      // Handles a key String
-                     if (keyLength != null && columnType.equals("LONGVARCHAR"))
+                     if (keyLength != null
+                         && (columnType.equals("LONGVARCHAR") || columnType.equals("CLOB")))
                      {
                         BlobTextKey currentBlobElement = new BlobTextKey();
                         currentBlobElement.setName(stringName);
@@ -935,7 +962,13 @@ public class TableTabPanel_HSQL extends TableTabPanel
             currentColumnClass = columnClassHashMap.get(currentColumnName);
             currentColumnType = columnTypeHashMap.get(currentColumnName);
 
-            currentContentData = db_resultSet.getString(currentDB_ColumnName);
+            if ((currentColumnClass.indexOf("String") == -1 &&
+                  currentColumnType.indexOf("BLOB") != -1) 
+                 || currentColumnType.indexOf("BINARY") != -1)
+               currentContentData = db_resultSet.getBytes(currentDB_ColumnName);
+            else
+               currentContentData = db_resultSet.getString(currentDB_ColumnName);
+            
             // System.out.println(i + " " + currentColumnName + " " +
             // currentDB_ColumnName + " " +
             // currentColumnType + " " + columnSize + " " + currentContentData);
@@ -958,49 +991,60 @@ public class TableTabPanel_HSQL extends TableTabPanel
                      DBTablesPanel.getGeneralProperties().getViewDateFormat()
                      + " HH:mm:ss").format(currentContentData)));
                }
-
-               // Blob/Binary Type Field
-               else if ((currentColumnClass.indexOf("String") == -1 &&
-                         currentColumnType.indexOf("BLOB") != -1) ||
-                        (currentColumnType.indexOf("BINARY") != -1))
+               
+               else if (currentColumnType.equals("TIMESTAMP WITH TIME ZONE"))
                {
-                  if (((String) currentContentData).getBytes().length != 0)
-                  {
-                     currentContentData = db_resultSet.getBytes(currentDB_ColumnName);
-
-                     int size = ((byte[]) currentContentData).length;
-                     if (currentColumnType.equals("BLOB"))
-                     {
-                        tableViewForm.setFormField(currentColumnName, (Object) ("BLOB " + size + " Bytes"));
-                        tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
-                     }
-                     else
-                     {
-                        tableViewForm.setFormField(currentColumnName, (Object) ("BINARY " + size + " Bytes"));
-                        tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
-                     }
-                  }
-                  else
-                  {
-                     if (currentColumnType.equals("BLOB"))
-                        tableViewForm.setFormField(currentColumnName, (Object) "BLOB 0 Bytes");
-                     else
-                        tableViewForm.setFormField(currentColumnName, (Object) "BINARY 0 Bytes");
-                  }
+                  currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
+                  tableViewForm.setFormField(currentColumnName,
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss z").format(currentContentData)));
                }
 
-               // Text, Fields
-               else if (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
-                        && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+               // Binary Type Field
+               else if ((currentColumnType.indexOf("BINARY") != -1)
+                         || (currentColumnClass.indexOf("String") == -1 &&
+                               currentColumnType.indexOf("BLOB") != -1))
                {
+                  String blobName;
+                  
+                  if (currentColumnType.indexOf("BINARY") != -1)
+                     blobName = "BINARY";
+                  else
+                     blobName = "BLOB";
+                  
+                  if (((byte[]) currentContentData).length != 0)
+                  {
+                     int size = ((byte[]) currentContentData).length;
+                     
+                     tableViewForm.setFormField(currentColumnName,
+                                                (Object) (blobName + " " + size + " Bytes"));
+                     tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
+                  }
+                  else
+                     tableViewForm.setFormField(currentColumnName, (Object) blobName + " 0 Bytes");
+               }
+
+               // Text, Char, & Clob Fields
+               else if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+                         && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+                        || (currentColumnType.equals("CLOB")))
+               {
+                  String stringName;
+                  
+                  if (currentColumnType.equals("CLOB"))
+                     stringName = "CLOB";
+                  else
+                     stringName = "TEXT";
+                  
                   if (((String) currentContentData).getBytes().length != 0)
                   {
                      int size = ((String) currentContentData).getBytes().length;
-                     tableViewForm.setFormField(currentColumnName, (Object) ("TEXT " + size + " Bytes"));
+                     tableViewForm.setFormField(currentColumnName,
+                                                (Object) (stringName + " " + size + " Bytes"));
                      tableViewForm.setFormFieldText(currentColumnName, (String) currentContentData);
                   }
                   else
-                     tableViewForm.setFormField(currentColumnName, (Object) "TEXT 0 Bytes");
+                     tableViewForm.setFormField(currentColumnName, (Object) (stringName + " 0 Bytes"));
                }
 
                // Default Content. A normal table entry should
@@ -1100,9 +1144,17 @@ public class TableTabPanel_HSQL extends TableTabPanel
             currentContentData = "hh:mm:ss";
             addForm.setFormField(currentColumnName, currentContentData);
          }
+         
+         // TIME TMZ Type Field
+         if (currentColumnType.equals("TIME WITH TIME ZONE"))
+         {
+            currentContentData = "hh:mm:ss.pppppp+-hh:mm";
+            addForm.setFormField(currentColumnName, currentContentData);
+         }
 
          // TIMESTAMP Type Field
-         if (currentColumnType.equals("TIMESTAMP"))
+         if (currentColumnType.equals("TIMESTAMP")
+             || currentColumnType.equals("TIMESTAMP WITH TIME ZONE"))
          {
             currentContentData = "NOW()";
             addForm.setFormField(currentColumnName, currentContentData);
@@ -1119,10 +1171,10 @@ public class TableTabPanel_HSQL extends TableTabPanel
                addForm.setFormField(currentColumnName, (Object) ("BINARY Browse"));
          }
 
-         // All TEXT, MEDIUMTEXT & LONGTEXT Type Field
-         if (currentColumnClass.indexOf("String") != -1 &&
-             !currentColumnType.equals("CHAR") &&
-             (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+         // All TEXT, MEDIUMTEXT, LONGTEXT & CLOB Type Field
+         if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+              && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
+             || (currentColumnType.equals("CLOB")))
          {
             addForm.setFormField(currentColumnName, (Object) ("TEXT Browse"));
          }
@@ -1258,7 +1310,12 @@ public class TableTabPanel_HSQL extends TableTabPanel
             currentColumnType = columnTypeHashMap.get(currentColumnName);
             currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
-            currentContentData = db_resultSet.getString(currentDB_ColumnName);
+            if ((currentColumnClass.indexOf("String") == -1 &&
+                  currentColumnType.indexOf("BLOB") != -1) 
+                 || currentColumnType.indexOf("BINARY") != -1)
+               currentContentData = db_resultSet.getBytes(currentDB_ColumnName);
+            else
+               currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(currentColumnName + " " + currentContentData);
 
             // Special content from other tables, ComboBoxes, maybe.
@@ -1301,11 +1358,15 @@ public class TableTabPanel_HSQL extends TableTabPanel
                if (currentContentData != null)
                {
                   currentContentData = db_resultSet.getTime(currentDB_ColumnName);
-                  editForm.setFormField(currentColumnName, ((Object) new SimpleDateFormat("HH:mm:ss z")
-                        .format(currentContentData)));
+                  if (ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL2))
+                     editForm.setFormField(currentColumnName, ((Object) new SimpleDateFormat("HH:mm:ss")
+                                                              .format(currentContentData)));
+                  else
+                     editForm.setFormField(currentColumnName, ((Object) new SimpleDateFormat("HH:mm:ss z")
+                                                               .format(currentContentData)));
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "HH:MM:SS");
+                  editForm.setFormField(currentColumnName, (Object) "HH:mm:ss");
 
             }
 
@@ -1319,6 +1380,22 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   editForm.setFormField(currentColumnName,
                      (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData)));
+               }
+               else
+                  editForm.setFormField(currentColumnName,
+                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+            }
+            
+            else if (currentColumnType.equals("TIMESTAMP WITH TIME ZONE"))
+            {
+               if (currentContentData != null)
+               {
+                  currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
+                  // System.out.println(currentContentData);
+                  editForm.setFormField(currentColumnName,
+                                        (Object) (new SimpleDateFormat(
+                                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                           + " HH:mm:ss z").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
@@ -1357,26 +1434,27 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   editForm.setFormField(currentColumnName, (Object) (binaryType + " NULL"));
             }
 
-            // All Text But TinyText Type Field
-            else if (currentColumnClass.indexOf("String") != -1 &&
-                     !currentColumnType.equals("CHAR") &&
-                     currentColumnSize > 255)
+            // All Text But TinyText & Clob Type Fields
+            else if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+                      && currentColumnSize > 255)
+                     || (currentColumnType.equals("CLOB")))
             {
                if (currentContentData != null)
                {
                   if (((String) currentContentData).getBytes().length != 0)
                   {
                      int size = ((String) currentContentData).getBytes().length;
-                     editForm.setFormField(currentColumnName, (Object) ("TEXT " + size + " Bytes"));
+                     editForm.setFormField(currentColumnName,
+                                           (Object) ("TEXT " + size + " Bytes"));
                   }
                   else
                   {
-                     editForm.setFormField(currentColumnName, (Object) "TEXT 0 Bytes");
+                     editForm.setFormField(currentColumnName, (Object) ("TEXT 0 Bytes"));
                   }
                   editForm.setFormFieldText(currentColumnName, (String) currentContentData);
                }
                else
-                  editForm.setFormField(currentColumnName, (Object) "TEXT NULL");
+                  editForm.setFormField(currentColumnName, (Object) ("TEXT NULL"));
             }
 
             // Default Content. A normal table entry should
