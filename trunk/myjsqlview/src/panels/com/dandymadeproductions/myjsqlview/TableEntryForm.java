@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.84 07/26/2011
+// Version 8.85 07/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -340,6 +340,8 @@
 //                        Zone, Time With Time Zone, & Bit Varying. Changes in Constructor for
 //                        Blob, actionPerformed() for Clob, Processing in addUpdateTableEntry()
 //                        for Timestamp and Time With Time Zone & Bit Varying.
+//        8.85 07/29/2011 Modification in addUpdateTableEntry() Method to Only Check Column Size
+//                        for MySQL Database Timestamp Types, Old Database Requirement.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -373,7 +375,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.84 07/26/2011
+ * @version 8.85 07/29/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1990,19 +1992,27 @@ class TableEntryForm extends JFrame implements ActionListener
                            // Create a Timestamp Format.
                            if (columnType.equals("TIMESTAMP"))
                            {
-                              if (columnSize == 2)
-                                 timeStampFormat = new SimpleDateFormat("yy");
-                              else if (columnSize == 4)
-                                 timeStampFormat = new SimpleDateFormat("MM-yy");
-                              else if (columnSize == 6)
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yy");
-                              else if (columnSize == 8)
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yyyy");
-                              else if (columnSize == 10)
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
-                              else if (columnSize == 12)
-                                 timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
-                              // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                              // Old MySQL Database Requirement, 4.x.
+                              if (dataSourceType.equals(ConnectionManager.MYSQL))
+                              {
+                                 if (columnSize == 2)
+                                    timeStampFormat = new SimpleDateFormat("yy");
+                                 else if (columnSize == 4)
+                                    timeStampFormat = new SimpleDateFormat("MM-yy");
+                                 else if (columnSize == 6)
+                                    timeStampFormat = new SimpleDateFormat("MM-dd-yy");
+                                 else if (columnSize == 8)
+                                    timeStampFormat = new SimpleDateFormat("MM-dd-yyyy");
+                                 else if (columnSize == 10)
+                                    timeStampFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
+                                 else if (columnSize == 12)
+                                    timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
+                                 // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                                 else
+                                    timeStampFormat = new SimpleDateFormat(
+                                       DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                       + " HH:mm:ss");
+                              }
                               else
                                  timeStampFormat = new SimpleDateFormat(
                                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
