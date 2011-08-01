@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.6 07/27/2011
+// Version 4.7 07/31/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,7 @@
 //             Lines That Contain One Character.
 //         4.6 Correction in Catching Single Line Commented, --, Input in Method
 //             importSQLFile().
+//         4.7 Commented Out a System.Out in ImportSQLFile().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -125,7 +126,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.6 07/26/2011
+ * @version 4.7 07/31/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -285,7 +286,7 @@ class SQLDataDumpImportThread implements Runnable
                      while (j < multiLineQueries.length)
                      {
                         multiLineQueries[j] = multiLineQueries[j].trim();
-                        System.out.println("multi: " + multiLineQueries[j]);
+                        // System.out.println("multi: " + multiLineQueries[j]);
                         
                         if (multiLineQueries[j].length() < 2 && !multiLineQueries[j].isEmpty())
                            queries[i] = queries[i] + multiLineQueries[j] + "\n";
@@ -318,7 +319,7 @@ class SQLDataDumpImportThread implements Runnable
 
                   // Process the query.
                   
-                  System.out.println("query: " + queries[i]);
+                  // System.out.println("query: " + queries[i]);
                   sqlStatement.execute(queries[i]);
                }
             }
