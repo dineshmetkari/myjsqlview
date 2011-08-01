@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.2 07/15/2011
+// Version 4.3 07/31/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,6 +116,10 @@
 //             createHSQLTableDefinition(). Addition of Sizing Data For Binary Types
 //             With HSQL2.x in Method createHSQLTableDefinition() Along With Other
 //             Modifications to Accomodate the Newer Version.
+//         4.3 Added Instances columnName, & columnType to Method createPostgreSQLTable
+//             Definition(). Rebuild of Class Method createHSQLTableDefinition() to
+//             Accomodate HSQLDB2. Class Method createOracleTableDefinition() Minor
+//             Modification to Handle Multiple Foreign Keys.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -137,7 +141,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.2 07/15/2011
+ * @version 4.3 07/31/2011
  */
 
 class TableDefinitionGenerator
@@ -328,17 +332,16 @@ class TableDefinitionGenerator
 
          while (resultSet.next())
          {
+            columnName = resultSet.getString("column_name");
+            columnType = resultSet.getString("data_type");
+            
             // =============
             // Column name.
 
-            tableDefinition.append(identifierQuoteString + resultSet.getString("column_name")
-                                   + identifierQuoteString + " ");
+            tableDefinition.append(identifierQuoteString + columnName + identifierQuoteString + " ");
 
             // =============
             // Column type.
-
-            columnType = resultSet.getString("data_type");
-            columnName = resultSet.getString("column_name");
 
             // Integer & Sequences
             if (columnType.indexOf("int") != -1)
@@ -528,6 +531,7 @@ class TableDefinitionGenerator
             // System.out.println(sqlStatementString);
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
+            
             resultSet.next();
             referenceSchemaName = identifierQuoteString + resultSet.getString("table_schema")
                                   + identifierQuoteString;
@@ -545,6 +549,7 @@ class TableDefinitionGenerator
             // System.out.println(sqlStatementString);
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
+            
             resultSet.next();
             onDeleteRule = resultSet.getString("delete_rule");
 
@@ -576,10 +581,16 @@ class TableDefinitionGenerator
    {
       // Class Method Instances.
       StringBuffer tableDefinition = new StringBuffer();
+      String dataSourceType;
       String tableType;
       String catalogName;
       String autoIncrementColumnName;
-      String columnName, columnType;
+      HashMap<String, String> timeTMZFieldsHashMap;
+      HashMap<String, String> intervalFieldsHashMap;
+      HashMap<String, Integer> columnPrecisionHashMap;
+      String columnName, columnType, columnSize;
+      int columnPrecision;
+      String defaultString;
       StringBuffer uniqueKeys;
       String primaryKeys, foreignKeys;
       String referenceTableName, referenceColumnName;
@@ -594,6 +605,12 @@ class TableDefinitionGenerator
       
       // Beginning the creation of the string description
       // of the table Structure.
+      
+      dataSourceType = ConnectionManager.getDataSourceType();
+      timeTMZFieldsHashMap = new HashMap<String, String>();
+      intervalFieldsHashMap = new HashMap<String, String>();
+      columnPrecisionHashMap = new HashMap<String, Integer>();
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -607,7 +624,7 @@ class TableDefinitionGenerator
                                + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEM"
                                + dbIdentifierQuoteString + "='" + schemaName
                                + "' AND TABLE_NAME='" + tableName + "'";
-         //System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
          
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          
@@ -625,21 +642,36 @@ class TableDefinitionGenerator
          // Table Creation Statement.
          if (tableType.equals("VIEW"))
          {
-            sqlStatementString = "SELECT " + dbIdentifierQuoteString + "VIEW_DEFINITION"
-                                 + dbIdentifierQuoteString + " FROM " + dbIdentifierQuoteString
-                                 + "INFORMATION_SCHEMA" + dbIdentifierQuoteString + "."
-                                 + dbIdentifierQuoteString + "SYSTEM_VIEWS" + dbIdentifierQuoteString
-                                 + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEMA"
-                                 + dbIdentifierQuoteString + "='" + schemaName
-                                 + "' AND TABLE_NAME='" + tableName + "'";
-            //System.out.println(sqlStatementString);
+            if (dataSourceType.equals(ConnectionManager.HSQL))
+            {
+               sqlStatementString = "SELECT " + dbIdentifierQuoteString + "VIEW_DEFINITION"
+                                    + dbIdentifierQuoteString + " FROM " + dbIdentifierQuoteString
+                                    + "INFORMATION_SCHEMA" + dbIdentifierQuoteString + "."
+                                    + dbIdentifierQuoteString + "SYSTEM_VIEWS" + dbIdentifierQuoteString
+                                    + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEMA"
+                                    + dbIdentifierQuoteString + "='" + schemaName
+                                    + "' AND TABLE_NAME='" + tableName + "'";
+               // System.out.println(sqlStatementString);
+            }
+            // HSQL2
+            else
+            {
+               sqlStatementString = "SELECT " + dbIdentifierQuoteString + "VIEW_DEFINITION"
+                                    + dbIdentifierQuoteString + " FROM " + dbIdentifierQuoteString
+                                    + "INFORMATION_SCHEMA" + dbIdentifierQuoteString + "."
+                                    + dbIdentifierQuoteString + "VIEWS" + dbIdentifierQuoteString
+                                    + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEMA"
+                                    + dbIdentifierQuoteString + "='" + schemaName
+                                    + "' AND TABLE_NAME='" + tableName + "'";
+               System.out.println(sqlStatementString);
+            }
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
 
             if (resultSet.next())
             {
                tableDefinition.append("CREATE " + tableType + " " + schemaTableName
-                                      + " AS " + resultSet.getString(1) + ";\n");
+                                       + " AS " + resultSet.getString(1) + ";\n");
             }
             resultSet.close();
             sqlStatement.close();
@@ -651,7 +683,32 @@ class TableDefinitionGenerator
 
          // Begin by creating the individual column field definitions.
          // Column name, data type, default, and isNullable.
+         
+         // Special Field Collection.
+         
+         sqlStatementString = "SELECT " + dbIdentifierQuoteString + "COLUMN_NAME" + dbIdentifierQuoteString
+                              + "," + dbIdentifierQuoteString + "DATA_TYPE" + dbIdentifierQuoteString
+                              + "," + dbIdentifierQuoteString + "DTD_IDENTIFIER" + dbIdentifierQuoteString
+                              + " FROM " + dbIdentifierQuoteString
+                              + "INFORMATION_SCHEMA" + dbIdentifierQuoteString + "."
+                              + dbIdentifierQuoteString + "COLUMNS" + dbIdentifierQuoteString
+                              + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEMA"
+                              + dbIdentifierQuoteString + "='" + schemaName
+                              + "' AND TABLE_NAME='" + tableName + "'";
+         // System.out.println(sqlStatementString);
+         
+         resultSet = sqlStatement.executeQuery(sqlStatementString);
 
+         while (resultSet.next())
+         {
+            if (resultSet.getString("DATA_TYPE").equals("INTERVAL"))
+               intervalFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
+                                         resultSet.getString("DTD_IDENTIFIER"));
+            if (resultSet.getString("DATA_TYPE").equals("TIME WITH TIME ZONE"))
+               timeTMZFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
+                                         resultSet.getString("DTD_IDENTIFIER"));
+         }
+         
          dbMetaData = dbConnection.getMetaData();
 
          sqlStatementString = "SELECT LIMIT 0 1 * FROM " + schemaTableName;
@@ -671,48 +728,63 @@ class TableDefinitionGenerator
                                            tableMetaData.getSchemaName(1),
                                            tableMetaData.getTableName(1), "%");
 
-         // Obtain IDENTITY column if there is one.
+         // Obtain IDENTITY column if there is one and at
+         // the same time precision information for TIME &
+         // TIMESTAMP fields.
+         
          autoIncrementColumnName = "";
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
+            columnName = tableMetaData.getColumnName(i);
+            columnType = (tableMetaData.getColumnTypeName(i)).toUpperCase();
+            
             if (tableMetaData.isAutoIncrement(i))
-               autoIncrementColumnName = tableMetaData.getColumnName(i);
+               autoIncrementColumnName = columnName;
+            
+            columnPrecisionHashMap.put(columnName, Integer.valueOf(tableMetaData.getPrecision(i)));
          }
 
          // Now proceed with rest of structure.
          while (resultSet.next())
          {
+            columnName = resultSet.getString("COLUMN_NAME");
+            columnType = resultSet.getString("TYPE_NAME");
+            columnSize = resultSet.getString("COLUMN_SIZE");
+            
+            if (columnPrecisionHashMap.get(columnName) != null)
+               columnPrecision = (columnPrecisionHashMap.get(columnName)).intValue();
+            else
+               columnPrecision = 0;
+            
             // =============
             // Column name.
 
-            tableDefinition.append(identifierQuoteString + resultSet.getString("COLUMN_NAME")
+            tableDefinition.append(identifierQuoteString + columnName
                                    + identifierQuoteString + " ");
 
             // =============
             // Column type.
 
-            columnType = resultSet.getString("TYPE_NAME");
-
             // Character Types
             if (columnType.indexOf("CHAR") != -1)
             {
                if (columnType.equals("CHAR") || columnType.equals("CHARACTER"))
-                  tableDefinition.append("CHAR(" + resultSet.getString("COLUMN_SIZE") + ")");
+                  tableDefinition.append("CHAR(" + columnSize + ")");
                else
                {
                   if (ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL))
                   {
                      if (columnType.equals("VARCHAR") || columnType.equals("VARCHAR_IGNORECASE"))
-                        tableDefinition.append("VARCHAR(" + resultSet.getString("COLUMN_SIZE") + ")");
+                        tableDefinition.append("VARCHAR(" + columnSize + ")");
                      else
                         tableDefinition.append(columnType);
                   }
                   else
                   {
-                     if (resultSet.getString("COLUMN_SIZE").equals("16777216"))
+                     if (columnSize.equals("16777216"))
                         tableDefinition.append("LONGVARCHAR");
                      else
-                        tableDefinition.append("VARCHAR(" + resultSet.getString("COLUMN_SIZE") + ")");      
+                        tableDefinition.append("VARCHAR(" + columnSize + ")");      
                   }
                }
             }
@@ -721,13 +793,13 @@ class TableDefinitionGenerator
                      ConnectionManager.getDataSourceType().equals(ConnectionManager.HSQL2))
             {
                if (columnType.equals("BINARY"))
-                  tableDefinition.append("BINARY(" + resultSet.getString("COLUMN_SIZE") + ")");
+                  tableDefinition.append("BINARY(" + columnSize + ")");
                else
                {
-                  if (resultSet.getString("COLUMN_SIZE").equals("16777216"))
+                  if (columnSize.equals("16777216"))
                      tableDefinition.append("LONGVARBINARY");
                   else
-                     tableDefinition.append("VARBINARY(" + resultSet.getString("COLUMN_SIZE") + ")");     
+                     tableDefinition.append("VARBINARY(" + columnSize + ")");     
                }
             }
             // Integer/BigInt Types
@@ -736,7 +808,7 @@ class TableDefinitionGenerator
                tableDefinition.append(columnType);
 
                // Assign IDENTITY as needed.
-               if (resultSet.getString("COLUMN_NAME").equals(autoIncrementColumnName))
+               if (columnName.equals(autoIncrementColumnName))
                   tableDefinition.append(" IDENTITY");
             }
             // Double Types
@@ -749,33 +821,59 @@ class TableDefinitionGenerator
             // Decimal & Numeric Types
             else if (columnType.equals("DECIMAL") || columnType.equals("NUMERIC"))
             {
-               tableDefinition.append(columnType + "(" + resultSet.getString("COLUMN_SIZE")
-                                      + "," + resultSet.getString("DECIMAL_DIGITS") + ")");
+               if (dataSourceType.equals(ConnectionManager.HSQL) && columnType.equals("NUMERIC"))
+                  tableDefinition.append(columnType);
+               else
+                  tableDefinition.append(columnType + "(" + columnPrecision
+                                         + "," + resultSet.getString("DECIMAL_DIGITS") + ")");
             }
-            // Time & Timestamp
+            // Time With Time Zone
+            else if (columnType.equals("TIME WITH TIME ZONE"))
+            {
+               // HSQL2 Defines, precision but can not determine.
+               // tableDefinition.append(columnType + "(" + columnPrecision + ")");
+               // so....
+               
+               if (timeTMZFieldsHashMap.get(columnName) != null)
+                  tableDefinition.append(timeTMZFieldsHashMap.get(columnName));
+               else
+                  tableDefinition.append(columnType);
+            }
+            // Timestamp
             else if (columnType.indexOf("TIMESTAMP") != -1)
             {
                // Unable to tell where the precision is
                // located in system table. Column_Size of
-               // 29 Seems to Indicate Timestamp(0)
-               if (resultSet.getString("COLUMN_SIZE").equals("29"))
-                  tableDefinition.append(columnType + "(0)");
+               // 29 Seems to Indicate Timestamp(0) for HSQL.
+               if (dataSourceType.equals(ConnectionManager.HSQL))
+               {
+                  if (columnSize.equals("29"))
+                     tableDefinition.append(columnType + "(0)");
+                  else
+                     tableDefinition.append(columnType);
+               }
+               else
+               {
+                  // HSQL2 Defines, precision but can not determine.
+                  // tableDefinition.append(columnType + "(" + columnPrecision + ")");
+                  tableDefinition.append(columnType);
+               }           
+            }
+            // Interval
+            else if (columnType.indexOf("INTERVAL") != -1)
+            {
+               if (intervalFieldsHashMap.get(columnName) != null)
+                  tableDefinition.append(intervalFieldsHashMap.get(columnName));
                else
                   tableDefinition.append(columnType);
             }
-            // Interval
-            else if (columnType.equals("interval") && resultSet.getString("datetime_precision") != null)
-            {
-               tableDefinition.append(columnType + "(" + resultSet.getString("datetime_precision") + ")");
-            }
             // Bit Varying
             else if (columnType.equals("BIT VARYING")
-                     && resultSet.getString("COLUMN_SIZE") != null)
+                     && columnSize != null)
             {
-               tableDefinition.append(columnType + "(" + resultSet.getString("COLUMN_SIZE")
-                                      + ")");
+               tableDefinition.append(columnType + "(" + columnSize + ")");
             }
-            // Boolean, Date, & Binary for HSQL 1.x
+            // All Others.
             else
             {
                tableDefinition.append(columnType);
@@ -783,11 +881,16 @@ class TableDefinitionGenerator
 
             // ==========================
             // Column Default & NOT NULL
+            
+            defaultString = resultSet.getString("COLUMN_DEF");
+            
+            if (defaultString != null && defaultString.equals("NULL"))
+               defaultString = null;
 
-            if (resultSet.getString("COLUMN_DEF") != null)
+            if (defaultString != null)
             {
-               String defaultString = resultSet.getString("COLUMN_DEF");
-
+               defaultString = defaultString.trim();
+               
                if (defaultString.indexOf("::") != -1)
                   tableDefinition.append(" DEFAULT " 
                                          + defaultString.substring(0, defaultString.indexOf(":")));
@@ -801,7 +904,7 @@ class TableDefinitionGenerator
             }
             else
             {
-               if (resultSet.getString("COLUMN_DEF") == null
+               if (defaultString == null
                    && resultSet.getString("IS_NULLABLE").equals("YES"))
                   tableDefinition.append(" DEFAULT NULL,\n    ");
                else
@@ -877,13 +980,17 @@ class TableDefinitionGenerator
             // onDeleteRule = resultSet.getString("DELETE_RULE");
             onDeleteRule = "CASCADE";
 
-            foreignKeys += identifierQuoteString + columnName + identifierQuoteString;
+            foreignKeys = identifierQuoteString + columnName + identifierQuoteString;
 
             tableDefinition.append("FOREIGN KEY (" + foreignKeys + ") REFERENCES "
                                    + identifierQuoteString + referenceTableName 
                                    + identifierQuoteString + "(" + identifierQuoteString
                                    + referenceColumnName + identifierQuoteString 
-                                   + ") ON DELETE " + onDeleteRule + " \n    ");
+                                   + ") ON DELETE " + onDeleteRule);
+            if (resultSet.isLast())
+               tableDefinition.append(" \n    ");
+            else
+               tableDefinition.append(",\n    ");
          }
          tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
          tableDefinition.append("\n);\n");
@@ -914,7 +1021,8 @@ class TableDefinitionGenerator
       HashMap<String, String> autoIncrementColumnNameHashMap;
       String sequenceKeyPresent;
 
-      StringBuffer primaryKeys, uniqueKeys, foreignKeys;
+      StringBuffer primaryKeys, uniqueKeys;
+      String foreignKeys;
       String referenceTableName, referenceColumnName;
       // String onUpdateRule;
       String onDeleteRule;
@@ -1149,7 +1257,7 @@ class TableDefinitionGenerator
          columnName = "";
          primaryKeys = new StringBuffer();
          uniqueKeys = new StringBuffer();
-         foreignKeys = new StringBuffer();
+         foreignKeys = "";
          referenceTableName = "";
          referenceColumnName = "";
          // onUpdateRule = "";
@@ -1216,13 +1324,18 @@ class TableDefinitionGenerator
             // onDeleteRule = resultSet.getString("DELETE_RULE");
             onDeleteRule = "CASCADE";
 
-            foreignKeys.append(identifierQuoteString + columnName + identifierQuoteString);
+            foreignKeys = identifierQuoteString + columnName + identifierQuoteString;
 
             tableDefinition.append("FOREIGN KEY (" + foreignKeys.toString() + ") REFERENCES " 
                                    + identifierQuoteString + referenceTableName 
                                    + identifierQuoteString + "(" + identifierQuoteString
                                    + referenceColumnName + identifierQuoteString + ") ON DELETE "
-                                   + onDeleteRule + " \n    ");
+                                   + onDeleteRule);
+            
+            if (resultSet.isLast())
+               tableDefinition.append(" \n    ");
+            else
+               tableDefinition.append(",\n    ");
          }
          tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
          tableDefinition.append("\n);\n");
