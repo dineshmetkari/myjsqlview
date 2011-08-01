@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.9 07/26/2011
+// Version 11.0 07/31/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -246,6 +246,8 @@
 //             Processing for HSQLDB2 New Data Types Clob, Blob, Time/Timestamp With
 //             Time Zone, & Bit Varying in Class Methods loadTable(), viewSelectedItem(),
 //             addItem(), & editSelectedItem().
+//        11.0 Minor Change in LOB Collection in Method getColumnNames() for String Content
+//             Larger Than 65536.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -271,7 +273,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.9 07/26/2011
+ * @version 11.0 07/31/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -418,7 +420,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                  || (columnType.toUpperCase().indexOf("BLOB") != -1)
                  || (columnType.toUpperCase().indexOf("CLOB") != -1)
                  || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
-                     && columnSize.intValue() > 65535)) && !primaryKeys.contains(colNameString))
+                     && columnSize.intValue() > 65536)) && !primaryKeys.contains(colNameString))
             {
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
                lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
@@ -926,7 +928,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   currentColumnClass = columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnClass.indexOf("String") != -1)
                      currentContentData = ((String) currentContentData).replaceAll("'", "''");
-
+                  
                   // Reformat date keys.
                   currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
                   if (currentColumnType.equals("DATE"))
