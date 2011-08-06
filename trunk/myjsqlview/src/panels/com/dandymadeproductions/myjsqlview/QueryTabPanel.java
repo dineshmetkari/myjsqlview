@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.6 06/11/2011
+// Version 8.7 08/06/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,10 @@
 //             AdvancedSortSearchForm.
 //         8.6 Replaced Class Instance subProtocol With dataSourceType. Class Methods
 //             Effected getColumnNames() & loadTable() and Constructor.
+//         8.7 Exclusion of viewButton for HSQL2 in Constructor. Implementation of HSQL2
+//             Temporary Table Creation in loadTable Along With Only Processing Sizing
+//             Information for MySQL Timestamps. Same Timestamp Processing for MySQL in
+//             viewSelectedItem().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -233,7 +237,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.6 06/11/2011
+ * @version 8.7 08/06/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -567,7 +571,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       actionButtonPanel.add(viewButton);
       
       if (dataSourceType.equals(ConnectionManager.ORACLE)
-            || dataSourceType.equals(ConnectionManager.SQLITE))
+            || dataSourceType.equals(ConnectionManager.SQLITE)
+            || dataSourceType.equals(ConnectionManager.HSQL2))
          viewButton.setVisible(false);
 
       buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
@@ -1010,13 +1015,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          fields.add(primaryKey);
          columnNamesHashMap.put(primaryKey, primaryKey);
          if (!dataSourceType.equals(ConnectionManager.ORACLE)
-               && !dataSourceType.equals(ConnectionManager.SQLITE))
+              && !dataSourceType.equals(ConnectionManager.SQLITE)
+              && !dataSourceType.equals(ConnectionManager.HSQL2))
             tableHeadings.add(primaryKey);
          columnClassHashMap.put(primaryKey, "java.lang.Integer");
          columnTypeHashMap.put(primaryKey, "INTEGER");
          columnSizeHashMap.put(primaryKey, Integer.valueOf(10));
          preferredColumnSizeHashMap.put(primaryKey, Integer.valueOf(primaryKey.length() * 9));
-
+         
          // Column Names, Form Fields, ComboBox Text and HashMaps
 
          sqlTableFieldsString = "";
@@ -1032,9 +1038,9 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            // comboBoxNameString + " " +
-            // columnClass + " " + columnType + " " +
-            // columnSize);
+            //                   comboBoxNameString + " " +
+            //                   columnClass + " " + columnType + " " +
+            //                   columnSize);
 
             // This going to be a problem so skip this column.
             // NOT TESTED. This is still problably not going to
@@ -1251,29 +1257,45 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
 
             // HSQL SQL Statement.
-            else if (dataSourceType.equals(ConnectionManager.HSQL))
+            else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
             {
-               // Drop any existing primary key sequence and create
-               // a new one.
-               sqlStatementString = "DROP SEQUENCE " + primaryKey + " IF EXISTS ";
-               sqlStatement.executeUpdate(sqlStatementString);
-
-               sqlStatementString = "CREATE SEQUENCE " + primaryKey + " " + "AS BIGINT";
-               sqlStatement.executeUpdate(sqlStatementString);
-
                // Create SQL Statement
-               if (query.toUpperCase().indexOf("SELECT") != -1)
-                  tempQueryString = query.replaceFirst("SELECT", "SELECT NEXT VALUE FOR " + primaryKey
-                                                        + " AS " + primaryKey + ",");
-               else
-                  tempQueryString = query;
+               
+               // HSQL
+               if (dataSourceType.equals(ConnectionManager.HSQL))
+               {
+                  // Drop any existing primary key sequence and create
+                  // a new one.
+                  sqlStatementString = "DROP SEQUENCE " + primaryKey + " IF EXISTS ";
+                  sqlStatement.executeUpdate(sqlStatementString);
 
-               if (tempQueryString.toUpperCase().indexOf("SELECT") != -1)
-                  sqlStatementString = tempQueryString
-                        .replaceFirst("FROM", "INTO MEMORY " + identifierQuoteString + tempTable
-                                              + identifierQuoteString + " FROM");
+                  sqlStatementString = "CREATE SEQUENCE " + primaryKey + " " + "AS BIGINT";
+                  sqlStatement.executeUpdate(sqlStatementString);
+                  
+                  if (query.toUpperCase().indexOf("SELECT") != -1)
+                     tempQueryString = query.replaceFirst("SELECT", "SELECT NEXT VALUE FOR " + primaryKey
+                                                           + " AS " + primaryKey + ",");
+                  else
+                     tempQueryString = query;
+
+                  if (tempQueryString.toUpperCase().indexOf("SELECT") != -1)
+                     sqlStatementString = tempQueryString
+                           .replaceFirst("FROM", "INTO MEMORY " + identifierQuoteString + tempTable
+                                                 + identifierQuoteString + " FROM");
+                  else
+                     sqlStatementString = tempQueryString;
+               }
+               // HSQL2
                else
-                  sqlStatementString = tempQueryString;
+               {
+                  // Example of what needs to be, but just to screwed up to
+                  // extract the table name for * to be worth it.
+                  // CREATE TEMPORARY TABLE "temptable0" AS (SELECT NEXT VALUE FOR id_0,
+                  // SELECT KEY_TABLE4.* FROM KEY_TABLE4) WITH DATA 
+                  
+                  sqlStatementString = "CREATE TEMPORARY TABLE " + identifierQuoteString + tempTable
+                                       + identifierQuoteString + " AS (" + query;
+               }
             }
 
             // Oracle SQL Statement.
@@ -1344,6 +1366,9 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                                         + identifierQuoteString;
                }
             }
+            
+            if (dataSourceType.equals(ConnectionManager.HSQL2))
+               sqlStatementString = sqlStatementString + ") WITH DATA ON COMMIT PRESERVE ROWS";
 
             if (showQuery)
                QueryFrame.setQueryResultTextArea(sqlStatementString);
@@ -1445,9 +1470,9 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
-               // columnName + " " + columnClass + " " +
-               // columnType + " " + columnSize + " " +
-               // preferredColumnSize);
+               //                   columnName + " " + columnClass + " " +
+               //                   columnType + " " + columnSize + " " +
+               //                   preferredColumnSize);
 
                // Storing data appropriately. If you have some
                // date or other formating, here is where you can
@@ -1491,28 +1516,36 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                      currentContentData = rs.getTimestamp(columnName);
                      // System.out.println(currentContentData);
 
-                     if (columnSize == 2)
-                        tableData[i][j++] = (new SimpleDateFormat("yy").format(currentContentData));
-                     else if (columnSize == 4)
-                        tableData[i][j++] = (new SimpleDateFormat("MM-yy").format(currentContentData));
-                     else if (columnSize == 6)
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yy").format(currentContentData));
-                     else if (columnSize == 8)
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy").format(currentContentData));
-                     else if (columnSize == 10)
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yy HH:mm")
-                              .format(currentContentData));
-                     else if (columnSize == 12)
-                        tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
-                              .format(currentContentData));
-                     // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                     // Old MySQL Database Requirement, 4.x.
+                     if (dataSourceType.equals(ConnectionManager.MYSQL))
+                     {
+                        if (columnSize == 2)
+                           tableData[i][j++] = (new SimpleDateFormat("yy").format(currentContentData));
+                        else if (columnSize == 4)
+                           tableData[i][j++] = (new SimpleDateFormat("MM-yy").format(currentContentData));
+                        else if (columnSize == 6)
+                           tableData[i][j++] = (new SimpleDateFormat("MM-dd-yy").format(currentContentData));
+                        else if (columnSize == 8)
+                           tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy").format(currentContentData));
+                        else if (columnSize == 10)
+                           tableData[i][j++] = (new SimpleDateFormat("MM-dd-yy HH:mm")
+                                 .format(currentContentData));
+                        else if (columnSize == 12)
+                           tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
+                                 .format(currentContentData));
+                        // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                        else
+                           tableData[i][j++] = (new SimpleDateFormat(
+                              DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                                 .format(currentContentData));
+                     }
                      else
                         tableData[i][j++] = (new SimpleDateFormat(
                            DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
-                              .format(currentContentData));
+                              .format(currentContentData));  
                   }
 
-                  else if (columnType.equals("TIMESTAMPTZ"))
+                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
@@ -1924,30 +1957,39 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
-                  if (currentColumnSize == 2)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("yy").format(currentContentData)));
-                  else if (currentColumnSize == 4)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("MM-yy").format(currentContentData)));
-                  else if (currentColumnSize == 6)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("MM-dd-yy").format(currentContentData)));
-                  else if (currentColumnSize == 8)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("MM-dd-yyyy").format(currentContentData)));
-                  else if (currentColumnSize == 10)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("MM-dd-yy HH:mm").format(currentContentData)));
-                  else if (currentColumnSize == 12)
-                     tableViewForm.setFormField(currentColumnName,
-                                                (new SimpleDateFormat("MM-dd-yyyy HH:mm").format(currentContentData)));
-                  // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                  // Old MySQL Database Requirement, 4.x.
+                  if (dataSourceType.equals(ConnectionManager.MYSQL))
+                  {
+                     if (currentColumnSize == 2)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("yy").format(currentContentData)));
+                     else if (currentColumnSize == 4)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("MM-yy").format(currentContentData)));
+                     else if (currentColumnSize == 6)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("MM-dd-yy").format(currentContentData)));
+                     else if (currentColumnSize == 8)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("MM-dd-yyyy").format(currentContentData)));
+                     else if (currentColumnSize == 10)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("MM-dd-yy HH:mm").format(currentContentData)));
+                     else if (currentColumnSize == 12)
+                        tableViewForm.setFormField(currentColumnName,
+                                                   (new SimpleDateFormat("MM-dd-yyyy HH:mm").format(currentContentData)));
+                     // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                     else
+                        tableViewForm.setFormField(currentColumnName,
+                           (new SimpleDateFormat(
+                              DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                              + " HH:mm:ss").format(currentContentData)));
+                  }
                   else
                      tableViewForm.setFormField(currentColumnName,
                         (new SimpleDateFormat(
                            DBTablesPanel.getGeneralProperties().getViewDateFormat()
-                           + " HH:mm:ss").format(currentContentData)));
+                           + " HH:mm:ss").format(currentContentData)));        
                }
 
                else if (currentColumnType.equals("TIMESTAMPTZ"))
