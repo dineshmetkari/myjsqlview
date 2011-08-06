@@ -5,7 +5,7 @@
 <Site Name="LocalHost_HSQL" Driver="org.hsqldb.jdbcDriver" Protocol="jdbc" SubProtocol="hsqldb:hsql" Host="127.0.0.1" Port="9001" Database="hsql;" User="" Password="" SSH="0" />
 <Site Name="LocalHost_HSQL" Driver="org.hsqldb.jdbcDriver" Protocol="jdbc" SubProtocol="hsqldb:hsql" Host="127.0.0.1" Port="9001" Database="mem:dbname" User="" Password="" SSH="0" />
 <Site Name="LocalHost_Oracle" Driver="oracle.jdbc.driver.OracleDriver" Protocol="jdbc" SubProtocol="oracle:thin" Host="127.0.0.1" Port="1521" Database="oracle" User="" Password="" SSH="0" />
-<Site Name="LocalHost_SQLite" Driver="org.sqlite.JDBC" Protocol="jdbc" SubProtocol="sqlite" Host="127.0.0.1" Port="0000" Database="test/sqliteTypes_test.db" User="" Password="" SSH="0" />
+<Site Name="LocalHost_SQLite" Driver="org.sqlite.JDBC" Protocol="jdbc" SubProtocol="sqlite" Host="127.0.0.1" Port="0000" Database="test/sqliteTypes_test.db" User=" " Password="" SSH="0" />
 <Site Name="LocalHost_SQLite" Driver="org.sqlite.JDBC" Protocol="jdbc" SubProtocol="sqlite" Host="127.0.0.1" Port="0000" Database=":memory:" User="" Password="" SSH="0" />
 <Site Name="LocalHost_MS_Access" Driver="sun.jdbc.odbc.JdbcOdbcDriver" Protocol="jdbc" SubProtocol="odbc" Host="127.0.0.1" Port="0000" Database="ms_access" User="" Password="" SSH="0" />
 </Sites>
