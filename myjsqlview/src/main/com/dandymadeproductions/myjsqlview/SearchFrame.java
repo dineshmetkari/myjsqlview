@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.6 04/03/2011
+// Version 3.7 08/06/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,9 @@
 //         3.5 Table Names Obtained From New Class ConnectionManager in Constructor
 //             and actionPerformed().
 //         3.6 Minor Comment Change.
+//         3.7 Class Instance clearSearchTextFieldButton Changed to clearSearchButton.
+//             Commented Out the Clearing of the searchTextField on Activation of
+//             Said Button.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -121,7 +124,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.6 04/03/2011
+ * @version 3.7 08/06/2011
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -137,7 +140,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
    private JPopupMenu resultTablePopupMenu;
    private JTextField searchTextField;
    private JButton searchButton;
-   private JButton clearSearchTextFieldButton;
+   private JButton clearSearchButton;
    private JButton searchCompleteButton;
 
    private MyJSQLView_ResourceBundle resourceBundle;
@@ -253,11 +256,11 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       searchButton.addActionListener(this);
       searchPanel.add(searchButton);
 
-      clearSearchTextFieldButton = new JButton(removeIcon);
-      clearSearchTextFieldButton.setMargin(new Insets(2, 2, 2, 2));
-      clearSearchTextFieldButton.setFocusPainted(false);
-      clearSearchTextFieldButton.addActionListener(this);
-      searchPanel.add(clearSearchTextFieldButton);
+      clearSearchButton = new JButton(removeIcon);
+      clearSearchButton.setMargin(new Insets(2, 2, 2, 2));
+      clearSearchButton.setFocusPainted(false);
+      clearSearchButton.addActionListener(this);
+      searchPanel.add(clearSearchButton);
 
       mainPanel.add(searchPanel, BorderLayout.NORTH);
 
@@ -456,10 +459,10 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
             }
          }
 
-         // Clear search field action.
-         if (panelSource == clearSearchTextFieldButton)
+         // Clear search action.
+         if (panelSource == clearSearchButton)
          {
-            searchTextField.setText("");
+            // searchTextField.setText("");
             searchProgressBar.setValue(0);
             searchProgressBar.setIndeterminate(true);
             tableModel.setValues(defaultTableData);
