@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.7 06/19/2011
+// Version 6.8 08/08/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -161,6 +161,13 @@
 //                        in Conditional for HSQL to Check for indexOf Instead of equals.
 //                        Added Static Class Instances to Handle the Action Events From the
 //                        Menu/ToolBar.
+//         6.8 08/08/2011 Class Instance queryTabPanel Changed to tabPanel and Class JPanel.
+//                        Removed Class Instance newQueryJButton and Renamed excuteQueryJButton
+//                        to executeButton. Added Static Class Instance SQL_STATEMENT_TYPE.
+//                        Removed Constructor Instance queryLabel, Added statementTypeComboBox
+//                        & newTabCheckBox. Class Methods actionPerformed() and stateChanged()
+//                        Corrected Processing for Changed Instances and Add SQLTabPanel
+//                        Behavior. Added rowSizeLimit Setting in rowSizeTextField.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -198,7 +205,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.7 06/19/2011
+ * @version 6.8 08/08/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -211,7 +218,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static final long serialVersionUID = -4085953364431028570L;
 
    private static JTabbedPane queryTabsPane = new JTabbedPane();
-   private QueryTabPanel queryTabPanel;
+   private JPanel tabPanel;
 
    private int maxTabs = 50;
    private int currentQueryIndex = 0;
@@ -221,10 +228,13 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private JCheckBoxMenuItem showQueryCheckBox;
    private transient Connection query_dbConnection;
 
+   private JComboBox statementTypeComboBox;
+   private int[] tabStatementType = new int[maxTabs];
    private JTextArea queryTextArea;
    private String[] queryTextAreaData = new String[maxTabs];
    private int[] summaryTableRowSize = new int[maxTabs];
-   private JButton executeQueryJButton, newQueryJButton;
+   private JButton executeButton;
+   private JCheckBox newTabCheckBox;
    private static JTextArea queryResultTextArea = new JTextArea(4, 40);
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourceAlert, resourceFileNOTFound;
@@ -245,6 +255,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static String DATAEXPORT_CSV_TABLE = "DECSVT";
    private static String DATAEXPORT_CSV_SUMMARY_TABLE = "DECSVTST";
    private static String DATAEXPORT_PDF_SUMMARY_TABLE = "DEPDFTST";
+   
+   private static int SQL_STATEMENT_TYPE = 0;
+   // private static int QUERY_STATEMENT_TYPE = 1;
 
    //==============================================================
    // QueryFrame Constructor
@@ -258,7 +271,6 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       JPanel framePanel, mainPanel, queryPanel, buttonPanel;
       JPanel centerPanel, queryResultPanel;
-      JLabel queryLabel;
       
       ConnectionProperties connectionProperties;
       String hostName, databaseName, resource;
@@ -368,14 +380,25 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       queryPanel = new JPanel();
       queryPanel.setBorder(BorderFactory.createEtchedBorder());
-
-      resource = resourceBundle.getResource("QueryFrame.label.QueryStatement");
+      
+      statementTypeComboBox = new JComboBox();
+      
+      // SQL_STATEMENT_TYPE:0
+      resource = resourceBundle.getResource("QueryFrame.combobox.SQLStatement");
       if (resource.equals(""))
-         queryLabel = new JLabel("Query Statement : ");
+         statementTypeComboBox.addItem("SQL Statement : ");
       else
-         queryLabel = new JLabel(resource + " : ");
-      queryPanel.add(queryLabel);
-
+         statementTypeComboBox.addItem(resource + " : ");
+      
+      queryPanel.add(statementTypeComboBox);
+      
+      // QUERY_STATEMENT_TYPE:1
+      resource = resourceBundle.getResource("QueryFrame.combobox.QueryStatement");
+      if (resource.equals(""))
+         statementTypeComboBox.addItem("Query Statement : ");
+      else
+         statementTypeComboBox.addItem(resource + " : ");
+      
       queryTextArea = new JTextArea(4, 40);
       queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
       queryTextArea.setLineWrap(true);
@@ -385,22 +408,28 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       buttonPanel = new JPanel();
       buttonPanel.setLayout(new GridLayout(2, 1, 4, 8));
 
-      resource = resourceBundle.getResource("QueryFrame.button.ExecuteQuery");
+      resource = resourceBundle.getResource("QueryFrame.button.Execute");
       if (resource.equals(""))
-         executeQueryJButton = new JButton("Execute Query");
+         executeButton = new JButton("Execute");
       else
-         executeQueryJButton = new JButton(resource);
-      executeQueryJButton.setMnemonic(KeyEvent.VK_ENTER);
-      executeQueryJButton.addActionListener(this);
-      buttonPanel.add(executeQueryJButton);
+         executeButton = new JButton(resource);
+      executeButton.setMnemonic(KeyEvent.VK_ENTER);
+      executeButton.addActionListener(this);
+      buttonPanel.add(executeButton);
 
-      resource = resourceBundle.getResource("QueryFrame.button.NewQuery");
+      resource = resourceBundle.getResource("QueryFrame.checkbox.NewTab");
       if (resource.equals(""))
-         newQueryJButton = new JButton("New Query");
+         newTabCheckBox = new JCheckBox("New Tab", true);
       else
-         newQueryJButton = new JButton(resource);
-      newQueryJButton.addActionListener(this);
-      buttonPanel.add(newQueryJButton);
+         newTabCheckBox = new JCheckBox(resource, true);
+      
+      newTabCheckBox.setIcon(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
+      newTabCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
+      newTabCheckBox.setMargin(new Insets(4, 1, 4, 1));
+      newTabCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
+      newTabCheckBox.setFocusPainted(false);
+      
+      buttonPanel.add(newTabCheckBox);
 
       queryPanel.add(buttonPanel);
 
@@ -454,51 +483,58 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       String resource, resourceOK, resourceCancel, message;
 
       // Button Actions
-      if (panelSource == executeQueryJButton || panelSource == newQueryJButton)
+      if (panelSource == executeButton)
       {
          queryTabsPane.removeChangeListener(this);
-
+         
          // Execute query action.
-         if (panelSource == executeQueryJButton && query_dbConnection != null)
+         if (panelSource == executeButton && query_dbConnection != null)
          {
             // Lets clear any left over query errors.
             queryResultTextArea.setText("");
 
-            if (queryTabsPane.getSelectedComponent() != null)
-               queryTabsPane.remove(currentQueryIndex);
-
-            queryTabPanel = new QueryTabPanel(currentQueryIndex + "",
-                                              queryTextArea.getText(),
-                                              showQueryCheckBox.isSelected(),
-                                              summaryTableRowSize[currentQueryIndex],
-                                              query_dbConnection, resourceBundle);
-            queryTabsPane.insertTab(currentQueryIndex + "", null, queryTabPanel,
-                                    "", currentQueryIndex);
+            // Get tab index to use.
+            if (newTabCheckBox.isSelected())
+            {
+               oldQueryIndex = currentQueryIndex;
+               currentQueryIndex = queryTabsPane.getTabCount();
+            }
+            else
+            {
+               if (queryTabsPane.getSelectedComponent() != null)
+                  queryTabsPane.remove(currentQueryIndex);
+            }
+            
+            // SQL Statement
+            if (statementTypeComboBox.getSelectedIndex() == SQL_STATEMENT_TYPE)
+            {
+               tabPanel = new SQLTabPanel(currentQueryIndex + "",
+                                          queryTextArea.getText(),
+                                          summaryTableRowSize[currentQueryIndex]);
+            }
+            // Query Statement
+            else
+            {
+               tabPanel = new QueryTabPanel(currentQueryIndex + "",
+                                            queryTextArea.getText(),
+                                            showQueryCheckBox.isSelected(),
+                                            summaryTableRowSize[currentQueryIndex],
+                                            query_dbConnection, resourceBundle);
+            }
+            if (newTabCheckBox.isSelected())
+               queryTabsPane.addTab(currentQueryIndex + "", tabPanel);
+            else
+               queryTabsPane.insertTab(currentQueryIndex + "", null, tabPanel,
+                                       "", currentQueryIndex);
             queryTabsPane.setSelectedIndex(queryTabsPane.indexOfTab(currentQueryIndex + ""));
 
+            // Save text and statement type.
             queryTextAreaData[currentQueryIndex] = queryTextArea.getText();
+            tabStatementType[currentQueryIndex] = statementTypeComboBox.getSelectedIndex();
          }
-         // New query action.
-         if (panelSource == newQueryJButton && query_dbConnection != null)
-         {
-            // Lets clear any left over query errors.
-            queryResultTextArea.setText("");
-
-            oldQueryIndex = currentQueryIndex;
-            currentQueryIndex = queryTabsPane.getTabCount();
-            queryTabPanel = new QueryTabPanel(currentQueryIndex + "",
-                                              queryTextArea.getText(),
-                                              showQueryCheckBox.isSelected(),
-                                              summaryTableRowSize[currentQueryIndex],
-                                              query_dbConnection, resourceBundle);
-            queryTabsPane.addTab(currentQueryIndex + "", queryTabPanel);
-            queryTabsPane.setSelectedIndex(queryTabsPane.indexOfTab(currentQueryIndex + ""));
-
-            queryTextAreaData[currentQueryIndex] = queryTextArea.getText();
-            // queryResultTextArea.setText("");
-         }
-
+         
          queryTabsPane.addChangeListener(this);
+         newTabCheckBox.setSelected(false);
       }
 
       // MenuBar Actions
@@ -690,8 +726,12 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             // Setup and display a option pane to collect the new
             // summary table row size.
 
-            JTextField rowSizeTextField = new JTextField();
+            JTextField rowSizeTextField;
             JLabel warning, warningMessage1, warningMessage2;
+            
+            rowSizeTextField = new JTextField();
+            if (currentQueryIndex <= summaryTableRowSize.length)
+               rowSizeTextField.setText(Integer.toString(summaryTableRowSize[currentQueryIndex]));
             
             resource = resourceBundle.getResource("QueryFrame.label.Warning");
             if (resource.equals(""))
@@ -741,10 +781,20 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                try
                {
                   summaryTableRowSize[currentQueryIndex] = Integer.parseInt(rowSizeTextField.getText());
-
-                  QueryTabPanel currentTab = (QueryTabPanel) queryTabsPane.getSelectedComponent();
-                  if (currentTab != null)
-                     currentTab.setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+                  
+                  JPanel currentTab = (JPanel) queryTabsPane.getSelectedComponent();
+                  
+                  // Select the correct panel type.
+                  
+                  // Query Statement
+                  if (currentTab != null && currentTab instanceof QueryTabPanel)
+                     ((QueryTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+                  
+                  // SQL Statement
+                  else if (currentTab != null && currentTab instanceof SQLTabPanel)
+                     ((SQLTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+                  
+                  else { /* Something not right. */}
                }
                catch (NumberFormatException e)
                {
@@ -902,7 +952,10 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
          // Save the query text string.
          if (oldQueryIndex != currentQueryIndex)
+         {
             queryTextArea.setText(queryTextAreaData[currentQueryIndex]);
+            statementTypeComboBox.setSelectedIndex(tabStatementType[currentQueryIndex]);
+         }
          // System.out.println("tab changed: " + currentQueryIndex);
       }
    }
