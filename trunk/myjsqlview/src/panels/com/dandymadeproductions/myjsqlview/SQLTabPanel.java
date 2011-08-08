@@ -1,0 +1,669 @@
+//=================================================================
+//                  MyJSQLView SQL Tab Panel
+//=================================================================
+//
+//    This class provides the view of resultant data/results from
+// the direct input of SQL commands executed on the database.
+//
+//                    << SQLTabPanel.java >>
+//
+//=================================================================
+// Copyright (C) 2005-2011 Dana M. Proctor
+// Version 1.0 08/04/2011
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version
+// 2 of the License, or (at your option) any later version. This
+// program is distributed in the hope that it will be useful, 
+// but WITHOUT ANY WARRANTY; without even the implied warranty
+// of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See
+// the GNU General Public License for more details. You should
+// have received a copy of the GNU General Public License along
+// with this program; if not, write to the Free Software Foundation,
+// Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+// (http://opensource.org)
+//
+//=================================================================
+// Revision History
+// Changes to the code should be documented here and reflected
+// in the present version number. Author information should
+// also be included with the original copyright author.
+//=================================================================
+// Version 1.0 Original Initial SQLTabPanel Class.
+//        
+//-----------------------------------------------------------------
+//                 danap@dandymadeproductions.com
+//=================================================================
+
+package com.dandymadeproductions.myjsqlview;
+
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
+import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+import javax.swing.*;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableColumn;
+
+/**
+ *    The SQLTabPanel class provides the view of resultant data/results
+ * from the direct input of SQL commands executed on the database.  
+ * 
+ * @author Dana M. Proctor
+ * @version 1.0 08/04/2011
+ */
+
+class SQLTabPanel extends JPanel
+{
+   // Class Instances.
+   private static final long serialVersionUID = 1361084034855756266L;
+
+   private String sqlTable;
+   private String queryNumber, sqlString;
+   private boolean validQuery;
+
+   private int tableRowLimit;
+   private String dataSourceType;
+   
+   private Vector<String> tableHeadings;
+   private HashMap<String, String> columnClassHashMap;
+   private HashMap<String, String> columnTypeHashMap;
+   private HashMap<String, Integer> columnSizeHashMap;
+   private HashMap<String, Integer> preferredColumnSizeHashMap;
+   
+   private transient MouseListener summaryTablePopupListener;
+
+   private JPanel centerPanel;
+   
+   private SQLTableModel tableModel;
+   private JTable listTable;
+   private JScrollPane tableScrollPane;
+   
+   private static final int maxPreferredColumnSize = 350;
+   
+   //==============================================================
+   // SQLTabPanel Constructor
+   //==============================================================
+
+   protected SQLTabPanel(String queryNumber, String sqlString, int queryRowLimit)
+   {
+      this.queryNumber = queryNumber;
+      this.sqlString = sqlString;
+      tableRowLimit = queryRowLimit;
+      
+      // Setting up a data source name qualifier and other
+      // instances.
+      
+      dataSourceType = ConnectionManager.getDataSourceType();
+      validQuery = false;
+      
+      tableModel = new SQLTableModel();
+      tableHeadings = new Vector <String>();
+      columnClassHashMap = new HashMap <String, String>();
+      columnTypeHashMap = new HashMap <String, String>();
+      columnSizeHashMap = new HashMap <String, Integer>();
+      preferredColumnSizeHashMap = new HashMap <String, Integer>();
+      
+      // General Panel Configurations
+      setLayout(new BorderLayout());
+      setBorder(BorderFactory.createRaisedBevelBorder());
+      centerPanel = new JPanel(new BorderLayout());
+      
+      // Connecting to the database to execute the input
+      // sql to see if a valid table can be loaded.
+      
+      executeSQL();
+      
+      // ==================================================
+      // Setting up the Table View.
+      // ==================================================
+
+      if (validQuery)
+      {
+         TableSorter tableSorter = new TableSorter(tableModel);
+         listTable = new JTable(tableSorter);
+         tableSorter.setTableHeader(listTable.getTableHeader());
+         listTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+         listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME),
+                                         TransferHandler.getCopyAction());
+         //createListTablePopupMenu();
+         //listTable.addMouseListener(summaryTablePopupListener);
+
+         // Sizing columns
+         Iterator<String> headings = tableHeadings.iterator();
+         TableColumn column = null;
+         int i = 0;
+
+         while (headings.hasNext())
+         {
+            column = listTable.getColumnModel().getColumn(i++);
+            column.setPreferredWidth((preferredColumnSizeHashMap.get(headings.next())).intValue());
+         }
+
+         // Create a scrollpane for the table.
+         
+         tableScrollPane = new JScrollPane(listTable);
+         tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+         centerPanel.add(sqlTable, tableScrollPane);
+      }
+
+      add(centerPanel, BorderLayout.CENTER);
+      addMouseListener(MyJSQLView.getPopupMenuListener()); 
+   }
+   
+   //==============================================================
+   // Class method to execute the given user's input SQL statement.
+   //==============================================================
+
+   private void executeSQL()
+   {
+      // Method Instances
+      Connection dbConnection;
+      String sqlStatementString;
+      Statement sqlStatement;
+      int updateCount;
+      ResultSet db_resultSet;
+      ResultSetMetaData tableMetaData;
+
+      String colNameString;
+      String columnClass, columnType;
+      Integer columnSize;
+      int preferredColumnSize;
+      Object[] rowData;
+      
+      // Checking to see if anything in the input to
+      // execute.
+      
+      if (sqlString.length() < 1)
+      {
+         validQuery = false;
+         return;
+      }
+
+      // Setting up a connection.
+      dbConnection = (Connection) ConnectionManager.getConnection("SQLTabPanel");
+      
+      // Connecting to the data base, to obtain
+      // meta data, and column names.
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+         sqlStatement.setMaxRows(tableRowLimit);
+
+         sqlStatementString = sqlString;
+         // System.out.println(sqlStatementString);
+         
+         sqlStatement.execute(sqlStatementString);
+         updateCount = sqlStatement.getUpdateCount();
+         
+         // Collect results.
+         if (updateCount == -1)
+         {
+            db_resultSet = sqlStatement.getResultSet();
+            
+            // Check to see if there are any results.
+            
+            if (db_resultSet == null)
+            {
+               // Fill information instances.
+               colNameString = "Result";
+               columnClass = "java.lang.String";
+               columnType = "VARCHAR";
+               columnSize = 30;
+               
+               tableHeadings.addElement(colNameString);
+               columnClassHashMap.put(colNameString, columnClass);
+               columnTypeHashMap.put(colNameString, columnType.toUpperCase());
+               columnSizeHashMap.put(colNameString, columnSize);
+               preferredColumnSizeHashMap.put(colNameString,
+                                              Integer.valueOf(colNameString.length() * 9));
+               
+               // Load table model.
+               tableModel.setHeader(tableHeadings.toArray());
+               
+               // Set data.
+               rowData = new Object[1];
+               rowData[0] = "(Empty)";
+               tableModel.addRow(rowData);  
+               
+               validQuery = true;
+               return;
+            }
+            
+            // Have results so setting Up the column names, and collecting
+            // information about columns.
+            
+            tableMetaData = db_resultSet.getMetaData();
+
+            for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
+            {
+               colNameString = tableMetaData.getColumnName(i);
+               columnClass = tableMetaData.getColumnClassName(i);
+               columnType = tableMetaData.getColumnTypeName(i);
+               columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
+
+               // System.out.println(i + " " + colNameString + " " +
+               //                   columnClass + " " + columnType + " " +
+               //                   columnSize);
+
+               // This going to be a problem so skip these columns.
+               // NOT TESTED. This is still problably not going to
+               // help. Bound to crash later.
+
+               if (columnClass == null && columnType == null)
+                  continue;
+
+               // Handle some Oracle data types that have a null
+               // class type and possibly others.
+
+               if (columnClass == null)
+               {
+                  if (columnType.equals("BINARY_FLOAT")
+                      && dataSourceType.equals(ConnectionManager.ORACLE))
+                  {
+                     columnClass = "java.lang.Float";
+                     columnType = "FLOAT";
+                  }
+                  else if (columnType.equals("BINARY_DOUBLE")
+                           && dataSourceType.equals(ConnectionManager.ORACLE))
+                  {
+                     columnClass = "java.lang.Double";
+                     columnType = "DOUBLE";
+                  }
+                  else
+                     columnClass = columnType;
+               }
+
+               tableHeadings.addElement(colNameString);
+               columnClassHashMap.put(colNameString, columnClass);
+               columnTypeHashMap.put(colNameString, columnType.toUpperCase());
+               columnSizeHashMap.put(colNameString, columnSize);
+               preferredColumnSizeHashMap.put(colNameString,
+                                              Integer.valueOf(colNameString.length() * 9));   
+            }
+            tableModel.setHeader(tableHeadings.toArray());
+            
+            // Try and Load the Data From the SQL Execution.
+            
+            int i = 0;
+            int j = 0;
+            rowData = new Object[tableHeadings.size()];
+
+            while (db_resultSet.next())
+            {
+               Iterator<String> headings = tableHeadings.iterator();
+               while (headings.hasNext())
+               {
+                  colNameString = headings.next();
+                  columnClass = columnClassHashMap.get(colNameString);
+                  columnType = columnTypeHashMap.get(colNameString);
+                  columnSize = (columnSizeHashMap.get(colNameString)).intValue();
+                  preferredColumnSize = (preferredColumnSizeHashMap.get(colNameString)).intValue();
+
+                  // System.out.println(i + " " + j + " " + colNameString + " " +
+                  //                    columnClass + " " + columnType + " " +
+                  //                    columnSize + " " + preferredColumnSize);
+
+                  // Storing data appropriately. If you have some
+                  // date or other formating, here is where you can
+                  // take care of it.
+
+                  Object currentContentData = db_resultSet.getObject(colNameString);
+                  // System.out.println(currentContentData);
+
+                  if (currentContentData != null)
+                  {
+                     // =============================================
+                     // BigDecimal
+                     if (columnClass.indexOf("BigDecimal") != -1)
+                        rowData[j++] = new BigDecimal(db_resultSet.getString(colNameString));
+
+                     // =============================================
+                     // Date
+                     else if (columnType.equals("DATE"))
+                        rowData[j++] = new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat()).format(currentContentData);
+
+                     // =============================================
+                     // Datetime
+                     else if (columnType.equals("DATETIME"))
+                        rowData[j++] = new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                              .format(currentContentData);
+
+                     // =============================================
+                     // Time With Time Zone
+                     else if (columnType.equals("TIMETZ"))
+                     {
+                        currentContentData = db_resultSet.getTime(colNameString);
+                        rowData[j++] = (new SimpleDateFormat("HH:mm:ss z").format(currentContentData));
+                     }
+
+                     // =============================================
+                     // Timestamps
+                     else if (columnType.equals("TIMESTAMP"))
+                     {
+                        currentContentData = db_resultSet.getTimestamp(colNameString);
+                        // System.out.println(currentContentData);
+
+                        // Old MySQL Database Requirement, 4.x.
+                        if (dataSourceType.equals(ConnectionManager.MYSQL))
+                        {
+                           if (columnSize == 2)
+                              rowData[j++] = (new SimpleDateFormat("yy").format(currentContentData));
+                           else if (columnSize == 4)
+                              rowData[j++] = (new SimpleDateFormat("MM-yy").format(currentContentData));
+                           else if (columnSize == 6)
+                              rowData[j++] = (new SimpleDateFormat("MM-dd-yy").format(currentContentData));
+                           else if (columnSize == 8)
+                              rowData[j++] = (new SimpleDateFormat("MM-dd-yyyy").format(currentContentData));
+                           else if (columnSize == 10)
+                              rowData[j++] = (new SimpleDateFormat("MM-dd-yy HH:mm")
+                                    .format(currentContentData));
+                           else if (columnSize == 12)
+                              rowData[j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
+                                    .format(currentContentData));
+                           // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                           else
+                              rowData[j++] = (new SimpleDateFormat(
+                                 DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                                    .format(currentContentData));
+                        }
+                        else
+                           rowData[j++] = (new SimpleDateFormat(
+                              DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                                 .format(currentContentData));  
+                     }
+
+                     else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                     {
+                        currentContentData = db_resultSet.getTimestamp(colNameString);
+                        rowData[j++] = (new SimpleDateFormat(
+                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z")
+                              .format(currentContentData));
+                     }
+
+                     // =============================================
+                     // Year
+                     else if (columnType.equals("YEAR"))
+                     {
+                        String displayYear = currentContentData + "";
+                        displayYear = displayYear.trim();
+
+                        if (columnSize == 2)
+                           displayYear = displayYear.substring(2, 4);
+                        else
+                           displayYear = displayYear.substring(0, 4);
+                        rowData[j++] = displayYear;
+                     }
+
+                     // =============================================
+                     // Blob
+                     else if (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
+                     {
+                        if (columnSize == 255)
+                           rowData[j++] = "Tiny Blob";
+                        else if (columnSize == 65535)
+                           rowData[j++] = "Blob";
+                        else if (columnSize == 16777215)
+                           rowData[j++] = "Medium Blob";
+                        else if (columnSize > 16777215)
+                           rowData[j++] = "Long Blob";
+                        else
+                           rowData[j++] = "Blob";
+                     }
+                     
+                     //=============================================
+                     // CLOB
+                     else if (columnType.indexOf("CLOB") != -1)
+                     {
+                        rowData[j++] = "Clob";
+                     }
+
+                     // =============================================
+                     // BYTEA
+                     else if (columnType.equals("BYTEA"))
+                     {
+                        rowData[j++] = "Bytea";
+                     }
+
+                     // =============================================
+                     // BINARY
+                     else if (columnType.indexOf("BINARY") != -1)
+                     {
+                        rowData[j++] = "Binary";
+                     }
+                     
+                     //=============================================
+                     // RAW
+                     else if (columnType.indexOf("RAW") != -1)
+                     {
+                        rowData[j++] = "Raw";
+                     }
+
+                     // =============================================
+                     // Boolean
+                     else if (columnClass.indexOf("Boolean") != -1)
+                     {
+                        rowData[j++] = db_resultSet.getString(colNameString);
+                     }
+
+                     // =============================================
+                     // Bit
+                     else if (columnType.indexOf("BIT") != -1
+                              && dataSourceType.equals(ConnectionManager.MYSQL))
+                     {
+                        //int bitValue = rs.getInt(columnName);
+                        //rowData[j++] = Integer.toBinaryString(bitValue);
+                        rowData[j++] = Integer.toBinaryString(Integer.parseInt(
+                                                  db_resultSet.getString(colNameString)));
+                     }
+
+                     // =============================================
+                     // Text
+                     else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                              & columnSize > 255)
+                     {
+                        if (columnSize <= 65535)
+                           rowData[j++] = (String) currentContentData;
+                        else if (columnSize == 16777215)
+                           rowData[j++] = ("Medium Text");
+                        else
+                        // (columnSize > 16777215)
+                        {
+                           if (dataSourceType.equals(ConnectionManager.MYSQL))
+                              rowData[j++] = ("Long Text");
+                           else
+                           {
+                              // Limit Table Cell Memory Usage.
+                              if (((String) currentContentData).length() > 512)
+                                 rowData[j++] = ((String) currentContentData).substring(0, 512);
+                              else
+                                 rowData[j++] = (String) currentContentData;
+                           }
+                        }
+                     }
+                     
+                     // =============================================
+                     // LONG
+                     else if (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                     {
+                        // Limit Table Cell Memory Usage.
+                        if (((String) currentContentData).length() > 512)
+                           rowData[j++] = ((String) currentContentData).substring(0, 512);
+                        else
+                           rowData[j++] = (String) currentContentData;
+                     }
+
+                     // =============================================
+                     // Array
+                     else if ((columnClass.indexOf("Object") != -1 || columnClass.indexOf("Array") != -1)
+                              && (columnType.indexOf("_") != -1))
+                     {
+                        String stringName;
+                        currentContentData = db_resultSet.getString(colNameString);
+                        stringName = (String) currentContentData;
+
+                        // Limit Table Cell Memory Usage.
+                        if (stringName.length() > 512)
+                           rowData[j++] = stringName.substring(0, 512);
+                        else
+                           rowData[j++] = stringName;
+                     }
+
+                     // =============================================
+                     // Any Other
+                     else
+                     {
+                        rowData[j++] = db_resultSet.getString(colNameString).trim();
+                        // rowData[j++] = rs.getObject(columnName);
+                     }
+                  }
+                  // Null Data
+                  else
+                  {
+                     rowData[j++] = "NULL";
+                  }
+
+                  // Setup some sizing for the column in the summary
+                  // table.
+                  if ((rowData[j - 1] + "").length() * 9 > preferredColumnSize)
+                  {
+                     preferredColumnSize = (rowData[j - 1] + "").length() * 9;
+                     if (preferredColumnSize > maxPreferredColumnSize)
+                        preferredColumnSize = maxPreferredColumnSize;
+                  }
+                  preferredColumnSizeHashMap.put(colNameString, Integer.valueOf(preferredColumnSize));
+               }
+               tableModel.addRow(rowData);
+               j = 0;
+               i++;
+            }
+            db_resultSet.close();
+            sqlStatement.close();
+            dbConnection.close();
+         }
+         // No results, data, but was update.
+         else
+         {
+            // Fill information instances.
+            colNameString = "Update Count";
+            columnClass = "java.lang.String";
+            columnType = "VARCHAR";
+            columnSize = 30;
+            
+            tableHeadings.addElement(colNameString);
+            columnClassHashMap.put(colNameString, columnClass);
+            columnTypeHashMap.put(colNameString, columnType.toUpperCase());
+            columnSizeHashMap.put(colNameString, columnSize);
+            preferredColumnSizeHashMap.put(colNameString,
+                                           Integer.valueOf(colNameString.length() * 9));
+            
+            // Load table model.
+            tableModel.setHeader(tableHeadings.toArray());
+            
+            rowData = new Object[1];
+            rowData[0] = updateCount;
+            tableModel.addRow(rowData);
+         }
+         
+         // Looks good so validate.
+         validQuery = true;
+      }
+      catch (SQLException e)
+      {
+         String errorString = "SQLException: " + e.getMessage() + " " + "SQLState: " 
+                              + e.getSQLState() + " " + "VendorError: " + e.getErrorCode();
+         QueryFrame.setQueryResultTextArea(errorString);
+         validQuery = false;
+         return;
+      }
+   }
+   
+   //==============================================================
+   // Class method to help load the table with data from a result
+   // set that returns such.
+   //==============================================================
+
+   private void loadResultSetData()
+   {
+      
+   }
+   
+   //==============================================================
+   // Class method to allow classes to set the summary table row
+   // size.
+   //==============================================================
+
+   protected void setTableRowSize(int numberOfRows)
+   {
+      tableRowLimit = numberOfRows;
+      tableModel.clear();
+      executeSQL();
+      tableModel.fireTableChanged(null);
+   }
+   
+   //==============================================================
+   // Class helper for the JTable, listTable, Table Model.
+   //==============================================================
+   
+   class SQLTableModel extends AbstractTableModel
+   {
+      private static final long serialVersionUID = 1229214973355124583L;
+      private Object[] headers;
+      private Vector<Object[]> rows;
+      
+      protected SQLTableModel()
+      {
+         // Just Intialize Class Instances.
+         headers = new Object[0];
+         rows = new Vector <Object[]>();
+      }
+      
+      public void addRow(Object[] rowData)
+      {
+         Object[] currentRow = new Object[rowData.length];
+         for (int i = 0; i < rowData.length; i++)
+         {
+            currentRow[i] = rowData[i];
+         }
+         //System.arraycopy(rowData, 0, row, 0, rowData.length);
+         rows.addElement(currentRow);
+      }
+      
+      public void clear(){rows.removeAllElements();}
+      
+      public String getColumnName(int i){return headers[i].toString();}
+      public int getColumnCount(){return headers.length;}
+      public Vector<Object[]> getData(){return rows;}
+      public int getRowCount(){return rows.size();}
+      public Object getValueAt(int row, int col)
+      {
+         if (row >= rows.size())
+            return null;
+
+         Object[] colArray = rows.elementAt(row);
+
+         if (col >= colArray.length)
+            return null;
+         
+         return colArray[col];
+      }
+      public void setHeader(Object[] colNames)
+      {
+         headers = new Object[colNames.length];
+         System.arraycopy(colNames, 0, headers, 0, colNames.length);
+      }
+   } 
+}
