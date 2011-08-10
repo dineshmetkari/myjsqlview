@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.7 07/14/2011
+// Version 6.8 08/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,9 @@
 //             Processing LIMIT Keyword.
 //         6.7 Class Method getSchemaTableName() Replaced Hard Coded Period With the
 //             catalogSeparator.
+//         6.8 Removal of colorChooserPanels Instance and Setting of Only One of the 
+//             Panels Because Lack of Support One in Gnome Desktop. Class Method
+//             createColorChooser().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -144,7 +147,6 @@ import java.io.IOException;
 import javax.sound.sampled.*;
 
 import javax.swing.*;
-import javax.swing.colorchooser.AbstractColorChooserPanel;
 import javax.swing.text.DefaultEditorKit;
 
 import java.sql.SQLException;
@@ -155,7 +157,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.7 07/14/2011
+ * @version 6.8 08/09/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -407,16 +409,12 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static JColorChooser createColorChooser(Component component)
    {
       // Method Instances.
-      AbstractColorChooserPanel[] colorChooserPanels;
       JColorChooser colorChooser;
 
       // Create color chooser.
       colorChooser = new JColorChooser();
       colorChooser.setBorder(BorderFactory.createTitledBorder("Color"));
       colorChooser.setColor(component.getBackground());
-      colorChooserPanels = colorChooser.getChooserPanels();
-      colorChooser.removeChooserPanel(colorChooserPanels[0]);
-      colorChooser.removeChooserPanel(colorChooserPanels[2]);
       colorChooser.setPreviewPanel(new JPanel());
       
       return colorChooser;
