@@ -19,7 +19,7 @@
 	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
 	<p align="center">Copyright &copy; 2005-2011 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
 	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
-	<p align="center"><font size="+1">May 2011</font></p>
+	<p align="center"><font size="+1">August 2011</font></p>
 
 	<hr size="2" width="100%">
 	<strong><font size="+3">Table of Contents</font></strong>
@@ -85,7 +85,7 @@
 	<a name="Introduction"></a>
 	<p><font size="+3"><strong>1 Introduction</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, for Oracle and SQLite just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.29</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, for Oracle and SQLite just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.30</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
 
 	<hr>
 	
@@ -255,7 +255,7 @@
 			<b>Figure 4a.</b>
 		</div><br>
 
-	<p> Under the menu for Tools one will find several items including the <b>Tools | Query Bucket</b>, <b>Figure 4a.</b>,  which will allow the user to store queries directly from a Summary Table's current state. Once stored queries may be organized, edited, and saved to facilitate usage with MyJSQLView's plugin architecture. With the proper design a plugin should accept a drop of a query from the bucket to allow processing of table data according to the functionality provided by the plugin. The MyJSQLView <b>Tools | Query Frame</b> toolbar command provides a generic query console frame that may be used to execute 'SELECT' SQL statements directly. The query frame tool provides a means to build complex queries like those associated with running the database's console tool. The Query Frame can be very helpful for those wishing to generate complex report data. <b>Figure 5.</b> below shows the MyJSQLView toolbar query frame. </p><br>
+	<p> Under the menu for Tools one will find several items including the <b>Tools | SQL Query Bucket</b>, <b>Figure 4a.</b>,  which will allow the user to store queries directly from a Summary Table's current state. Once stored queries may be organized, edited, and saved to facilitate usage with MyJSQLView's plugin architecture. With the proper design a plugin should accept a drop of a query from the bucket to allow processing of table data according to the functionality provided by the plugin. The MyJSQLView <b>Tools | Query Frame</b> toolbar command provides a generic query console frame that may be used to execute 'SELECT' SQL statements directly. The query frame tool provides a means to build complex queries like those associated with running the database's console tool. The Query Frame can be very helpful for those wishing to generate complex report data. <b>Figure 5.</b> below shows the MyJSQLView toolbar query frame. </p><br>
 
 		<div style="text-align: center;">
 			<img alt="" src="query_frame.jpg" style="width: 600px; height: 451px;"><br>
@@ -435,11 +435,12 @@
 	</p><br>
 
 	<div style="text-align: center;">
-		<table  summary="" border="1" cellpadding="1"  cellspacing="1"  width="600" align="center">
+		<table  summary="" border="1" cellpadding="1"  cellspacing="1"  width="625" align="center">
   		<tbody>
     			<tr align="center">
       				<td><b>Expression Type</b></td>
 				<td><b>HSQL</b></td>
+				<td><b>HSQL2</b></td>
       				<td><b>MySQL</b></td>
 				<td><b>Oracle</b></td>
       				<td><b>PostgreSQL</b></td>
@@ -447,6 +448,7 @@
     			</tr>
     			<tr>
       				<td>Singular</td>
+				<td align="center">Yes</td>
 				<td align="center">Yes</td>
       				<td align="center">Yes</td>
 				<td align="center">Yes</td>
@@ -456,6 +458,7 @@
     			<tr>
       				<td>Plural</td>
 				<td align="center">No</td>
+				<td align="center">Yes</td>
       				<td align="center">Yes</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
@@ -463,6 +466,7 @@
     			</tr>
     			<tr>
       				<td>Explicit</td>
+				<td align="center">No</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
 				<td align="center">No</td>
