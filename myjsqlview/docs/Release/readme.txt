@@ -1,4 +1,4 @@
-MyJSQLView Version 3.29
+MyJSQLView Version 3.30
 
 Copyright 2005-2011
 by Dana Proctor
@@ -201,6 +201,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Versoin 3.30 Preliminary Production Release to Address/Correct Reported Problems With
+		  PDF Exports and Gnome Desktop Functionality.
    * Version 3.29 Summary Table sort/search history implementation and addition of
                   Query Bucket for query storage, organizing, and drops to plugins.
    * Version 3.26 Architectural modularization for core aspects relating to login
