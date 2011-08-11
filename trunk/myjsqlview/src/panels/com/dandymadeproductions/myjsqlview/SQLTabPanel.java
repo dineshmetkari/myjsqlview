@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.0 08/04/2011
+// Version 1.1 08/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original Initial SQLTabPanel Class.
+//         1.1 Minor Cleanup, Commenting, for Version Release 3.30.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -39,9 +40,9 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.print.PageFormat;
-import java.awt.print.Printable;
+//import java.awt.event.*;
+//import java.awt.print.PageFormat;
+//import java.awt.print.Printable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -61,7 +62,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.0 08/04/2011
+ * @version 1.1 08/10/2011
  */
 
 class SQLTabPanel extends JPanel
@@ -70,7 +71,8 @@ class SQLTabPanel extends JPanel
    private static final long serialVersionUID = 1361084034855756266L;
 
    private String sqlTable;
-   private String queryNumber, sqlString;
+   //private String queryNumber;
+   private String sqlString;
    private boolean validQuery;
 
    private int tableRowLimit;
@@ -82,7 +84,7 @@ class SQLTabPanel extends JPanel
    private HashMap<String, Integer> columnSizeHashMap;
    private HashMap<String, Integer> preferredColumnSizeHashMap;
    
-   private transient MouseListener summaryTablePopupListener;
+   //private transient MouseListener summaryTablePopupListener;
 
    private JPanel centerPanel;
    
@@ -98,7 +100,7 @@ class SQLTabPanel extends JPanel
 
    protected SQLTabPanel(String queryNumber, String sqlString, int queryRowLimit)
    {
-      this.queryNumber = queryNumber;
+      //this.queryNumber = queryNumber;
       this.sqlString = sqlString;
       tableRowLimit = queryRowLimit;
       
@@ -192,7 +194,14 @@ class SQLTabPanel extends JPanel
       }
 
       // Setting up a connection.
-      dbConnection = (Connection) ConnectionManager.getConnection("SQLTabPanel");
+      dbConnection = (Connection) ConnectionManager
+            .getConnection("SQLTabPanel executeSQL()");
+      
+      if (dbConnection == null)
+      {
+         validQuery = false;
+         return;
+      }
       
       // Connecting to the data base, to obtain
       // meta data, and column names.
@@ -552,7 +561,7 @@ class SQLTabPanel extends JPanel
             }
             db_resultSet.close();
             sqlStatement.close();
-            dbConnection.close();
+            ConnectionManager.closeConnection(dbConnection, "SQLTabPanel executeSQL()");
          }
          // No results, data, but was update.
          else
@@ -595,11 +604,12 @@ class SQLTabPanel extends JPanel
    // Class method to help load the table with data from a result
    // set that returns such.
    //==============================================================
-
+   /*
    private void loadResultSetData()
    {
       
    }
+   */
    
    //==============================================================
    // Class method to allow classes to set the summary table row
