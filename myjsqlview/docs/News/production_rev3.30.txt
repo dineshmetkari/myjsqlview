@@ -1,0 +1,25 @@
+MyJSQLView Version 3.30 Released
+
+The MyJSQLView project has released a preliminary production version to
+address several reported problems with the application. Since this release
+is to correct these bugs a more fully vetted release will be forth coming
+by the end of the month or early next.
+
+The release Version 3.30 corrects the running of the application 
+on specifically the Ubuntu Linux OS with the Gnome desktop. Because of
+the type of bug that was discovered it is possible this may effect all
+uses of the application on the Gnome desktop. The second issued addressed
+by the release is the lack to properly export PDF Summary Table data. A
+failure on the project to properly build the last release with an updated
+iText library file inclusion was the cause.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface
+frontend for viewing, adding, editing, or deleting entries in
+the HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases. A
+query frame allows the building of complex SELECT SQL statements.
+The application allows easy sorting, searching, and import/export
+of table data.
