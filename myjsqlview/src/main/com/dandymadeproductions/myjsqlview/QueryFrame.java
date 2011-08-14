@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.8 08/08/2011
+// Version 6.9 08/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -168,6 +168,9 @@
 //                        & newTabCheckBox. Class Methods actionPerformed() and stateChanged()
 //                        Corrected Processing for Changed Instances and Add SQLTabPanel
 //                        Behavior. Added rowSizeLimit Setting in rowSizeTextField.
+//         6.9 08/14/2011 Removed Argument currentQueryIndex from SQLTabPanel Class Instantiation.
+//                        Added Correct getSelectedTab() for SQLTabPanel and QueryTabPanel. Also
+//                        the Same for Processing. All in actionPerformed() Besides Noted Method.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -205,7 +208,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.8 08/08/2011
+ * @version 6.9 08/14/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -508,9 +511,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             // SQL Statement
             if (statementTypeComboBox.getSelectedIndex() == SQL_STATEMENT_TYPE)
             {
-               tabPanel = new SQLTabPanel(currentQueryIndex + "",
-                                          queryTextArea.getText(),
-                                          summaryTableRowSize[currentQueryIndex]);
+               tabPanel = new SQLTabPanel(queryTextArea.getText(),
+                                          summaryTableRowSize[currentQueryIndex],
+                                          resourceBundle);
             }
             // Query Statement
             else
@@ -653,15 +656,17 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
             Paper customPaper = new Paper();
             double margin = 36;
-            customPaper.setImageableArea(margin, margin, customPaper.getWidth() - margin * 2, customPaper
-                  .getHeight()
-                                                                                              - margin * 2);
+            customPaper.setImageableArea(margin, margin, customPaper.getWidth() - margin * 2,
+                                         customPaper.getHeight() - margin * 2);
             mPageFormat.setPaper(customPaper);
 
             // Printing the selected Tab
             if (getSelectedTab() != null)
-            {
-               currentPrintJob.setPrintable(getSelectedTab(), mPageFormat);
+            {  
+               if (getSelectedTab() instanceof QueryTabPanel)
+                  currentPrintJob.setPrintable(((QueryTabPanel) getSelectedTab()), mPageFormat);
+               else
+                  currentPrintJob.setPrintable(((SQLTabPanel) getSelectedTab()), mPageFormat);
 
                // Should have graphics to print now so
                // lets try to print.
@@ -829,10 +834,13 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
             JFileChooser exportData = new JFileChooser();
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            exportedTable = getSelectedTab().getTableName();
+            
+            if (getSelectedTab() instanceof QueryTabPanel)
+               exportedTable = ((QueryTabPanel) getSelectedTab()).getTableName();
+            else
+               exportedTable = "sqlData";
 
             fileName = exportedTable + "_" + dateFormat.format(new Date());
-            ;
 
             if (actionCommand.indexOf("DECSV") != -1)
                fileName += ".csv";
@@ -857,12 +865,24 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                   Vector<String> columnNameFields = new Vector <String>();
                   if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
                   {
-                     //columnNameFields = new Vector();
-                     columnNameFields = (getSelectedTab()).getTableFields();
-                     tableColumnNamesHashMap = (getSelectedTab()).getColumnNamesHashMap();
-                     tableColumnClassHashMap = (getSelectedTab()).getColumnClassHashMap();
-                     tableColumnTypeHashMap = (getSelectedTab()).getColumnTypeHashMap();
-                     tableColumnSizeHashMap = (getSelectedTab()).getColumnSizeHashMap();
+                     if (getSelectedTab() instanceof QueryTabPanel)
+                     {
+                        //columnNameFields = new Vector();
+                        columnNameFields = ((QueryTabPanel) getSelectedTab()).getTableFields();
+                        tableColumnNamesHashMap = ((QueryTabPanel) getSelectedTab()).getColumnNamesHashMap();
+                        tableColumnClassHashMap = ((QueryTabPanel) getSelectedTab()).getColumnClassHashMap();
+                        tableColumnTypeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnTypeHashMap();
+                        tableColumnSizeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnSizeHashMap();
+                        
+                     }
+                     else
+                     {
+                        columnNameFields = ((SQLTabPanel) getSelectedTab()).getTableHeadings();
+                        tableColumnNamesHashMap = ((SQLTabPanel) getSelectedTab()).getColumnNamesHashMap();
+                        tableColumnClassHashMap = ((SQLTabPanel) getSelectedTab()).getColumnClassHashMap();
+                        tableColumnTypeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnTypeHashMap();
+                        tableColumnSizeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnSizeHashMap();
+                     }
                   }
 
                   // Select the table and fields to export and
@@ -879,23 +899,27 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                                         fileName);
                   }
 
-                  // Data Export CVS Tab Summary Table
-                  else if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
+                  // Data Export CVS & PDF Tab Summary Table
+                  else if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE) ||
+                        actionCommand.equals(DATAEXPORT_PDF_SUMMARY_TABLE))
                   {
-                     JTable summaryListTable = (getSelectedTab()).getListTable();
+                     JTable summaryListTable;
+                     
+                     if (getSelectedTab() instanceof QueryTabPanel)
+                        summaryListTable = ((QueryTabPanel) getSelectedTab()).getListTable();
+                     else
+                        summaryListTable = ((SQLTabPanel) getSelectedTab()).getListTable();
+                     
                      if (summaryListTable != null)
-                        new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
-                                                tableColumnTypeHashMap, exportedTable,
-                                                fileName);
-                  }
-                  
-                  // Data Export PDF Summary Table
-                  else if (actionCommand.equals(DATAEXPORT_PDF_SUMMARY_TABLE))
-                  {
-                     JTable summaryListTable = (getSelectedTab()).getListTable();
-                     if (summaryListTable != null)
-                        new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
-                                                   exportedTable, fileName);  
+                     {
+                        if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
+                           new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
+                                                   tableColumnTypeHashMap, exportedTable,
+                                                   fileName);
+                        else
+                           new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
+                              exportedTable, fileName); 
+                     }
                   }
                   
                   /*
@@ -1304,18 +1328,19 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    // Class Method to return the current selected tab, in the
    // main center panel.
    //==============================================================
-
-   protected static QueryTabPanel getSelectedTab()
+   
+   protected static Object getSelectedTab()
    {
       Object currentTab = queryTabsPane.getSelectedComponent();
+      
       if (currentTab instanceof QueryTabPanel)
-      {
          return (QueryTabPanel) currentTab;
-      }
+      else if (currentTab instanceof SQLTabPanel)
+         return (SQLTabPanel) currentTab;
       else
          return null;
    }
-
+   
    //==============================================================
    // Class Method to return the current selected tab titel, in
    // the main center panel.
