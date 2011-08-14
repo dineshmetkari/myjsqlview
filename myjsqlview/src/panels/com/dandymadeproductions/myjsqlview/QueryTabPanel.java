@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.7 08/06/2011
+// Version 8.8 08/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -206,6 +206,7 @@
 //             Temporary Table Creation in loadTable Along With Only Processing Sizing
 //             Information for MySQL Timestamps. Same Timestamp Processing for MySQL in
 //             viewSelectedItem().
+//         8.8 Minor Comment Changes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -237,7 +238,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.7 08/06/2011
+ * @version 8.8 08/14/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -2161,8 +2162,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    }
 
    //==============================================================
-   // Class Method to print the VendorsPanel's current
-   // information.
+   // Class Method to print the Panel's current information.
    //==============================================================
 
    public int print(Graphics g, PageFormat pageFormat, int pageIndex)
