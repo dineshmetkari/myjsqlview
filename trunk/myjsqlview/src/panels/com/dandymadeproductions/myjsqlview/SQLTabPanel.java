@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.1 08/10/2011
+// Version 1.2 08/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,12 @@
 //=================================================================
 // Version 1.0 Original Initial SQLTabPanel Class.
 //         1.1 Minor Cleanup, Commenting, for Version Release 3.30.
+//         1.2 Added Class Instance columnNamesHashMap() & Class Methods
+//             actionPerformed(), print(), getTableHeadings(), getListTable(),
+//             createListTablePopup(), getColumnNamesHashMap(),
+//             getColumnClassHashMap(), & getColumnSizeHashMap(). Removed
+//             Class Instance sqlTable, and queryNumber From Constructor
+//             Argument. Cleaned Up.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -40,9 +46,12 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-//import java.awt.event.*;
-//import java.awt.print.PageFormat;
-//import java.awt.print.Printable;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseListener;
+import java.awt.print.PageFormat;
+import java.awt.print.Printable;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -62,16 +71,14 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.1 08/10/2011
+ * @version 1.2 08/14/2011
  */
 
-class SQLTabPanel extends JPanel
+class SQLTabPanel extends JPanel implements ActionListener, Printable
 {
    // Class Instances.
-   private static final long serialVersionUID = 1361084034855756266L;
+   private static final long serialVersionUID = -2175726421156127449L;
 
-   private String sqlTable;
-   //private String queryNumber;
    private String sqlString;
    private boolean validQuery;
 
@@ -79,15 +86,16 @@ class SQLTabPanel extends JPanel
    private String dataSourceType;
    
    private Vector<String> tableHeadings;
+   private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypeHashMap;
    private HashMap<String, Integer> columnSizeHashMap;
    private HashMap<String, Integer> preferredColumnSizeHashMap;
+   private MyJSQLView_ResourceBundle resourceBundle;
    
-   //private transient MouseListener summaryTablePopupListener;
-
    private JPanel centerPanel;
-   
+   private transient MouseListener summaryTablePopupListener;
+
    private SQLTableModel tableModel;
    private JTable listTable;
    private JScrollPane tableScrollPane;
@@ -98,11 +106,12 @@ class SQLTabPanel extends JPanel
    // SQLTabPanel Constructor
    //==============================================================
 
-   protected SQLTabPanel(String queryNumber, String sqlString, int queryRowLimit)
+   protected SQLTabPanel(String sqlString, int queryRowLimit,
+                         MyJSQLView_ResourceBundle resourceBundle)
    {
-      //this.queryNumber = queryNumber;
       this.sqlString = sqlString;
       tableRowLimit = queryRowLimit;
+      this.resourceBundle = resourceBundle;
       
       // Setting up a data source name qualifier and other
       // instances.
@@ -112,6 +121,7 @@ class SQLTabPanel extends JPanel
       
       tableModel = new SQLTableModel();
       tableHeadings = new Vector <String>();
+      columnNamesHashMap = new HashMap <String, String>();
       columnClassHashMap = new HashMap <String, String>();
       columnTypeHashMap = new HashMap <String, String>();
       columnSizeHashMap = new HashMap <String, Integer>();
@@ -128,7 +138,7 @@ class SQLTabPanel extends JPanel
       executeSQL();
       
       // ==================================================
-      // Setting up the Table View.
+      // Setting up the Summary Table View.
       // ==================================================
 
       if (validQuery)
@@ -139,8 +149,8 @@ class SQLTabPanel extends JPanel
          listTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
          listTable.getActionMap().put(TransferHandler.getCopyAction().getValue(Action.NAME),
                                          TransferHandler.getCopyAction());
-         //createListTablePopupMenu();
-         //listTable.addMouseListener(summaryTablePopupListener);
+         createListTablePopupMenu();
+         listTable.addMouseListener(summaryTablePopupListener);
 
          // Sizing columns
          Iterator<String> headings = tableHeadings.iterator();
@@ -157,13 +167,45 @@ class SQLTabPanel extends JPanel
          
          tableScrollPane = new JScrollPane(listTable);
          tableScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-         centerPanel.add(sqlTable, tableScrollPane);
+         centerPanel.add(tableScrollPane, BorderLayout.CENTER);
       }
 
       add(centerPanel, BorderLayout.CENTER);
       addMouseListener(MyJSQLView.getPopupMenuListener()); 
    }
    
+   //==============================================================
+   // ActionEvent Listener method for detecting the inputs from
+   // the panel and directing to the appropriate routine.
+   //=============================================================
+
+   public void actionPerformed(ActionEvent evt)
+   {
+      Object panelSource = evt.getSource();
+
+      if ((panelSource instanceof JButton || panelSource instanceof JMenuItem) && validQuery)
+      {
+         // listTable Popup Menu Actions
+         if (panelSource instanceof JMenuItem)
+         {
+            String actionCommand = ((JMenuItem) panelSource).getActionCommand();
+            // System.out.println(actionCommand);
+
+            if (actionCommand.equals("Select All"))
+               listTable.selectAll();
+            else if (actionCommand.equals("DeSelect All"))
+               listTable.clearSelection();
+            // Copy
+            else if (actionCommand.equals((String)TransferHandler.getCopyAction().getValue(Action.NAME)))
+            {
+               Action a = listTable.getActionMap().get(actionCommand);
+               if (a != null)
+                  a.actionPerformed(new ActionEvent(listTable, ActionEvent.ACTION_PERFORMED, null));
+            }
+         }
+      }
+   }
+         
    //==============================================================
    // Class method to execute the given user's input SQL statement.
    //==============================================================
@@ -232,6 +274,7 @@ class SQLTabPanel extends JPanel
                columnSize = 30;
                
                tableHeadings.addElement(colNameString);
+               columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
                columnSizeHashMap.put(colNameString, columnSize);
@@ -295,6 +338,7 @@ class SQLTabPanel extends JPanel
                }
 
                tableHeadings.addElement(colNameString);
+               columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
                columnSizeHashMap.put(colNameString, columnSize);
@@ -545,8 +589,8 @@ class SQLTabPanel extends JPanel
                      rowData[j++] = "NULL";
                   }
 
-                  // Setup some sizing for the column in the summary
-                  // table.
+                  // Setup some sizing for the column in the summary table.
+                  
                   if ((rowData[j - 1] + "").length() * 9 > preferredColumnSize)
                   {
                      preferredColumnSize = (rowData[j - 1] + "").length() * 9;
@@ -573,6 +617,7 @@ class SQLTabPanel extends JPanel
             columnSize = 30;
             
             tableHeadings.addElement(colNameString);
+            columnNamesHashMap.put(colNameString, colNameString);
             columnClassHashMap.put(colNameString, columnClass);
             columnTypeHashMap.put(colNameString, columnType.toUpperCase());
             columnSizeHashMap.put(colNameString, columnSize);
@@ -601,15 +646,132 @@ class SQLTabPanel extends JPanel
    }
    
    //==============================================================
-   // Class method to help load the table with data from a result
-   // set that returns such.
+   // Class method to create the summary table view popup menu.
    //==============================================================
-   /*
-   private void loadResultSetData()
+
+   private void createListTablePopupMenu()
    {
+      // Method Instances.
+      JPopupMenu summaryTablePopupMenu = new JPopupMenu();
+      JMenuItem menuItem;
+      String resource;
       
+      // Summary Table select actions.
+      
+      resource = resourceBundle.getResource("QueryTabPanel.menu.SelectAll");
+      if (resource.equals(""))
+         menuItem = new JMenuItem("Select All");
+      else
+         menuItem = new JMenuItem(resource);
+      menuItem.setActionCommand("Select All");
+      menuItem.addActionListener(this);
+      summaryTablePopupMenu.add(menuItem);
+
+      resource = resourceBundle.getResource("QueryTabPanel.menu.DeSelectAll");
+      if (resource.equals(""))
+         menuItem = new JMenuItem("DeSelect All");
+      else
+         menuItem = new JMenuItem(resource);
+      menuItem.setActionCommand("DeSelect All");
+      menuItem.addActionListener(this);
+      summaryTablePopupMenu.add(menuItem);
+      
+      // Summary Table copy/paste? actions
+      
+      summaryTablePopupMenu.addSeparator();
+      
+      resource = resourceBundle.getResource("QueryTabPanel.menu.Copy");
+      if (resource.equals(""))
+         menuItem = new JMenuItem("Copy");
+      else
+         menuItem = new JMenuItem(resource);
+      menuItem.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
+      menuItem.setMnemonic(KeyEvent.VK_C);
+      menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+      menuItem.addActionListener(this);
+      summaryTablePopupMenu.add(menuItem);
+      
+      summaryTablePopupListener = new MyJSQLView_MouseAdapter(summaryTablePopupMenu);
    }
-   */
+    
+   //==============================================================
+   // Class Method to print the Panel's current information.
+   //==============================================================
+
+   public int print(Graphics g, PageFormat pageFormat, int pageIndex)
+   {
+      if (pageIndex > 0)
+         return NO_SUCH_PAGE;
+      Graphics2D g2 = (Graphics2D) g;
+      g2.translate(pageFormat.getImageableX(), pageFormat.getImageableY());
+
+      RepaintManager currentManager = RepaintManager.currentManager(this);
+      currentManager.setDoubleBufferingEnabled(false);
+      final Rectangle rect = g2.getClipBounds();
+
+      double scaleFactor = rect.getWidth() / this.getWidth();
+      g2.scale(scaleFactor, scaleFactor);
+      // pageFormat.setOrientation(PageFormat.LANDSCAPE);
+      paintAll(g2);
+      currentManager.setDoubleBufferingEnabled(true);
+      return PAGE_EXISTS;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the list of allowed
+   // column names that is presently in the summary table.
+   //==============================================================
+
+   protected Vector<String> getTableHeadings()
+   {
+      return tableHeadings;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the summary list
+   // table presently displayed in the tab.
+   //==============================================================
+
+   protected JTable getListTable()
+   {
+      return listTable;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the columnNamesHashMap.
+   //==============================================================
+
+   protected HashMap<String, String> getColumnNamesHashMap()
+   {
+      return columnNamesHashMap;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the columnClassHashMap.
+   //==============================================================
+
+   protected HashMap<String, String> getColumnClassHashMap()
+   {
+      return columnClassHashMap;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the columnTypeHashMap.
+   //==============================================================
+
+   protected HashMap<String, String> getColumnTypeHashMap()
+   {
+      return columnTypeHashMap;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the columnSizeHashMap.
+   //==============================================================
+
+   protected HashMap<String, Integer> getColumnSizeHashMap()
+   {
+      return columnSizeHashMap;
+   }
    
    //==============================================================
    // Class method to allow classes to set the summary table row
