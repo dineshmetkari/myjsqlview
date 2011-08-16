@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.9 08/14/2011
+// Version 7.0 08/16/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,15 +152,16 @@
 //                        connectionProperties, hostName, & databaseName. Connection
 //                        Parameters Obtained From New Class ConnectionManager in
 //                        Constructor and actionPerformed().
-//         6.4 02/05/2011 Class Method actionPerformed() rowSizeDialog.pack() Instead of Sized.
+//         6.4 02/05/2011 Class Method actionPerformed() rowSizeDialog.pack() Instead
+//                        of Sized.
 //         6.5 04/27/2011 Class Instance queryTextArea.setDragEnabled(true) in Constructor.
 //         6.6 06/11/2011 Removed Class Instance subProtocol and Replaced With dataSourceType.
 //                        Derivation in Constructor From ConnectionManager.getDataSourceType().
 //                        Effected queryFrameListener, & Method actionPerformed().
 //         6.7 06/19/2011 Class Method actionPerformed() and queryFrameListener Change
 //                        in Conditional for HSQL to Check for indexOf Instead of equals.
-//                        Added Static Class Instances to Handle the Action Events From the
-//                        Menu/ToolBar.
+//                        Added Static Class Instances to Handle the Action Events From
+//                        the Menu/ToolBar.
 //         6.8 08/08/2011 Class Instance queryTabPanel Changed to tabPanel and Class JPanel.
 //                        Removed Class Instance newQueryJButton and Renamed excuteQueryJButton
 //                        to executeButton. Added Static Class Instance SQL_STATEMENT_TYPE.
@@ -168,9 +169,14 @@
 //                        & newTabCheckBox. Class Methods actionPerformed() and stateChanged()
 //                        Corrected Processing for Changed Instances and Add SQLTabPanel
 //                        Behavior. Added rowSizeLimit Setting in rowSizeTextField.
-//         6.9 08/14/2011 Removed Argument currentQueryIndex from SQLTabPanel Class Instantiation.
-//                        Added Correct getSelectedTab() for SQLTabPanel and QueryTabPanel. Also
-//                        the Same for Processing. All in actionPerformed() Besides Noted Method.
+//         6.9 08/14/2011 Removed Argument currentQueryIndex from SQLTabPanel Class
+//                        Instantiation. Added Correct getSelectedTab() for SQLTabPanel
+//                        and QueryTabPanel. Also the Same for Processing. All in actionPerformed()
+//                        Besides Noted Method.
+//         7.0 08/16/2011 Added a ScrollPane to the Input queryTextArea. Organized the
+//                        Method actionPerformed() to Further Evaluate Threading by Creating
+//                        Separate Action Handlers openScriptFile(), saveScriptFile(),
+//                        exportData(), print(), & setRowPreferences().
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -208,7 +214,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 6.9 08/14/2011
+ * @version 7.0 08/16/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -406,7 +412,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
       queryTextArea.setLineWrap(true);
       queryTextArea.setDragEnabled(true);
-      queryPanel.add(queryTextArea);
+      
+      JScrollPane queryScrollPane = new JScrollPane(queryTextArea);
+      queryPanel.add(queryScrollPane);
 
       buttonPanel = new JPanel();
       buttonPanel.setLayout(new GridLayout(2, 1, 4, 8));
@@ -482,8 +490,6 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    public void actionPerformed(ActionEvent evt)
    {
       Object panelSource = evt.getSource();
-      int fileChooserResult;
-      String resource, resourceOK, resourceCancel, message;
 
       // Button Actions
       if (panelSource == executeButton)
@@ -544,7 +550,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       if (panelSource instanceof JMenuItem || panelSource instanceof JButton)
       {
          // Instances & Setting Up.
-         String fileName, actionCommand;
+         String actionCommand;
 
          if (panelSource instanceof JMenuItem)
          {
@@ -564,131 +570,19 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          // Open Script
          if (actionCommand.equals(FILE_OPEN_SCRIPT))
          {
-            // Choosing the file to import data from.
-            JFileChooser openScriptFileChooser;
-            
-            if (lastDirectory.equals(""))
-               openScriptFileChooser = new JFileChooser();
-            else
-               openScriptFileChooser = new JFileChooser(new File(lastDirectory));
-            
-            fileChooserResult = openScriptFileChooser.showOpenDialog(null);
-
-            // Looks like might be good so lets check and write data.
-            if (fileChooserResult == JFileChooser.APPROVE_OPTION)
-            {
-               lastDirectory = openScriptFileChooser.getCurrentDirectory().toString();
-               fileName = openScriptFileChooser.getSelectedFile().getName();
-               fileName = openScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
-               // System.out.println(fileName);
-
-               if (!fileName.equals(""))
-               {
-                  try
-                  {
-                     FileReader fileReader = new FileReader(fileName);
-                     BufferedReader bufferedReader = new BufferedReader(fileReader);
-                     String currentLine;
-
-                     int lineNumber = 1;
-                     queryTextArea.setText("");
-
-                     while ((currentLine = bufferedReader.readLine()) != null && lineNumber < 100)
-                     {
-                        queryTextArea.append(currentLine);
-                        lineNumber++;
-                     }
-                     bufferedReader.close();
-                     fileReader.close();
-                  }
-                  catch (IOException e)
-                  {
-                     resource = resourceBundle.getResource("QueryFrame.dialogmessage.InputFile");
-                     if (resource.equals(""))
-                        message = "Unable to Read Input File!";
-                     else
-                        message = resource;
-                        
-                     JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
-                  }
-               }
-               else
-               {
-                  JOptionPane.showMessageDialog(null, resourceFileNOTFound, resourceAlert,
-                                                JOptionPane.ERROR_MESSAGE);
-               }
-            }
+            openScriptFile();
          }
 
          // Save Script
          if (actionCommand.equals(FILE_SAVE_SCRIPT))
          {  
-            // Setup a file chooser and showing.
-            JFileChooser saveScriptFileChooser;
-            
-            if (lastDirectory.equals(""))
-               saveScriptFileChooser = new JFileChooser();
-            else
-               saveScriptFileChooser = new JFileChooser(new File(lastDirectory));
-               
-            fileChooserResult = saveScriptFileChooser.showSaveDialog(null);
-
-            // Looks like might be good so lets check and then write data.
-            if (fileChooserResult == JFileChooser.APPROVE_OPTION)
-            {
-               lastDirectory = saveScriptFileChooser.getCurrentDirectory().toString();
-               fileName = saveScriptFileChooser.getSelectedFile().getName();
-               fileName = saveScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
-               // System.out.println(fileName);
-
-               if (!fileName.equals(""))
-               {
-                  WriteDataFile.mainWriteDataString(fileName, ((String) queryTextArea.getText()).getBytes(),
-                     false);
-               }
-            }
+            saveScriptFile();
          }
 
          // Print
          if (actionCommand.equals(FILE_PRINT))
          {
-            // Setting up the printing.
-
-            Paper customPaper = new Paper();
-            double margin = 36;
-            customPaper.setImageableArea(margin, margin, customPaper.getWidth() - margin * 2,
-                                         customPaper.getHeight() - margin * 2);
-            mPageFormat.setPaper(customPaper);
-
-            // Printing the selected Tab
-            if (getSelectedTab() != null)
-            {  
-               if (getSelectedTab() instanceof QueryTabPanel)
-                  currentPrintJob.setPrintable(((QueryTabPanel) getSelectedTab()), mPageFormat);
-               else
-                  currentPrintJob.setPrintable(((SQLTabPanel) getSelectedTab()), mPageFormat);
-
-               // Should have graphics to print now so
-               // lets try to print.
-               if (currentPrintJob.printDialog())
-               {
-                  try
-                  {
-                     currentPrintJob.print();
-                  }
-                  catch (PrinterException e)
-                  {
-                     resource = resourceBundle.getResource("QueryFrame.dialogmessage.PrinterException");
-                     if (resource.equals(""))
-                        message = "Printer Exception";
-                     else
-                        message = resource;
-                     
-                     JOptionPane.showMessageDialog(null, message, e.getMessage(),
-                                                   JOptionPane.ERROR_MESSAGE);
-                  }
-               }
-            }
+            printData();
          }
 
          // Print PageFormat Dialog
@@ -728,90 +622,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          if (actionCommand.equals(EDITPREFERENCES_TABLE_ROWS)
                && queryTabsPane.getSelectedComponent() != null)
          {
-            // Setup and display a option pane to collect the new
-            // summary table row size.
-
-            JTextField rowSizeTextField;
-            JLabel warning, warningMessage1, warningMessage2;
-            
-            rowSizeTextField = new JTextField();
-            if (currentQueryIndex <= summaryTableRowSize.length)
-               rowSizeTextField.setText(Integer.toString(summaryTableRowSize[currentQueryIndex]));
-            
-            resource = resourceBundle.getResource("QueryFrame.label.Warning");
-            if (resource.equals(""))
-               warning = new JLabel("Warning!", JLabel.CENTER);
-            else
-               warning = new JLabel(resource, JLabel.CENTER);
-            warning.setForeground(Color.RED);
-            
-            resource = resourceBundle.getResource("QueryFrame.label.LargeRowSize");
-            if (resource.equals(""))
-               warningMessage1 = new JLabel("A large row size may adversely effect", JLabel.CENTER);
-            else
-               warningMessage1 = new JLabel(resource, JLabel.CENTER);
-            
-            resource = resourceBundle.getResource("QueryFrame.label.ApplicationServerPerformance");
-            if (resource.equals(""))
-               warningMessage2 = new JLabel("application/server performance.", JLabel.CENTER);
-            else
-               warningMessage2 = new JLabel(resource, JLabel.CENTER);
-
-            Object content[] = {warning, warningMessage1, warningMessage2, rowSizeTextField};
-
-            resource = resourceBundle.getResource("QueryFrame.label.SetSummaryTableRowSize");
-            if (resource.equals(""))
-               resource = "Set Summary Table Row Size";
-            
-            resourceOK = resourceBundle.getResource("QueryFrame.button.OK");
-            if (resourceOK.equals(""))
-               resourceOK = "OK";
-            
-            resourceCancel = resourceBundle.getResource("QueryFrame.button.Cancel");
-            if (resourceCancel.equals(""))
-               resourceCancel = "Cancel";
-            
-            InputDialog rowSizeDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
-                                                        content, null);
-            rowSizeDialog.pack();
-            rowSizeDialog.setResizable(false);
-            rowSizeDialog.center();
-            rowSizeDialog.setVisible(true);
-
-            // Collect the new row size input and updating
-            // the current selected summary table.
-
-            if (rowSizeDialog.isActionResult())
-            {
-               try
-               {
-                  summaryTableRowSize[currentQueryIndex] = Integer.parseInt(rowSizeTextField.getText());
-                  
-                  JPanel currentTab = (JPanel) queryTabsPane.getSelectedComponent();
-                  
-                  // Select the correct panel type.
-                  
-                  // Query Statement
-                  if (currentTab != null && currentTab instanceof QueryTabPanel)
-                     ((QueryTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
-                  
-                  // SQL Statement
-                  else if (currentTab != null && currentTab instanceof SQLTabPanel)
-                     ((SQLTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
-                  
-                  else { /* Something not right. */}
-               }
-               catch (NumberFormatException e)
-               {
-                  resource = resourceBundle.getResource("QueryFrame.dialogmessage.RowSize");
-                  if (resource.equals(""))
-                     message = "The Row Size Input Appears To NOT Be A Valid Integer!";
-                  else
-                     message = resource;
-                  
-                  JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
-               }
-            }
+            setRowPreferences();
          }
 
          // ==================================
@@ -823,137 +634,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
              && (actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DEPDF") != -1
                  || actionCommand.indexOf("DESQL") != -1))
          {
-            String exportedTable;
-            HashMap<String, String> tableColumnNamesHashMap = new HashMap <String, String>();
-            HashMap<String, String> tableColumnClassHashMap = new HashMap <String, String>();
-            HashMap<String, String> tableColumnTypeHashMap = new HashMap <String, String>();
-            HashMap<String, Integer> tableColumnSizeHashMap = new HashMap <String, Integer>();
-
-            // Setting up a default file name based on the selected
-            // database, or table and date.
-
-            JFileChooser exportData = new JFileChooser();
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-            
-            if (getSelectedTab() instanceof QueryTabPanel)
-               exportedTable = ((QueryTabPanel) getSelectedTab()).getTableName();
-            else
-               exportedTable = "sqlData";
-
-            fileName = exportedTable + "_" + dateFormat.format(new Date());
-
-            if (actionCommand.indexOf("DECSV") != -1)
-               fileName += ".csv";
-            else if (actionCommand.indexOf("DEPDF") != -1)
-               fileName += ".pdf";
-            else
-               fileName += ".sql";
-
-            exportData.setSelectedFile(new File(fileName));
-
-            fileChooserResult = exportData.showSaveDialog(null);
-
-            // Looks like might be good so lets check and then write data.
-            if (fileChooserResult == JFileChooser.APPROVE_OPTION)
-            {
-               fileName = exportData.getSelectedFile().getName();
-               fileName = exportData.getCurrentDirectory() + fileSeparator + fileName;
-               // System.out.println(fileName);
-
-               if (!fileName.equals(""))
-               {
-                  Vector<String> columnNameFields = new Vector <String>();
-                  if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
-                  {
-                     if (getSelectedTab() instanceof QueryTabPanel)
-                     {
-                        //columnNameFields = new Vector();
-                        columnNameFields = ((QueryTabPanel) getSelectedTab()).getTableFields();
-                        tableColumnNamesHashMap = ((QueryTabPanel) getSelectedTab()).getColumnNamesHashMap();
-                        tableColumnClassHashMap = ((QueryTabPanel) getSelectedTab()).getColumnClassHashMap();
-                        tableColumnTypeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnTypeHashMap();
-                        tableColumnSizeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnSizeHashMap();
-                        
-                     }
-                     else
-                     {
-                        columnNameFields = ((SQLTabPanel) getSelectedTab()).getTableHeadings();
-                        tableColumnNamesHashMap = ((SQLTabPanel) getSelectedTab()).getColumnNamesHashMap();
-                        tableColumnClassHashMap = ((SQLTabPanel) getSelectedTab()).getColumnClassHashMap();
-                        tableColumnTypeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnTypeHashMap();
-                        tableColumnSizeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnSizeHashMap();
-                     }
-                  }
-
-                  // Select the table and fields to export and
-                  // then outputting the data via the appropriate
-                  // approach. Basic Summary Table CSV Implemented
-                  // Only in 2.72, 2.76.
-
-                  // Data Export CVS Table
-                  if (actionCommand.equals(DATAEXPORT_CSV_TABLE))
-                  {
-                     new DataDumpThread(columnNameFields, tableColumnNamesHashMap,
-                                        tableColumnClassHashMap, tableColumnTypeHashMap,
-                                        tableColumnSizeHashMap, exportedTable,
-                                        fileName);
-                  }
-
-                  // Data Export CVS & PDF Tab Summary Table
-                  else if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE) ||
-                        actionCommand.equals(DATAEXPORT_PDF_SUMMARY_TABLE))
-                  {
-                     JTable summaryListTable;
-                     
-                     if (getSelectedTab() instanceof QueryTabPanel)
-                        summaryListTable = ((QueryTabPanel) getSelectedTab()).getListTable();
-                     else
-                        summaryListTable = ((SQLTabPanel) getSelectedTab()).getListTable();
-                     
-                     if (summaryListTable != null)
-                     {
-                        if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
-                           new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
-                                                   tableColumnTypeHashMap, exportedTable,
-                                                   fileName);
-                        else
-                           new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
-                              exportedTable, fileName); 
-                     }
-                  }
-                  
-                  /*
-                  // Data Export SQL Table
-                  else if (actionCommand.equals("DESQLT"))
-                  {
-                      SQLDataDumpThread sqlDump = new SQLDataDumpThread(columnNameFields,
-                                                                        tableColumnNamesHashMap,
-                                                                        false, tableColumnClassHashMap,
-                                                                        tableColumnTypeHashMap,
-                                                                        exportedTable, fileName,
-                                                                        myJSQLView_Version);
-                  }
-                  
-                  // Data Export SQL Tab Summary Table
-                  else if (actionCommand.equals("DESQLTST"))
-                  {
-                      columnNameFields = new Vector();
-                      columnNameFields = (getSelectedTab()).getTableHeadings();
-                      SQLDataDumpThread sqlDump = new SQLDataDumpThread(columnNameFields,
-                                                                        tableColumnNamesHashMap,
-                                                                        true, tableColumnClassHashMap,
-                                                                        tableColumnTypeHashMap,
-                                                                        exportedTable, fileName,
-                                                                        myJSQLView_Version);
-                   }
-                   */
-               }
-               else
-               {
-                  JOptionPane.showMessageDialog(null, resourceFileNOTFound, resourceAlert,
-                                                JOptionPane.ERROR_MESSAGE);
-               }
-            }
+            exportData(actionCommand);
          }
       }
    }
@@ -981,6 +662,401 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             statementTypeComboBox.setSelectedIndex(tabStatementType[currentQueryIndex]);
          }
          // System.out.println("tab changed: " + currentQueryIndex);
+      }
+   }
+   
+   //==============================================================
+   // Class method used to handle the loading of a SQL script file.
+   //==============================================================
+
+   private void openScriptFile()
+   {
+      // Method Instances.
+      JFileChooser openScriptFileChooser;
+      int fileChooserResult;
+      String fileName, resource, message;
+      
+      // Choosing the file to import data from.
+      
+      if (lastDirectory.equals(""))
+         openScriptFileChooser = new JFileChooser();
+      else
+         openScriptFileChooser = new JFileChooser(new File(lastDirectory));
+      
+      fileChooserResult = openScriptFileChooser.showOpenDialog(null);
+
+      // Looks like might be good so lets check and write data.
+      if (fileChooserResult == JFileChooser.APPROVE_OPTION)
+      {
+         lastDirectory = openScriptFileChooser.getCurrentDirectory().toString();
+         fileName = openScriptFileChooser.getSelectedFile().getName();
+         fileName = openScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
+         // System.out.println(fileName);
+
+         if (!fileName.equals(""))
+         {
+            try
+            {
+               FileReader fileReader = new FileReader(fileName);
+               BufferedReader bufferedReader = new BufferedReader(fileReader);
+               String currentLine;
+
+               int lineNumber = 1;
+               queryTextArea.setText("");
+
+               while ((currentLine = bufferedReader.readLine()) != null && lineNumber < 100)
+               {
+                  queryTextArea.append(currentLine);
+                  lineNumber++;
+               }
+               bufferedReader.close();
+               fileReader.close();
+            }
+            catch (IOException e)
+            {
+               resource = resourceBundle.getResource("QueryFrame.dialogmessage.InputFile");
+               if (resource.equals(""))
+                  message = "Unable to Read Input File!";
+               else
+                  message = resource;
+                  
+               JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
+            }
+         }
+         else
+         {
+            JOptionPane.showMessageDialog(null, resourceFileNOTFound, resourceAlert,
+                                          JOptionPane.ERROR_MESSAGE);
+         }
+      } 
+   }
+   
+   //==============================================================
+   // Class method used to handle the saving of a script file.
+   //==============================================================
+
+   private void saveScriptFile()
+   {
+      // Method Instances.
+      JFileChooser saveScriptFileChooser;
+      int fileChooserResult;
+      String fileName;
+      
+      // Setup a file chooser and showing.
+      
+      if (lastDirectory.equals(""))
+         saveScriptFileChooser = new JFileChooser();
+      else
+         saveScriptFileChooser = new JFileChooser(new File(lastDirectory));
+         
+      fileChooserResult = saveScriptFileChooser.showSaveDialog(null);
+
+      // Looks like might be good so lets check and then write data.
+      if (fileChooserResult == JFileChooser.APPROVE_OPTION)
+      {
+         lastDirectory = saveScriptFileChooser.getCurrentDirectory().toString();
+         fileName = saveScriptFileChooser.getSelectedFile().getName();
+         fileName = saveScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
+         // System.out.println(fileName);
+
+         if (!fileName.equals(""))
+         {
+            WriteDataFile.mainWriteDataString(fileName, ((String) queryTextArea.getText()).getBytes(),
+               false);
+         }
+      }
+   }
+   
+   //==============================================================
+   // Class method used print the summary table data from the
+   // current showing tab.
+   //==============================================================
+
+   private void printData()
+   {
+      // Method Instances.
+      Paper customPaper;
+      double margin;
+      String resource, message;
+      
+      // Setting up the printing.
+
+      customPaper = new Paper();
+      margin = 36;
+      customPaper.setImageableArea(margin, margin, customPaper.getWidth() - margin * 2,
+                                   customPaper.getHeight() - margin * 2);
+      mPageFormat.setPaper(customPaper);
+
+      // Printing the selected Tab
+      if (getSelectedTab() != null)
+      {  
+         if (getSelectedTab() instanceof QueryTabPanel)
+            currentPrintJob.setPrintable(((QueryTabPanel) getSelectedTab()), mPageFormat);
+         else
+            currentPrintJob.setPrintable(((SQLTabPanel) getSelectedTab()), mPageFormat);
+
+         // Should have graphics to print now so lets try to print.
+         
+         if (currentPrintJob.printDialog())
+         {
+            try
+            {
+               currentPrintJob.print();
+            }
+            catch (PrinterException e)
+            {
+               resource = resourceBundle.getResource("QueryFrame.dialogmessage.PrinterException");
+               if (resource.equals(""))
+                  message = "Printer Exception";
+               else
+                  message = resource;
+               
+               JOptionPane.showMessageDialog(null, message, e.getMessage(),
+                                             JOptionPane.ERROR_MESSAGE);
+            }
+         }
+      }
+   }
+   
+   //==============================================================
+   // Class method used set the current visible tab data panel's
+   // maxium number of returned rows from the result set.
+   //==============================================================
+
+   private void setRowPreferences()
+   {
+      // Method Instances.
+      String resource, resourceOK, resourceCancel;
+      String message;
+      
+      // Setup and display a option pane to collect the new
+      // summary table row size.
+
+      JTextField rowSizeTextField;
+      JLabel warning, warningMessage1, warningMessage2;
+      
+      rowSizeTextField = new JTextField();
+      if (currentQueryIndex <= summaryTableRowSize.length)
+         rowSizeTextField.setText(Integer.toString(summaryTableRowSize[currentQueryIndex]));
+      
+      resource = resourceBundle.getResource("QueryFrame.label.Warning");
+      if (resource.equals(""))
+         warning = new JLabel("Warning!", JLabel.CENTER);
+      else
+         warning = new JLabel(resource, JLabel.CENTER);
+      warning.setForeground(Color.RED);
+      
+      resource = resourceBundle.getResource("QueryFrame.label.LargeRowSize");
+      if (resource.equals(""))
+         warningMessage1 = new JLabel("A large row size may adversely effect", JLabel.CENTER);
+      else
+         warningMessage1 = new JLabel(resource, JLabel.CENTER);
+      
+      resource = resourceBundle.getResource("QueryFrame.label.ApplicationServerPerformance");
+      if (resource.equals(""))
+         warningMessage2 = new JLabel("application/server performance.", JLabel.CENTER);
+      else
+         warningMessage2 = new JLabel(resource, JLabel.CENTER);
+
+      Object content[] = {warning, warningMessage1, warningMessage2, rowSizeTextField};
+
+      resource = resourceBundle.getResource("QueryFrame.label.SetSummaryTableRowSize");
+      if (resource.equals(""))
+         resource = "Set Summary Table Row Size";
+      
+      resourceOK = resourceBundle.getResource("QueryFrame.button.OK");
+      if (resourceOK.equals(""))
+         resourceOK = "OK";
+      
+      resourceCancel = resourceBundle.getResource("QueryFrame.button.Cancel");
+      if (resourceCancel.equals(""))
+         resourceCancel = "Cancel";
+      
+      InputDialog rowSizeDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
+                                                  content, null);
+      rowSizeDialog.pack();
+      rowSizeDialog.setResizable(false);
+      rowSizeDialog.center();
+      rowSizeDialog.setVisible(true);
+
+      // Collect the new row size input and updating
+      // the current selected summary table.
+
+      if (rowSizeDialog.isActionResult())
+      {
+         try
+         {
+            summaryTableRowSize[currentQueryIndex] = Integer.parseInt(rowSizeTextField.getText());
+            
+            JPanel currentTab = (JPanel) queryTabsPane.getSelectedComponent();
+            
+            // Select the correct panel type.
+            
+            // Query Statement
+            if (currentTab != null && currentTab instanceof QueryTabPanel)
+               ((QueryTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+            
+            // SQL Statement
+            else if (currentTab != null && currentTab instanceof SQLTabPanel)
+               ((SQLTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+            
+            else { /* Something not right. */}
+         }
+         catch (NumberFormatException e)
+         {
+            resource = resourceBundle.getResource("QueryFrame.dialogmessage.RowSize");
+            if (resource.equals(""))
+               message = "The Row Size Input Appears To NOT Be A Valid Integer!";
+            else
+               message = resource;
+            
+            JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
+         }
+      }
+   }
+   
+   //==============================================================
+   // Class method to execute the selected type of data export of
+   // the data in summary table of the current visible tab.
+   //==============================================================
+
+   private void exportData(String actionCommand)
+   {
+      // Method Instances
+      JFileChooser exportData;
+      SimpleDateFormat dateFormat;
+      String fileName, exportedTable;
+      int fileChooserResult;
+      
+      HashMap<String, String> tableColumnNamesHashMap = new HashMap <String, String>();
+      HashMap<String, String> tableColumnClassHashMap = new HashMap <String, String>();
+      HashMap<String, String> tableColumnTypeHashMap = new HashMap <String, String>();
+      HashMap<String, Integer> tableColumnSizeHashMap = new HashMap <String, Integer>();
+
+      // Creating and showing a file chooser based on a default file name
+      // derived from the table and date.
+
+      exportData = new JFileChooser();
+      dateFormat = new SimpleDateFormat("yyyyMMdd");
+      
+      if (getSelectedTab() instanceof QueryTabPanel)
+         exportedTable = ((QueryTabPanel) getSelectedTab()).getTableName();
+      else
+         exportedTable = "sqlData";
+
+      fileName = exportedTable + "_" + dateFormat.format(new Date());
+
+      if (actionCommand.indexOf("DECSV") != -1)
+         fileName += ".csv";
+      else if (actionCommand.indexOf("DEPDF") != -1)
+         fileName += ".pdf";
+      else
+         fileName += ".sql";
+
+      exportData.setSelectedFile(new File(fileName));
+
+      fileChooserResult = exportData.showSaveDialog(null);
+
+      // Looks like might be good so lets check and then write data.
+      if (fileChooserResult == JFileChooser.APPROVE_OPTION)
+      {
+         fileName = exportData.getSelectedFile().getName();
+         fileName = exportData.getCurrentDirectory() + fileSeparator + fileName;
+         // System.out.println(fileName);
+
+         if (!fileName.equals(""))
+         {
+            Vector<String> columnNameFields = new Vector <String>();
+            if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
+            {
+               if (getSelectedTab() instanceof QueryTabPanel)
+               {
+                  //columnNameFields = new Vector();
+                  columnNameFields = ((QueryTabPanel) getSelectedTab()).getTableFields();
+                  tableColumnNamesHashMap = ((QueryTabPanel) getSelectedTab()).getColumnNamesHashMap();
+                  tableColumnClassHashMap = ((QueryTabPanel) getSelectedTab()).getColumnClassHashMap();
+                  tableColumnTypeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnTypeHashMap();
+                  tableColumnSizeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnSizeHashMap();
+                  
+               }
+               else
+               {
+                  columnNameFields = ((SQLTabPanel) getSelectedTab()).getTableHeadings();
+                  tableColumnNamesHashMap = ((SQLTabPanel) getSelectedTab()).getColumnNamesHashMap();
+                  tableColumnClassHashMap = ((SQLTabPanel) getSelectedTab()).getColumnClassHashMap();
+                  tableColumnTypeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnTypeHashMap();
+                  tableColumnSizeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnSizeHashMap();
+               }
+            }
+
+            // Select the table and fields to export and
+            // then outputting the data via the appropriate
+            // approach. Basic Summary Table CSV Implemented
+            // Only in 2.72, 2.76.
+
+            // Data Export CVS Table
+            if (actionCommand.equals(DATAEXPORT_CSV_TABLE))
+            {
+               new DataDumpThread(columnNameFields, tableColumnNamesHashMap,
+                                  tableColumnClassHashMap, tableColumnTypeHashMap,
+                                  tableColumnSizeHashMap, exportedTable,
+                                  fileName);
+            }
+
+            // Data Export CVS & PDF Tab Summary Table
+            else if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE) ||
+                  actionCommand.equals(DATAEXPORT_PDF_SUMMARY_TABLE))
+            {
+               JTable summaryListTable;
+               
+               if (getSelectedTab() instanceof QueryTabPanel)
+                  summaryListTable = ((QueryTabPanel) getSelectedTab()).getListTable();
+               else
+                  summaryListTable = ((SQLTabPanel) getSelectedTab()).getListTable();
+               
+               if (summaryListTable != null)
+               {
+                  if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
+                     new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
+                                             tableColumnTypeHashMap, exportedTable,
+                                             fileName);
+                  else
+                     new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
+                        exportedTable, fileName); 
+               }
+            }
+            
+            /*
+            // Data Export SQL Table
+            else if (actionCommand.equals("DESQLT"))
+            {
+                SQLDataDumpThread sqlDump = new SQLDataDumpThread(columnNameFields,
+                                                                  tableColumnNamesHashMap,
+                                                                  false, tableColumnClassHashMap,
+                                                                  tableColumnTypeHashMap,
+                                                                  exportedTable, fileName,
+                                                                  myJSQLView_Version);
+            }
+            
+            // Data Export SQL Tab Summary Table
+            else if (actionCommand.equals("DESQLTST"))
+            {
+                columnNameFields = new Vector();
+                columnNameFields = (getSelectedTab()).getTableHeadings();
+                SQLDataDumpThread sqlDump = new SQLDataDumpThread(columnNameFields,
+                                                                  tableColumnNamesHashMap,
+                                                                  true, tableColumnClassHashMap,
+                                                                  tableColumnTypeHashMap,
+                                                                  exportedTable, fileName,
+                                                                  myJSQLView_Version);
+             }
+             */
+         }
+         else
+         {
+            JOptionPane.showMessageDialog(null, resourceFileNOTFound, resourceAlert,
+                                          JOptionPane.ERROR_MESSAGE);
+         }
       }
    }
    
