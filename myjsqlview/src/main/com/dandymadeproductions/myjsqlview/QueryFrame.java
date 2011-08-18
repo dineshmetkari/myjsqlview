@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.1 08/18/2011
+// Version 7.2 08/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -184,6 +184,7 @@
 //                        & statusPanel. Added Methods buildConstraints() & executeSQL().
 //                        Added Method Instance scriptLineLimit to openScript(). Status
 //                        Setting for Tabs in stateChanged().
+//         7.2 08/18/2011 Made Class Instance maxTabs static.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -221,7 +222,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.1 08/18/2011
+ * @version 7.2 08/18/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -236,7 +237,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static JTabbedPane queryTabsPane = new JTabbedPane();
    private JPanel tabPanel;
 
-   private final int maxTabs = 50;
+   private static final int maxTabs = 50;
    private int currentQueryIndex;
    private int workingQueryIndex;
    private int oldQueryIndex;
