@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.0 08/16/2011
+// Version 7.1 08/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,13 @@
 //                        Method actionPerformed() to Further Evaluate Threading by Creating
 //                        Separate Action Handlers openScriptFile(), saveScriptFile(),
 //                        exportData(), print(), & setRowPreferences().
+//         7.1 08/18/2011 Rebuilt Top Part of GUI to Comformalize and Add Status Indicator.
+//                        As Such Added Class Instances workingQueryIndex, newTabState,
+//                        status, statusIdle/WorkingIcon, statusIndicator, and statusLabel.
+//                        Initialized in Constructor Along With Added in Same statusControlPanel,
+//                        & statusPanel. Added Methods buildConstraints() & executeSQL().
+//                        Added Method Instance scriptLineLimit to openScript(). Status
+//                        Setting for Tabs in stateChanged().
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -214,7 +221,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.0 08/16/2011
+ * @version 7.1 08/18/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -229,19 +236,28 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private static JTabbedPane queryTabsPane = new JTabbedPane();
    private JPanel tabPanel;
 
-   private int maxTabs = 50;
-   private int currentQueryIndex = 0;
-   private int oldQueryIndex = currentQueryIndex;
-   private boolean clearingTabs = false;
+   private final int maxTabs = 50;
+   private int currentQueryIndex;
+   private int workingQueryIndex;
+   private int oldQueryIndex;
+   private boolean clearingTabs, newTabState; 
 
    private JCheckBoxMenuItem showQueryCheckBox;
    private transient Connection query_dbConnection;
 
+   private ImageIcon statusIdleIcon, statusWorkingIcon;
+   private ImageIcon[] statusIndicatorIcon = new ImageIcon[maxTabs];
+   private JLabel statusIndicator;
+   private String[] status = new String[maxTabs];
+   private JTextField statusLabel;
    private JComboBox statementTypeComboBox;
    private int[] tabStatementType = new int[maxTabs];
+   
    private JTextArea queryTextArea;
    private String[] queryTextAreaData = new String[maxTabs];
+   
    private int[] summaryTableRowSize = new int[maxTabs];
+   
    private JButton executeButton;
    private JCheckBox newTabCheckBox;
    private static JTextArea queryResultTextArea = new JTextArea(4, 40);
@@ -278,8 +294,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JMenuBar queryFrameMenuBar;
       JToolBar queryFrameToolBar;
       
-      JPanel framePanel, mainPanel, queryPanel, buttonPanel;
-      JPanel centerPanel, queryResultPanel;
+      JPanel framePanel, mainPanel;
+      JPanel queryPanel, centerPanel, queryResultPanel;
+      JPanel statusControlPanel, statusPanel, buttonPanel;
       
       ConnectionProperties connectionProperties;
       String hostName, databaseName, resource;
@@ -311,12 +328,25 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       else
          resourceFileNOTFound = resource;
       
+      currentQueryIndex = 0;
+      workingQueryIndex = 0;
+      oldQueryIndex = currentQueryIndex;
+      clearingTabs = false;
+      newTabState = true;
+      
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
       lastDirectory = "";
+      
+      statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
+      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
 
       for (int i = 0; i < maxTabs; i++)
+      {
+         statusIndicatorIcon[i] = statusIdleIcon;
+         status[i] = "Idle";
          summaryTableRowSize[i] = 50;
+      }
 
       // Setting up a connection.
       query_dbConnection = (Connection) ConnectionManager.getConnection("QueryFrame");
@@ -385,11 +415,21 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
       // =====================================
-      // QueryFrame Entry TextArea
+      // QueryFrame SQL Entry Text Area
 
-      queryPanel = new JPanel();
+      GridBagLayout gridbag = new GridBagLayout();
+      GridBagConstraints constraints = new GridBagConstraints();
+      
+      queryPanel = new JPanel(gridbag);
       queryPanel.setBorder(BorderFactory.createEtchedBorder());
       
+      statusControlPanel = new JPanel(gridbag);
+      statusControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+      
+      // Status Indicator
+      statusPanel = new JPanel(gridbag);
+      statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
+                                                               BorderFactory.createEmptyBorder(0, 2, 0, 1)));
       statementTypeComboBox = new JComboBox();
       
       // SQL_STATEMENT_TYPE:0
@@ -399,8 +439,6 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       else
          statementTypeComboBox.addItem(resource + " : ");
       
-      queryPanel.add(statementTypeComboBox);
-      
       // QUERY_STATEMENT_TYPE:1
       resource = resourceBundle.getResource("QueryFrame.combobox.QueryStatement");
       if (resource.equals(""))
@@ -408,16 +446,63 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       else
          statementTypeComboBox.addItem(resource + " : ");
       
-      queryTextArea = new JTextArea(4, 40);
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(statementTypeComboBox, constraints);
+      statusControlPanel.add(statementTypeComboBox);
+      
+      statusIndicator = new JLabel("", JLabel.LEFT);
+      statusIndicator.setIcon(statusIdleIcon);
+      statusIndicator.setDisabledIcon(statusWorkingIcon);
+      statusIndicator.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 20, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statusIndicator, constraints);
+      statusPanel.add(statusIndicator);
+      
+      statusLabel = new JTextField("Idle", 15);
+      statusLabel.setHorizontalAlignment(JTextField.LEFT);
+      statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+      statusLabel.setEditable(false);
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statusLabel, constraints);
+      statusPanel.add(statusLabel);
+      
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 50);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(statusPanel, constraints);
+      statusControlPanel.add(statusPanel);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 20, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(statusControlPanel, constraints);
+      queryPanel.add(statusControlPanel);
+      
+      queryTextArea = new JTextArea(5, 40);
       queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
       queryTextArea.setLineWrap(true);
       queryTextArea.setDragEnabled(true);
       
       JScrollPane queryScrollPane = new JScrollPane(queryTextArea);
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 60, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(queryScrollPane, constraints);
       queryPanel.add(queryScrollPane);
-
+      
       buttonPanel = new JPanel();
       buttonPanel.setLayout(new GridLayout(2, 1, 4, 8));
+      buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
+                                                               BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
       resource = resourceBundle.getResource("QueryFrame.button.Execute");
       if (resource.equals(""))
@@ -441,7 +526,11 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       newTabCheckBox.setFocusPainted(false);
       
       buttonPanel.add(newTabCheckBox);
-
+      
+      buildConstraints(constraints, 2, 0, 1, 1, 20, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(buttonPanel, constraints);
       queryPanel.add(buttonPanel);
 
       mainPanel.add(queryPanel, BorderLayout.NORTH);
@@ -459,6 +548,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       mainPanel.add(centerPanel, BorderLayout.CENTER);
 
+      // =====================================
       // QueryFrame SQL Feedback TextArea.
 
       queryResultPanel = new JPanel(new GridLayout(1, 1, 0, 0));
@@ -491,59 +581,16 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    {
       Object panelSource = evt.getSource();
 
-      // Button Actions
+      // Execute SQL Action
       if (panelSource == executeButton)
       {
          queryTabsPane.removeChangeListener(this);
          
-         // Execute query action.
-         if (panelSource == executeButton && query_dbConnection != null)
-         {
-            // Lets clear any left over query errors.
-            queryResultTextArea.setText("");
-
-            // Get tab index to use.
-            if (newTabCheckBox.isSelected())
-            {
-               oldQueryIndex = currentQueryIndex;
-               currentQueryIndex = queryTabsPane.getTabCount();
-            }
-            else
-            {
-               if (queryTabsPane.getSelectedComponent() != null)
-                  queryTabsPane.remove(currentQueryIndex);
-            }
-            
-            // SQL Statement
-            if (statementTypeComboBox.getSelectedIndex() == SQL_STATEMENT_TYPE)
-            {
-               tabPanel = new SQLTabPanel(queryTextArea.getText(),
-                                          summaryTableRowSize[currentQueryIndex],
-                                          resourceBundle);
-            }
-            // Query Statement
-            else
-            {
-               tabPanel = new QueryTabPanel(currentQueryIndex + "",
-                                            queryTextArea.getText(),
-                                            showQueryCheckBox.isSelected(),
-                                            summaryTableRowSize[currentQueryIndex],
-                                            query_dbConnection, resourceBundle);
-            }
-            if (newTabCheckBox.isSelected())
-               queryTabsPane.addTab(currentQueryIndex + "", tabPanel);
-            else
-               queryTabsPane.insertTab(currentQueryIndex + "", null, tabPanel,
-                                       "", currentQueryIndex);
-            queryTabsPane.setSelectedIndex(queryTabsPane.indexOfTab(currentQueryIndex + ""));
-
-            // Save text and statement type.
-            queryTextAreaData[currentQueryIndex] = queryTextArea.getText();
-            tabStatementType[currentQueryIndex] = statementTypeComboBox.getSelectedIndex();
-         }
+         executeSQL();
          
          queryTabsPane.addChangeListener(this);
          newTabCheckBox.setSelected(false);
+         return;
       }
 
       // MenuBar Actions
@@ -655,18 +702,97 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          oldQueryIndex = currentQueryIndex;
          currentQueryIndex = queryTabsPane.getSelectedIndex();
 
-         // Save the query text string.
+         // Set the tabs various paramerters.
          if (oldQueryIndex != currentQueryIndex)
          {
             queryTextArea.setText(queryTextAreaData[currentQueryIndex]);
             statementTypeComboBox.setSelectedIndex(tabStatementType[currentQueryIndex]);
+            statusIndicator.setIcon(statusIndicatorIcon[currentQueryIndex]);
+            statusLabel.setText(status[currentQueryIndex]);
          }
          // System.out.println("tab changed: " + currentQueryIndex);
       }
    }
    
    //==============================================================
+   // Class method used to execute the given SQL input by the user
+   // as defined in the query text area.
+   //==============================================================
+
+   private void executeSQL()
+   {
+      if (query_dbConnection != null)
+      {
+         // Lets clear any left over query errors.
+         queryResultTextArea.setText("");
+
+         // Get tab index to use.
+         if (newTabCheckBox.isSelected())
+         {
+            oldQueryIndex = currentQueryIndex;
+            currentQueryIndex = queryTabsPane.getTabCount();
+            newTabState = true;
+         }
+         else
+            newTabState = false;
+         
+         // Save query text, statement type, and status.
+         queryTextAreaData[currentQueryIndex] = queryTextArea.getText();
+         tabStatementType[currentQueryIndex] = statementTypeComboBox.getSelectedIndex();
+         workingQueryIndex = currentQueryIndex;
+         
+         // Set Status
+         statusIndicator.setIcon(statusWorkingIcon);
+         statusIndicatorIcon[currentQueryIndex] = statusWorkingIcon;
+         statusLabel.setText("Working");
+         status[currentQueryIndex] = "Working";
+         
+         // Create a thread to create the appropriate
+         // panel that will be used to run the SQL.
+         
+         Thread executeSQLThread = new Thread(new Runnable()
+         {
+            boolean isNewTab = newTabState;
+            
+            public void run()
+            {
+               // SQL Statement
+               if (statementTypeComboBox.getSelectedIndex() == SQL_STATEMENT_TYPE)
+               {
+                  tabPanel = new SQLTabPanel(queryTextArea.getText(),
+                                             summaryTableRowSize[workingQueryIndex],
+                                             resourceBundle);
+               }
+               // Query Statement
+               else
+               {
+                  tabPanel = new QueryTabPanel(workingQueryIndex + "",
+                                               queryTextArea.getText(),
+                                               showQueryCheckBox.isSelected(),
+                                               summaryTableRowSize[workingQueryIndex],
+                                               query_dbConnection, resourceBundle);
+               }
+               
+               if (isNewTab)
+                  queryTabsPane.addTab(workingQueryIndex + "", tabPanel);
+               else
+                  queryTabsPane.setComponentAt(workingQueryIndex, tabPanel);
+               
+               // Show tab and return status to idle.
+               queryTabsPane.setSelectedIndex(queryTabsPane.indexOfTab(workingQueryIndex + ""));
+               statusIndicator.setIcon(statusIdleIcon);
+               statusIndicatorIcon[workingQueryIndex] = statusIdleIcon;
+               statusLabel.setText("Idle");
+               status[currentQueryIndex] = "Idle";      
+            }
+         }, "QueryFrame.executeSQLThread");
+         executeSQLThread.start();   
+      }
+   }
+   
+   //==============================================================
    // Class method used to handle the loading of a SQL script file.
+   // Note: The script file is limited to importing only 100 lines.
    //==============================================================
 
    private void openScriptFile()
@@ -674,6 +800,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // Method Instances.
       JFileChooser openScriptFileChooser;
       int fileChooserResult;
+      int scriptLineLimit = 100;
       String fileName, resource, message;
       
       // Choosing the file to import data from.
@@ -704,7 +831,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
                int lineNumber = 1;
                queryTextArea.setText("");
 
-               while ((currentLine = bufferedReader.readLine()) != null && lineNumber < 100)
+               while ((currentLine = bufferedReader.readLine()) != null && lineNumber < scriptLineLimit)
                {
                   queryTextArea.append(currentLine);
                   lineNumber++;
@@ -967,6 +1094,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          if (!fileName.equals(""))
          {
             Vector<String> columnNameFields = new Vector <String>();
+            
             if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
             {
                if (getSelectedTab() instanceof QueryTabPanel)
@@ -1388,6 +1516,20 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       item.addActionListener(this);
       
       return item;
+   }
+   
+   //==============================================================
+   // Class Method for helping the parameters in gridbag.
+   //==============================================================
+
+   private void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx, double wy)
+   {
+      gbc.gridx = gx;
+      gbc.gridy = gy;
+      gbc.gridwidth = gw;
+      gbc.gridheight = gh;
+      gbc.weightx = wx;
+      gbc.weighty = wy;
    }
 
    //==============================================================
