@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.3 07/31/2011
+// Version 4.4 08/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,8 @@
 //             Definition(). Rebuild of Class Method createHSQLTableDefinition() to
 //             Accomodate HSQLDB2. Class Method createOracleTableDefinition() Minor
 //             Modification to Handle Multiple Foreign Keys.
+//         4.4 Class Method createOracleTableDefinition() Removed Conversion of toString()
+//             on Already Defined String, foreignKeys.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -141,7 +143,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.3 07/31/2011
+ * @version 4.4 08/18/2011
  */
 
 class TableDefinitionGenerator
@@ -1326,7 +1328,7 @@ class TableDefinitionGenerator
 
             foreignKeys = identifierQuoteString + columnName + identifierQuoteString;
 
-            tableDefinition.append("FOREIGN KEY (" + foreignKeys.toString() + ") REFERENCES " 
+            tableDefinition.append("FOREIGN KEY (" + foreignKeys + ") REFERENCES " 
                                    + identifierQuoteString + referenceTableName 
                                    + identifierQuoteString + "(" + identifierQuoteString
                                    + referenceColumnName + identifierQuoteString + ") ON DELETE "
