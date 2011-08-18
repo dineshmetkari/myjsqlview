@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.2 08/14/2011
+// Version 1.3 08/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@
 //             getColumnClassHashMap(), & getColumnSizeHashMap(). Removed
 //             Class Instance sqlTable, and queryNumber From Constructor
 //             Argument. Cleaned Up.
+//         1.3 Corrected to Short-Circuit Logical Operator && in Conditional
+//             Check for Text in executeSQL().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +73,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.2 08/14/2011
+ * @version 1.3 08/18/2011
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -526,7 +528,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                      // =============================================
                      // Text
                      else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
-                              & columnSize > 255)
+                              && columnSize > 255)
                      {
                         if (columnSize <= 65535)
                            rowData[j++] = (String) currentContentData;
