@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.2 08/18/2011
+// Version 7.3 08/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -185,6 +185,8 @@
 //                        Added Method Instance scriptLineLimit to openScript(). Status
 //                        Setting for Tabs in stateChanged().
 //         7.2 08/18/2011 Made Class Instance maxTabs static.
+//         7.3 08/19/2011 Method setRowPreferences() Removed Call to SQLTabPanel.setTableRowSize()
+//                        and Just Reloaded a New SQLTabPanel.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -222,7 +224,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.2 08/18/2011
+ * @version 7.3 08/19/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1026,7 +1028,11 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             
             // SQL Statement
             else if (currentTab != null && currentTab instanceof SQLTabPanel)
-               ((SQLTabPanel) currentTab).setTableRowSize(summaryTableRowSize[currentQueryIndex]);
+            {
+               queryTabsPane.removeChangeListener(this);
+               executeSQL();
+               queryTabsPane.addChangeListener(this);
+            }
             
             else { /* Something not right. */}
          }
