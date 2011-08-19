@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 08/18/2011
+// Version 1.4 08/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@
 //             Argument. Cleaned Up.
 //         1.3 Corrected to Short-Circuit Logical Operator && in Conditional
 //             Check for Text in executeSQL().
+//         1.4 Made Inner Class SQLTableModel static & Removed All Elements
+//             in tableHeadings for setTableRowSize().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,7 +75,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.3 08/18/2011
+ * @version 1.4 08/18/2011
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -783,6 +785,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    protected void setTableRowSize(int numberOfRows)
    {
       tableRowLimit = numberOfRows;
+      tableHeadings.removeAllElements();
       tableModel.clear();
       executeSQL();
       tableModel.fireTableChanged(null);
@@ -792,7 +795,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    // Class helper for the JTable, listTable, Table Model.
    //==============================================================
    
-   class SQLTableModel extends AbstractTableModel
+   static class SQLTableModel extends AbstractTableModel
    {
       private static final long serialVersionUID = 1229214973355124583L;
       private Object[] headers;
@@ -816,7 +819,11 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
          rows.addElement(currentRow);
       }
       
-      public void clear(){rows.removeAllElements();}
+      public void clear()
+      {
+         rows.removeAllElements();
+         
+      }
       
       public String getColumnName(int i){return headers[i].toString();}
       public int getColumnCount(){return headers.length;}
