@@ -46,11 +46,18 @@
  * 
  * <ul>
  * <li>
- * Parameterized class instances, methods to conform to Java 5.0 API. Formatted.
+ * 2.1 08/07/2011 Parameterized class instances, methods to conform to Java
+ * 5.0 API. Formatted.
+ * <li>
+ * 2.2 08/19/2011 Removed Dual Check for o2 NULL in Class Comparator,
+ * COMPARABLE_COMPARATOR Method compare() for Conditional o1 == NULL. Made
+ * Class Instances mouseListener & tableModelListener Transient. Class
+ * Arrow.paintIcon Changed integer Denominator to Double 2.0. Mucked With
+ * Arrow Icon Color.
  * </ul>
  * 
  * @author Dana M. Proctor
- * @version 2.1 08/07/2011
+ * @version 2.2 08/19/2011
  */
 
 package com.dandymadeproductions.myjsqlview;
@@ -102,11 +109,6 @@ public class TableSorter extends AbstractTableModel
 
          if (o1 == null)
          {
-            if (o2 == null)
-            {
-               return 0;
-            }
-
             return -1;
          }
 
@@ -131,8 +133,8 @@ public class TableSorter extends AbstractTableModel
    private Row[] viewToModel;
    private int[] modelToView;
    private JTableHeader tableHeader;
-   private MouseListener mouseListener;
-   private TableModelListener tableModelListener;
+   private transient MouseListener mouseListener;
+   private transient TableModelListener tableModelListener;
    private Map<Class<?>, Comparator<Object>> columnComparators = new HashMap<Class<?>, Comparator<Object>>();
    private List<Directive> sortingColumns = new ArrayList<Directive>();
 
@@ -558,10 +560,17 @@ public class TableSorter extends AbstractTableModel
       public void paintIcon(Component c, Graphics g, int x, int y)
       {
          Color color = c == null ? Color.gray : c.getBackground();
+         
+         if ((color.getRed() > (Color.RED.getRed() - 50))
+               && (color.getBlue() < 150) && (color.getGreen() < 150))
+            color = Color.YELLOW;
+         else
+            color = Color.RED;
 
          // In a compound sort, make each succesive triangle 20%
          // smaller than the previous one.
-         int dx = (int) (size / 2 * Math.pow(0.8, priority));
+         int dx = (int) ((size / 2.0) * (Math.pow(0.8, priority)));
+         //int dx = (int) (size / 2 * Math.pow(0.8, priority));
          int dy = descending ? dx : -dx;
 
          // Align icon (roughly) with font baseline.
