@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.7 08/06/2011
+// Version 3.8 09/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,8 @@
 //         3.7 Class Instance clearSearchTextFieldButton Changed to clearSearchButton.
 //             Commented Out the Clearing of the searchTextField on Activation of
 //             Said Button.
+//         3.8 Class Method actionPerformed() Introduced Instance progressBarMax and
+//             Set searchProgressBar Maximum to It.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -124,7 +126,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.7 08/06/2011
+ * @version 3.8 09/03/2011
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -434,21 +436,26 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
                
                Vector<String> databaseTables = ConnectionManager.getTableNames();
                boolean[] selectedTables = new boolean[databaseTables.size()];
+               int progressBarMax = 0;
                
                // Create a list of included tables to be searched.
+               
                if (!databaseTables.isEmpty())
                {
                   for (int i = 0; i < databaseTables.size(); i++)
                   {
                      if (databaseTables.contains(resultTable.getValueAt(i, 1).toString().trim())
                          && ((Boolean)resultTable.getValueAt(i, 0)).booleanValue() == true)
+                     {
                         selectedTables[i] = true;
+                        progressBarMax++;
+                     }
                      else
                         selectedTables[i] = false;
                   }
                   
                   // Execute query
-                  searchProgressBar.setMaximum(databaseTables.size());
+                  searchProgressBar.setMaximum(progressBarMax);
                   searchProgressBar.setValue(0);
                   searchProgressBar.setIndeterminate(false);
                   searchDatabase = new SearchDatabaseThread(databaseTables, selectedTables,
