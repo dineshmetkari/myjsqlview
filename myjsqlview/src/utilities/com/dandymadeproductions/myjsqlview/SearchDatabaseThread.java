@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.8 06/11/2011
+// Version 2.9 09/03/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -71,6 +71,9 @@
 //             Method createColumnSQLQuery().
 //         2.8 Class Method createColumnsSQLQuery() Replaced Instance subProtocol With
 //             dataSourceType.
+//         2.9 Optimized by Not Processing Non-Selected Tables for Search in run().
+//             Correction in Class Method createColumnsSQLQuery() for Oracle columnsSQLQuery
+//             String Creation.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -92,7 +95,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.8 06/11/2011
+ * @version 2.9 09/03/2011
  */
 
 class SearchDatabaseThread implements Runnable
@@ -175,6 +178,16 @@ class SearchDatabaseThread implements Runnable
          final int index = i;
          final String searchQuery;
          
+         // Optimize by not bothering with excluded
+         // tables.
+         
+         if (selectedTables[i] == false)
+         {
+            resultsCount++;
+            i++;
+            continue;
+         }
+         
          // Properly format the string used in the query
          // for the table.
 
@@ -190,7 +203,7 @@ class SearchDatabaseThread implements Runnable
          // so go to next table, but still allow the table result
          // to be displayed, Will be invalid -1.
          
-         if (columnsSQLQuery.equals("") || selectedTables[i] == false)
+         if (columnsSQLQuery.equals(""))
          {
             resultsCount++;
             i++;
@@ -201,7 +214,7 @@ class SearchDatabaseThread implements Runnable
          searchQuery = "SELECT COUNT(*) AS " + identifierQuoteString + "Count"
                        + identifierQuoteString + " FROM " + schemaTableName
                        + " WHERE " + columnsSQLQuery;
-         //System.out.println(searchQuery);
+         // System.out.println(searchQuery);
          searchProgressBar.setValue(index + 1);
 
          // Inner class to execute the query as a new thread.
@@ -226,7 +239,7 @@ class SearchDatabaseThread implements Runnable
                catch (SQLException e)
                {
                   resultsCount++;
-                  //System.out.println(e);
+                  // System.out.println(e);
                }
             }
          });
@@ -363,11 +376,13 @@ class SearchDatabaseThread implements Runnable
                      columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                             + " LIKE TO_DATE(\'" + searchQueryString + "\', "
                                             + "\'YYYY-MM-dd\') OR ");
+                  else
+                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                        + " LIKE \'%" + searchQueryString + "%\' OR ");     
                }
                else
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
-                     + " LIKE \'%" + searchQueryString + "%\' OR ");
-                  
+                     + " LIKE \'%" + searchQueryString + "%\' OR ");   
             }
          }
          sqlStatement.close();
