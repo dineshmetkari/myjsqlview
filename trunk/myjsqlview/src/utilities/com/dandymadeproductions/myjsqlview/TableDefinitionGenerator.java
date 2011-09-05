@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.4 08/18/2011
+// Version 4.5 09/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -122,6 +122,9 @@
 //             Modification to Handle Multiple Foreign Keys.
 //         4.4 Class Method createOracleTableDefinition() Removed Conversion of toString()
 //             on Already Defined String, foreignKeys.
+//         4.5 Minor Comment Changes and Class Method createOracleTableDefinition() Added
+//             Method Instance foreignKeysCount to Compensate for Oracle's Lack of Support
+//             for isLast() With ResultSet Obtained From dbMetaData.getImportedKeys().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -143,7 +146,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.4 08/18/2011
+ * @version 4.5 09/05/2011
  */
 
 class TableDefinitionGenerator
@@ -164,7 +167,7 @@ class TableDefinitionGenerator
       // Common class Instances.
       this.dbConnection = dbConnection;
       this.schemaTableName = table;
-      //System.out.println(schemaTableName);
+      // System.out.println(schemaTableName);
       
       databaseName = ConnectionManager.getConnectionProperties().getProperty(
          ConnectionProperties.DB);
@@ -273,7 +276,7 @@ class TableDefinitionGenerator
                                + "table_catalog='" + databaseName + "' AND "
                                + "table_schema='" + schemaName + "' AND "
                                + "table_name='" + tableName + "'";
-         //System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
          
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          
@@ -300,7 +303,7 @@ class TableDefinitionGenerator
                                  + "table_catalog='" + databaseName + "' AND "
                                  + "table_schema='" + schemaName + "' AND "
                                  + "table_name='" + tableName + "'";
-            //System.out.println(sqlStatementString);
+            // System.out.println(sqlStatementString);
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
 
@@ -665,7 +668,7 @@ class TableDefinitionGenerator
                                     + " WHERE " + dbIdentifierQuoteString + "TABLE_SCHEMA"
                                     + dbIdentifierQuoteString + "='" + schemaName
                                     + "' AND TABLE_NAME='" + tableName + "'";
-               System.out.println(sqlStatementString);
+               // System.out.println(sqlStatementString);
             }
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
@@ -1025,6 +1028,7 @@ class TableDefinitionGenerator
 
       StringBuffer primaryKeys, uniqueKeys;
       String foreignKeys;
+      int foreignKeysCount;
       String referenceTableName, referenceColumnName;
       // String onUpdateRule;
       String onDeleteRule;
@@ -1047,7 +1051,7 @@ class TableDefinitionGenerator
          
          sqlStatementString = "SELECT OBJECT_TYPE FROM USER_OBJECTS WHERE "
                                + "OBJECT_NAME='" + tableName + "'";
-         //System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
          
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          
@@ -1071,7 +1075,7 @@ class TableDefinitionGenerator
             
             sqlStatementString = "SELECT TEXT FROM ALL_VIEWS WHERE "
                                  + "VIEW_NAME='" + tableName + "'";
-            //System.out.println(sqlStatementString);
+            // System.out.println(sqlStatementString);
 
             resultSet = sqlStatement.executeQuery(sqlStatementString);
 
@@ -1313,7 +1317,17 @@ class TableDefinitionGenerator
          // The Oracle database is having considerable delay right here
          // with collecting the imported keys.
          resultSet = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
-
+         
+         // Collect number of keys.
+         
+         foreignKeysCount = 0;
+         
+         while (resultSet.next())
+            foreignKeysCount++;
+         
+         resultSet = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
+        
+         int i = 0;
          while (resultSet.next())
          {
             columnName = resultSet.getString("FKCOLUMN_NAME");
@@ -1334,10 +1348,11 @@ class TableDefinitionGenerator
                                    + referenceColumnName + identifierQuoteString + ") ON DELETE "
                                    + onDeleteRule);
             
-            if (resultSet.isLast())
-               tableDefinition.append(" \n    ");
-            else
+            if (i < foreignKeysCount)
                tableDefinition.append(",\n    ");
+            else
+               tableDefinition.append(" \n    ");
+            i++;
          }
          tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
          tableDefinition.append("\n);\n");
@@ -1357,11 +1372,11 @@ class TableDefinitionGenerator
             if (sequenceKeyPresent.indexOf("primary") != -1)
                tableDefinition.append("PRIMARY KEY (" 
                                       + primaryKeys.substring(0, primaryKeys.length() - 1)
-                                      + ");\n    ");
+                                      + ");\n\n  ");
             else
                tableDefinition.append("UNIQUE (" 
                                       + uniqueKeys.substring(0, uniqueKeys.length() - 1)
-                                      + ");\n    ");
+                                      + ");\n\n  ");
          }
 
          resultSet.close();
