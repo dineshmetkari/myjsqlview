@@ -34,12 +34,15 @@ Note: Insure for each test case that involves a menu command that the
 	   database key_tables SQL file to understand the purpose for each of
 	   the test tables. Insure that each supported action is also properly
 	   executed from the popup menu in the Summary Table.
+	   
+	b. Test the history feature of the application for sort, search, and advanced
+	   sort/search activity in the summary table.
 
-	b. Perform a data types load test with test database datatypes table
+	c. Perform a data types load test with test database datatypes table
 	   xxxxtypes. Where xxxx stands for the associated database application,
 	   ie. mysql, hsql.
 
-	c. Test add, edit, sort, search, advanced sort/search, update field rows,
+	d. Test add, edit, sort, search, advanced sort/search, update field rows,
 	   and functions in the test database datatypes table xxxxtypes. Where xxxx
 	   stands for the associated database application, ie. mysql, hsql.
 
@@ -58,6 +61,9 @@ Note: Insure for each test case that involves a menu command that the
 	c. Edit/View Forms Cutting, Copying, and Pasting.
 	
 4. Test Query Table Tool (Each Supported Database Application)
+   Note: As of v3.30 the Query Tool, Frame, consists of a SQL & Query
+         Statement result set table generator. So both aspects of these
+         separate tools needed to be tested. 
 
 	a. Execute SELECT * FROM xxxxtypes. Where xxxx stands for the assocaited
 	   database application, ie mysql, hsql.
@@ -73,7 +79,7 @@ Note: Insure for each test case that involves a menu command that the
 	a. Execute a generic search on the each of the test databases.
     
 	b. Insure tables in the list may be selected and automatically
-       displayed in the main applications window.
+       displayed in the main application's window summary table.
        
 	c. Insure clearing and canceling operations functions along with
        copying, cutting, and pasting in the search phrase text field.
@@ -95,6 +101,8 @@ Note: Insure for each test case that involves a menu command that the
        for the xxxxtypes database table. Insure this is done for one row of data
        and multiple rows of data. Use the Preferences Panel Edit | Preferences |
        SQL Format options to exercise INSERT/UPDATE, Singular/Plural/Explicit.
+       Note: Manual gives information on the various databases support of these
+             options.
            
 	f. Data Import CSV - Verify data exported in 5.c. & 5.d. can be imported into
        same table. Change preferences import deliminter, date format as needed.
@@ -116,3 +124,19 @@ Note: Insure for each test case that involves a menu command that the
 	   
 	b. Table Summary View - Insure that state is restored for each saved *.myj
 	   file from 7.a by opening with MyJSQLView.
+	   
+8. Query Drop Bucket
+
+    a. Test the addition of a Summary Table current SQL statement to the Query
+       Bucket. Insure capability to change parameters during this add such as
+       name, statement, limit, and color.
+       
+    b. Test the ability to view, add, edit, and delete SQL statements in the
+       list.
+       
+    c. Try moving multiple list items to various positions in the list and also
+       drag and drop into an external editor and one of MyJSQLView's plugins such
+       as the TableFieldProfiler.
+       
+    d. Insure the list can be saved via the File | Save/Save As and then re-opened,
+       loaded, back into the Query Bucket. 
