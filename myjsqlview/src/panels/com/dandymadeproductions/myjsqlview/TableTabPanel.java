@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.86 09/07/2011
+// Version 4.87 09/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -188,6 +188,8 @@
 //             subProtocol with dataSourceType.
 //        4.86 Additional Conditional Qualifier in executeActions() for Checking the
 //             sortComboBox Selection Before Setting to Index 1.
+//        4.87 Modified Code From 4.86 to More Fully Comply With Desired Results of
+//             Sort Column Name Not Being Null or Empty.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -221,7 +223,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.86 09/07/2011
+ * @version 4.87 09/07/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1291,9 +1293,11 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
             if (work_dbConnection == null)
                return;
-
+            
             // Just insure have column field selected.
-            if (sortComboBox.getSelectedIndex() == 0 && sortComboBox.getSelectedItem() == null)
+            Object selectedSortItem = sortComboBox.getSelectedItem();
+            
+            if (!columnNamesHashMap.containsKey(selectedSortItem))
             {
                sortComboBox.removeActionListener(this);
                sortComboBox.setSelectedIndex(1);
