@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.85 06/11/2011
+// Version 4.86 09/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -186,6 +186,8 @@
 //             Argument for AdvancedSortSearchForm.
 //        4.85 Class Methods deleteSelectedItem() & deleteAllItems() Changed Instance
 //             subProtocol with dataSourceType.
+//        4.86 Additional Conditional Qualifier in executeActions() for Checking the
+//             sortComboBox Selection Before Setting to Index 1.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -219,7 +221,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.85 06/11/2011
+ * @version 4.86 09/07/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1291,7 +1293,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                return;
 
             // Just insure have column field selected.
-            if (sortComboBox.getSelectedIndex() == 0)
+            if (sortComboBox.getSelectedIndex() == 0 && sortComboBox.getSelectedItem() == null)
             {
                sortComboBox.removeActionListener(this);
                sortComboBox.setSelectedIndex(1);
