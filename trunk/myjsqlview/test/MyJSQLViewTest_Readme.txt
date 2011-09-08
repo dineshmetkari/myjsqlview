@@ -96,22 +96,26 @@ Note: Insure for each test case that involves a menu command that the
 
 	d. Data Export CSV - Change the deliminter, date format and export CSV data
 	   both table & summary table.
+	   
+	e. Data Export PDF - Check that summary data may be exported in PDF format.
+	   Use the Preferences | Data Export | PDF to change various parameters like
+	   Font Size/Color, Title, etc.
        
-	e. Data Export SQL - Check the generic SQL export of table and summary table
+	f. Data Export SQL - Check the generic SQL export of table and summary table
        for the xxxxtypes database table. Insure this is done for one row of data
        and multiple rows of data. Use the Preferences Panel Edit | Preferences |
        SQL Format options to exercise INSERT/UPDATE, Singular/Plural/Explicit.
        Note: Manual gives information on the various databases support of these
              options.
            
-	f. Data Import CSV - Verify data exported in 5.c. & 5.d. can be imported into
+	g. Data Import CSV - Verify data exported in 5.c. & 5.d. can be imported into
        same table. Change preferences import deliminter, date format as needed.
        Check both insert and update.
        
-	g. Data Import SQL - Verify data exported in 5.e. can be imported into same
+	h. Data Import SQL - Verify data exported in 5.e. can be imported into same
 	   table.
 
-	h. Export Database and Database Scheme. Import both output files with
+	i. Export Database and Database Scheme. Import both output files with
        MyJSQLView. As an alternate check, use each database's standard
        management tool to import the database and database scheme created
        to verify conformity.
