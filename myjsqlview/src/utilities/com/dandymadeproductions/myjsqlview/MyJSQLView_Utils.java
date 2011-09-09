@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.8 08/09/2011
+// Version 6.9 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -126,6 +126,9 @@
 //         6.8 Removal of colorChooserPanels Instance and Setting of Only One of the 
 //             Panels Because Lack of Support One in Gnome Desktop. Class Method
 //             createColorChooser().
+//         6.9 Added static Class Instances for Date Formats and dateFormatOptions.
+//             Used New Date Formats in Class Methods convertDBDateString(),
+//             convertViewDateString(), & processDateFormatSearch().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -157,11 +160,28 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.8 08/09/2011
+ * @version 6.9 09/09/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
 {
+   // Class Instances
+   
+   public static final String MMddyyyy_DASH = "MM-dd-yyyy";
+   public static final String MMddyyyy_SLASH = "MM/dd/yyyy";
+   public static final String MMMddyyyy_DASH = "MMM-dd-yyyy";
+   public static final String ddMMyyyy_DASH = "dd-MM-yyyy";
+   public static final String ddMMyyyy_SLASH = "dd/MM/yyyy";
+   public static final String ddMMMyyyy_DASH = "dd-MMM-yyyy";
+   public static final String yyyyMMdd_DASH = "yyyy-MM-dd";
+   public static final String yyyyMMdd_SLASH = "yyyy/MM/dd";
+   public static final String yyyyMMMdd_DASH = "yyyy-MMM-dd";
+   public static final String MMM = "MMM";
+   
+   public static final Object[] dateFormatOptions = {MMddyyyy_DASH, MMddyyyy_SLASH, MMMddyyyy_DASH,
+                                                     ddMMyyyy_DASH, ddMMyyyy_SLASH, ddMMMyyyy_DASH,
+                                                     yyyyMMdd_DASH, yyyyMMdd_SLASH, yyyyMMMdd_DASH};
+   
    //==============================================================
    // Protected class Method for helping the parameters in gridbag.
    // Most GUI panels call this class method.
@@ -278,10 +298,10 @@ public class MyJSQLView_Utils extends MyJSQLView
          // Convert to the selected format.
          
          // yyyy-MM-dd
-         if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
-             || dateFormat.equals("yyyy-MMM-dd"))
+         if (dateFormat.equals(yyyyMMdd_DASH) || dateFormat.equals(yyyyMMdd_SLASH)
+             || dateFormat.equals(yyyyMMMdd_DASH))
          {
-            if (dateFormat.indexOf("MMM") != -1)
+            if (dateFormat.indexOf(MMM) != -1)
                formattedDateString = year + "-"
                                  + MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
                                  + day;
@@ -290,10 +310,10 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
 
          // dd-MM-yyyy
-         else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
-                  || dateFormat.equals("dd-MMM-yyyy"))
+         else if (dateFormat.equals(ddMMyyyy_DASH) || dateFormat.equals(ddMMyyyy_SLASH)
+                  || dateFormat.equals(ddMMMyyyy_DASH))
          {
-            if (dateFormat.indexOf("MMM") != -1)
+            if (dateFormat.indexOf(MMM) != -1)
                formattedDateString = day + "-"
                                  + MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
                                  + year;
@@ -304,7 +324,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          // MM-dd-yyyy
          else
          {
-            if (dateFormat.indexOf("MMM") != -1)
+            if (dateFormat.indexOf(MMM) != -1)
                formattedDateString = MyJSQLView_Utils.convertDecimalToCharMonth(Integer.parseInt(month)) + "-"
                                      + day + "-" + year;
             else
@@ -348,8 +368,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       // Convert the input date string to the appropriate format.
       
       // yyyy-MM-dd
-      if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
-          || dateFormat.equals("yyyy-MMM-dd"))
+      if (dateFormat.equals(yyyyMMdd_DASH) || dateFormat.equals(yyyyMMdd_SLASH)
+          || dateFormat.equals(yyyyMMMdd_DASH))
       {
          year = view_DateString.substring(0, firstDashIndex);
          month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
@@ -359,8 +379,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       
       // dd-MM-yyyy
-      else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
-            || dateFormat.equals("dd-MMM-yyyy"))
+      else if (dateFormat.equals(ddMMyyyy_DASH) || dateFormat.equals(ddMMyyyy_SLASH)
+            || dateFormat.equals(ddMMMyyyy_DASH))
       {
          year = view_DateString.substring(lastDashIndex + 1);
          month = view_DateString.substring(firstDashIndex + 1, lastDashIndex);
@@ -903,8 +923,8 @@ public class MyJSQLView_Utils extends MyJSQLView
             dateFormat = DBTablesPanel.getGeneralProperties().getViewDateFormat();
             
             // yyyy-MM-dd
-            if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd")
-                || dateFormat.equals("yyyy-MMM-dd"))
+            if (dateFormat.equals(yyyyMMdd_DASH) || dateFormat.equals(yyyyMMdd_SLASH)
+                || dateFormat.equals(yyyyMMMdd_DASH))
             {
                // Something with yyyy-MM-dd, but not standard format.
                if (dateContents.length == 3)
@@ -935,8 +955,8 @@ public class MyJSQLView_Utils extends MyJSQLView
             }
             
             // dd-MM-yyyy
-            else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy")
-                  || dateFormat.equals("dd-MMM-yyyy"))
+            else if (dateFormat.equals(ddMMyyyy_DASH) || dateFormat.equals(ddMMyyyy_SLASH)
+                  || dateFormat.equals(ddMMMyyyy_DASH))
             {
                // Something with dd-MM-yyyy, but not standard format.
                if (dateContents.length == 3)
