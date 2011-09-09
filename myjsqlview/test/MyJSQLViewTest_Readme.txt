@@ -112,7 +112,7 @@ Note: Insure for each test case that involves a menu command that the
        same table. Change preferences import deliminter, date format as needed.
        Check both insert and update.
        
-	h. Data Import SQL - Verify data exported in 5.e. can be imported into same
+	h. Data Import SQL - Verify data exported in 5.f. can be imported into same
 	   table.
 
 	i. Export Database and Database Scheme. Import both output files with
