@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.1 01/10/2011
+// Version 1.2 09/109/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 // Version 1.0 01/08/2011 Original GeneralPreferencesPanel Class.
 //         1.1 01/10/2011 Changed Format for Year From YYYY to yyyy for dateFormatOptions
 //                        in Constructor.
+//         1.2 09/09/2011 Removed Instance dateFormatOptions in Constuctor and Replaced
+//                        by Obtaining from MyJSQLView_Utils Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +57,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/10/2011
+ * @version 1.2 09/09/2011
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -108,11 +110,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      Object[] dateFormatOptions = {"MM-dd-yyyy", "MM/dd/yyyy", "MMM-dd-yyyy", "dd-MM-yyyy",
-                                    "dd/MM/yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd",
-                                    "yyyy-MMM-dd"};
-      
-      dateFormatComboBox = new JComboBox(dateFormatOptions);
+      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.dateFormatOptions);
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
