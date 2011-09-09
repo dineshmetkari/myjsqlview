@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana Proctor
-// Version 3.6 01/26/2011
+// Version 3.7 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,8 @@
 //         3.5 Updated Copyright and Some Comments.
 //         3.6 Constructor identifierQuoteString Obtained From Redefined Class
 //             ConnctionManager.
+//         3.7 Set Default csv/pdfDateFormat to MyJSQLView_Utils.MMddyyyy_DASH in
+//             the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +94,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.6 01/26/2011
+ * @version 3.7 09/09/2011
  */
 
 class DataExportProperties
@@ -205,7 +207,7 @@ class DataExportProperties
       textInclusion = false;
       textCharsNumber = 50;
       dataDelimiter = ",";
-      csvDateFormat = "MM-dd-YYYY";
+      csvDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
       
       // PDF
       title = "";
@@ -217,7 +219,7 @@ class DataExportProperties
       headerBorderColor = Color.BLACK.getRGB();
       numberAlignment = 2;
       dateAlignment = 1;
-      csvDateFormat = "MM-dd-YYYY";
+      pdfDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
       
       // Try to retrieve state from Preferences.
       try
@@ -250,7 +252,7 @@ class DataExportProperties
          textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, false);
          textCharsNumber = dataExportPreferences.getInt(TEXTCHARSNUMBER, 50);
          dataDelimiter = dataExportPreferences.get(DATADELIMITER, ",");
-         csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, "MM-DD-YYYY");
+         csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
          
          // PDF
          title = dataExportPreferences.get(TITLE, "");
@@ -262,7 +264,7 @@ class DataExportProperties
          headerBorderColor = dataExportPreferences.getInt(HEADERBORDERCOLOR, Color.BLACK.getRGB());
          numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, 2);
          dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, 1);
-         pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, "MM-dd-YYYY");
+         pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
