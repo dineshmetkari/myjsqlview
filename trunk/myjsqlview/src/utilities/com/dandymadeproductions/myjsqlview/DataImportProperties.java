@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana Proctor
-// Version 1.9 01/27/2011
+// Version 2.0 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 Organized Imports.
 //         1.9 Copyright Update.
+//         2.0 Set Default dateFormat to MyJSQLView_Utils.MMddyyyy_DASH in the
+//             Constructor.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -57,7 +59,7 @@ import java.util.prefs.Preferences;
  * data import properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.9 01/27/2011
+ * @version 2.0 09/09/2011
  */
 
 class DataImportProperties
@@ -79,7 +81,7 @@ class DataImportProperties
    {  
       // Set default state.
       dataDelimiter = ",";
-      dateFormat = "MM-dd-YYYY";
+      dateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
       
       // Try to retrieve state from Preferences.
       try
@@ -91,7 +93,7 @@ class DataImportProperties
       try
       {
          dataDelimiter = dataImportPreferences.get(DATADELIMITER, ",");
-         dateFormat = dataImportPreferences.get(DATEFORMAT, "MM-dd-YYY");
+         dateFormat = dataImportPreferences.get(DATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
