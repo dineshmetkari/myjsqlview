@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.1 02/13/2011
+// Version 5.2 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,8 @@
 //                        in Constructor.
 //         5.1 02/13/2011 Added KeyListener to Detect When Changes Take Place in the
 //                        otherTextField.
+//         5.2 09/09/2011 Removed Instance dateFormatOptions in Constuctor and Replaced
+//                        by Obtaining from MyJSQLView_Utils Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -127,7 +129,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.1 02/13/2011
+ * @version 5.2 09/09/2011
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -205,11 +207,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      Object[] dateFormatOptions = {"MM-dd-yyyy", "MM/dd/yyyy", "MMM-dd-yyyy", "dd-MM-yyyy",
-                                    "dd/MM/yyyy", "dd-MMM-yyyy", "yyyy-MM-dd", "yyyy/MM/dd",
-                                    "yyyy-MMM-dd"};
-      
-      dateFormatComboBox = new JComboBox(dateFormatOptions);
+      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.dateFormatOptions);
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
