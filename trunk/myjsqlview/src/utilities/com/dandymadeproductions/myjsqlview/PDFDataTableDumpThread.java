@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.7 05/08/2011
+// Version 1.8 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,10 @@
 //         1.6 Made Class Public & Check for tableColumnTypeHashMap Being NULL
 //             in Method run().
 //         1.7 Backed Out Making the Class Public.
+//         1.8 In Method run() Corrected the Collection of the Required Date
+//             Format from the pdfDataExportOptions Rather Than the DBTables
+//             DataExportProperties getCSVDateFormat(). Included in Same Method
+//             Number Type Currency, & Expanded Float, Double to indexOf().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -78,7 +82,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/08/2011
+ * @version 1.8 09/09/2011
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -251,7 +255,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                      currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
                         DBTablesPanel.getGeneralProperties().getViewDateFormat());
                      currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
-                        DBTablesPanel.getDataExportProperties().getCSVDateFormat()) + time;
+                        pdfDataExportOptions.getPDFDateFormat()) + time;
                   }
                }
                bodyCell = new PdfPCell(new Phrase(currentString));
@@ -262,8 +266,10 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                   // Set Numeric Fields Alignment.
                   if (currentType.indexOf("BIT") != -1 || currentType.indexOf("BOOL") != -1
                       || currentType.indexOf("NUM") != -1 || currentType.indexOf("INT") != -1
-                      || currentType.equals("FLOAT") || currentType.equals("DOUBLE")
-                      || currentType.equals("REAL") || currentType.equals("DECIMAL"))
+                      || currentType.indexOf("FLOAT") != -1 || currentType.indexOf("DOUBLE") != -1
+                      || currentType.equals("REAL") || currentType.equals("DECIMAL")
+                      || currentType.indexOf("COUNTER") != -1 || currentType.equals("BYTE")
+                      || currentType.equals("CURRENCY"))
                   {
                      bodyCell.setHorizontalAlignment(pdfDataExportOptions.getNumberAlignment());
                      bodyCell.setPaddingRight(4);
