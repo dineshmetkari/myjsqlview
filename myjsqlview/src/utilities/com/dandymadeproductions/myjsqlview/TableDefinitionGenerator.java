@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.5 09/05/2011
+// Version 4.6 09/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -125,6 +125,9 @@
 //         4.5 Minor Comment Changes and Class Method createOracleTableDefinition() Added
 //             Method Instance foreignKeysCount to Compensate for Oracle's Lack of Support
 //             for isLast() With ResultSet Obtained From dbMetaData.getImportedKeys().
+//         4.6 Class Method createPostgreSQLTableDefinition() Modification to Accomodate
+//             Multiple Foreign Keys. Changed Method Instance foreignKeys to HashMap,
+//             Added foreignKey, & Changed referenceColumnName to a StringBuffer.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -139,6 +142,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  *    The TableDefinitionGenerator class provides a common focus
@@ -146,7 +151,7 @@ import java.util.HashMap;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.5 09/05/2011
+ * @version 4.6 09/10/2011
  */
 
 class TableDefinitionGenerator
@@ -249,8 +254,11 @@ class TableDefinitionGenerator
       StringBuffer tableDefinition = new StringBuffer();
       String tableType;
       String columnName, columnType, constraint;
-      StringBuffer primaryKeys, uniqueKeys, foreignKeys;
-      String referenceSchemaName, referenceTableName, referenceColumnName;
+      StringBuffer primaryKeys, uniqueKeys;
+      HashMap<String, String> foreignKeys;
+      String foreignKey;
+      String referenceSchemaName, referenceTableName;
+      StringBuffer referenceColumnName;
       String onDeleteRule;
 
       String sqlStatementString;
@@ -481,10 +489,11 @@ class TableDefinitionGenerator
 
          primaryKeys = new StringBuffer();
          uniqueKeys = new StringBuffer();
-         foreignKeys = new StringBuffer();
+         foreignKeys = new HashMap<String, String> ();
+         foreignKey = "";
          referenceSchemaName = "";
          referenceTableName = "";
-         referenceColumnName = "";
+         referenceColumnName = new StringBuffer();
          constraint = "";
          onDeleteRule = "";
 
@@ -500,16 +509,28 @@ class TableDefinitionGenerator
             // Primary Keys
             else if (constraint.indexOf("pkey") != -1)
                primaryKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
-
-            // Foreign Keys. There should be only one?
+            
+            // Foreign Keys. There should be only one, NOT.
             else if (constraint.indexOf("fkey") != -1)
-               foreignKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
+            {
+               if (foreignKeys.containsKey(constraint))
+                  foreignKeys.put(constraint, foreignKeys.get(constraint) + "," + identifierQuoteString +
+                     columnName + identifierQuoteString);
+               else
+                  foreignKeys.put(constraint, identifierQuoteString + columnName + identifierQuoteString);
+            }
          }
 
-         // Create the appropriate SQL for the keys. Choosen to
+         // Create the appropriate SQL for the keys. Chose to
          // use a breviated form. A future version may need to
-         // more closely/duplicate pg_dump.
+         // more closely/duplicate pg_dump. The issue is the same
+         // for all these databases with the CONSTRAINTS. If a
+         // table is not yet created then can not create the
+         // constraint. This class works fine for individual 
+         // table dumps, but a schema needs to dump tables then
+         // add constraints.
 
+         // Add Unique & Primary Keys.
          if (!(uniqueKeys.toString()).equals(""))
             tableDefinition.append("UNIQUE (" 
                                    + uniqueKeys.substring(0, uniqueKeys.length() - 1) 
@@ -520,48 +541,72 @@ class TableDefinitionGenerator
                                    + primaryKeys.substring(0, primaryKeys.length() - 1)
                                    + "),\n    ");
 
-         if (!(foreignKeys.toString()).equals(""))
+         // Add Foreign Keys. There should be only one? NOT!
+         if (!foreignKeys.isEmpty())
          {
-            // Obtaining the table who owns the foreign key
-            // and its name.
-
-            sqlStatementString = "SELECT table_catalog, table_schema, table_name, " 
-                                 + "column_name, constraint_name FROM "
-                                 + "information_schema.constraint_column_usage "
-                                 + "WHERE table_catalog='"
-                                 + databaseName
-                                 + "' AND "
-                                 + "constraint_name='"
-                                 + constraint + "'";
-            // System.out.println(sqlStatementString);
-
-            resultSet = sqlStatement.executeQuery(sqlStatementString);
+            Set<String> foreignKeysSet = foreignKeys.keySet();  
+            Iterator<String> foreignKeyConstraintIterator = foreignKeysSet.iterator();
             
-            resultSet.next();
-            referenceSchemaName = identifierQuoteString + resultSet.getString("table_schema")
-                                  + identifierQuoteString;
-            referenceTableName = identifierQuoteString + resultSet.getString("table_name")
-                                 + identifierQuoteString;
-            referenceColumnName = identifierQuoteString + resultSet.getString("column_name")
-                                  + identifierQuoteString;
+            while (foreignKeyConstraintIterator.hasNext())
+            {
+               constraint = foreignKeyConstraintIterator.next();
+               foreignKey = foreignKeys.get(constraint);
+               
+               // Obtaining the table who owns the foreign key
+               // and its name.
 
-            // Obtaining the constraint for ON DELETE.
+               sqlStatementString = "SELECT table_catalog, table_schema, table_name, " 
+                                    + "column_name, constraint_name FROM "
+                                    + "information_schema.constraint_column_usage "
+                                    + "WHERE table_catalog='"
+                                    + databaseName
+                                    + "' AND "
+                                    + "constraint_name='"
+                                    + constraint + "'";
+               // System.out.println(sqlStatementString);
 
-            sqlStatementString = "SELECT constraint_catalog, constraint_name, delete_rule FROM "
-                                 + "information_schema.referential_constraints "
-                                 + "WHERE constraint_catalog='" + databaseName
-                                 + "' AND " + "constraint_name='" + constraint + "'";
-            // System.out.println(sqlStatementString);
+               resultSet = sqlStatement.executeQuery(sqlStatementString);
+               
+               while (resultSet.next())
+               {
+                  referenceSchemaName = identifierQuoteString + resultSet.getString("table_schema")
+                                        + identifierQuoteString;
+                  referenceTableName = identifierQuoteString + resultSet.getString("table_name")
+                                       + identifierQuoteString;
+                  
+                  if (!resultSet.isLast())
+                     referenceColumnName.append(identifierQuoteString + resultSet.getString("column_name")
+                                           + identifierQuoteString + ",");
+                  else
+                     referenceColumnName.append(identifierQuoteString + resultSet.getString("column_name")
+                                           + identifierQuoteString);  
+               }
 
-            resultSet = sqlStatement.executeQuery(sqlStatementString);
-            
-            resultSet.next();
-            onDeleteRule = resultSet.getString("delete_rule");
+               // Obtaining the constraint for ON DELETE.
 
-            // Finally create the SQL for the key.
-            tableDefinition.append("FOREIGN KEY (" + foreignKeys.substring(0, foreignKeys.length() - 1)
-                                   + ") REFERENCES " + referenceSchemaName + "." + referenceTableName + "("
-                                   + referenceColumnName + ") ON DELETE " + onDeleteRule + " \n    ");
+               sqlStatementString = "SELECT constraint_catalog, constraint_name, delete_rule FROM "
+                                    + "information_schema.referential_constraints "
+                                    + "WHERE constraint_catalog='" + databaseName
+                                    + "' AND " + "constraint_name='" + constraint + "'";
+               // System.out.println(sqlStatementString);
+
+               resultSet = sqlStatement.executeQuery(sqlStatementString);
+               
+               resultSet.next();
+               onDeleteRule = resultSet.getString("delete_rule");
+
+               // Finally create the SQL for the key.
+               tableDefinition.append("FOREIGN KEY ("
+                                      + foreignKey
+                                      + ") REFERENCES " + referenceSchemaName + "." + referenceTableName + "("
+                                      + referenceColumnName + ") ON DELETE " + onDeleteRule);
+               
+               if (foreignKeyConstraintIterator.hasNext())
+                  tableDefinition.append(",\n    ");
+               else
+                  tableDefinition.append(" \n    ");
+               referenceColumnName.delete(0, referenceColumnName.length());
+            }  
          }
          tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
          tableDefinition.append("\n);\n");
