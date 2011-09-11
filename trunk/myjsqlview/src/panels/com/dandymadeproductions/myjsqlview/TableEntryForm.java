@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.85 07/29/2011
+// Version 8.86 09/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -342,6 +342,8 @@
 //                        for Timestamp and Time With Time Zone & Bit Varying.
 //        8.85 07/29/2011 Modification in addUpdateTableEntry() Method to Only Check Column Size
 //                        for MySQL Database Timestamp Types, Old Database Requirement.
+//        8.86 09/11/2011 Class Method createFunctionSQLStatement() Setup the Non-Quoting of Number
+//                        Type Fields in Functions.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -375,7 +377,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.85 07/29/2011
+ * @version 8.86 09/11/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1751,7 +1753,7 @@ class TableEntryForm extends JFrame implements ActionListener
                }
             }
          }
-         // System.out.println(sqlStatementString);
+         System.out.println(sqlStatementString);
 
          // ======================================================
          // Accessing the database and setting values for each
@@ -2423,6 +2425,26 @@ class TableEntryForm extends JFrame implements ActionListener
    {
       // Class Method Instances
       StringBuffer sqlStatementString;
+      String columnType, columnClass;
+      String valueDelimiter;
+      
+      // Setup to accomodate the non-quoting of number
+      // type fields. HSQLDB2 & MS_Access Issue.
+      
+      columnType = columnTypeHashMap.get(columnName);
+      columnClass = columnClassHashMap.get(columnName);
+      
+      if (columnType.indexOf("NUM") != -1 || columnType.indexOf("INT") != -1
+            || columnType.indexOf("FLOAT") != -1 || columnType.indexOf("DOUBLE") != -1
+            || columnType.equals("REAL") || columnType.equals("DECIMAL")
+            || columnType.indexOf("COUNTER") != -1 || columnType.equals("BYTE")
+            || columnType.equals("CURRENCY"))
+      {
+         valueDelimiter = "";
+      }
+      else
+         valueDelimiter = "'";
+         
 
       // Collect the function operator.
       sqlStatementString = new StringBuffer();
@@ -2431,12 +2453,11 @@ class TableEntryForm extends JFrame implements ActionListener
       // Get correct form data, TEXT, Blob, or Normal entry.
       // Take into account a possible no argument for the function.
 
-      if (((columnClassHashMap.get(columnName)).indexOf("String") != -1
-           && !(columnTypeHashMap.get(columnName)).equals("CHAR")
+      if ((columnClass.indexOf("String") != -1
+           && !columnType.equals("CHAR")
            && ((columnSizeHashMap.get(columnName)).intValue() > 255))
-          || ((columnClassHashMap.get(columnName)).indexOf("String") != -1 && (columnTypeHashMap
-                .get(columnName)).equals("LONG"))
-          || ((columnTypeHashMap.get(columnName)).indexOf("CLOB") != -1))
+          || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+          || (columnType.indexOf("CLOB") != -1))
       {
          if (getFormFieldText(columnName) == null || getFormFieldText(columnName).length() == 0)
             sqlStatementString.append("(), ");
@@ -2476,9 +2497,9 @@ class TableEntryForm extends JFrame implements ActionListener
             for (int i = 0; i < argumentString.length; i++)
             {
                if (i < (argumentString.length - 1))
-                  sqlStatementString.append("'" + argumentString[i] + "',");
+                  sqlStatementString.append(valueDelimiter + argumentString[i] + valueDelimiter + ",");
                else
-                  sqlStatementString.append("'" + argumentString[i] + "'), ");
+                  sqlStatementString.append(valueDelimiter + argumentString[i] + valueDelimiter + "), ");
             }
          }
       }
