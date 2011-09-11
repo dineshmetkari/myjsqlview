@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.6 04/08/2011
+// Version 1.7 09/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //         1.5 04/07/2011 Moved Class Method createColorChooser() to MyJSQLView_Utils Class.
 //         1.6 04/08/2011 Added Class Instances fileSeparator & iconsDirectory. Created
 //                        Icons for titleColorButton, headerColorButton, headerBorderColorButton.
+//         1.7 09/09/2011 Removed Instance dateFormatOptions in fillDatePanel() and Replaced
+//                        by Obtaining from MyJSQLView_Utils Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.6 04/08/2011
+ * @version 1.7 09/09/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -100,9 +102,6 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
    private static final int maxBorderSize = 6;
    private static final int spinnerSizeStep = 1;
 
-   private static final Object[] dateFormatOptions = {"MM-dd-YYYY", "MM/dd/YYYY", "MMM-dd-YYYY",
-                                                      "dd-MM-YYYY", "dd/MM/YYYY", "dd-MMM-YYYY",
-                                                      "YYYY-MM-dd", "YYYY/MM/dd", "YYYY-MMM-dd"};
    private static final Object[] alignmentOptions = {"LEFT", "CENTER", "RIGHT"};
 
    //===========================================================
@@ -670,7 +669,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(dateFormatLabel, constraints);
       datePanel.add(dateFormatLabel);
 
-      dateFormatComboBox = new JComboBox(dateFormatOptions);
+      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.dateFormatOptions);
       dateFormatComboBox.addActionListener(this);
 
       buildConstraints(constraints, 1, 1, 1, 1, 38, 100);
