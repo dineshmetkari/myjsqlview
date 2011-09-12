@@ -1753,7 +1753,7 @@ class TableEntryForm extends JFrame implements ActionListener
                }
             }
          }
-         System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
 
          // ======================================================
          // Accessing the database and setting values for each
