@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.7 09/09/2011
+// Version 1.8 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //                        Icons for titleColorButton, headerColorButton, headerBorderColorButton.
 //         1.7 09/09/2011 Removed Instance dateFormatOptions in fillDatePanel() and Replaced
 //                        by Obtaining from MyJSQLView_Utils Class.
+//         1.8 09/13/2011 fillDatePanel() Obtained dateFormatComboBox From MyJSQLView_Utils.
+//                        getDateFormatOptions().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +70,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/09/2011
+ * @version 1.8 09/13/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -669,7 +671,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(dateFormatLabel, constraints);
       datePanel.add(dateFormatLabel);
 
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.dateFormatOptions);
+      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
 
       buildConstraints(constraints, 1, 1, 1, 1, 38, 100);
