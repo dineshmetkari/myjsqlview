@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.8 08/14/2011
+// Version 8.9 09/14/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -207,6 +207,8 @@
 //             Information for MySQL Timestamps. Same Timestamp Processing for MySQL in
 //             viewSelectedItem().
 //         8.8 Minor Comment Changes.
+//         8.9 Class Method loadTable() Set validQuery to True if Loading Properly Takes
+//             Place, But False if Exception Generated.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -238,7 +240,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.8 08/14/2011
+ * @version 8.9 09/14/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1710,12 +1712,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          }
          rs.close();
          sqlStatement.close();
+         validQuery = true;
       }
       catch (SQLException e)
       {
          String errorString = "SQLException: " + e.getMessage() + " " + "SQLState: " + e.getSQLState() + " "
                               + "VendorError: " + e.getErrorCode();
          QueryFrame.setQueryResultTextArea(errorString);
+         validQuery = false;
          return false;
       }
       return true;
