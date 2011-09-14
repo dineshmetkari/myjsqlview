@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.2 05/02/2011
+// Version 4.3 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,13 @@
 //             Replaced With TableTabPanel. Removed Class Instance tableName added
 //             tablePanelPanel. Removed All References to DBTablesPanel, loadPreferences()
 //             & updatePreferences().
+//         4.3 Added Constructor Instances iconsDirectory, keyUpIcon, keyDownIcon.
+//             Setup in Constructor the Assignmet of keyUp/DownIcon for Key Field
+//             Checkboxes & Made Them Selectable. Class Method actionPerformed()
+//             Select All CheckBoxes Enabled for All, Including Keys Fields. Class
+//             Method updatePrefences() Add Instance viewOnlyState & Implemented
+//             With This Instance the Setting of the TableTablPanels setViewOnly()
+//             Method.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -106,6 +113,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
@@ -117,7 +125,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.2 05/02/2011
+ * @version 4.3 09/13/2011
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -148,11 +156,16 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       // Class Instances
       JPanel itemSelections, southButtonPanel;
       int rowNumber;
-      String resource;
+      String iconsDirectory, resource;
+      ImageIcon keyUpIcon, keyDownIcon;
 
       // Setting up
       setLayout(new BorderLayout());
       checkBoxesHashMap = new HashMap <String, JCheckBox>();
+      
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      keyUpIcon = new ImageIcon(iconsDirectory + "keyUpIcon.png");
+      keyDownIcon = new ImageIcon(iconsDirectory + "keyDownIcon.png");
       
       // Setting up table column names' checkboxes that will be used
       // to select the desired tabel fields to be displayed.
@@ -179,9 +192,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
 
          if (primaryKeys.contains(columnNamesHashMap.get(columnName)))
          {
-            columnNamesCheckBoxes[i] = new JCheckBox(columnName);
-            columnNamesCheckBoxes[i].setSelected(true);
-            columnNamesCheckBoxes[i].setEnabled(false);
+            columnNamesCheckBoxes[i] = new JCheckBox(columnName, keyUpIcon);
+            columnNamesCheckBoxes[i].setSelectedIcon(keyDownIcon);
          }
          else
             columnNamesCheckBoxes[i] = new JCheckBox(columnName);
@@ -254,10 +266,7 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       else if (panelSource == selectAllButton)
       {
          for (int i = 0; i < columnNamesCheckBoxes.length; i++)
-         {
-            if (!primaryKeys.contains(columnNamesHashMap.get(columnNamesCheckBoxes[i].getText())))
-               columnNamesCheckBoxes[i].setSelected(true);
-         }
+            columnNamesCheckBoxes[i].setSelected(true);
          applyButton.setEnabled(true);
       }
 
@@ -332,18 +341,26 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
                // Instances
                int checkBoxCount;
                Vector<String> newFields;
+               Boolean viewOnlyState;
 
                // Determine which of the table fields have been
                // selected.
                checkBoxCount = columnNamesCheckBoxes.length;
                newFields = new Vector <String>();
+               viewOnlyState = false;
 
                for (int i = 0; i < checkBoxCount; i++)
+               {
                   if (columnNamesCheckBoxes[i].isSelected())
                      newFields.add((String) columnNamesCheckBoxes[i].getText());
+                  else
+                     if (primaryKeys.contains(columnNamesHashMap.get(columnNamesCheckBoxes[i].getText())))
+                        viewOnlyState = true;
+               }
 
                // Setting the new field preferences.
                tableTabPanel.setTableHeadings(newFields);
+               tableTabPanel.setViewOnly(viewOnlyState);
             }
          }, "TableFieldSelectionPreferencesPanel.updatetableTabPanelFieldsThread");
          updateTableTabPanelFieldsThread.start();
