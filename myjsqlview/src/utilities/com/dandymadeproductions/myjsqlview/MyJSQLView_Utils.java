@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.9 09/09/2011
+// Version 7.0 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,8 @@
 //         6.9 Added static Class Instances for Date Formats and dateFormatOptions.
 //             Used New Date Formats in Class Methods convertDBDateString(),
 //             convertViewDateString(), & processDateFormatSearch().
+//         7.0 Changed Class Instance dateFormatOptions From public to private.
+//             Added Class Method getDateFormatOptions().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -160,7 +162,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 6.9 09/09/2011
+ * @version 7.0 09/13/2011
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -178,7 +180,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static final String yyyyMMMdd_DASH = "yyyy-MMM-dd";
    public static final String MMM = "MMM";
    
-   public static final Object[] dateFormatOptions = {MMddyyyy_DASH, MMddyyyy_SLASH, MMMddyyyy_DASH,
+   private static final Object[] dateFormatOptions = {MMddyyyy_DASH, MMddyyyy_SLASH, MMMddyyyy_DASH,
                                                      ddMMyyyy_DASH, ddMMyyyy_SLASH, ddMMMyyyy_DASH,
                                                      yyyyMMdd_DASH, yyyyMMdd_SLASH, yyyyMMMdd_DASH};
    
@@ -704,6 +706,16 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
       }
       return conditionString;
+   }
+   
+   public static Object[] getDateFormatOption()
+   {
+      Object[] dateFormatOptionsCopy = new Object[dateFormatOptions.length];
+      
+      for (int i = 0; i < dateFormatOptions.length; i++)
+         dateFormatOptionsCopy[i] = dateFormatOptions[i];
+      
+      return dateFormatOptionsCopy;
    }
    
    //==============================================================
