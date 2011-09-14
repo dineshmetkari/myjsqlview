@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.87 09/07/2011
+// Version 4.88 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -190,6 +190,7 @@
 //             sortComboBox Selection Before Setting to Index 1.
 //        4.87 Modified Code From 4.86 to More Fully Comply With Desired Results of
 //             Sort Column Name Not Being Null or Empty.
+//        4.88 Added Class Method setViewOnly() to Meet Interface Requirements.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -223,7 +224,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.87 09/07/2011
+ * @version 4.88 09/13/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2822,6 +2823,25 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          String optionPaneStringErrors = "Unable to Set Table State. Possible Corrupt File!";
          JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
       }
+   }
+   
+   //==============================================================
+   // Class method to limit the ability to add, edit, delete, and
+   // view items in the summary list. Essentially make the table
+   // view only. Allows the ablilty to generate export of summary
+   // table without the keys, field select modification.
+   //==============================================================
+
+   public void setViewOnly(boolean viewState)
+   {
+      viewOnly = viewState;
+      viewButton.setEnabled(!viewState);
+      addButton.setEnabled(!viewState);
+      editButton.setEnabled(!viewState);
+      deleteButton.setEnabled(!viewState);
+      
+      createListTablePopupMenu();
+      listTable.addMouseListener(summaryTablePopupListener);
    }
 
    //==============================================================
