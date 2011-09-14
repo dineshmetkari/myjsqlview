@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.6 09/10/2011
+// Version 4.7 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -128,6 +128,7 @@
 //         4.6 Class Method createPostgreSQLTableDefinition() Modification to Accomodate
 //             Multiple Foreign Keys. Changed Method Instance foreignKeys to HashMap,
 //             Added foreignKey, & Changed referenceColumnName to a StringBuffer.
+//         4.7 Improved Efficiency by Use a Map.Entry Set in createPostgreSQLTableDefinition().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -143,6 +144,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -151,7 +153,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.6 09/10/2011
+ * @version 4.7 09/13/2011
  */
 
 class TableDefinitionGenerator
@@ -544,13 +546,13 @@ class TableDefinitionGenerator
          // Add Foreign Keys. There should be only one? NOT!
          if (!foreignKeys.isEmpty())
          {
-            Set<String> foreignKeysSet = foreignKeys.keySet();  
-            Iterator<String> foreignKeyConstraintIterator = foreignKeysSet.iterator();
+            Set<Map.Entry<String, String>> foreignKeysSet = foreignKeys.entrySet();
+            Iterator<Map.Entry<String, String>> foreignKeyConstraintIterator = foreignKeysSet.iterator();
             
             while (foreignKeyConstraintIterator.hasNext())
             {
-               constraint = foreignKeyConstraintIterator.next();
-               foreignKey = foreignKeys.get(constraint);
+               Map.Entry<String, String> currentEntry = (Map.Entry<String, String>) foreignKeyConstraintIterator.next();
+               foreignKey = currentEntry.getValue();
                
                // Obtaining the table who owns the foreign key
                // and its name.
