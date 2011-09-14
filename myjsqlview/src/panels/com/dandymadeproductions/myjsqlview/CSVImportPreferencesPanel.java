@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.1 09/09/2011
+// Version 3.2 09/13/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,8 @@
 //                        otherTextField.
 //         3.1 09/09/2011 Removed Instance dateFormatOptions in Constuctor and Replaced
 //                        by Obtaining from MyJSQLView_Utils Class.
+//         3.2 09/13/2011 Constructor Obtained dateFormatComboBox From MyJSQLView_Utils.
+//                        getDateFormatOptions().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -93,7 +95,7 @@ import javax.swing.*;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.1 09/09/2011
+ * @version 3.2 09/13/2011
  */
 
 class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -181,7 +183,7 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.dateFormatOptions);
+      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
