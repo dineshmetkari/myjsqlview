@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.86 09/11/2011
+// Version 8.87 09/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -344,6 +344,9 @@
 //                        for MySQL Database Timestamp Types, Old Database Requirement.
 //        8.86 09/11/2011 Class Method createFunctionSQLStatement() Setup the Non-Quoting of Number
 //                        Type Fields in Functions.
+//        8.87 09/17/2011 Class Method addUpdateTableEntry() Modification to Handle MSAccess
+//                        Binary Fields That Are Empty, NULL, So That Their Values Are Set in
+//                        The Initial PrepareStatement. Likewise for Removing.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -377,7 +380,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.86 09/11/2011
+ * @version 8.87 09/17/2011
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -1361,6 +1364,14 @@ class TableEntryForm extends JFrame implements ActionListener
                         return;
                      }
                   }
+                  
+                  // MS_Access Blob Empty entry field.
+                  else if (dataSourceType.equals(ConnectionManager.MSACCESS) && isBlobField
+                           && fieldHashMap.get(columnName) != null
+                           && (blobBytesHashMap.get((JButton) fieldHashMap.get(columnName)) == null))
+                  {
+                     sqlValuesString += "null, ";
+                  }
 
                   else if (isArrayField)
                   {
@@ -1557,6 +1568,15 @@ class TableEntryForm extends JFrame implements ActionListener
                   else if (columnType.equals("BFILE"))
                   {
                      // Do nothing not supported.
+                  }
+                  
+                  // MS_Access Blob Empty entry field or remove.
+                  else if ((dataSourceType.equals(ConnectionManager.MSACCESS) && isBlobField) &&
+                           ((fieldHashMap.get(columnName) != null && (blobBytesHashMap.get((JButton) fieldHashMap.get(columnName)) == null))
+                            || (blobRemoveCheckBoxesHashMap.get(columnName) != null && blobRemoveCheckBoxesHashMap.get(columnName).isSelected())))
+                  {
+                     sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
+                                               + identifierQuoteString + "=null, ");  
                   }
 
                   else if (isArrayField)
@@ -1782,7 +1802,7 @@ class TableEntryForm extends JFrame implements ActionListener
             isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                            && columnType.indexOf("_") != -1;
             // System.out.println(i + " " + columnName + " " + columnClass + " "
-            //                   + columnType);
+            //                    + columnType);
 
             // Validating input and setting content to fields
 
@@ -2104,7 +2124,14 @@ class TableEntryForm extends JFrame implements ActionListener
                      if (currentRemoveBlobCheckBox != null)
                      {
                         if (currentRemoveBlobCheckBox.isSelected())
-                           prepared_sqlStatement.setBytes(i++, null);
+                        {
+                           if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                           {
+                              // Do Nothing Already Set.
+                           }
+                           else
+                              prepared_sqlStatement.setBytes(i++, null);
+                        }
                         else
                         {
                            prepared_sqlStatement.setBytes(i++, (getFormFieldBlob(columnName)));
@@ -2123,7 +2150,14 @@ class TableEntryForm extends JFrame implements ActionListener
                      }
                   }
                   else
-                     prepared_sqlStatement.setBytes(i++, null);
+                  {
+                     if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                     {
+                        // Do Nothing Already Set
+                     }
+                     else
+                        prepared_sqlStatement.setBytes(i++, null);
+                  }
                }
                else
                   prepared_sqlStatement.setBytes(i++, null);
