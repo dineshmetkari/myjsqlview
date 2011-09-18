@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.5 08/19/2011
+// Version 1.6 09/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //             in tableHeadings for setTableRowSize().
 //         1.5 Removed Class Method setTableRowSize(). Minor Format Changes
 //             in SQLTableModel Inner Class.
+//         1.6 Modification to Method executeSQL() to Accomodate MSAccess
+//             by Limiting db_resultSet Collection to Only Once.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -230,6 +232,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       String columnClass, columnType;
       Integer columnSize;
       int preferredColumnSize;
+      Object currentContentData;
       Object[] rowData;
       
       // Checking to see if anything in the input to
@@ -312,8 +315,8 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
                // System.out.println(i + " " + colNameString + " " +
-               //                   columnClass + " " + columnType + " " +
-               //                   columnSize);
+               //                    columnClass + " " + columnType + " " +
+               //                    columnSize);
 
                // This going to be a problem so skip these columns.
                // NOT TESTED. This is still problably not going to
@@ -371,51 +374,70 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                   preferredColumnSize = (preferredColumnSizeHashMap.get(colNameString)).intValue();
 
                   // System.out.println(i + " " + j + " " + colNameString + " " +
-                  //                    columnClass + " " + columnType + " " +
-                  //                    columnSize + " " + preferredColumnSize);
+                  //                     columnClass + " " + columnType + " " +
+                  //                     columnSize + " " + preferredColumnSize);
 
                   // Storing data appropriately. If you have some
                   // date or other formating, here is where you can
                   // take care of it.
-
-                  Object currentContentData = db_resultSet.getObject(colNameString);
-                  // System.out.println(currentContentData);
-
-                  if (currentContentData != null)
+                  
+                  // =============================================
+                  // BigDecimal
+                  if (columnClass.indexOf("BigDecimal") != -1)
                   {
-                     // =============================================
-                     // BigDecimal
-                     if (columnClass.indexOf("BigDecimal") != -1)
-                        rowData[j++] = new BigDecimal(db_resultSet.getString(colNameString));
+                     currentContentData = db_resultSet.getString(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = new BigDecimal(currentContentData.toString());
+                  }
 
-                     // =============================================
-                     // Date
-                     else if (columnType.equals("DATE"))
-                        rowData[j++] = new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat()).format(currentContentData);
+                  // =============================================
+                  // Date
+                  else if (columnType.equals("DATE"))
+                  {
+                     currentContentData = db_resultSet.getObject(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                           .getViewDateFormat()).format(currentContentData);
+                  }
 
-                     // =============================================
-                     // Datetime
-                     else if (columnType.equals("DATETIME"))
-                        rowData[j++] = new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
-                              .format(currentContentData);
+                  // =============================================
+                  // Datetime
+                  else if (columnType.equals("DATETIME"))
+                  {
+                     currentContentData = db_resultSet.getObject(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                           .getViewDateFormat() + " HH:mm:ss").format(currentContentData);
+                  }
 
-                     // =============================================
-                     // Time With Time Zone
-                     else if (columnType.equals("TIMETZ"))
-                     {
-                        currentContentData = db_resultSet.getTime(colNameString);
+                  // =============================================
+                  // Time With Time Zone
+                  else if (columnType.equals("TIMETZ"))
+                  {
+                     currentContentData = db_resultSet.getTime(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                         rowData[j++] = (new SimpleDateFormat("HH:mm:ss z").format(currentContentData));
-                     }
+                  }
 
-                     // =============================================
-                     // Timestamps
-                     else if (columnType.equals("TIMESTAMP"))
+                  // =============================================
+                  // Timestamps
+                  else if (columnType.equals("TIMESTAMP"))
+                  {
+                     currentContentData = db_resultSet.getTimestamp(colNameString);
+                     // System.out.println(currentContentData);
+                     
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                      {
-                        currentContentData = db_resultSet.getTimestamp(colNameString);
-                        // System.out.println(currentContentData);
-
                         // Old MySQL Database Requirement, 4.x.
                         if (dataSourceType.equals(ConnectionManager.MYSQL))
                         {
@@ -444,18 +466,26 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                               DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
                                  .format(currentContentData));  
                      }
+                  }
 
-                     else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
-                     {
-                        currentContentData = db_resultSet.getTimestamp(colNameString);
-                        rowData[j++] = (new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z")
-                              .format(currentContentData));
-                     }
+                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                  {
+                     currentContentData = db_resultSet.getTimestamp(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = (new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                           .getViewDateFormat() + " HH:mm:ss z").format(currentContentData));
+                  }
 
-                     // =============================================
-                     // Year
-                     else if (columnType.equals("YEAR"))
+                  // =============================================
+                  // Year
+                  else if (columnType.equals("YEAR"))
+                  {
+                     currentContentData = db_resultSet.getObject(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                      {
                         String displayYear = currentContentData + "";
                         displayYear = displayYear.trim();
@@ -466,73 +496,85 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                            displayYear = displayYear.substring(0, 4);
                         rowData[j++] = displayYear;
                      }
+                  }
 
-                     // =============================================
-                     // Blob
-                     else if (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
-                     {
-                        if (columnSize == 255)
-                           rowData[j++] = "Tiny Blob";
-                        else if (columnSize == 65535)
-                           rowData[j++] = "Blob";
-                        else if (columnSize == 16777215)
-                           rowData[j++] = "Medium Blob";
-                        else if (columnSize > 16777215)
-                           rowData[j++] = "Long Blob";
-                        else
-                           rowData[j++] = "Blob";
-                     }
-                     
-                     //=============================================
-                     // CLOB
-                     else if (columnType.indexOf("CLOB") != -1)
-                     {
-                        rowData[j++] = "Clob";
-                     }
+                  // =============================================
+                  // Blob
+                  else if (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
+                  {
+                     if (columnSize == 255)
+                        rowData[j++] = "Tiny Blob";
+                     else if (columnSize == 65535)
+                        rowData[j++] = "Blob";
+                     else if (columnSize == 16777215)
+                        rowData[j++] = "Medium Blob";
+                     else if (columnSize > 16777215)
+                        rowData[j++] = "Long Blob";
+                     else
+                        rowData[j++] = "Blob";
+                  }
+                  
+                  //=============================================
+                  // CLOB
+                  else if (columnType.indexOf("CLOB") != -1)
+                  {
+                     rowData[j++] = "Clob";
+                  }
 
-                     // =============================================
-                     // BYTEA
-                     else if (columnType.equals("BYTEA"))
-                     {
-                        rowData[j++] = "Bytea";
-                     }
+                  // =============================================
+                  // BYTEA
+                  else if (columnType.equals("BYTEA"))
+                  {
+                     rowData[j++] = "Bytea";
+                  }
 
-                     // =============================================
-                     // BINARY
-                     else if (columnType.indexOf("BINARY") != -1)
-                     {
-                        rowData[j++] = "Binary";
-                     }
-                     
-                     //=============================================
-                     // RAW
-                     else if (columnType.indexOf("RAW") != -1)
-                     {
-                        rowData[j++] = "Raw";
-                     }
+                  // =============================================
+                  // BINARY
+                  else if (columnType.indexOf("BINARY") != -1 || columnType.indexOf("IMAGE") != -1)
+                  {
+                     rowData[j++] = "Binary";
+                  }
+                  
+                  //=============================================
+                  // RAW
+                  else if (columnType.indexOf("RAW") != -1)
+                  {
+                     rowData[j++] = "Raw";
+                  }
 
-                     // =============================================
-                     // Boolean
-                     else if (columnClass.indexOf("Boolean") != -1)
-                     {
-                        rowData[j++] = db_resultSet.getString(colNameString);
-                     }
+                  // =============================================
+                  // Boolean
+                  else if (columnClass.indexOf("Boolean") != -1)
+                  {
+                     currentContentData = db_resultSet.getString(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = currentContentData.toString();
+                  }
 
-                     // =============================================
-                     // Bit
-                     else if (columnType.indexOf("BIT") != -1
-                              && dataSourceType.equals(ConnectionManager.MYSQL))
-                     {
-                        //int bitValue = rs.getInt(columnName);
-                        //rowData[j++] = Integer.toBinaryString(bitValue);
+                  // =============================================
+                  // Bit
+                  else if (columnType.indexOf("BIT") != -1
+                           && dataSourceType.equals(ConnectionManager.MYSQL))
+                  {
+                     currentContentData = db_resultSet.getString(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                         rowData[j++] = Integer.toBinaryString(Integer.parseInt(
-                                                  db_resultSet.getString(colNameString)));
-                     }
+                           currentContentData.toString()));
+                  }
 
-                     // =============================================
-                     // Text
-                     else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
-                              && columnSize > 255)
+                  // =============================================
+                  // Text
+                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                           && columnSize > 255)
+                  {
+                     currentContentData = db_resultSet.getObject(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                      {
                         if (columnSize <= 65535)
                            rowData[j++] = (String) currentContentData;
@@ -551,12 +593,18 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                               else
                                  rowData[j++] = (String) currentContentData;
                            }
-                        }
+                        }   
                      }
-                     
-                     // =============================================
-                     // LONG
-                     else if (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                  }
+                  
+                  // =============================================
+                  // LONG
+                  else if (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                  {
+                     currentContentData = db_resultSet.getObject(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                      {
                         // Limit Table Cell Memory Usage.
                         if (((String) currentContentData).length() > 512)
@@ -564,15 +612,19 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                         else
                            rowData[j++] = (String) currentContentData;
                      }
+                  }
 
-                     // =============================================
-                     // Array
-                     else if ((columnClass.indexOf("Object") != -1 || columnClass.indexOf("Array") != -1)
-                              && (columnType.indexOf("_") != -1))
+                  // =============================================
+                  // Array
+                  else if ((columnClass.indexOf("Object") != -1 || columnClass.indexOf("Array") != -1)
+                           && (columnType.indexOf("_") != -1))
+                  {
+                     currentContentData = db_resultSet.getString(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
                      {
-                        String stringName;
-                        currentContentData = db_resultSet.getString(colNameString);
-                        stringName = (String) currentContentData;
+                        String stringName = (String) currentContentData;
 
                         // Limit Table Cell Memory Usage.
                         if (stringName.length() > 512)
@@ -580,19 +632,17 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                         else
                            rowData[j++] = stringName;
                      }
-
-                     // =============================================
-                     // Any Other
-                     else
-                     {
-                        rowData[j++] = db_resultSet.getString(colNameString).trim();
-                        // rowData[j++] = rs.getObject(columnName);
-                     }
                   }
-                  // Null Data
+
+                  // =============================================
+                  // Any Other
                   else
                   {
-                     rowData[j++] = "NULL";
+                     currentContentData = db_resultSet.getString(colNameString);
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                        rowData[j++] = currentContentData.toString().trim();
                   }
 
                   // Setup some sizing for the column in the summary table.
