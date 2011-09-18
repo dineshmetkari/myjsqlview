@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.3 08/19/2011
+// Version 7.4 09/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -187,6 +187,8 @@
 //         7.2 08/18/2011 Made Class Instance maxTabs static.
 //         7.3 08/19/2011 Method setRowPreferences() Removed Call to SQLTabPanel.setTableRowSize()
 //                        and Just Reloaded a New SQLTabPanel.
+//         7.4 09/18/2011 Added MyJSQLView.getPopupMenuListener() to queryTextArea and
+//                        queryResultTextArea Instead of contentPane() in Constructor.
 //                   
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -224,7 +226,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.3 08/19/2011
+ * @version 7.4 09/18/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -493,6 +495,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
       queryTextArea.setLineWrap(true);
       queryTextArea.setDragEnabled(true);
+      queryTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());
       
       JScrollPane queryScrollPane = new JScrollPane(queryTextArea);
       
@@ -559,6 +562,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       queryResultTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
       queryResultTextArea.setLineWrap(true);
+      queryResultTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());
 
       JScrollPane resultScrollPane = new JScrollPane(queryResultTextArea);
       queryResultPanel.add(resultScrollPane);
@@ -568,7 +572,6 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       framePanel.add(mainPanel, BorderLayout.CENTER);
 
       getContentPane().add(framePanel);
-      getContentPane().addMouseListener(MyJSQLView.getPopupMenuListener());
 
       queryTextArea.requestFocus();
    }
