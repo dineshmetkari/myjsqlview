@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.4 09/18/2011
+// Version 7.5 09/18/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -189,7 +189,9 @@
 //                        and Just Reloaded a New SQLTabPanel.
 //         7.4 09/18/2011 Added MyJSQLView.getPopupMenuListener() to queryTextArea and
 //                        queryResultTextArea Instead of contentPane() in Constructor.
-//                   
+//         7.5 09/18/2011 Limiting MSAccess Type Databases to SQL_Statement Queries Only via
+//                        the statementTypeComboBox Instance.
+//                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
 //=================================================================
@@ -226,7 +228,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.4 09/18/2011
+ * @version 7.5 09/18/2011
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -445,11 +447,14 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          statementTypeComboBox.addItem(resource + " : ");
       
       // QUERY_STATEMENT_TYPE:1
-      resource = resourceBundle.getResource("QueryFrame.combobox.QueryStatement");
-      if (resource.equals(""))
-         statementTypeComboBox.addItem("Query Statement : ");
-      else
-         statementTypeComboBox.addItem(resource + " : ");
+      if (!dataSourceType.equals(ConnectionManager.MSACCESS))
+      {
+         resource = resourceBundle.getResource("QueryFrame.combobox.QueryStatement");
+         if (resource.equals(""))
+            statementTypeComboBox.addItem("Query Statement : ");
+         else
+            statementTypeComboBox.addItem(resource + " : ");
+      }
       
       buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
       constraints.fill = GridBagConstraints.NONE;
