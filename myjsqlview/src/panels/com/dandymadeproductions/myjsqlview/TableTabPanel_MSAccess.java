@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.0 05/30/2011
+// Version 1.1 09/17/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original TableTabPanel_MSAccess Class.
+//         1.1 Change To Generic Search String Modification for Date/DateTime
+//             Fields to Not Include the # Character in loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.0 05/30/2011
+ * @version 1.1 09/17/2011
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -181,9 +183,9 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            //                   comboBoxNameString + " " +
-            //                   columnClass + " " + columnType + " " +
-            //                   columnSize);
+            //                    comboBoxNameString + " " +
+            //                    columnClass + " " + columnType + " " +
+            //                    columnSize);
 
             // This going to be a problem so skip this column.
 
@@ -359,9 +361,14 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                   }
                   
                   if (i < tableColumns.length - 1)
-                     searchQueryString.append(tableColumns[i] + " LIKE #" + searchString + "# OR");
+                     searchQueryString.append(tableColumns[i] + " LIKE '%" + searchString + "%' OR");
                   else
-                     searchQueryString.append(tableColumns[i] + " LIKE #" + searchString + "#");
+                     searchQueryString.append(tableColumns[i] + " LIKE '%" + searchString + "%'");
+                  
+                  // if (i < tableColumns.length - 1)
+                  //    searchQueryString.append(tableColumns[i] + " LIKE #" + searchString + "# OR");
+                  // else
+                  //    searchQueryString.append(tableColumns[i] + " LIKE #" + searchString + "#");
                }
                else
                {
@@ -392,7 +399,10 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                }
                
                searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                   + " LIKE #" + searchTextString + "#");
+                                        + " LIKE '%" + searchTextString + "%'");
+               
+               // searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
+               //                          + " LIKE #" + searchTextString + "#");
             }
             else
                searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
