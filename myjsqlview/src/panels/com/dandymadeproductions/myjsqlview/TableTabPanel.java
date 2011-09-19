@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.88 09/13/2011
+// Version 4.89 09/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,8 @@
 //        4.87 Modified Code From 4.86 to More Fully Comply With Desired Results of
 //             Sort Column Name Not Being Null or Empty.
 //        4.88 Added Class Method setViewOnly() to Meet Interface Requirements.
+//        4.89 Modification of Processing for DateTime Field for MSAccess to Use the
+//             # Character for Quotes in deleteSelectedItems() Keys.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -224,7 +226,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.88 09/13/2011
+ * @version 4.89 09/19/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1939,6 +1941,28 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                                                               DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                                            + "' AND ");
                               }
+                           }
+                           else if (currentColumnType.equals("DATETIME"))
+                           {
+                              String dateString = (String) currentContentData;
+                              
+                              if (dateString.indexOf(" ") != -1)
+                                 currentContentData = MyJSQLView_Utils.processDateFormatSearch(
+                                    dateString.substring(0, dateString.indexOf(" ")))
+                                    + dateString.substring(dateString.indexOf(" "));
+                              else if (dateString.indexOf("-") != -1 || dateString.indexOf("/") != -1)
+                                 currentContentData = MyJSQLView_Utils.processDateFormatSearch(dateString);
+                                 
+                              if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "=#"
+                                                           + currentContentData
+                                                           + "# AND ");
+                              else
+                                 sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                           + identifierQuoteString + "='"
+                                                           + currentContentData
+                                                           + "' AND ");
                            }
                            else
                            {
