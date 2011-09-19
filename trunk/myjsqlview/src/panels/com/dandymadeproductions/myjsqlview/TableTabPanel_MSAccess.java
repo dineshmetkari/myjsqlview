@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.1 09/17/2011
+// Version 1.2 09/19/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 // Version 1.0 Original TableTabPanel_MSAccess Class.
 //         1.1 Change To Generic Search String Modification for Date/DateTime
 //             Fields to Not Include the # Character in loadTable().
+//         1.2 Class Method editSelectedItem() DateTime Fields Made Sure to
+//             Use editForm.setFormField(Object, Object). Correction.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -62,7 +64,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.1 09/17/2011
+ * @version 1.2 09/19/2011
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -183,9 +185,9 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            //                    comboBoxNameString + " " +
-            //                    columnClass + " " + columnType + " " +
-            //                    columnSize);
+            //                     comboBoxNameString + " " +
+            //                     columnClass + " " + columnType + " " +
+            //                     columnSize);
 
             // This going to be a problem so skip this column.
 
@@ -1188,7 +1190,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Binary/Image Type Field
