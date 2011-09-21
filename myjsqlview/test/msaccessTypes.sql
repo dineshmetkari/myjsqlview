@@ -5,6 +5,8 @@
 -- Dana Proctor 
 -- Version 06/02/2011 Orignal Test Data Type Table.
 --         09/19/2011 Updated to Correctly Implement Requirements.
+--         09/20/2011 Added Field Decimal, Fails, But Should be a
+--                    Data Type.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -32,6 +34,7 @@ CREATE TABLE msaccesstypes (
     long_type LONG,
     single_type SINGLE,
     double_type DOUBLE,
+    -- decimal_type DECIMAL,
     currency_type CURRENCY,
     guid_type GUID,
     
