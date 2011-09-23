@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.7 06/11/2011
+// Version 5.8 06/23/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -125,6 +125,9 @@
 //             dateFormat.
 //         5.7 Removed Instance connectionProperties in Consructor. Replaced Class
 //             Instance subProtocol With dataSourceType.
+//         5.8 Chang to MSAcces Date/DateTime Fields to Quote With the # Character
+//             in Class Method importCSVFile(). In Same Method and Database Removal
+//             of Quotes for Field Values if Non-String.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -428,6 +431,8 @@ class CSVDataImportThread implements Runnable
                         {
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
                               lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i]) + "', 'YYYY-MM-DD')";
+                           else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                              lineContent[i] = "#" + formatDateString(lineContent[i]) + "#";
                            else
                               lineContent[i] = "'" + formatDateString(lineContent[i]) + "'";
                         }
@@ -463,6 +468,9 @@ class CSVDataImportThread implements Runnable
                               else
                                  lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM')";
                            }
+                           // MSAccess
+                           else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                              lineContent[i] = "#" + formatDateString(lineContent[i]) + time + "#";
                            // All others
                            else
                               lineContent[i] = "'" + formatDateString(lineContent[i]) + time + "'";
@@ -485,6 +493,14 @@ class CSVDataImportThread implements Runnable
                      // Update SQL
                      else
                      {
+                        // Remove quotes for numeric fields if MSAccess
+                        // database. This may need to be revisited for
+                        // all databases.
+                        
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                            && columnClass.toLowerCase().indexOf("string") == -1)
+                           lineContent[i] = lineContent[i].replaceAll("'", "");
+                        
                         // Capture key data for SQL.
                         if (primaryKeys.contains(fields.get(i)))
                         {
