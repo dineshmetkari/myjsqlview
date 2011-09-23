@@ -7,38 +7,40 @@
 --         09/19/2011 Updated to Correctly Implement Requirements.
 --         09/20/2011 Added Field Decimal, Fails, But Should be a
 --                    Data Type.
+--         09/23/2011 Properly Implemented Identifier String Character
+--                    for Table Names & Fields.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
 
 -- Drop Table MUST be in separate file, import.
--- DROP TABLE msaccesstypes;
-CREATE TABLE msaccesstypes (
+-- DROP TABLE `msaccesstypes`;
+CREATE TABLE `msaccesstypes` (
 
 --  Table id and creation data entries.
 
-	data_type_id COUNTER PRIMARY KEY,
+	`data_type_id` COUNTER PRIMARY KEY,
 
 --  Character, text, and blob type fields.
 
-    binary_type BINARY,
-    longbinary_type LONGBINARY,
-    varchar_type TEXT(50),
-    longText_type LONGTEXT,
+    `binary_type` BINARY,
+    `longbinary_type` LONGBINARY,
+    `varchar_type` TEXT(50),
+    `longText_type` LONGTEXT,
 
 --  Numeric fields.
 
-    bit_type BIT,
-    byte_type BYTE,
-    short_type SHORT,
-    long_type LONG,
-    single_type SINGLE,
-    double_type DOUBLE,
-    -- decimal_type DECIMAL,
-    currency_type CURRENCY,
-    guid_type GUID,
+    `bit_type` BIT,
+    `byte_type` BYTE,
+    `short_type` SHORT,
+    `long_type` LONG,
+    `single_type` SINGLE,
+    `double_type` DOUBLE,
+    -- `decimal_type` DECIMAL,
+    `currency_type` CURRENCY,
+    `guid_type` GUID,
     
 --  Date and time fields.
    
-    dateTime_type DATETIME
+    `dateTime_type` DATETIME
 );
