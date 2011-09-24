@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 6.2 06/11/2011
+// Version 6.3 09/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,9 @@
 //         6.0 Change in dataDump Clipping by the dataDelimiter.length in run().
 //         6.1 Class Method Addition of Proper Processing for Oracle timestampLTZ.
 //         6.2 Replaced Method Instance subProtocol in run() With dataSourceType.
+//         6.3 Replacement of Multiple dbResultSet Retrieval for a Single Column
+//             to Only One for Each Row in Data Collection in run(). Limitation
+//             for Some Databases, MSAccess, to Limiting Only One Call to ResultSet.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -136,7 +139,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.2 06/11/2011
+ * @version 6.3 09/24/2011
  */
 
 class DataDumpThread implements Runnable
@@ -255,7 +258,7 @@ class DataDumpThread implements Runnable
          }
          columnNames_String.delete((columnNames_String.length() - 2), columnNames_String.length());
          sqlStatementString += columnNames_String.toString() + " FROM " + schemaTableName;
-         //System.out.println(sqlStatementString);
+         // System.out.println(sqlStatementString);
 
          dbResultSet = sqlStatement.executeQuery(sqlStatementString);
 
@@ -293,30 +296,35 @@ class DataDumpThread implements Runnable
                columnType = tableColumnTypeHashMap.get(currentHeading);
                columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
 
-               fieldContent = dbResultSet.getString(i);
-
-               if (fieldContent != null)
+               // Blob/Bytea data.
+               
+               if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+                   (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+                   (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
+                   (columnType.indexOf("RAW") != -1))
                {
-                  // Blob/Bytea data.
- 
-                  if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("RAW") != -1))
-                  {
+                  fieldContent = dbResultSet.getString(i);
+                  
+                  if (fieldContent != null)
                      dumpData = dumpData + "Binary" + dataDelimiter;
-                  }
+                  else
+                     dumpData = dumpData + "NULL" + dataDelimiter;
+               }
 
-                  // Text, MediumText, LongText, & CLOB.
-                  else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
-                            columnSize > 255) ||
-                           (columnClass.indexOf("String") != -1 && columnType.equals("LONG")) ||
-                           (columnType.indexOf("CLOB") != -1))
+               // Text, MediumText, LongText, & CLOB.
+               else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
+                         columnSize > 255) ||
+                        (columnClass.indexOf("String") != -1 && columnType.equals("LONG")) ||
+                        (columnType.indexOf("CLOB") != -1))
+               {
+                  fieldContent = dbResultSet.getString(i);
+                  
+                  // Check to see if a portion of the TEXT data should be
+                  // included as defined in the Preferences | Export Data |
+                  // CVS.
+                  
+                  if (fieldContent != null)
                   {
-                     // Check to see if a portion of the TEXT data should be
-                     // included as defined in the Preferences | Export Data |
-                     // CVS.
-
                      if (DBTablesPanel.getDataExportProperties().getTextInclusion())
                      {
                         int textLength = DBTablesPanel.getDataExportProperties().getTextCharsNumber();
@@ -324,7 +332,7 @@ class DataDumpThread implements Runnable
                         // Obtain text and cleanup some
                         fieldContent = fieldContent.replaceAll("\n", "");
                         fieldContent = fieldContent.replaceAll("\r", "");
-
+                        
                         if (fieldContent.length() > textLength)
                            dumpData = dumpData + fieldContent.substring(0, textLength) + dataDelimiter;
                         else
@@ -333,11 +341,18 @@ class DataDumpThread implements Runnable
                      else
                         dumpData = dumpData + "Text" + dataDelimiter;
                   }
+                  else
+                     dumpData = dumpData + "NULL" + dataDelimiter;
+               }
 
-                  // Convert MySQL Bit Fields to Such, Since they will
-                  // be returned in base 10.
-                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
-                           && columnType.indexOf("BIT") != -1)
+               // Convert MySQL Bit Fields to Such, Since they will
+               // be returned in base 10.
+               else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                        && columnType.indexOf("BIT") != -1)
+               {
+                  fieldContent = dbResultSet.getString(i);
+                  
+                  if (fieldContent != null)
                   {
                      try
                      {
@@ -349,10 +364,17 @@ class DataDumpThread implements Runnable
                         // Should never happen.
                      }
                   }
+                  else
+                     dumpData = dumpData + "NULL" + dataDelimiter;
+               }
 
-                  // Insure MySQL Date/Year fields are chopped to only 4 digits.
-                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
-                           && columnType.indexOf("YEAR") != -1)
+               // Insure MySQL Date/Year fields are chopped to only 4 digits.
+               else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                        && columnType.indexOf("YEAR") != -1)
+               {
+                  fieldContent = dbResultSet.getString(i);
+                  
+                  if (fieldContent != null)
                   {
                      String yearString = fieldContent.trim();
 
@@ -361,57 +383,77 @@ class DataDumpThread implements Runnable
 
                      dumpData = dumpData + yearString + dataDelimiter;
                   }
-                  
-                  // Format Date & Timestamp Fields as Needed.
-                  else if (columnType.equals("DATE") || columnType.equals("DATETIME") ||
-                           columnType.indexOf("TIMESTAMP") != -1)
-                  {
-                     if (columnType.equals("DATE"))
-                     {
-                        fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-                                       dbResultSet.getDate(i)
-                                       + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
-                     }
-                     else
-                     {  
-                        if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
-                        {
-                           Object dateTime = dbResultSet.getTimestamp(i);
-                           fieldContent = (new SimpleDateFormat(
-                                            DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                                            + " HH:mm:ss")).format(dateTime) + "";  
-                        }
-                        else if (columnType.equals("TIMESTAMPTZ"))
-                        {
-                           Object dateTime = dbResultSet.getTimestamp(i);
-                           fieldContent = (new SimpleDateFormat(
-                                            DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                                            + " HH:mm:ss Z")).format(dateTime) + "";  
-                        }
-                        // TIMESTAMPLTZ, Oracle
-                        else
-                        {
-                           String timestamp = dbResultSet.getString(i);
-                           
-                          if (timestamp.indexOf(" ") != -1)
-                                 fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-                                                     timestamp.substring(0, timestamp.indexOf(" ")),
-                                                     DBTablesPanel.getDataExportProperties().getCSVDateFormat())
-                                                + timestamp.substring(timestamp.indexOf(" "));
-                          else
-                             fieldContent = timestamp;
-                        }
-                     }
-                     dumpData = dumpData + fieldContent + dataDelimiter;  
-                  }
-                  
-                  // All other fields.
                   else
-                     dumpData = dumpData + fieldContent.trim() + dataDelimiter;
+                     dumpData = dumpData + "NULL" + dataDelimiter;
                }
-               else
-                  dumpData = dumpData + "NULL" + dataDelimiter;
                
+               // Format Date & Timestamp Fields as Needed.
+               else if (columnType.equals("DATE") || columnType.equals("DATETIME") ||
+                        columnType.indexOf("TIMESTAMP") != -1)
+               {
+                  if (columnType.equals("DATE"))
+                  {
+                     Object date = dbResultSet.getDate(i);
+                     if (date != null)
+                        fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                           date + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
+                     else
+                        fieldContent = "NULL";
+                  }
+                  else
+                  {  
+                     if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+                     {
+                        Object dateTime = dbResultSet.getTimestamp(i);
+                        if (dateTime != null)
+                           fieldContent = (new SimpleDateFormat(
+                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                              + " HH:mm:ss")).format(dateTime) + "";
+                        else
+                           fieldContent = "NULL";
+                     }
+                     else if (columnType.equals("TIMESTAMPTZ"))
+                     {
+                        Object dateTime = dbResultSet.getTimestamp(i);
+                        if (dateTime != null)
+                           fieldContent = (new SimpleDateFormat(
+                              DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                              + " HH:mm:ss Z")).format(dateTime) + "";
+                        else
+                           fieldContent = "NULL";
+                     }
+                     // TIMESTAMPLTZ, Oracle
+                     else
+                     {
+                        String timestamp = dbResultSet.getString(i);
+                        
+                        if (timestamp != null)
+                        {
+                           if (timestamp.indexOf(" ") != -1)
+                              fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                                                  timestamp.substring(0, timestamp.indexOf(" ")),
+                                                  DBTablesPanel.getDataExportProperties().getCSVDateFormat())
+                                                  + timestamp.substring(timestamp.indexOf(" "));
+                           else
+                              fieldContent = timestamp;
+                        }
+                        else
+                           fieldContent = "NULL";
+                     }
+                  }
+                  dumpData = dumpData + fieldContent + dataDelimiter;  
+               }
+               
+               // All other fields.
+               else
+               {
+                  fieldContent = dbResultSet.getString(i);
+                  
+                  if (fieldContent != null)
+                     dumpData = dumpData + fieldContent.trim() + dataDelimiter;
+                  else
+                     dumpData = dumpData + "NULL" + dataDelimiter;     
+               }
                i++;
             }
             dumpData = ((String) dumpData).substring(0,
