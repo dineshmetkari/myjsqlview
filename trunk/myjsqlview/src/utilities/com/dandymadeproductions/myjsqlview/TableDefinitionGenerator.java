@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.7 09/13/2011
+// Version 4.8 09/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,8 @@
 //             Multiple Foreign Keys. Changed Method Instance foreignKeys to HashMap,
 //             Added foreignKey, & Changed referenceColumnName to a StringBuffer.
 //         4.7 Improved Efficiency by Use a Map.Entry Set in createPostgreSQLTableDefinition().
+//         4.8 Added Framework for MSAccess Table Definition Generation. Information
+//             Only at This Time.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -153,7 +155,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.7 09/13/2011
+ * @version 4.8 09/24/2011
  */
 
 class TableDefinitionGenerator
@@ -1496,6 +1498,22 @@ class TableDefinitionGenerator
          return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
    }
+   
+   //==============================================================
+   // Class method for creating a given MSAccess TABLE definition.
+   //==============================================================
+
+   private String createMSAccessTableDefinition()
+   {
+      // Class Method Instances.
+      StringBuffer tableDefinition = new StringBuffer("");
+      
+      // Beginning the creation of the string description
+      // of the table Structure.
+      
+      tableDefinition.append("-- MSAccess Table Definition, DDL, Not Supported At This Time.\n");
+      return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+   }
 
    //==============================================================
    // Class method for getting CREATE TABLE definition.
@@ -1540,6 +1558,12 @@ class TableDefinitionGenerator
       else if (dataSourceType.equals(ConnectionManager.SQLITE))
       {
          return createSQLiteTableDefinition();
+      }
+      
+      // MSAccess
+      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+      {
+         return createMSAccessTableDefinition();
       }
 
       // Default
