@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.7 07/31/2011
+// Version 4.8 09/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,11 @@
 //         4.6 Correction in Catching Single Line Commented, --, Input in Method
 //             importSQLFile().
 //         4.7 Commented Out a System.Out in ImportSQLFile().
+//         4.8 Sorry Borislav, But Complete Rebuild of importSQLFile() Method to
+//             Eliminate the HeapSize Error Created by Overloading a String by the
+//             Complete Data Dump. Now the Dump is Read a Single Line at a Time
+//             Then Once a Query is Built is Execute, to Reiterate Again. Removed
+//             Class Method separateQueries(). 
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -112,7 +117,10 @@
 
 package com.dandymadeproductions.myjsqlview;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -126,14 +134,15 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.7 07/31/2011
+ * @version 4.8 09/25/2011
  */
 
 class SQLDataDumpImportThread implements Runnable
 {
    // Class Instance Fields.
    Thread importThread;
-   String fileName, failedQuery;
+   String fileName;
+   String dataSourceType;
    boolean validImport, reloadDatabase;
 
    //==============================================================
@@ -144,11 +153,11 @@ class SQLDataDumpImportThread implements Runnable
    {
       this.fileName = fileName;
       this.reloadDatabase = reloadedDatabase;
+      
+      dataSourceType = ConnectionManager.getDataSourceType();
 
       importThread = new Thread(this, "SQLDataDumpImportThread");
-      // System.out.println("SQL Data Import Thread");
 
-      failedQuery = "";
       importThread.start();
    }
 
@@ -198,132 +207,161 @@ class SQLDataDumpImportThread implements Runnable
       Connection dbConnection;
       Statement sqlStatement;
 
-      String dataSourceType;
-      String sqlDump;
+      FileReader fileReader;
+      BufferedReader bufferedReader;
+
+      String currentLine;
+      StringBuffer query;
+      StringBuffer queryStatement;
       String[] multiLineQueries;
-      String[] queries;
-      int currentLine = 0;
-      byte[] dump;
+      String failedQuery;
+      int fileLineLength, line;
+      
+      MyJSQLView_ProgressBar sqlImportProgressBar;
 
-      MyJSQLView_ProgressBar sqlDumpProgressBar;
+      // Obtain database connection & setting up.
 
-      // Obtain the data bytes from the selected file.
-      dump = ReadDataFile.mainReadDataString(fileName, true);
-
-      // Begin the separation of SQL statement queries and
-      // execution for import.
-      if (dump != null)
+      dbConnection = (Connection) ConnectionManager.getConnection(
+         "SQLDataDumpImportThread importSQLFile()");
+      
+      if (dbConnection == null)
       {
-         // Obtain database connection & setting up.
-         dbConnection = (Connection) ConnectionManager.getConnection(
-            "SQLDataDumpImportThread importSQLFile()");
-         
-         if (dbConnection == null)
-         {
-            validImport = false;
-            return;
-         }
+         validImport = false;
+         return;
+      }
+      
+      sqlImportProgressBar = new MyJSQLView_ProgressBar("SQL Import");
+      fileLineLength = 0;
+      line = 0;
+      failedQuery = "";
+      
+      // Begin the processing of the input SQL file by reading
+      // each line and checking before insert if it is valid
+      // not a comment.
+      
+      try
+      {
+         // Disable autocommit and begin the start
+         // of transactions.
+         dbConnection.setAutoCommit(false);
+         sqlStatement = dbConnection.createStatement();
 
-         sqlDumpProgressBar = new MyJSQLView_ProgressBar("SQL Import");
-         dataSourceType = ConnectionManager.getDataSourceType();
-         sqlDump = new String(dump);
+         // Only MySQL & PostgreSQL supports.
+         if (dataSourceType.equals(ConnectionManager.MYSQL)
+               || dataSourceType.equals(ConnectionManager.POSTGRESQL))
+            sqlStatement.executeUpdate("BEGIN");
 
          try
          {
-            // Disable autocommit and begin the start
-            // of transactions.
-            dbConnection.setAutoCommit(false);
-            sqlStatement = dbConnection.createStatement();
+            // Setting file reader & progress bar.
+            fileReader = new FileReader(fileName);
+            bufferedReader = new BufferedReader(fileReader);
 
-            // Only MySQL & PostgreSQL support.
-            if (dataSourceType.equals(ConnectionManager.MYSQL)
-                  || dataSourceType.equals(ConnectionManager.POSTGRESQL))
-               sqlStatement.executeUpdate("BEGIN");
+            while ((currentLine = bufferedReader.readLine()) != null)
+               fileLineLength++;
 
-            // Creating seperate queries and beginning
-            // the monitor of the dump.
-            queries = separateQueries(sqlDump);
-
-            sqlDumpProgressBar.setTaskLength(queries.length);
-            sqlDumpProgressBar.pack();
-            sqlDumpProgressBar.center();
-            sqlDumpProgressBar.setVisible(true);
+            sqlImportProgressBar.setTaskLength(fileLineLength);
+            sqlImportProgressBar.pack();
+            sqlImportProgressBar.center();
+            sqlImportProgressBar.setVisible(true);
             validImport = true;
 
-            // Cycle through the queries and execute
-            // the SQL statement. Note commented queries
-            // are now handled in 2.29++, but still
-            // the question remains what characters
-            // represent a comment. Presently '--' is
-            // recognized as a commented line.
+            // Beginning processing the input file for insertions
+            // into the database table.
 
-            for (int i = 0; i < queries.length; i++)
+            bufferedReader.close();
+            fileReader = new FileReader(fileName);
+            bufferedReader = new BufferedReader(fileReader);
+            
+            line = 1;
+            query = new StringBuffer();
+
+            while ((currentLine = bufferedReader.readLine()) != null)
             {
+               // System.out.println(currentLine);
+
                // Check to see if user wishes to stop.
-               if (sqlDumpProgressBar.isCanceled())
+               if (sqlImportProgressBar.isCanceled())
                {
                   validImport = false;
                   break;
                }
-
-               sqlDumpProgressBar.setCurrentValue(i);
-               currentLine = i;
                
-               queries[i] = queries[i].trim();
-
-               if (!queries[i].equals(""))
+               // Collect input lines.
+               query.append(currentLine + "\n");
+               
+               // Check to see if a complete query statement has
+               // been collect, determined by ending with a semicolon.
+               // Small chance that TEXT field could end with that,
+               // but very low.
+               
+               if (!currentLine.equals("") && currentLine.endsWith(";"))
                {
-                  // Parse the query further to remove commented
-                  // lines as needed.
+                  queryStatement = new StringBuffer((query.toString()).trim());
+                  queryStatement.substring(0, (queryStatement.length() - 1));
                   
-                  multiLineQueries = queries[i].split("\n");
-                  
-                  if (multiLineQueries.length > 1)
+                  // Process the possibly multi-line statement.
+
+                  if (!(queryStatement.toString()).equals(""))
                   {
-                     int j = 0;
-                     queries[i] = "";
+                     // Parse the query further to remove commented
+                     // lines as needed, The standard is --, but also
+                     // include /*, *, & */
                      
-                     while (j < multiLineQueries.length)
+                     multiLineQueries = (queryStatement.toString()).split("\n");
+                     
+                     if (multiLineQueries.length > 1)
                      {
-                        multiLineQueries[j] = multiLineQueries[j].trim();
-                        // System.out.println("multi: " + multiLineQueries[j]);
+                        int j = 0;
+                        queryStatement.delete(0, queryStatement.length());
                         
-                        if (multiLineQueries[j].length() < 2 && !multiLineQueries[j].isEmpty())
-                           queries[i] = queries[i] + multiLineQueries[j] + "\n";
-                        else
+                        while (j < multiLineQueries.length)
                         {
-                           if (!multiLineQueries[j].isEmpty())
+                           multiLineQueries[j] = multiLineQueries[j].trim();
+                           // System.out.println("multi: " + multiLineQueries[j]);
+                           
+                           // Continue with building the query.
+                           
+                           if (multiLineQueries[j].length() < 2 && !multiLineQueries[j].isEmpty())
+                              queryStatement.append(multiLineQueries[j] + "\n");
+                           else
                            {
-                              if (multiLineQueries[j].length() >= 2 &&
-                                  !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
+                              if (!multiLineQueries[j].isEmpty())
                               {
-                                 queries[i] = queries[i] + multiLineQueries[j] + "\n";
+                                 if (multiLineQueries[j].length() >= 2 &&
+                                     !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
+                                 {
+                                    queryStatement.append(multiLineQueries[j] + "\n");
+                                 }
                               }
                            }
+                           j++;
                         }
-                        j++;
                      }
-                  }
-                  
-                  // Check for empty queries and just commented
-                  // single line queries.
-                  if ((queries[i].equals(""))
-                      || (queries[i].length() >= 2 && (queries[i].substring(0, 2)).matches("^-{2}?")))
-                     continue;
-                  
-                  // Save the query in case exception thrown.
-                  if (queries[i].length() > 50)
-                     failedQuery = queries[i].substring(0, 50);
-                  else
-                     failedQuery = queries[i];
+                     
+                     // Check for empty queries and just commented
+                     // single line queries.
+                     
+                     if (((queryStatement.toString()).equals(""))
+                         || (queryStatement.length() >= 2 && ((queryStatement.toString()).substring(0, 2)).matches("^-{2}?")))
+                        continue;
+                     
+                     // Save the query in case exception thrown.
+                     if (queryStatement.length() > 50)
+                        failedQuery = queryStatement.substring(0, 50);
+                     else
+                        failedQuery = queryStatement.toString();
 
-                  // Process the query.
-                  
-                  // System.out.println("query: " + queries[i]);
-                  sqlStatement.execute(queries[i]);
+                     // Process the query.
+                     
+                     // System.out.println("query: " + queryStatement);
+                     sqlStatement.execute(queryStatement.toString());
+                  }
+                  query = new StringBuffer();
                }
+               sqlImportProgressBar.setCurrentValue(line++);
             }
-            sqlDumpProgressBar.dispose();
+            sqlImportProgressBar.dispose();
 
             // Commiting the transactions as necessary
             // and cleaning up.
@@ -333,31 +371,51 @@ class SQLDataDumpImportThread implements Runnable
             else
                dbConnection.rollback();
 
+            fileReader.close();
+            bufferedReader.close();
             sqlStatement.close();
             dbConnection.setAutoCommit(true);
-
             ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile()");
          }
-         catch (SQLException e)
+         catch (IOException e)
          {
-            sqlDumpProgressBar.dispose();
-            validImport = false;
-            ConnectionManager.displaySQLErrors(e, "line# " + currentLine + " " + failedQuery
-                                                  + " SQLDataDumpImportThread importSQLFile()");
+            sqlImportProgressBar.dispose();
+            JOptionPane.showMessageDialog(null, "Unable to Read Input File!", "Alert",
+               JOptionPane.ERROR_MESSAGE);
             try
             {
+               sqlStatement.close();
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
-               ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
+               ConnectionManager
+                     .closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
             }
             catch (SQLException error)
             {
-               ConnectionManager.displaySQLErrors(e, "SQLDataDumpImportThread importSQLFile() rollback failed");
+               ConnectionManager.displaySQLErrors(error,
+                  "SQLDataDumpImportThread importSQLFile() rollback failed");
             }
          }
       }
+      catch (SQLException e)
+      {
+         sqlImportProgressBar.dispose();
+         ConnectionManager.displaySQLErrors(e, "line# " + line + " " + failedQuery
+                                               + " SQLDataDumpImportThread importSQLFile()");
+         try
+         {
+            dbConnection.rollback();
+            dbConnection.setAutoCommit(true);
+            ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
+         }
+         catch (SQLException error)
+         {
+            ConnectionManager.displaySQLErrors(e, "SQLDataDumpImportThread importSQLFile() rollback failed");
+         }
+      }
+      
    }
-
+   
    //==============================================================
    // Class method to refresh table tab panel.
    //==============================================================
@@ -370,26 +428,5 @@ class SQLDataDumpImportThread implements Runnable
          Vector<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableFields);
       }
-   }
-
-   //==============================================================
-   // Class method for separating each query.
-   //==============================================================
-
-   private String[] separateQueries(String dump)
-   {
-      /*
-       * Pattern pattern; Patcher matcher; pattern = Pattern.compile("(.*);",
-       * Pattern.MULTILINE); matcher = pattern.matcher(dump); while
-       * (matcher.find()) { System.out.println("-------------------");
-       * System.out.println(matcher.group() + "\n"); }
-       */
-
-      String[] queries;
-      // FIXME must be better solutiin with regex
-      // this will fail if have ";" in some row
-      // I'm not so sure I did some testing and seems ok, dmp.
-      queries = dump.split(";\n");
-      return queries;
    }
 }
