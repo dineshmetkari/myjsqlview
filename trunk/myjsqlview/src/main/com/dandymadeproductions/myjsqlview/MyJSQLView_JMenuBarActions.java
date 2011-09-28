@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.32 06/16/2011
+// Version 7.33 09/27/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,7 @@
 //        7.31 Class Method actionSelection() Replacement of Instance subProtocol With
 //             dataSourceType and Derivation from ConnectionManager.getDataSourceType().
 //        7.32 Added Class Instances DATA_EXPORT_CSV, DATA_EXPORT_PDF, & DATA_EXPORT_SQL.
+//        7.33 Increase of size of PreferencesFrame From 700x435 to 750x461.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -284,7 +285,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.32 06/16/2011
+ * @version 7.33 09/27/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -393,7 +394,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       {
          // Showing the Edit Preferences Frame.
          PreferencesFrame editPreferences = new PreferencesFrame();
-         editPreferences.setSize(700, 430);
+         editPreferences.setSize(750, 461);
          editPreferences.setResizable(false);
          editPreferences.center();
          editPreferences.setVisible(true);
