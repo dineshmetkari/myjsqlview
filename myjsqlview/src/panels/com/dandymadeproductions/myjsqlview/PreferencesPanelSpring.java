@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 2.5 03/20/2011
+// Version 2.6 09/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,9 @@
 //         2.5 03/20/2011 Change in Location of currentOwlImage in drawPanel() Method
 //                        Because and Increase in the Preferences Frame Size Along With
 //                        PreferencesSpringPanel Image.
+//         2.6 09/29/2011 Change in Location of currentOwlImage in drawPanel() Method
+//                        Because and Increase in the Preferences Frame Size Along With
+//                        PreferencesSpringPanel Image.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +78,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's spring months, May-June.
  * 
  * @author Dana M. Proctor
- * @version 2.5 03/20/2011
+ * @version 2.6 09/29/2011
  */
 
 class PreferencesPanelSpring extends PreferencesPanel implements Runnable
@@ -264,7 +267,7 @@ class PreferencesPanelSpring extends PreferencesPanel implements Runnable
       g.drawString(dateString, 10, 20);
       
       // Draw the animated owl gif.
-      g.drawImage(currentOwlImage, 135, 88, this);
+      g.drawImage(currentOwlImage, 154, 98, this);
    }
 
    //==============================================================
