@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana Proctor
-// Version 3.7 09/09/2011
+// Version 3.8 10/01/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,9 @@
 //             ConnctionManager.
 //         3.7 Set Default csv/pdfDateFormat to MyJSQLView_Utils.MMddyyyy_DASH in
 //             the Constructor.
+//         3.8 Added Class Instances FONT, PAGELAYOUT, font & pageLayout and the
+//             Latter Two Corresponding get/setter Methods. Obtained Defaults in
+//             Constructor From Appropriate Panels.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -94,7 +97,7 @@ import java.util.prefs.Preferences;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.7 09/09/2011
+ * @version 3.8 10/01/2011
  */
 
 class DataExportProperties
@@ -137,8 +140,12 @@ class DataExportProperties
    private int numberAlignment;
    private int dateAlignment;
    private String pdfDateFormat;
+   private String font;
+   private int pageLayout;
    
    private Preferences dataExportPreferences;
+   
+   // These all have to be unique.
    
    // SQL
    private static final String TABLESTRUCTURE = "TableStructure";
@@ -175,6 +182,8 @@ class DataExportProperties
    private static final String NUMBERALIGNMENT = "NumberAlignment";
    private static final String DATEALIGNMENT = "DateAlignment";
    private static final String PDFDATEFORMAT = "ExportPDFDateFormat";
+   private static final String FONT = "Font";
+   private static final String PAGELAYOUT = "PageLayout";
    
    //==============================================================
    // DataExportProperties Constructor
@@ -185,41 +194,43 @@ class DataExportProperties
       // Set Default State.
       
       // SQL
-      tableStructure = false;
-      tableData = true;
-      insertLock = true;
-      replaceLock = true;
-      updateLock = true;
-      insertExpression = "Singular";
-      replaceExpression = "Singular";
-      autoIncrement = false;
-      timeStamp = false;
-      insertType = false;
-      replaceType = false;
-      updateType = false;
-      insertReplaceUpdate = "Insert";
-      insertTypeSetting = "Low_Priority";
-      replaceTypeSetting = "Low_Priority";
-      updateTypeSetting = "Low_Priority";
+      tableStructure = SQLExportPreferencesPanel.DEFAULT_TABLE_STRUCTURE;
+      tableData = SQLExportPreferencesPanel.DEFAULT_TABLE_DATA;
+      insertLock = SQLExportPreferencesPanel.DEFAULT_INSERT_LOCK;
+      replaceLock = SQLExportPreferencesPanel.DEFAULT_REPLACE_LOCK;
+      updateLock = SQLExportPreferencesPanel.DEFAULT_UPDATE_LOCK;
+      insertExpression = SQLExportPreferencesPanel.EXPRESSION_SINGULAR;
+      replaceExpression = SQLExportPreferencesPanel.EXPRESSION_SINGULAR;
+      autoIncrement = SQLExportPreferencesPanel.DEFAULT_AUTO_INCREMENT;
+      timeStamp = SQLExportPreferencesPanel.DEFAULT_TIMESTAMP;
+      insertType = SQLExportPreferencesPanel.DEFAULT_INSERT_TYPE;
+      replaceType = SQLExportPreferencesPanel.DEFAULT_REPLACE_TYPE;
+      updateType = SQLExportPreferencesPanel.DEFAULT_UPDATE_TYPE;
+      insertReplaceUpdate = SQLExportPreferencesPanel.TYPE_INSERT;
+      insertTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
+      replaceTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
+      updateTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
       // CSV
-      textInclusion = false;
-      textCharsNumber = 50;
-      dataDelimiter = ",";
+      textInclusion = CSVExportPreferencesPanel.DEFAULT_CHAR_INCLUSION;
+      textCharsNumber = CSVExportPreferencesPanel.DEFAULT_CHARS_LENGTH;
+      dataDelimiter = CSVExportPreferencesPanel.DEFAULT_DATA_DELIMITER;
       csvDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
       
       // PDF
-      title = "";
-      titleFontSize = 14;
-      titleColor = Color.BLACK.getRGB();
-      headerFontSize = 12;
-      headerColor = Color.BLACK.getRGB();
-      headerBorderSize = 1;
-      headerBorderColor = Color.BLACK.getRGB();
-      numberAlignment = 2;
-      dateAlignment = 1;
+      title = PDFExportPreferencesPanel.DEFAULT_TITLE;
+      titleFontSize = PDFExportPreferencesPanel.DEFAULT_TITLE_FONT_SIZE;
+      titleColor = PDFExportPreferencesPanel.DEFAULT_COLOR.getRGB();
+      headerFontSize = PDFExportPreferencesPanel.DEFAULT_HEADER_FONT_SIZE;
+      headerColor = PDFExportPreferencesPanel.DEFAULT_COLOR.getRGB();
+      headerBorderSize = PDFExportPreferencesPanel.DEFAULT_BORDER_SIZE;
+      headerBorderColor = PDFExportPreferencesPanel.DEFAULT_COLOR.getRGB();
+      numberAlignment = PDFExportPreferencesPanel.ALIGNMENT_RIGHT;
+      dateAlignment = PDFExportPreferencesPanel.ALIGNMENT_CENTER;
       pdfDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
+      font = PDFExportPreferencesPanel.DEFAULT_FONT;
+      pageLayout = PDFExportPreferencesPanel.LAYOUT_PORTRAIT;
       
       // Try to retrieve state from Preferences.
       try
@@ -231,40 +242,42 @@ class DataExportProperties
       try
       {
          // SQL
-         tableStructure = dataExportPreferences.getBoolean(TABLESTRUCTURE, false);
-         tableData = dataExportPreferences.getBoolean(TABLEDATA, true);
-         insertLock = dataExportPreferences.getBoolean(INSERTLOCK, true);
-         replaceLock = dataExportPreferences.getBoolean(REPLACELOCK, true);
-         updateLock = dataExportPreferences.getBoolean(UPDATELOCK, true);
-         insertExpression = dataExportPreferences.get(INSERTEXPRESSION, "Singular");
-         replaceExpression = dataExportPreferences.get(REPLACEEXPRESSION, "Singular");
-         autoIncrement = dataExportPreferences.getBoolean(AUTOINCREMENT, false);
-         timeStamp = dataExportPreferences.getBoolean(TIMESTAMP, false);
-         insertType = dataExportPreferences.getBoolean(INSERTTYPE, false);
-         replaceType = dataExportPreferences.getBoolean(REPLACETYPE, false);
-         updateType = dataExportPreferences.getBoolean(UPDATETYPE, false);
-         insertReplaceUpdate = dataExportPreferences.get(INSERTREPLACEUPDATE, "Insert");
-         insertTypeSetting = dataExportPreferences.get(INSERTTYPESETTING, "Low_Priority");
-         replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, "Low_Priority");
-         updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, "Low_Priority");
+         tableStructure = dataExportPreferences.getBoolean(TABLESTRUCTURE, tableStructure);
+         tableData = dataExportPreferences.getBoolean(TABLEDATA, tableData);
+         insertLock = dataExportPreferences.getBoolean(INSERTLOCK, insertLock);
+         replaceLock = dataExportPreferences.getBoolean(REPLACELOCK, replaceLock);
+         updateLock = dataExportPreferences.getBoolean(UPDATELOCK, updateLock);
+         insertExpression = dataExportPreferences.get(INSERTEXPRESSION, insertExpression);
+         replaceExpression = dataExportPreferences.get(REPLACEEXPRESSION, replaceExpression);
+         autoIncrement = dataExportPreferences.getBoolean(AUTOINCREMENT, autoIncrement);
+         timeStamp = dataExportPreferences.getBoolean(TIMESTAMP, timeStamp);
+         insertType = dataExportPreferences.getBoolean(INSERTTYPE, insertType);
+         replaceType = dataExportPreferences.getBoolean(REPLACETYPE, replaceType);
+         updateType = dataExportPreferences.getBoolean(UPDATETYPE, updateType);
+         insertReplaceUpdate = dataExportPreferences.get(INSERTREPLACEUPDATE, insertReplaceUpdate);
+         insertTypeSetting = dataExportPreferences.get(INSERTTYPESETTING, insertTypeSetting);
+         replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, replaceTypeSetting);
+         updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, updateTypeSetting);
          
          // CSV
-         textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, false);
-         textCharsNumber = dataExportPreferences.getInt(TEXTCHARSNUMBER, 50);
-         dataDelimiter = dataExportPreferences.get(DATADELIMITER, ",");
-         csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
+         textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, textInclusion);
+         textCharsNumber = dataExportPreferences.getInt(TEXTCHARSNUMBER, textCharsNumber);
+         dataDelimiter = dataExportPreferences.get(DATADELIMITER, dataDelimiter);
+         csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, csvDateFormat);
          
          // PDF
-         title = dataExportPreferences.get(TITLE, "");
-         titleFontSize = dataExportPreferences.getInt(TITLEFONTSIZE, 14);
-         titleColor = dataExportPreferences.getInt(TITLECOLOR, Color.BLACK.getRGB());
-         headerFontSize = dataExportPreferences.getInt(HEADERFONTSIZE, 12);
-         headerColor = dataExportPreferences.getInt(HEADERCOLOR, Color.BLACK.getRGB());
-         headerBorderSize = dataExportPreferences.getInt(HEADERBORDERSIZE, 1);
-         headerBorderColor = dataExportPreferences.getInt(HEADERBORDERCOLOR, Color.BLACK.getRGB());
-         numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, 2);
-         dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, 1);
-         pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
+         title = dataExportPreferences.get(TITLE, title);
+         titleFontSize = dataExportPreferences.getInt(TITLEFONTSIZE, titleFontSize);
+         titleColor = dataExportPreferences.getInt(TITLECOLOR, titleColor);
+         headerFontSize = dataExportPreferences.getInt(HEADERFONTSIZE, headerFontSize);
+         headerColor = dataExportPreferences.getInt(HEADERCOLOR, headerColor);
+         headerBorderSize = dataExportPreferences.getInt(HEADERBORDERSIZE, headerBorderSize);
+         headerBorderColor = dataExportPreferences.getInt(HEADERBORDERCOLOR, headerBorderColor);
+         numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, numberAlignment);
+         dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, dateAlignment);
+         pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, pdfDateFormat);
+         font = dataExportPreferences.get(FONT, font);
+         pageLayout = dataExportPreferences.getInt(PAGELAYOUT, pageLayout);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -315,7 +328,7 @@ class DataExportProperties
 
    protected boolean getAutoIncrement()
    {
-      if (insertReplaceUpdate.equals("Insert"))
+      if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_INSERT))
          return autoIncrement;
       else
          return false;
@@ -323,7 +336,7 @@ class DataExportProperties
 
    protected boolean getTimeStamp()
    {
-      if (insertReplaceUpdate.equals("Insert"))
+      if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_INSERT))
          return timeStamp;
       else
          return false;
@@ -366,9 +379,9 @@ class DataExportProperties
 
    protected boolean getLock()
    {
-      if (insertReplaceUpdate.equals("Insert"))
+      if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_INSERT))
          return insertLock;
-      else if (insertReplaceUpdate.equals("Replace"))
+      else if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_REPLACE))
          return replaceLock;
       else
          return updateLock;
@@ -385,21 +398,21 @@ class DataExportProperties
       }
       else
       {
-         if (insertReplaceUpdate.equals("Insert"))
+         if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_INSERT))
          {
             if (insertType)
                return " " + insertTypeSetting + " ";
             else
                return " ";
          }
-         else if (insertReplaceUpdate.equals("Replace"))
+         else if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_REPLACE))
          {
             if (replaceType)
                return " " + replaceTypeSetting + " ";
             else
                return " ";
          }
-         else if (insertReplaceUpdate.equals("Update"))
+         else if (insertReplaceUpdate.equals(SQLExportPreferencesPanel.TYPE_UPDATE))
          {
             if (updateType)
                return " " + updateTypeSetting + " ";
@@ -490,6 +503,16 @@ class DataExportProperties
    protected int getDateAlignment()
    {
       return dateAlignment;
+   }
+   
+   protected String getFont()
+   {
+      return font;
+   }
+   
+   protected int getPageLayout()
+   {
+      return pageLayout;
    }
    
    //==============================================================
@@ -691,6 +714,18 @@ class DataExportProperties
       savePreference(DATEALIGNMENT, value);
    }
    
+   protected void setFont(String content)
+   {
+      font = content;
+      savePreference(FONT, content);
+   }
+   
+   protected void setPageLayout(int value)
+   {
+      pageLayout = value;
+      savePreference(PAGELAYOUT, value);
+   }
+   
    //==============================================================
    // Class methods to try and save the preferences state. 
    //==============================================================
@@ -775,7 +810,9 @@ class DataExportProperties
       parameters.append("[numberAlignment = " + numberAlignment + "]");
       parameters.append("[pdfDateFormat = " + pdfDateFormat + "]");
       parameters.append("[dateAlignment = " + dateAlignment + "]");
-
+      parameters.append("[font = " + font + "]");
+      parameters.append("[pageLayout = " + pageLayout + "]");
+      
       return parameters.toString();
    }
 }
