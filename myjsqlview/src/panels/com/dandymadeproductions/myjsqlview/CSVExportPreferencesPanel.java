@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.4 10/01/2011
+// Version 5.5 10/01/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -109,6 +109,8 @@
 //                        DEFAULT_CHARS_INCLUSION. Added Class Instances DEFAULT_CHARS_LENGTH
 //                        & DEFAULT_DATA_DELIMITER. Used in actionPerformed() for Restore
 //                        Defaults.
+//         5.5 10/01/2011 Set Date Format to DBTablesPanel.getGeneralProperties().getViewDateFormat()
+//                        on Restore Defaults in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -135,7 +137,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.4 10/01/2011
+ * @version 5.5 10/01/2011
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -273,7 +275,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyLis
             textMaxCharsSpinner.setEnabled(false);
             commaRadioButton.setSelected(true);
             otherTextField.setEnabled(false);
-            dateFormatComboBox.setSelectedItem(MyJSQLView_Utils.getDateFormatOption());
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
             applyButton.setEnabled(true);
          }
 

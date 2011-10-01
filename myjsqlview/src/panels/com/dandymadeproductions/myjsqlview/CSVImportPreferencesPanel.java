@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.2 09/13/2011
+// Version 3.3 10/01/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,6 +72,8 @@
 //                        by Obtaining from MyJSQLView_Utils Class.
 //         3.2 09/13/2011 Constructor Obtained dateFormatComboBox From MyJSQLView_Utils.
 //                        getDateFormatOptions().
+//         3.3 10/01/2011 Set Date Format to DBTablesPanel.getGeneralProperties().getViewDateFormat()
+//                        on Restore Defaults in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -95,7 +97,7 @@ import javax.swing.*;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.2 09/13/2011
+ * @version 3.3 10/01/2011
  */
 
 class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -237,7 +239,7 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
          {
             commaRadioButton.setSelected(true);
             otherTextField.setEnabled(false);
-            dateFormatComboBox.setSelectedIndex(0);
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
             applyButton.setEnabled(true);
          }
 
