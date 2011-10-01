@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.3 09/13/2011
+// Version 5.4 10/01/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,10 @@
 //                        by Obtaining from MyJSQLView_Utils Class.
 //         5.3 09/13/2011 Constructor Obtained dateFormatComboBox From MyJSQLView_Utils.
 //                        getDateFormatOptions().
+//         5.4 10/01/2011 Removed Class Instance defaultCharsInclude & Replaced With
+//                        DEFAULT_CHARS_INCLUSION. Added Class Instances DEFAULT_CHARS_LENGTH
+//                        & DEFAULT_DATA_DELIMITER. Used in actionPerformed() for Restore
+//                        Defaults.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -131,7 +135,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.3 09/13/2011
+ * @version 5.4 10/01/2011
  */
 
 class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -141,12 +145,15 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyLis
 
    private JCheckBox includeTextCheckBox;
    private JSpinner textMaxCharsSpinner;
-   private static final int defaultCharsInclude = 50;
    private JRadioButton tabRadioButton, semicolonRadioButton, commaRadioButton, spaceRadioButton,
            otherRadioButton;
    private JTextField otherTextField;
    private JComboBox dateFormatComboBox;
    private JButton restoreDefaultsButton, applyButton;
+   
+   protected static final boolean DEFAULT_CHAR_INCLUSION = false;
+   protected static final int DEFAULT_CHARS_LENGTH = 50;
+   protected static final String DEFAULT_DATA_DELIMITER = ",";
 
    //===========================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -261,12 +268,12 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyLis
          // Restore Defaults Button Action
          if (formSource == restoreDefaultsButton)
          {
-            includeTextCheckBox.setSelected(false);
-            textMaxCharsSpinner.setValue(Integer.valueOf(defaultCharsInclude));
+            includeTextCheckBox.setSelected(DEFAULT_CHAR_INCLUSION);
+            textMaxCharsSpinner.setValue(Integer.valueOf(DEFAULT_CHARS_LENGTH));
             textMaxCharsSpinner.setEnabled(false);
             commaRadioButton.setSelected(true);
             otherTextField.setEnabled(false);
-            dateFormatComboBox.setSelectedIndex(0);
+            dateFormatComboBox.setSelectedItem(MyJSQLView_Utils.getDateFormatOption());
             applyButton.setEnabled(true);
          }
 
@@ -400,7 +407,7 @@ class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(charNumberLabel, constraints);
       charNumberSelectionPanel.add(charNumberLabel);
 
-      textCharSpinnerModel = new SpinnerNumberModel(defaultCharsInclude, minimumCharsIncluded,
+      textCharSpinnerModel = new SpinnerNumberModel(DEFAULT_CHARS_LENGTH, minimumCharsIncluded,
                                                     maxCharsIncluded, spinnerCharsIncludedStep);
       textMaxCharsSpinner = new JSpinner(textCharSpinnerModel);
       textMaxCharsSpinner.setEnabled(false);
