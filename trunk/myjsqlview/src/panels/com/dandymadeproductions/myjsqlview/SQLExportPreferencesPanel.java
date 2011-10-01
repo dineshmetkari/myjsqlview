@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.1 06/11/2011
+// Version 4.2 10/01/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,8 +32,8 @@
 //=================================================================
 // Version 1.0 04/28/2007 Original SQLExportPreferencesPanel.
 //         1.1 04/30/2007 Basic Componenet Layout Completion.
-//         1.2 05/01/2007 Clean Up Constructor and Began
-//                        Implementing Action Events.
+//         1.2 05/01/2007 Clean Up Constructor and Began Implementing Action
+//                        Events.
 //         1.3 05/02/2007 Cleaned Up Some More. Completed Action
 //                        Events and Implemented setSQLExportOptions().
 //         1.4 05/02/2007 Added Class Method getSQLExportOptions().
@@ -97,6 +97,8 @@
 //         4.1 06/11/2011 Replaced Class Instance subProtocol With dataSourceType.
 //                        Constructor and Class Methods createInsert/UpdateOptionsPanel()
 //                        Effected.
+//         4.2 10/01/2011 Added Static Final Default and Other Common Class Instances. Used
+//                        to Setup Instances and Restoring Defaults in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -115,7 +117,7 @@ import javax.swing.*;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.1 06/11/2011
+ * @version 4.2 10/01/2011
  */
 
 class SQLExportPreferencesPanel extends JPanel implements ActionListener
@@ -138,6 +140,29 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
    private JButton restoreDefaultsButton, applyButton;
    private String dataSourceType;
+   
+   protected static final boolean DEFAULT_TABLE_STRUCTURE = false;
+   protected static final boolean DEFAULT_TABLE_DATA = true;
+   protected static final boolean DEFAULT_INSERT_LOCK = true;
+   protected static final boolean DEFAULT_INSERT_TYPE = false;
+   protected static final boolean DEFAULT_REPLACE_LOCK = true;
+   protected static final boolean DEFAULT_REPLACE_TYPE = false;
+   protected static final boolean DEFAULT_UPDATE_LOCK = true;
+   protected static final boolean DEFAULT_UPDATE_TYPE = false;
+   protected static final boolean DEFAULT_AUTO_INCREMENT = false;
+   protected static final boolean DEFAULT_TIMESTAMP = false;
+   
+   protected static final String EXPRESSION_SINGULAR = "Singular";
+   protected static final String EXPRESSION_PLURAL = "Plural";
+   protected static final String EXPRESSION_EXPLICIT = "Explicit";
+   
+   protected static final String TYPE_INSERT = "Insert";
+   protected static final String TYPE_REPLACE = "Replace";
+   protected static final String TYPE_UPDATE = "Update";
+   
+   protected static final String PRIORITY_LOW = "Low_Priority";
+   protected static final String PRIORITY_DELAYED = "Delayed";
+   protected static final String PRIORITY_IGNORE = "Ignore";
 
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -180,9 +205,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.TableStructure");
       if (resource.equals(""))
-         tableStructureCheckBox = new JCheckBox("Table Structure", false);
+         tableStructureCheckBox = new JCheckBox("Table Structure", DEFAULT_TABLE_STRUCTURE);
       else
-         tableStructureCheckBox = new JCheckBox(resource, false);
+         tableStructureCheckBox = new JCheckBox(resource, DEFAULT_TABLE_STRUCTURE);
       tableStructureCheckBox.setFocusPainted(false);
       tableStructureCheckBox.addActionListener(this);
       structurePanel.add(tableStructureCheckBox);
@@ -222,9 +247,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Data CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.TableData");
       if (resource.equals(""))
-         tableDataCheckBox = new JCheckBox("Table Data", true);
+         tableDataCheckBox = new JCheckBox("Table Data", DEFAULT_TABLE_DATA);
       else
-         tableDataCheckBox = new JCheckBox(resource, true);
+         tableDataCheckBox = new JCheckBox(resource, DEFAULT_TABLE_DATA);
       tableDataCheckBox.setFocusPainted(false);
       tableDataCheckBox.addActionListener(this);
 
@@ -269,11 +294,11 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Insert/Replace ComboBox
       insertReplaceUpdateComboBox = new JComboBox();
-      insertReplaceUpdateComboBox.addItem("Insert");
+      insertReplaceUpdateComboBox.addItem(TYPE_INSERT);
       if (!dataSourceType.equals(ConnectionManager.POSTGRESQL)
             && !dataSourceType.equals(ConnectionManager.MSACCESS))
-         insertReplaceUpdateComboBox.addItem("Replace");
-      insertReplaceUpdateComboBox.addItem("Update");
+         insertReplaceUpdateComboBox.addItem(TYPE_REPLACE);
+      insertReplaceUpdateComboBox.addItem(TYPE_UPDATE);
       insertReplaceUpdateComboBox.addActionListener(this);
       dataContentPanel.add(insertReplaceUpdateComboBox);
 
@@ -376,35 +401,35 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
          // Restore Defaults Content Settings
          if (formSource == restoreDefaultsButton)
          {
-            tableStructureCheckBox.setSelected(false);
-            tableDataCheckBox.setSelected(true);
+            tableStructureCheckBox.setSelected(DEFAULT_TABLE_STRUCTURE);
+            tableDataCheckBox.setSelected(DEFAULT_TABLE_DATA);
             identifierQuoteTextField.setText(ConnectionManager.getIdentifierQuoteString());
-            insertLockTableCheckBox.setSelected(true);
-            replaceLockTableCheckBox.setSelected(true);
-            updateLockTableCheckBox.setSelected(true);
-            autoIncrementCheckBox.setSelected(false);
-            timeStampCheckBox.setSelected(false);
+            insertLockTableCheckBox.setSelected(DEFAULT_INSERT_LOCK);
+            replaceLockTableCheckBox.setSelected(DEFAULT_REPLACE_LOCK);
+            updateLockTableCheckBox.setSelected(DEFAULT_UPDATE_LOCK);
+            autoIncrementCheckBox.setSelected(DEFAULT_AUTO_INCREMENT);
+            timeStampCheckBox.setSelected(DEFAULT_TIMESTAMP);
             if (dataSourceType.equals(ConnectionManager.MYSQL) ||
                 dataSourceType.equals(ConnectionManager.POSTGRESQL))
             {
-               insertExpressionComboBox.setSelectedItem("Plural");
-               replaceExpressionComboBox.setSelectedItem("Plural");
+               insertExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
+               replaceExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
             }
             else
             {
-               insertExpressionComboBox.setSelectedItem("Singular");
-               replaceExpressionComboBox.setSelectedItem("Singular");
+               insertExpressionComboBox.setSelectedItem(EXPRESSION_SINGULAR);
+               replaceExpressionComboBox.setSelectedItem(EXPRESSION_SINGULAR);
             }
-            insertTypeCheckBox.setSelected(false);
-            replaceTypeCheckBox.setSelected(false);
-            updateTypeCheckBox.setSelected(false);
-            insertReplaceUpdateComboBox.setSelectedIndex(0);
+            insertTypeCheckBox.setSelected(DEFAULT_INSERT_TYPE);
+            replaceTypeCheckBox.setSelected(DEFAULT_REPLACE_TYPE);
+            updateTypeCheckBox.setSelected(DEFAULT_UPDATE_TYPE);
+            insertReplaceUpdateComboBox.setSelectedItem(TYPE_INSERT);
             insertReplaceUpdateComboBox.setEnabled(true);
-            insertTypeComboBox.setSelectedIndex(0);
+            insertTypeComboBox.setSelectedItem(PRIORITY_LOW);
             insertTypeComboBox.setEnabled(false);
-            replaceTypeComboBox.setSelectedIndex(0);
+            replaceTypeComboBox.setSelectedItem(PRIORITY_LOW);
             replaceTypeComboBox.setEnabled(false);
-            updateTypeComboBox.setSelectedIndex(0);
+            updateTypeComboBox.setSelectedItem(PRIORITY_LOW);
             updateTypeComboBox.setEnabled(false);
 
             applyButton.setEnabled(true);
@@ -431,7 +456,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
          {
             if (tableStructureCheckBox.isSelected())
             {
-               insertReplaceUpdateComboBox.setSelectedItem("Insert");
+               insertReplaceUpdateComboBox.setSelectedItem(TYPE_INSERT);
                insertReplaceUpdateComboBox.setEnabled(false);
             }
             else
@@ -496,13 +521,13 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
          // so uncheck the appropriate lock table checkbox.
          if (formSource == insertTypeComboBox)
          {
-            if (insertTypeComboBox.getSelectedItem().equals("Delayed"))
+            if (insertTypeComboBox.getSelectedItem().equals(PRIORITY_DELAYED))
                insertLockTableCheckBox.setSelected(false);
          }
 
          if (formSource == replaceTypeComboBox)
          {
-            if (replaceTypeComboBox.getSelectedItem().equals("Delayed"))
+            if (replaceTypeComboBox.getSelectedItem().equals(PRIORITY_DELAYED))
                replaceLockTableCheckBox.setSelected(false);
          }
 
@@ -529,9 +554,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Insert Explicit ComboBox
       insertExpressionComboBox = new JComboBox();
-      insertExpressionComboBox.addItem("Singular");
-      insertExpressionComboBox.addItem("Plural");
-      insertExpressionComboBox.addItem("Explicit");
+      insertExpressionComboBox.addItem(EXPRESSION_SINGULAR);
+      insertExpressionComboBox.addItem(EXPRESSION_PLURAL);
+      insertExpressionComboBox.addItem(EXPRESSION_EXPLICIT);
       insertExpressionComboBox.addActionListener(this);
       expressionTypePanel.add(insertExpressionComboBox);
 
@@ -544,9 +569,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Insert Lock Table CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
       if (resource.equals(""))
-         insertLockTableCheckBox = new JCheckBox("Lock Table", true);
+         insertLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_INSERT_LOCK);
       else
-         insertLockTableCheckBox = new JCheckBox(resource, true);
+         insertLockTableCheckBox = new JCheckBox(resource, DEFAULT_INSERT_LOCK);
       insertLockTableCheckBox.setFocusPainted(false);
       insertLockTableCheckBox.addActionListener(this);
 
@@ -559,9 +584,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Auto-Increment CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Auto-Increment");
       if (resource.equals(""))
-         autoIncrementCheckBox = new JCheckBox("Auto-Increment: SEQ", false);
+         autoIncrementCheckBox = new JCheckBox("Auto-Increment: SEQ", DEFAULT_AUTO_INCREMENT);
       else
-         autoIncrementCheckBox = new JCheckBox(resource + ": SEQ", false);
+         autoIncrementCheckBox = new JCheckBox(resource + ": SEQ", DEFAULT_AUTO_INCREMENT);
       autoIncrementCheckBox.setFocusPainted(false);
       autoIncrementCheckBox.addActionListener(this);
 
@@ -574,9 +599,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // TimeStamp CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Timestamp");
       if (resource.equals(""))
-         timeStampCheckBox = new JCheckBox("Timestamp: NOW( )", false);
+         timeStampCheckBox = new JCheckBox("Timestamp: NOW( )", DEFAULT_TIMESTAMP);
       else
-         timeStampCheckBox = new JCheckBox(resource + ": NOW( )", false);
+         timeStampCheckBox = new JCheckBox(resource + ": NOW( )", DEFAULT_TIMESTAMP);
       timeStampCheckBox.setFocusPainted(false);
       timeStampCheckBox.addActionListener(this);
 
@@ -589,9 +614,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Insert Type CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
       if (resource.equals(""))
-         insertTypeCheckBox = new JCheckBox("Type", false);
+         insertTypeCheckBox = new JCheckBox("Type", DEFAULT_INSERT_TYPE);
       else
-         insertTypeCheckBox = new JCheckBox(resource, false);
+         insertTypeCheckBox = new JCheckBox(resource, DEFAULT_INSERT_TYPE);
       insertTypeCheckBox.setFocusPainted(false);
       insertTypeCheckBox.addActionListener(this);
 
@@ -609,9 +634,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Insert Type Options
       insertTypeComboBox = new JComboBox();
-      insertTypeComboBox.addItem("Low_Priority");
-      insertTypeComboBox.addItem("Delayed");
-      insertTypeComboBox.addItem("Ignore");
+      insertTypeComboBox.addItem(PRIORITY_LOW);
+      insertTypeComboBox.addItem(PRIORITY_DELAYED);
+      insertTypeComboBox.addItem(PRIORITY_IGNORE);
       insertTypeComboBox.setEnabled(false);
       insertTypeComboBox.addActionListener(this);
       insertTypePanel.add(insertTypeComboBox);
@@ -641,9 +666,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Replace Explicit ComboBox
       replaceExpressionComboBox = new JComboBox();
-      replaceExpressionComboBox.addItem("Singular");
-      replaceExpressionComboBox.addItem("Plural");
-      replaceExpressionComboBox.addItem("Explicit");
+      replaceExpressionComboBox.addItem(EXPRESSION_SINGULAR);
+      replaceExpressionComboBox.addItem(EXPRESSION_PLURAL);
+      replaceExpressionComboBox.addItem(EXPRESSION_EXPLICIT);
       replaceExpressionComboBox.addActionListener(this);
       expressionTypePanel.add(replaceExpressionComboBox);
 
@@ -656,9 +681,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Replace Lock Table CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
       if (resource.equals(""))
-         replaceLockTableCheckBox = new JCheckBox("Lock Table", true);
+         replaceLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_REPLACE_LOCK);
       else
-         replaceLockTableCheckBox = new JCheckBox(resource, true);
+         replaceLockTableCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_LOCK);
       replaceLockTableCheckBox.setFocusPainted(false);
       replaceLockTableCheckBox.addActionListener(this);
 
@@ -671,9 +696,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Replace Type CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
       if (resource.equals(""))
-         replaceTypeCheckBox = new JCheckBox("Type", false);
+         replaceTypeCheckBox = new JCheckBox("Type", DEFAULT_REPLACE_TYPE);
       else
-         replaceTypeCheckBox = new JCheckBox(resource, false);
+         replaceTypeCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_TYPE);
       replaceTypeCheckBox.setFocusPainted(false);
       replaceTypeCheckBox.addActionListener(this);
 
@@ -688,8 +713,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Replace Type Options
       replaceTypeComboBox = new JComboBox();
-      replaceTypeComboBox.addItem("Low_Priority");
-      replaceTypeComboBox.addItem("Delayed");
+      replaceTypeComboBox.addItem(PRIORITY_LOW);
+      replaceTypeComboBox.addItem(PRIORITY_DELAYED);
       replaceTypeComboBox.setEnabled(false);
       replaceTypeComboBox.addActionListener(this);
       replaceTypePanel.add(replaceTypeComboBox);
@@ -716,9 +741,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // UpdateLock Table CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
       if (resource.equals(""))
-         updateLockTableCheckBox = new JCheckBox("Lock Table", true);
+         updateLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_UPDATE_LOCK);
       else
-         updateLockTableCheckBox = new JCheckBox(resource, true);
+         updateLockTableCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_LOCK);
       updateLockTableCheckBox.setFocusPainted(false);
       updateLockTableCheckBox.addActionListener(this);
 
@@ -731,9 +756,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       // Type CheckBox
       resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
       if (resource.equals(""))
-         updateTypeCheckBox = new JCheckBox("Type", false);
+         updateTypeCheckBox = new JCheckBox("Type", DEFAULT_UPDATE_TYPE);
       else
-         updateTypeCheckBox = new JCheckBox(resource, false);
+         updateTypeCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_TYPE);
       updateTypeCheckBox.setFocusPainted(false);
       updateTypeCheckBox.addActionListener(this);
 
@@ -750,8 +775,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       // Type Options
       updateTypeComboBox = new JComboBox();
-      updateTypeComboBox.addItem("Low_Priority");
-      updateTypeComboBox.addItem("Ignore");
+      updateTypeComboBox.addItem(PRIORITY_LOW);
+      updateTypeComboBox.addItem(PRIORITY_IGNORE);
       updateTypeComboBox.setEnabled(false);
       updateTypeComboBox.addActionListener(this);
       updateTypePanel.add(updateTypeComboBox);
