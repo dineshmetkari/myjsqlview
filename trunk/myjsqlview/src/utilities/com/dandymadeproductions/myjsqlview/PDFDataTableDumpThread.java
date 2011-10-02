@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.8 09/09/2011
+// Version 1.9 10/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,11 @@
 //             Format from the pdfDataExportOptions Rather Than the DBTables
 //             DataExportProperties getCSVDateFormat(). Included in Same Method
 //             Number Type Currency, & Expanded Float, Double to indexOf().
+//         1.9 Obtained titleFont, & rowHeaderFont From DataExportProperties.
+//             Added Class Instance tableDataFont and Used in Data for Cells.
+//             Controlled Page Layout Through pdfDataExportOptions.getPageLayout()
+//             in run(). Correction in Check to Not Output PDF if Table Has
+//             No Rows.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -82,7 +87,7 @@ import com.itextpdf.text.pdf.PdfPageEvent;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 1.8 09/09/2011
+ * @version 1.9 10/02/2011
  */
 
 class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -95,7 +100,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
    private DataExportProperties pdfDataExportOptions;
    private PdfTemplate pdfTemplate;
 
-   private Font titleFont, rowHeaderFont;
+   private Font titleFont, rowHeaderFont, tableDataFont;
    private BaseFont rowHeaderBaseFont;
    private static final Font FONT = new Font();
    private static final BaseFont BASE_FONT = FONT.getCalculatedBaseFont(false);
@@ -156,13 +161,18 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       summaryListTableNameTypes = new HashMap<String, String>();
       pdfDataExportOptions = DBTablesPanel.getDataExportProperties();
       
-      titleFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getTitleFontSize(),
-                           Font.BOLD);
+      titleFont = new Font(pdfDataExportOptions.getFont());
+      titleFont.setStyle(Font.BOLD);
+      titleFont.setSize((float) pdfDataExportOptions.getTitleFontSize());
       titleFont.setColor(new BaseColor(pdfDataExportOptions.getTitleColor()));
-      rowHeaderFont = new Font(Font.FontFamily.UNDEFINED, (float) pdfDataExportOptions.getHeaderFontSize(),
-                               Font.BOLD);
+      
+      rowHeaderFont = new Font(pdfDataExportOptions.getFont());
+      rowHeaderFont.setStyle(Font.BOLD);
+      rowHeaderFont.setSize((float) pdfDataExportOptions.getHeaderFontSize());
       rowHeaderFont.setColor(new BaseColor(pdfDataExportOptions.getHeaderColor()));
       rowHeaderBaseFont = rowHeaderFont.getCalculatedBaseFont(false);
+      
+      tableDataFont = pdfDataExportOptions.getFont();
 
       // Constructing progress bar.
       rowNumber = summaryListTable.getRowCount();
@@ -258,7 +268,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                         pdfDataExportOptions.getPDFDateFormat()) + time;
                   }
                }
-               bodyCell = new PdfPCell(new Phrase(currentString));
+               bodyCell = new PdfPCell(new Phrase(currentString, tableDataFont));
                bodyCell.setPaddingBottom(4);
                
                if (currentType != null)
@@ -292,7 +302,7 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       // Check to see if any data was in the summary
       // table to even be saved.
       
-      if (pdfTable.size() <= 1)
+      if (pdfTable.size() <= pdfTable.getHeaderRows())
          return;
       
       // Create a document of the PDF formatted data
@@ -300,13 +310,19 @@ class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       
       try
       {
-         // Sizing
+         // Sizing & Layout
          totalWidth = 0;
          for (int width : columnWidths)
             totalWidth += width;
-         pageSize = PageSize.A4.rotate();
-         pageSize.setRight(pageSize.getRight() * Math.max(1f, totalWidth / 53000f));
-         pageSize.setTop(pageSize.getTop() * Math.max(1f, totalWidth / 53000f));
+         
+         if (pdfDataExportOptions.getPageLayout() == PDFExportPreferencesPanel.LAYOUT_PORTRAIT)
+            pageSize = PageSize.A4;
+         else
+         {
+            pageSize = PageSize.A4.rotate();
+            pageSize.setRight(pageSize.getRight() * Math.max(1f, totalWidth / 53000f));
+            pageSize.setTop(pageSize.getTop() * Math.max(1f, totalWidth / 53000f));
+         }
          
          pdfTable.setWidths(columnWidths);
 
