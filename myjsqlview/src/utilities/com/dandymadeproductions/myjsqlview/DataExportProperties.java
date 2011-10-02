@@ -33,14 +33,13 @@
 //         1.1 Author Comment Changes.
 //         1.2 Added Update Options. Updated As Needed.
 //         1.3 Class Methods getType() & getLock().
-//         1.4 Class Instances insert/replaceExplicit and
-//             Same getter/setter Methods.
-//         1.5 Modified getAutoIncrement() and getTimeStamp()
-//             to Return autoIncrement if Insert Selected or
-//             False Otherwise.
+//         1.4 Class Instances insert/replaceExplicit and Same getter/setter
+//             Methods.
+//         1.5 Modified getAutoIncrement() and getTimeStamp() to Return
+//             autoIncrement if Insert Selected or False Otherwise.
 //         1.6 Renamed From SQLDataExportProperties to DataExportProperties.
-//         1.7 Added Instances textInclusion & textCharsNumber
-//             Along With get/setter Methods.
+//         1.7 Added Instances textInclusion & textCharsNumber Along With
+//             get/setter Methods.
 //         1.8 Set the Default Comma Separateed Value to Comma.
 //         1.9 Comment Changes.
 //         2.0 Header Update.
@@ -61,27 +60,29 @@
 //         2,8 Class Instance dateFormat Initialization Changed From MM-DD-YYYY
 //             to MM-dd-YYYY.
 //         2.9 Implemented a Preferences API to Save State. Class Instances
-//             dataExportPreferences, All Static Preferences Identifiers. Changes
-//             to Constructor and Setter Methods. Addition Methods savePreferences().
+//             dataExportPreferences, All Static Preferences Identifiers.
+//             Changes to Constructor and Setter Methods. Addition Methods
+//             savePreferences().
 //         3.0 Removed the identifierQuoteString From Preferences Saving/Loading.
-//             When Switching Between Databases This Can Cause SQL Statements to
-//             be Exported With the Incorrect Identifier Quote. This Causes More
-//             Confusion Than it is Worth in Saving. Removed IDENTIFIERQUOTESTRING.
+//             When Switching Between Databases This Can Cause SQL Statements
+//             to be Exported With the Incorrect Identifier Quote. This Causes
+//             More Confusion Than it is Worth in Saving. Removed IDENTIFIERQUOTESTRING.
 //         3.1 Changed Package to Reflect Dandy Made Productions Code.
 //         3.2 Implemenation of PDF Export Properties.
 //         3.3 Changed titleFont, headerFont, & headerBorder to titleFontSize,
 //             headerFontSize, & headerBorderSize. Correction to getter/setter
 //             Methods and Final Instances to Corespond.
-//         3.4 Cleanup and Correction to savePreference() in Setter Methods for PDF
-//             Export Options.
+//         3.4 Cleanup and Correction to savePreference() in Setter Methods
+//             for PDF Export Options.
 //         3.5 Updated Copyright and Some Comments.
 //         3.6 Constructor identifierQuoteString Obtained From Redefined Class
 //             ConnctionManager.
-//         3.7 Set Default csv/pdfDateFormat to MyJSQLView_Utils.MMddyyyy_DASH in
-//             the Constructor.
-//         3.8 Added Class Instances FONT, PAGELAYOUT, font & pageLayout and the
-//             Latter Two Corresponding get/setter Methods. Obtained Defaults in
-//             Constructor From Appropriate Panels.
+//         3.7 Set Default csv/pdfDateFormat to MyJSQLView_Utils.MMddyyyy_DASH
+//             in the Constructor.
+//         3.8 Added Class Instances FONT, PAGELAYOUT, fontName & pageLayout
+//             and the Latter Two Corresponding get/setter Methods. Obtained
+//             Defaults in Constructor From Appropriate Panels. Added Class
+//             Methods loadPDFFonts(), getFont() & getFonts().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -90,7 +91,12 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Color;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.prefs.Preferences;
+
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Font;
 
 /**
  *    The DataExportProperties class provides the structure for the
@@ -140,10 +146,11 @@ class DataExportProperties
    private int numberAlignment;
    private int dateAlignment;
    private String pdfDateFormat;
-   private String font;
+   private String fontName;
    private int pageLayout;
    
    private Preferences dataExportPreferences;
+   private HashMap<String, Font> fontHashMap;
    
    // These all have to be unique.
    
@@ -182,7 +189,7 @@ class DataExportProperties
    private static final String NUMBERALIGNMENT = "NumberAlignment";
    private static final String DATEALIGNMENT = "DateAlignment";
    private static final String PDFDATEFORMAT = "ExportPDFDateFormat";
-   private static final String FONT = "Font";
+   private static final String FONTNAME = "FontName";
    private static final String PAGELAYOUT = "PageLayout";
    
    //==============================================================
@@ -229,7 +236,7 @@ class DataExportProperties
       numberAlignment = PDFExportPreferencesPanel.ALIGNMENT_RIGHT;
       dateAlignment = PDFExportPreferencesPanel.ALIGNMENT_CENTER;
       pdfDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
-      font = PDFExportPreferencesPanel.DEFAULT_FONT;
+      fontName = PDFExportPreferencesPanel.DEFAULT_FONT;
       pageLayout = PDFExportPreferencesPanel.LAYOUT_PORTRAIT;
       
       // Try to retrieve state from Preferences.
@@ -276,11 +283,41 @@ class DataExportProperties
          numberAlignment = dataExportPreferences.getInt(NUMBERALIGNMENT, numberAlignment);
          dateAlignment = dataExportPreferences.getInt(DATEALIGNMENT, dateAlignment);
          pdfDateFormat = dataExportPreferences.get(PDFDATEFORMAT, pdfDateFormat);
-         font = dataExportPreferences.get(FONT, font);
+         fontName = dataExportPreferences.get(FONTNAME, fontName);
          pageLayout = dataExportPreferences.getInt(PAGELAYOUT, pageLayout);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
+      
+      // Load PDF Export Fonts.
+      loadPDFFonts();
+   }
+   
+   //========================================================
+   // Class method to load iText PDF Fonts.
+   //========================================================
+   
+   private void loadPDFFonts()
+   {
+      // Method Instances.
+      Iterator<String> fontNameIterator;
+      String fontName;
+      
+      fontHashMap = new HashMap<String, Font> ();
+      
+      // Insure have one default font.
+      
+      fontHashMap.put(PDFExportPreferencesPanel.DEFAULT_FONT, new Font(Font.FontFamily.UNDEFINED));
+      
+      // Create the default registered fonts.
+      
+      fontNameIterator = FontFactory.getRegisteredFonts().iterator();
+      
+      while (fontNameIterator.hasNext())
+      {
+         fontName = fontNameIterator.next();
+         fontHashMap.put(fontName, FontFactory.getFont(fontName));
+      } 
    }
 
    //==============================================================
@@ -505,9 +542,22 @@ class DataExportProperties
       return dateAlignment;
    }
    
-   protected String getFont()
+   protected Font getFont()
    {
-      return font;
+      if (fontHashMap.containsKey(fontName))
+         return fontHashMap.get(fontName);
+      else
+         return fontHashMap.get(PDFExportPreferencesPanel.DEFAULT_FONT);
+   }
+   
+   protected Object[] getFonts()
+   {
+      return fontHashMap.keySet().toArray();
+   }
+   
+   protected String getFontName()
+   {
+      return fontName;
    }
    
    protected int getPageLayout()
@@ -714,10 +764,10 @@ class DataExportProperties
       savePreference(DATEALIGNMENT, value);
    }
    
-   protected void setFont(String content)
+   protected void setFontName(String content)
    {
-      font = content;
-      savePreference(FONT, content);
+      fontName = content;
+      savePreference(FONTNAME, content);
    }
    
    protected void setPageLayout(int value)
@@ -810,7 +860,7 @@ class DataExportProperties
       parameters.append("[numberAlignment = " + numberAlignment + "]");
       parameters.append("[pdfDateFormat = " + pdfDateFormat + "]");
       parameters.append("[dateAlignment = " + dateAlignment + "]");
-      parameters.append("[font = " + font + "]");
+      parameters.append("[fontName = " + fontName + "]");
       parameters.append("[pageLayout = " + pageLayout + "]");
       
       return parameters.toString();
