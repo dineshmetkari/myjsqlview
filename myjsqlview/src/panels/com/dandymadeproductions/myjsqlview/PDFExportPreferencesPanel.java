@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 09/13/2011
+// Version 1.9 10/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,14 @@
 //                        by Obtaining from MyJSQLView_Utils Class.
 //         1.8 09/13/2011 fillDatePanel() Obtained dateFormatComboBox From MyJSQLView_Utils.
 //                        getDateFormatOptions().
+//         1.9 10/02/2011 Added Mouse Listener for Copy/Cut/Paste for customTitleTextField.
+//                        Set customTitleTextField Enabled if Custom Title is Enabled in
+//                        Class Method setPDFExportProperties(). Renamed Static Final Class
+//                        Instances to Uppercase. Used Default Class Instances Throughout.
+//                        Re-designed to Use Font and Page Layout Selectors. To That Effect
+//                        Added Class Instances fontComboBox & pageLayoutComboBox, Method
+//                        fillFontPageLayoutPanel(), & Use of the Instances in getPDFExportOptions()
+//                        & setPDFExportProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +78,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.8 09/13/2011
+ * @version 1.9 10/02/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -89,22 +97,32 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
    private JButton headerColorButton, headerBorderColorButton;
    private JComboBox numberAlignmentComboBox;
    private JComboBox dateAlignmentComboBox, dateFormatComboBox;
+   private JComboBox fontComboBox;
+   private JComboBox pageLayoutComboBox;
    private JButton restoreDefaultsButton, applyButton;
 
    private JColorChooser panelColorChooser;
    private String fileSeparator, iconsDirectory;
    private String actionCommand;
 
-   private static final int defaultTitleFontSize = 14;
-   private static final int defaultHeaderFontSize = 12;
-   private static final int minimumFontSize = 8;
-   private static final int maxFontSize = 32;
-   private static final int defaultBorderSize = 1;
-   private static final int minimumBorderSize = 1;
-   private static final int maxBorderSize = 6;
-   private static final int spinnerSizeStep = 1;
+   protected static final String DEFAULT_FONT = "Undefined";
+   protected static final Color DEFAULT_COLOR = Color.BLACK;
+   protected static final String DEFAULT_TITLE = "";
+   protected static final int DEFAULT_TITLE_FONT_SIZE = 14;
+   protected static final int DEFAULT_HEADER_FONT_SIZE = 12;
+   protected static final int MINIMUM_FONT_SIZE = 8;
+   protected static final int MAX_FONT_SIZE = 32;
+   protected static final int DEFAULT_BORDER_SIZE = 1;
+   protected static final int MINIMUM_BORDER_SIZE = 1;
+   protected static final int MAX_BORDER_SIZE = 6;
+   protected static final int SPINNER_SIZE_STEP = 1;
 
-   private static final Object[] alignmentOptions = {"LEFT", "CENTER", "RIGHT"};
+   protected static final int ALIGNMENT_LEFT = 0;
+   protected static final int ALIGNMENT_CENTER = 1;
+   protected static final int ALIGNMENT_RIGHT = 2;
+   
+   protected static final int LAYOUT_PORTRAIT = 0;
+   protected static final int LAYOUT_LANDSCAPE = 1;
 
    //===========================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -114,7 +132,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
    {
       // Class Instances
       JPanel mainPanel, centerPanel;
-      JPanel titlePanel, headerPanel, numberPanel, datePanel;
+      JPanel titlePanel, headerPanel, numberPanel, datePanel, fontLayoutPanel;
       JPanel buttonPanel;
 
       String resource;
@@ -157,7 +175,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
                                  BorderFactory.createEtchedBorder()));
       fillHeaderPanel(headerPanel, resourceBundle);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 70);
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 38);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(headerPanel, constraints);
@@ -172,13 +190,11 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
                                 BorderFactory.createEtchedBorder()));
       fillNumberPanel(numberPanel, resourceBundle);
 
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 30);
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 24);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(numberPanel, constraints);
       centerPanel.add(numberPanel);
-
-      mainPanel.add(centerPanel, BorderLayout.CENTER);
 
       // =====================================================
       // Date Panel.
@@ -188,8 +204,26 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
                               BorderFactory.createEmptyBorder(2, 2, 2, 2),
                               BorderFactory.createEtchedBorder()));
       fillDatePanel(datePanel, resourceBundle);
-      mainPanel.add(datePanel, BorderLayout.SOUTH);
+      
+      buildConstraints(constraints, 0, 2, 1, 1, 100, 38);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(datePanel, constraints);
+      centerPanel.add(datePanel);
+      
+      mainPanel.add(centerPanel, BorderLayout.CENTER);
 
+      // =====================================================
+      // Font/PageLayout Panel.
+
+      fontLayoutPanel = new JPanel(gridbag);
+      fontLayoutPanel.setBorder(BorderFactory.createCompoundBorder(
+                                BorderFactory.createEmptyBorder(2, 2, 2, 2),
+                                BorderFactory.createEtchedBorder()));
+      fillFontPageLayoutPanel(fontLayoutPanel, resourceBundle);
+      
+      mainPanel.add(fontLayoutPanel, BorderLayout.SOUTH);
+      
       add(mainPanel, BorderLayout.CENTER);
 
       // Button Action Options Panel
@@ -279,17 +313,19 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
          if (formSource == restoreDefaultsButton)
          {
             titleNoneRadioButton.setSelected(true);
-            customTitleTextField.setText("");
+            customTitleTextField.setText(DEFAULT_TITLE);
             customTitleTextField.setEnabled(false);
-            titleFontSizeSpinner.setValue(Integer.valueOf(defaultTitleFontSize));
+            titleFontSizeSpinner.setValue(Integer.valueOf(DEFAULT_TITLE_FONT_SIZE));
             titleColorButton.setBackground(Color.BLACK);
-            headerFontSizeSpinner.setValue(defaultHeaderFontSize);
+            headerFontSizeSpinner.setValue(DEFAULT_HEADER_FONT_SIZE);
             headerColorButton.setBackground(Color.BLACK);
-            headerBorderSizeSpinner.setValue(defaultBorderSize);
+            headerBorderSizeSpinner.setValue(DEFAULT_BORDER_SIZE);
             headerBorderColorButton.setBackground(Color.BLACK);
-            numberAlignmentComboBox.setSelectedIndex(2);
-            dateFormatComboBox.setSelectedItem("MM-dd-YYYY");
-            dateAlignmentComboBox.setSelectedIndex(1);
+            numberAlignmentComboBox.setSelectedIndex(ALIGNMENT_RIGHT);
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
+            dateAlignmentComboBox.setSelectedIndex(ALIGNMENT_CENTER);
+            fontComboBox.setSelectedItem(DEFAULT_FONT);
+            pageLayoutComboBox.setSelectedIndex(LAYOUT_PORTRAIT);
          }
 
          // Apply Button Action
@@ -383,7 +419,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(titleNoneRadioButton, constraints);
       titleSelectionPanel.add(titleNoneRadioButton);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.TableName");
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.Default");
       if (resource.equals(""))
          titleDefaultRadioButton = new JRadioButton("Default", false);
       else
@@ -414,6 +450,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       titleSelectionPanel.add(titleCustomRadioButton);
 
       customTitleTextField = new JTextField(10);
+      customTitleTextField.addMouseListener(MyJSQLView.getPopupMenuListener());
       customTitleTextField.setEnabled(false);
 
       buildConstraints(constraints, 3, 0, 1, 1, 64, 100);
@@ -443,8 +480,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(titleFontSizeLabel, constraints);
       titlePanel.add(titleFontSizeLabel);
 
-      titleFontSizeSpinnerModel = new SpinnerNumberModel(defaultTitleFontSize, minimumFontSize,
-                                                         maxFontSize, spinnerSizeStep);
+      titleFontSizeSpinnerModel = new SpinnerNumberModel(DEFAULT_TITLE_FONT_SIZE, MINIMUM_FONT_SIZE,
+                                                         MAX_FONT_SIZE, SPINNER_SIZE_STEP);
       titleFontSizeSpinner = new JSpinner(titleFontSizeSpinnerModel);
       titleFontSizeSpinner.addChangeListener(this);
 
@@ -471,7 +508,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       titleColorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
       titleColorButton.setActionCommand("Title Color");
-      titleColorButton.setBackground(Color.BLACK);
+      titleColorButton.setBackground(DEFAULT_COLOR);
       titleColorButton.setFocusable(false);
       titleColorButton.setMargin(new Insets(0, 0, 0, 0));
       titleColorButton.addActionListener(this);
@@ -527,8 +564,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(headerFontLabel, constraints);
       headerPanel.add(headerFontLabel);
 
-      headerFontSizeSpinnerModel = new SpinnerNumberModel(defaultHeaderFontSize, minimumFontSize,
-                                                          maxFontSize, spinnerSizeStep);
+      headerFontSizeSpinnerModel = new SpinnerNumberModel(DEFAULT_HEADER_FONT_SIZE, MINIMUM_FONT_SIZE,
+                                                          MAX_FONT_SIZE, SPINNER_SIZE_STEP);
       headerFontSizeSpinner = new JSpinner(headerFontSizeSpinnerModel);
       headerFontSizeSpinner.addChangeListener(this);
 
@@ -568,8 +605,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(headerBorderLabel, constraints);
       headerPanel.add(headerBorderLabel);
 
-      headerBorderSizeSpinnerModel = new SpinnerNumberModel(defaultBorderSize, minimumBorderSize,
-                                                            maxBorderSize, spinnerSizeStep);
+      headerBorderSizeSpinnerModel = new SpinnerNumberModel(DEFAULT_BORDER_SIZE, MINIMUM_BORDER_SIZE,
+                                                            MAX_BORDER_SIZE, SPINNER_SIZE_STEP);
       headerBorderSizeSpinner = new JSpinner(headerBorderSizeSpinnerModel);
       headerBorderSizeSpinner.addChangeListener(this);
 
@@ -583,7 +620,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       headerBorderColorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
       headerBorderColorButton.setActionCommand("Border Color");
-      headerBorderColorButton.setBackground(Color.BLACK);
+      headerBorderColorButton.setBackground(DEFAULT_COLOR);
       headerBorderColorButton.setFocusable(false);
       headerBorderColorButton.setMargin(new Insets(0, 0, 0, 0));
       headerBorderColorButton.addActionListener(this);
@@ -594,7 +631,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(headerBorderColorButton, constraints);
       headerPanel.add(headerBorderColorButton);
    }
-
+   
    //================================================================
    // Class Method to fill the Number Panel with the needed components.
    //================================================================
@@ -620,8 +657,27 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(numberFieldsAlignmentLabel, constraints);
       numberPanel.add(numberFieldsAlignmentLabel);
 
-      numberAlignmentComboBox = new JComboBox(alignmentOptions);
-      numberAlignmentComboBox.setSelectedIndex(2);
+      numberAlignmentComboBox = new JComboBox();
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Left");
+      if (resource.equals(""))
+         numberAlignmentComboBox.addItem(ALIGNMENT_LEFT);
+      else
+         numberAlignmentComboBox.addItem(resource);
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Center");
+      if (resource.equals(""))
+         numberAlignmentComboBox.addItem(ALIGNMENT_CENTER);
+      else
+         numberAlignmentComboBox.addItem(resource);
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Right");
+      if (resource.equals(""))
+         numberAlignmentComboBox.addItem(ALIGNMENT_RIGHT);
+      else
+         numberAlignmentComboBox.addItem(resource);
+         
+      numberAlignmentComboBox.setSelectedIndex(ALIGNMENT_RIGHT);
       numberAlignmentComboBox.addActionListener(this);
 
       buildConstraints(constraints, 1, 1, 1, 1, 50, 100);
@@ -693,8 +749,27 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(dateAlignmentLabel, constraints);
       datePanel.add(dateAlignmentLabel);
 
-      dateAlignmentComboBox = new JComboBox(alignmentOptions);
-      dateAlignmentComboBox.setSelectedIndex(1);
+      dateAlignmentComboBox = new JComboBox();
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Left");
+      if (resource.equals(""))
+         dateAlignmentComboBox.addItem(ALIGNMENT_LEFT);
+      else
+         dateAlignmentComboBox.addItem(resource);
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Center");
+      if (resource.equals(""))
+         dateAlignmentComboBox.addItem(ALIGNMENT_CENTER);
+      else
+         dateAlignmentComboBox.addItem(resource);
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Right");
+      if (resource.equals(""))
+         dateAlignmentComboBox.addItem(ALIGNMENT_RIGHT);
+      else
+         dateAlignmentComboBox.addItem(resource);
+      
+      dateAlignmentComboBox.setSelectedIndex(ALIGNMENT_CENTER);
       dateAlignmentComboBox.addActionListener(this);
 
       buildConstraints(constraints, 3, 1, 1, 1, 38, 100);
@@ -702,6 +777,78 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(dateAlignmentComboBox, constraints);
       datePanel.add(dateAlignmentComboBox);
+   }
+   
+   //================================================================
+   // Class Method to fill the Font/Page Layout Panel with the needed
+   // components.
+   //================================================================
+
+   private void fillFontPageLayoutPanel(JPanel fontLayoutPanel, MyJSQLView_ResourceBundle resourceBundle)
+   {
+      // Class Method Instances
+      String resource;
+      JLabel fontLabel, pageLayoutLabel;
+      
+      // Font Selector.
+
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.Font");
+      if (resource.equals(""))
+         fontLabel = new JLabel("Font");
+      else
+         fontLabel = new JLabel(resource);
+      fontLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+      buildConstraints(constraints, 0, 0, 1, 1, 12, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(fontLabel, constraints);
+      fontLayoutPanel.add(fontLabel);
+
+      fontComboBox = new JComboBox(DBTablesPanel.getDataExportProperties().getFonts());
+      fontComboBox.addActionListener(this);
+
+      buildConstraints(constraints, 1, 0, 1, 1, 38, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(fontComboBox, constraints);
+      fontLayoutPanel.add(fontComboBox);
+
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.PageLayout");
+      if (resource.equals(""))
+         pageLayoutLabel = new JLabel("Page Layout");
+      else
+         pageLayoutLabel = new JLabel(resource);
+      pageLayoutLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+
+      buildConstraints(constraints, 2, 0, 1, 1, 12, 50);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(pageLayoutLabel, constraints);
+      fontLayoutPanel.add(pageLayoutLabel);
+      
+      pageLayoutComboBox = new JComboBox();
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Portrait");
+      if (resource.equals(""))
+         pageLayoutComboBox.addItem(LAYOUT_PORTRAIT);
+      else
+         pageLayoutComboBox.addItem(resource);
+      
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Landscape");
+      if (resource.equals(""))
+         pageLayoutComboBox.addItem(LAYOUT_LANDSCAPE);
+      else
+         pageLayoutComboBox.addItem(resource);
+         
+      pageLayoutComboBox.setSelectedIndex(LAYOUT_PORTRAIT);
+      pageLayoutComboBox.addActionListener(this);
+
+      buildConstraints(constraints, 3, 0, 1, 1, 38, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(pageLayoutComboBox, constraints);
+      fontLayoutPanel.add(pageLayoutComboBox);  
    }
 
    //================================================================
@@ -738,7 +885,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       newDataProperties.setTitleFontSize(Integer.parseInt(titleFontSizeSpinner.getValue().toString()));
       newDataProperties.setTitleColor(titleColorButton.getBackground());
-
+      
       // Header Options
 
       newDataProperties.setHeaderFontSize(Integer.parseInt(headerFontSizeSpinner.getValue().toString()));
@@ -754,14 +901,19 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       newDataProperties.setPDFDateFormat((String) dateFormatComboBox.getSelectedItem());
       newDataProperties.setDateAlignment(dateAlignmentComboBox.getSelectedIndex());
-
+      
+      // Font & Page Layout Options
+      
+      newDataProperties.setPageLayout(pageLayoutComboBox.getSelectedIndex());
+      newDataProperties.setFontName((String) fontComboBox.getSelectedItem());
+      
       return newDataProperties;
    }
 
    //========================================================
    // Class method to set the PDF Export Properties.
    //========================================================
-
+   
    protected void setPDFExportProperties(DataExportProperties dataProperties)
    {
       // Title Options
@@ -774,8 +926,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       {
          titleCustomRadioButton.setSelected(true);
          customTitleTextField.setText(dataProperties.getTitle());
+         customTitleTextField.setEnabled(true);
       }
-
+       
       titleFontSizeSpinner.setValue(Integer.valueOf(dataProperties.getTitleFontSize()));
       titleColorButton.setBackground(dataProperties.getTitleColor());
 
@@ -794,5 +947,10 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       dateFormatComboBox.setSelectedItem(dataProperties.getPDFDateFormat());
       dateAlignmentComboBox.setSelectedIndex(dataProperties.getDateAlignment());
+      
+      // Font & Page Layout Options
+      
+      pageLayoutComboBox.setSelectedIndex(dataProperties.getPageLayout());
+      fontComboBox.setSelectedItem(dataProperties.getFontName());
    }
 }
