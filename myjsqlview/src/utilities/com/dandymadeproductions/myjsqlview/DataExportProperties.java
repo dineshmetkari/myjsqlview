@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana Proctor
-// Version 3.8 10/01/2011
+// Version 3.9 10/04/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,10 @@
 //             and the Latter Two Corresponding get/setter Methods. Obtained
 //             Defaults in Constructor From Appropriate Panels. Added Class
 //             Methods loadPDFFonts(), getFont() & getFonts().
+//         3.9 Replaced fontHashMap With fontTreeHashMap. Threaded the Loading
+//             of Fonts. Implemented Creating Embedded Fonts From the Fonts
+//             Directory in Class Method loadPDFFonts(). Added Inner Classes
+//             FileFilter & FileNameFilter.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -91,19 +95,26 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Color;
-import java.util.HashMap;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.prefs.Preferences;
 
+import com.itextpdf.text.DocumentException;
 import com.itextpdf.text.FontFactory;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.pdf.BaseFont;
 
 /**
  *    The DataExportProperties class provides the structure for the
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.8 10/01/2011
+ * @version 3.9 10/04/2011
  */
 
 class DataExportProperties
@@ -150,7 +161,7 @@ class DataExportProperties
    private int pageLayout;
    
    private Preferences dataExportPreferences;
-   private HashMap<String, Font> fontHashMap;
+   private TreeMap<String, Font> fontTreeMap;
    
    // These all have to be unique.
    
@@ -290,7 +301,16 @@ class DataExportProperties
       catch (IllegalStateException ise){}
       
       // Load PDF Export Fonts.
-      loadPDFFonts();
+      fontTreeMap = new TreeMap <String, Font>();
+      
+      Thread fontLoadingThread = new Thread(new Runnable()
+      {
+         public void run()
+         {
+            loadPDFFonts();
+         }
+      }, "DataExportProperties.fontLoadingThread");
+      fontLoadingThread.start();
    }
    
    //========================================================
@@ -300,14 +320,23 @@ class DataExportProperties
    private void loadPDFFonts()
    {
       // Method Instances.
+      String fileSeparator;
+      String fontPath, fontName;
+      String fontsDirectoryName;
       Iterator<String> fontNameIterator;
-      String fontName;
+      File fontsDirectory;
+      File[] fontsSubDirectories;
+      String[] fontNames;
+      TreeSet<String> fonts;
       
-      fontHashMap = new HashMap<String, Font> ();
+      // Setting up.
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      fontsDirectoryName = "fonts" + fileSeparator;
+      fonts = new TreeSet<String> ();
       
       // Insure have one default font.
       
-      fontHashMap.put(PDFExportPreferencesPanel.DEFAULT_FONT, new Font(Font.FontFamily.UNDEFINED));
+      fontTreeMap.put(PDFExportPreferencesPanel.DEFAULT_FONT, new Font(Font.FontFamily.UNDEFINED));
       
       // Create the default registered fonts.
       
@@ -316,9 +345,84 @@ class DataExportProperties
       while (fontNameIterator.hasNext())
       {
          fontName = fontNameIterator.next();
-         fontHashMap.put(fontName, FontFactory.getFont(fontName));
-      } 
+         fontTreeMap.put(fontName, FontFactory.getFont(fontName));
+      }
+      
+      // Create embedded fonts from fonts directory.
+      
+      fontsDirectory = new File(fontsDirectoryName);
+      
+      if (fontsDirectory.exists())
+      {
+         // Handle one level of sub-directories.
+         fontsSubDirectories = fontsDirectory.listFiles(directoriesFilter);
+         
+         for (int i = 0; i < fontsSubDirectories.length; i++)
+         {
+            fontNames = fontsSubDirectories[i].list(fontNameFilter);
+            
+            for (int j = 0; j < fontNames.length; j++)
+               fonts.add(fontsSubDirectories[i] + fileSeparator + fontNames[j]);       
+         }
+         
+         // Handle all direct font names in the directory.
+         fontNames = fontsDirectory.list(fontNameFilter);
+         
+         for (int i = 0; i < fontNames.length; i++)
+            fonts.add(fontsDirectoryName + fontNames[i]);
+         
+         // Load the found fonts.
+         fontNameIterator = fonts.iterator();
+         
+         while (fontNameIterator.hasNext())
+         {
+            fontPath = fontNameIterator.next();
+            if (fontPath.indexOf(fileSeparator) != -1)
+               fontName = fontPath.substring((fontPath.lastIndexOf(fileSeparator) + 1), fontPath.indexOf("."));
+            else
+               fontName = fontPath.substring(0, fontPath.indexOf("."));
+            
+            // System.out.println(fontName + " " + fontPath);
+            try
+            {
+               BaseFont currentBaseFont = BaseFont.createFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+               fontTreeMap.put(fontName, new Font(currentBaseFont, 12));
+            }
+            catch(DocumentException de){}
+            catch(IOException ioe){}
+         }  
+      }
    }
+   
+   //==============================================================
+   // File filter to be used to collect the desired directories
+   // in the fonts directory.
+   //==============================================================
+
+   private FileFilter directoriesFilter = new FileFilter()
+   {
+      public boolean accept(File fileName)
+      {  
+         if (fileName.isDirectory())
+            return true;
+         else
+            return false;
+      }
+   };
+   
+   //==============================================================
+   // File Name filter to be used to collect the desired font files,
+   // ttf/otf, in the fonts directory.
+   //==============================================================
+
+   private FilenameFilter fontNameFilter = new FilenameFilter()
+   {
+      public boolean accept(File dir, String fileName)
+      {  
+         return fileName.toLowerCase().endsWith(".ttf")
+               || fileName.toLowerCase().endsWith("otf");
+      }
+   };
 
    //==============================================================
    // Class methods to allow classes to get the data export
@@ -544,15 +648,15 @@ class DataExportProperties
    
    protected Font getFont()
    {
-      if (fontHashMap.containsKey(fontName))
-         return fontHashMap.get(fontName);
+      if (fontTreeMap.containsKey(fontName))
+         return fontTreeMap.get(fontName);
       else
-         return fontHashMap.get(PDFExportPreferencesPanel.DEFAULT_FONT);
+         return fontTreeMap.get(PDFExportPreferencesPanel.DEFAULT_FONT);
    }
    
    protected Object[] getFonts()
    {
-      return fontHashMap.keySet().toArray();
+      return fontTreeMap.keySet().toArray();
    }
    
    protected String getFontName()
