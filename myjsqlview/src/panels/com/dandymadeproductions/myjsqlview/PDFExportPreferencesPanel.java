@@ -54,6 +54,8 @@
 //                        Added Class Instances fontComboBox & pageLayoutComboBox, Method
 //                        fillFontPageLayoutPanel(), & Use of the Instances in getPDFExportOptions()
 //                        & setPDFExportProperties().
+//         2.0 10/04/2011 Correction in fillFontPageLayoutPanel() pageLayoutLabel Resource
+//                        Identification Name.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -78,7 +80,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 1.9 10/02/2011
+ * @version 2.0 10/04/2011
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -814,7 +816,7 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(fontComboBox, constraints);
       fontLayoutPanel.add(fontComboBox);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.PageLayout");
+      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.PageLayout");
       if (resource.equals(""))
          pageLayoutLabel = new JLabel("Page Layout");
       else
