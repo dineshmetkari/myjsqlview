@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.33 09/27/2011
+// Version 7.34 10/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -253,6 +253,8 @@
 //             dataSourceType and Derivation from ConnectionManager.getDataSourceType().
 //        7.32 Added Class Instances DATA_EXPORT_CSV, DATA_EXPORT_PDF, & DATA_EXPORT_SQL.
 //        7.33 Increase of size of PreferencesFrame From 700x435 to 750x461.
+//        7.34 Added sqlQueryBucketFrame.saveLastUsedList() to Action Exit in Class
+//             Method actionSelection().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -285,7 +287,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.33 09/27/2011
+ * @version 7.34 10/05/2011
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -382,6 +384,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Exit
       if (actionCommand.equals(ACTION_EXIT))
       {
+         sqlQueryBucketFrame.saveLastUsedList();
          System.exit(0);
       }
 
