@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.5 05/05/2011
+// Version 1.6 10/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,9 @@
 //                        List File Save/Opening Parameter Sequence.
 //         1.5 05/05/2011 Class Method actionPerformed() SQL Statement Editor Pane
 //                        Action, Filtered Line Feeds and Carriage-Returns.
+//         1.6 10/05/2011 Added Class Methods open/saveLastUsedList() to Handle
+//                        the Automatic Saving and Loading of the Bucket's List.
+//                        Added Class Instance DEFAULT_LIST_LAST_USED_FILENAME.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +71,7 @@ import javax.swing.*;
  * Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.5 05/05/2011
+ * @version 1.6 10/05/2011
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -116,6 +119,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private static final String DIALOG_COLOR = "DialogColor";
 
    private static final String parameterDelimiter = "%;%";
+   private static final String DEFAULT_LIST_LAST_USED_FILENAME = "sqlquerybucket.txt";
 
    // ==============================================================
    // SQLQueryBucketFrame Constructor
@@ -1295,6 +1299,107 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          ((DefaultListModel) sqlQueryList.getModel()).addElement(processingBucketListObject);
       
       processItem = false;
+   }
+   
+   //==============================================================
+   // Class Method to open the last used list by the bucket.
+   //==============================================================
+
+   protected void openLastUsedList()
+   {
+      // Method Instances.
+      FileReader fileReader;
+      String fileName;
+      BufferedReader bufferedReader;
+      SQLQueryBucketListObject currentLoadingSQLObject;
+      String currentLine;
+      String[] sqlObjectParameters;
+
+      try
+      {
+         fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
+                    + DEFAULT_LIST_LAST_USED_FILENAME; 
+         fileReader = new FileReader(fileName);
+         bufferedReader = new BufferedReader(fileReader);
+
+         int lineNumber = 1;
+
+         while ((currentLine = bufferedReader.readLine()) != null && lineNumber < 25)
+         {
+            // Parse parameters.
+            sqlObjectParameters = currentLine.split(parameterDelimiter, 0);
+
+            if (sqlObjectParameters.length == 4)
+            {
+               // Create the SQLStatement Object and load the individual
+               // parameters then add to bucket list.
+               try
+               {
+                  // Name, SQL Statement, LIMIT, & Color.
+                  currentLoadingSQLObject = new SQLQueryBucketListObject();
+
+                  currentLoadingSQLObject.setText(sqlObjectParameters[0]);
+                  currentLoadingSQLObject.setSQLStatementString(sqlObjectParameters[1]);
+                  if (sqlObjectParameters[2].equals("true"))
+                     currentLoadingSQLObject.setLimited(true);
+                  else
+                     currentLoadingSQLObject.setLimited(false);
+                  currentLoadingSQLObject.setBackground(new Color(Integer
+                                             .parseInt(sqlObjectParameters[3])));
+
+                  ((DefaultListModel) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
+               }
+               catch (NumberFormatException e){}
+            }
+            lineNumber++;
+         }
+         bufferedReader.close();
+         fileReader.close();
+      }
+      catch (IOException e){}
+   }
+   
+   //==============================================================
+   // Class Method to save the last used list for the bucket on
+   // closing of the MyJSQLView application.
+   //==============================================================
+
+   protected void saveLastUsedList()
+   {
+      // Method Instances.
+      int listSize;
+      DefaultListModel listModel;
+      SQLQueryBucketListObject currentSQLBucketObject;
+      String fileName;
+
+      // Setup
+      listModel = ((DefaultListModel) sqlQueryList.getModel());
+      listSize = listModel.getSize();
+      stringBuffer = new StringBuffer();
+      fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
+                 + DEFAULT_LIST_LAST_USED_FILENAME;  
+
+      // Collect the list.
+      int i = 0;
+      while (i < listSize)
+      {
+         currentSQLBucketObject = (SQLQueryBucketListObject) listModel.getElementAt(i);
+
+         // Object's Visible Name, SQL Statement, Limited, & Color
+         // parameter.
+
+         stringBuffer.append(currentSQLBucketObject.getText() + parameterDelimiter);
+         stringBuffer.append(currentSQLBucketObject.getSQLStatementString() + parameterDelimiter);
+         stringBuffer.append(currentSQLBucketObject.isLimited() + parameterDelimiter);
+         stringBuffer.append(currentSQLBucketObject.getBackground().getRGB() + "\n");
+         
+         i++;
+      }
+      // System.out.println(stringBuffer.toString());
+      
+      // Save the list
+      if (stringBuffer.length() != 0)
+         WriteDataFile.mainWriteDataString(fileName, stringBuffer.toString().getBytes(), false);
    }
 
    //==============================================================
