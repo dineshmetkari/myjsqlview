@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 2.1 01/27/2011
+// Version 2.2 10/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,16 +51,18 @@
 //         1.8 06/09/2010 Offloaded the Adding of a Plugin Module to the MyJSQlView's
 //                        Main Frame to the New PluginThread Class in Method
 //                        loadPluginModule().
-//         1.9 08/18/2010 Modified to Handle Manually Loading Plugins Through Two Argument
-//                        Constructor and Method init(). Additional Methods Also Added to
-//                        Properly Process, loadPluginEntry(), loadConfigurationFilePluginEntries().
-//                        Changed Class Method loadPluginEntries() to loadDefaultPluginEntries().
+//         1.9 08/18/2010 Modified to Handle Manually Loading Plugins Through Two
+//                        Argument Constructor and Method init(). Additional Methods
+//                        Also Added to Properly Process, loadPluginEntry(),
+//                        loadConfigurationFilePluginEntries(). Changed Class Method
+//                        loadPluginEntries() to loadDefaultPluginEntries().
 //         2.0 09/06/2010 Changed the Delimiter Between pathKey & className to '<$$$>'.
 //                        Methods Effected loadPluginEntry(), loadConfigurationFilePluginEntries(),
 //                        & loadPluginModules().
 //         2.1 01/27/2011 Copyright Update.
+//         2.2 10/05/2011 Updated errorString Information in run for URL ClassLoader
+//                        and Class Loading Exceptions.
 //                        
-//
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -89,7 +91,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.1 01/27/2011
+ * @version 2.2 10/05/2011
  */
 
 class PluginLoader implements Runnable
@@ -392,7 +394,7 @@ class PluginLoader implements Runnable
                }
                catch (MalformedURLException me)
                {
-                  String errorString = "MyJSQLView_Frame createGUI() URLClassLoader: \n" + me.toString();
+                  String errorString = "PluginLoader loadPluginModules() URLClassLoader: \n" + me.toString();
                   displayErrors(errorString);
                   return null;
                }
@@ -414,7 +416,7 @@ class PluginLoader implements Runnable
             }
             catch (Exception e)
             {
-               String errorString = "PluginLoader loadPluginModule() Exception: \n" + e.toString();
+               String errorString = "PluginLoader loadPluginModules() Exception: \n" + e.toString();
                displayErrors(errorString);
             }
          }
