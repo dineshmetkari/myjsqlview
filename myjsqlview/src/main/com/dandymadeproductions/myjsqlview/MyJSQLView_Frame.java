@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.4 04/07/2011
+// Version 6.5 10/05/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -162,6 +162,8 @@
 //                        MyJSQLView_JMenuBarActions.actionsSelection() Called in actionPerformed().
 //                        Added Class Method getSQLBucket().
 //         6.4 04/07/2011 Class Instance sqlQueryBucketFrame Size Change and setResizable(false).
+//         6.5 10/05/2011 Added Inner Class myjsqlviewFrameListener to Handle the Closing
+//                        Event to Insure the SQLQueryBucket List is Saved.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -173,6 +175,9 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Vector;
@@ -188,7 +193,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.4 04/07/2011
+ * @version 6.5 10/05/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -231,6 +236,25 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       sqlQueryBucketFrame.setSize(500, 450);
       sqlQueryBucketFrame.setResizable(false);
       sqlQueryBucketFrame.center();
+      sqlQueryBucketFrame.openLastUsedList();
+      
+      //==================================================
+      // Frame Window closing listener to detect the frame
+      // window closing event so the SQL Query Bucket can
+      // be saved.
+      //==================================================
+
+      WindowListener myjsqlviewFrameListener = new WindowAdapter()
+      {
+         public void windowClosing(WindowEvent e)
+         {
+            sqlQueryBucketFrame.saveLastUsedList();
+            System.exit(0);
+         }
+
+         public void windowActivated(WindowEvent e){}
+      };
+      this.addWindowListener(myjsqlviewFrameListener);
    }
 
    //==============================================================
