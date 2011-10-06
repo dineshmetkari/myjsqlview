@@ -5,7 +5,7 @@
 		<meta name="Author" content="Dana Proctor">		
 		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
 		<meta name="Description" content="MyJSQLView Manual">
-		<meta name="keywords" content="MyJSQLView, Manual, Documentation, Dana Proctor, Java, Database, HSQL, MySQL, Oracle, PostgreSQL, SQLite, GUI">
+		<meta name="keywords" content="MyJSQLView, Manual, Documentation, Dana Proctor, Java, Database, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, SQLite, GUI">
 		<meta name="Copyright" content="2005-2011">
 		
   		<title>MyJSQLView Manual</title>
@@ -19,7 +19,7 @@
 	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
 	<p align="center">Copyright &copy; 2005-2011 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
 	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
-	<p align="center"><font size="+1">August 2011</font></p>
+	<p align="center"><font size="+1">October 2011</font></p>
 
 	<hr size="2" width="100%">
 	<strong><font size="+3">Table of Contents</font></strong>
@@ -85,7 +85,7 @@
 	<a name="Introduction"></a>
 	<p><font size="+3"><strong>1 Introduction</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, for Oracle and SQLite just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.30</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle and SQLite just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.31</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
 
 	<hr>
 	
@@ -113,7 +113,7 @@
     		<li>Import of SQL Statement File.</li>
     		<li>Import of CSV data File Into Selected Database Table via Insert/Update.</li>
 		<li>Query Bucket for Storing/Organizing SQL Statements.</li>
-    		<li>Query Frame for Building Complex Select SQL Statements.</li>
+    		<li>Query Frame for Building Complex SQL Statements.</li>
 		<li>Search Frame for Running Generic LIKE Queries on All Tables in Database.</li>
 		<li>Simple Easy to Use Interface.</li>
 		<li>Simple and Advanced Table Sorting and Searching.</li>
@@ -166,6 +166,7 @@
 
 	<ul>
 		<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.3</font> (JDBC Integrated Into HSQLDB.jar)</li>
+		<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge.</li>
 		<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 		<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
 		<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.0-801</font>.</li>
@@ -255,7 +256,7 @@
 			<b>Figure 4a.</b>
 		</div><br>
 
-	<p> Under the menu for Tools one will find several items including the <b>Tools | SQL Query Bucket</b>, <b>Figure 4a.</b>,  which will allow the user to store queries directly from a Summary Table's current state. Once stored queries may be organized, edited, and saved to facilitate usage with MyJSQLView's plugin architecture. With the proper design a plugin should accept a drop of a query from the bucket to allow processing of table data according to the functionality provided by the plugin. The MyJSQLView <b>Tools | Query Frame</b> toolbar command provides a generic query console frame that may be used to execute 'SELECT' SQL statements directly. The query frame tool provides a means to build complex queries like those associated with running the database's console tool. The Query Frame can be very helpful for those wishing to generate complex report data. <b>Figure 5.</b> below shows the MyJSQLView toolbar query frame. </p><br>
+	<p> Under the menu for Tools one will find several items including the <b>Tools | SQL Query Bucket</b>, <b>Figure 4a.</b>,  which will allow the user to store queries directly from a Summary Table's current state. Once stored queries may be organized, edited, and saved to facilitate usage with MyJSQLView's plugin architecture. With the proper design a plugin should accept a drop of a query from the bucket to allow processing of table data according to the functionality provided by the plugin. The MyJSQLView <b>Tools | Query Frame</b> toolbar command provides a generic query console frame that may be used to execute both 'COMPLEX' and 'SELECT' SQL statements directly. The query frame tool provides a means to build complex queries like those associated with running the database's console tool. The Query Frame can be very helpful for those wishing to generate complex report data. <b>Figure 5.</b> below shows the MyJSQLView toolbar query frame. </p><br>
 
 		<div style="text-align: center;">
 			<img alt="" src="query_frame.jpg" style="width: 600px; height: 451px;"><br>
@@ -311,7 +312,7 @@
 	<a name="QueryBucket"></a>
 	<p><font size="+2"><strong>Query Bucket</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Query Bucket in MyJSQLView is accessible via the menu <b>Tools | Query Bucket</b> or via the addition of a query from the Summary Table interface. The Query Bucket provides a method for the user to create, organized, and save queries. Once the queries are listed in the Query Bucket a user may drag and drop one into a plugin panel. The plugin, if properly designed, will use the resultant data as determined by the dropped query to process data according to its functionality. The addition of a query to the Query Bucket takes place via a dialog as displayed in <b>Figure 9a.</b> below. The dialog allows the user to give a general description to the query along with controlling the LIMIT aspect, and color as presented in the Query Bucket list. If the LIMIT button is selected, depressed, in the dialog then any LIMIT stipulated in the query will be maintained. Otherwise the LIMIT aspect of the query will be removed on a drop or any further editing. Once a query is added to the bucket it will appear in a list format of the Query Bucket interface. Queries in the list may be organized by moving and placing them in any order as desired. Just drag the query to a new position in the list. The buttons at the bottom of the Query Bucket frame allows the viewing of the details of a stored query, editing or deletion. The complete list in the bucket may be saved by way of the <b>File | Save</b> or retrieved back into the bucket with <b>File | Open</b>. </p><br>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Query Bucket in MyJSQLView is accessible via the menu <b>Tools | Query Bucket</b> or via the addition of a query from the Summary Table interface. The Query Bucket provides a method for the user to create, organized, and save queries. Once the queries are listed in the Query Bucket a user may drag and drop one into a plugin panel. The plugin, if properly designed, will use the resultant data as determined by the dropped query to process data according to its functionality. The addition of a query to the Query Bucket takes place via a dialog as displayed in <b>Figure 9a.</b> below. The dialog allows the user to give a general description to the query along with controlling the LIMIT aspect, and color as presented in the Query Bucket list. If the LIMIT button is selected, depressed, in the dialog then any LIMIT stipulated in the query will be maintained. Otherwise the LIMIT aspect of the query will be removed on a drop or any further editing. Once a query is added to the bucket it will appear in a list format of the Query Bucket interface. Queries in the list may be organized by moving and placing them in any order as desired. Just drag the query to a new position in the list. The buttons at the bottom of the Query Bucket frame allows the viewing of the details of a stored query, editing or deletion. The complete list in the bucket may be saved by way of the <b>File | Save</b> or retrieved back into the bucket with <b>File | Open</b>. The MyJSQLView application when closed will automatically save the current Query Bucket list and restore this saved list when the application is once again started.</p><br>
 
 	<div style="text-align: center;">
 		<img alt="" src="query_bucket2.jpg" style="width: 600px; height: 450px;"><br>
@@ -322,14 +323,14 @@
 	<a name="QueryFrame"></a>
 	<p><font size="+2"><strong>Query Frame</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Query Frame in MyJSQLView is accessible via the menu <b>Tools | Query Frame</b>. The Query Frame may be used to create and run complex SELECT queries on the current connected database. <b>Figure 10.</b> shown below outlines the major areas of the the Query Frame. At the top of the window frame is the text entry area for SELECT queries. The Query frame will only process <b>SELECT</b> SQL statements at the time of this manual update. Once a SELECT SQL statement has been entered than either activate the <b>Execute Query</b> or <b>New Query</b> button. If there is no errors in processing the query then a resultant Summary Table of data will be displayed in the center of the panel. The text area at the bottom of the frame will output any errors that are generated by the database in trying to execute the statement. Review the error output if needed and make any necessary corrections in the <b>Select Query Input</b> and execute</p><br>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The Query Frame in MyJSQLView is accessible via the menu <b>Tools | Query Frame</b>. The Query Frame may be used to create and run complex queries on the current connected database. <b>Figure 10.</b> shown below outlines the major areas of the the Query Frame. At the top of the window frame is the text entry area for query input. The Query frame as of <b>v3.31</b> has a <b>Query Selector Type</b> that allows the execution of either <b>Generic</b> or only <b>SELECT</b> SQL statements. Once a SQL statement has been entered than activate the <b>Execute</b> button. If there is no errors in processing the query then a resultant Summary Table of data will be displayed in the center of the panel. The text area at the bottom of the frame will output any errors that are generated by the database in trying to execute the statement. Review the error output if needed and make any necessary corrections in the <b>Query Input</b> and execute</p><br>
 
 	<div style="text-align: center;">
 		<img alt="" src="query_frame2.jpg" style="width: 600px; height: 449px;"><br>
 		<b>Figure 10.</b>
 	</div><br>
 	
-	<p>the query again. Once a Summary Table of the SELECT statement has been generated then the data may be sorted and searched via the <b>Sort/Search Panel</b> just like any of the table views in MyJSQLView. Likewise an advanced sort/search may also be applied to the resultant query. Just below the Summary Table data is a <b>Summary Table Action Buttons</b> panel that allows the forwarding or reversing through the table data rows. The current record position is shown in the right most portion of this panel. Included in the panel is also a <b>View</b> button that allows a closer look at a table entry. This feature is useful if one or more of the table fields contains array, blob, bytea, binary, clob, long, longvarchar, raw, text, mediumtext, or longtext data types since these fields are only identified or have abbreviated content in the Summary Table view. A closer look by the way of the <b>View</b> button will allow the saving of binary data fields directly to the user's hard disk for access by an appropriate program for viewing. Text, array, longvarchar, mediumtext and longtext field types can also be saved to the user's hard disk, but are also directly viewable via a non-editable editor pane.<br> &nbsp;&nbsp;&nbsp;&nbsp; The Query Frame may have multiple tabs with each having independent SELECT queries with data. Each time a SELECT query is entered and the <b>New Query</b> button is pressed then a new tab in the Query Frame will be created with the resultant data. The Query Frame is different with regard to connections to the database than the rest of the MyJSQLView application. Normally MyJSQLView opens and closes connections to the database as needed during the processing of events such as record advancement and entry views. In the Query Frame one connection is maintained as long as the window frame is open and the connection has not under gone a timeout condition. Each tab's query is the same active connection to the database. What this achieves is the ability to create complex queries on tables in the database that may evolve multiple joins. Each tab actually creates and maintains a temporary table of its own data. A new query may access that temporary table to build further on refinement of analysis of the database information. The temporary table name for each tab is located in the <b>The Summary Table Action Buttons</b> panel left hand side. The toolbar at the top of the Query Frame may be used to open/save script to/from the query text area, print as in the main application, edit the Summary Table row size, display built queries, and export the data in the format of comma delimiter values. The MyJSQLView <b>Edit | Preferences</b> options panel allows the control of the delimiter used with the export of data.</p><br>
+	<p>the query again. Once a Summary Table of a <b>SELECT</b> statement has been generated then the data may be sorted and searched via the <b>Sort/Search Panel</b> just like any of the table views in MyJSQLView. Likewise an advanced sort/search may also be applied to the resultant query. If the data was generated via a <b>Generic</b> SQL statement then each column's header may be used to sort the current data. A search is not available in this mode of operation. Just below the Summary Table data is a <b>Summary Table Action Button's</b> panel if a <b>SELECT</b> type of query was executed that allows the forwarding or reversing through the table data rows. The current record position is shown in the right most portion of this panel. Included in the panel is also a <b>View</b> button that allows a closer look at a table entry. This feature is useful if one or more of the table fields contains array, blob, bytea, binary, clob, long, longvarchar, raw, text, mediumtext, or longtext data types since these fields are only identified or have abbreviated content in the Summary Table view. A closer look by the way of the <b>View</b> button will allow the saving of binary data fields directly to the user's hard disk for access by an appropriate program for viewing. Text, array, longvarchar, mediumtext and longtext field types can also be saved to the user's hard disk, but are also directly viewable via a non-editable editor pane.<br> &nbsp;&nbsp;&nbsp;&nbsp; The Query Frame may have multiple tabs with each having independent GENERIC or SELECT queries with data. Each time a query is entered and the <b>Execute</b> button activated with the <b>New Tab</b> checkbox pressed then a new tab in the Query Frame will be created with the resultant data. The Query Frame is different with regard to connections to the database than the rest of the MyJSQLView application with SELECT queries. Normally MyJSQLView opens and closes connections to the database as needed during the processing of events such as record advancement and entry views. In the Query Frame, Query Statement, mode one connection is maintained as long as the window frame is open and the connection has not under gone a timeout condition. Each tab's query of this mode is the same active connection to the database. What this achieves is the ability to create complex queries on tables in the database that may evolve multiple joins. Each of these type tabs' queries actually creates and maintains a temporary table of its own data. A new query may access that temporary table to build further on refinement of analysis of the database information. The temporary table name for each tab is located in the <b>The Summary Table Action Buttons</b> panel left hand side. The toolbar at the top of the Query Frame may be used to open/save script to/from the query text area, print as in the main application, edit the Summary Table row size, display built queries, and export the data in the format of either PDF or comma delimiter values. The MyJSQLView <b>Edit | Preferences</b> options panel allows the control of the delimiter used with the export of data and PDF report format options.</p><br>
 
 	<hr size="2" width="100%">
 	<a name="SearchFrame"></a>
@@ -402,7 +403,7 @@
 	<a name="Preferences_Data_Export_PDF"></a>
 	<p><strong><font size="+1">Data Export PDF</font></strong></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;The PDF, portable document format, export options panel allows the user to create a controlled export of the current selected Summary Table to a PDF file. At the top of the panel is the ability to select whether or not a title for the page will be produced. If so then the font size and color of that title may be specified. Under the Header Columns one may control the font size, and color for the table's field names. The border color surrounding these field names can also be selected in addition to the the border size. Any character type fields in the table will be left justified, but numerical fields can be manipulated via the pulldown menu combobox, Number Fields Alignment, for left, center, or right justification. Like numerical fields the Date Fields can have the alignment specified in the panel, but also have the format dictated. The default format for dates is set for month, day, year. At anytime the form like others in the Preferences Frame may have the default settings returned by the Restore Defaults button. To activate the changes for the PDF formatted file export press the Apply button or if finished with the preferences selections activate the OK button. The PDF Export options panel is shown below in <b>Figure 17.</b></p><br>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The PDF, portable document format, export options panel allows the user to create a controlled export of the current selected Summary Table to a PDF file. At the top of the panel is the ability to select whether or not a title for the page will be produced. If so then the font size and color of that title may be specified. Under the Header Columns one may control the font size, and color for the table's field names. The border color surrounding these field names can also be selected in addition to the the border size. Any character type fields in the table will be left justified, but numerical fields can be manipulated via the pulldown menu combobox, Number Fields Alignment, for left, center, or right justification. Like numerical fields the Date Fields can have the alignment specified in the panel, but also have the format dictated. The default format for dates is set for month, day, year. The final option for the PDF export is the control of the font and page layout of the report. The font will allow the user to select a font that will be embedded in the PDF document. The selection of one of Freefonts will allow unicode characters to be displayed in the report.  At anytime the form like others in the Preferences Frame may have the default settings returned by the Restore Defaults button. To activate the changes for the PDF formatted file export press the Apply button or if finished with the preferences selections activate the OK button. The PDF Export options panel is shown below in <b>Figure 17.</b></p><br>
 
 	<div style="text-align: center;">
 		<img alt="" src="preferences_PDFExport.jpg" style="width: 674px; height: 404px;"><br>
@@ -415,7 +416,7 @@
 	<p> &nbsp;&nbsp;&nbsp;&nbsp;The final option's control panel in the Preferences menu is the <b>Data Export | SQL</b>. The SQL panel shown below in <b>Figure 18.</b> allows the user to fine tune SQL statements exported during a <b>Data | Export | Table/Summary Table</b> command. The various options in this panel can be used to create all the normal SQL statements for inserts and updates. At the top of the panel allows the selection of exporting the table structure and the bottom portion the type of SQL statement to be generated for the data. Insert, replace, and update SQL statements along with additional variants of the these commands can be generated. <b>Table 1.</b> and the information below gives examples of the various insert/replace variants <b>Singular</b>, <b>Plural</b>, and <b>Explicit</b> along with the support in what databases. Its best to review your requirements in a SQL statement reference and then experiment with these settings to achieve the desired results needed for the exported data. Large data sets in a table that includes Blob/Binary fields are best exported using the <b>Explicit</b> statement because this option creates separate SQL statements that may be parsed for execution. The <b>Locked</b> selection allows the insertion of a lock statement for the effected table. The <b>Identifier Quote String</b> allows the selection of the character that will be used to highlight table names and fields. Often different databases use dissimilar characters for identifying/quoting table and field names. With this option one could perhaps compensate for this dilemma when generating SQL statement tables that will be used on an alternate database then the one being export from. <font style="border: 2px solid red;" size="+1">!</font> The preferred procedure for backup of all critical data should always be the database's own dump tool.</p><br>
 
 	<div style="text-align: center;">
-		<img alt="" src="preferences_SQLExport.jpg" style="width: 673px; height: 405px;"><br>
+		<img alt="" src="preferences_SQLExport.jpg" style="width: 674px; height: 414px;"><br>
 		<b>Figure 18.</b>
 	</div><br>
 
@@ -441,6 +442,7 @@
       				<td><b>Expression Type</b></td>
 				<td><b>HSQL</b></td>
 				<td><b>HSQL2</b></td>
+				<td><b>MSAccess</b></td>
       				<td><b>MySQL</b></td>
 				<td><b>Oracle</b></td>
       				<td><b>PostgreSQL</b></td>
@@ -448,6 +450,7 @@
     			</tr>
     			<tr>
       				<td>Singular</td>
+				<td align="center">Yes</td>
 				<td align="center">Yes</td>
 				<td align="center">Yes</td>
       				<td align="center">Yes</td>
@@ -459,6 +462,7 @@
       				<td>Plural</td>
 				<td align="center">No</td>
 				<td align="center">Yes</td>
+				<td align="center">No</td>
       				<td align="center">Yes</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
@@ -466,6 +470,7 @@
     			</tr>
     			<tr>
       				<td>Explicit</td>
+				<td align="center">No</td>
 				<td align="center">No</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
