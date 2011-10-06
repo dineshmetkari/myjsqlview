@@ -1,4 +1,4 @@
-MyJSQLView Version 3.30
+MyJSQLView Version 3.31
 
 Copyright 2005-2011
 by Dana Proctor
@@ -7,8 +7,9 @@ http://dandymadeproductions.com
 What is MyJSQLView?
 
    MyJSQLView provides an easy to use Java based interface for viewing, adding,
-editing, or deleting entries in the HSQL, MySQL, Oracle, PostgreSQL, and SQLite
-databases. All tables and fields are available for access in the selected database.
+editing, or deleting entries in the HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and
+SQLite databases. All tables and fields are available for access in the selected
+database.
 
    MyJSQLView is the result of a condensed version of a larger project that was
 needed to access an inventory database. The project from its inception was to be
@@ -23,14 +24,14 @@ databases and plugins. The application only needs two other pieces of code, the
 JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity, driver.
 The JDBC provides the driver interface between the Java SQL, structured query
 language, statements, and the database. As of the release of this version of
-MyJSQLView the application has been tested with the HSQL, MySQL, Oracle,
+MyJSQLView the application has been tested with the HSQL, MSAccess, MySQL, Oracle,
 PostgreSQL, and SQLite databases. The application once installed can provide
 a much quicker access/update to a database than a web based interface frontend
 and MyJSQLView supports transaction locking. If your small business, scientific
 community, government agency, or educational institute wants to quickly access
-either a HSQL, MySQL, Oracle, PostgreSQL, or SQLite database for viewing, adding,
-editing, searching, and analyzing data MyJSQLView provides an alternative that
-is simple and easy to use.
+either a HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database for viewing,
+adding, editing, searching, and analyzing data MyJSQLView provides an alternative
+that is simple and easy to use.
 
    Dana M. Proctor
    Project Manager 
@@ -59,7 +60,7 @@ Features:
    * Import of SQL Statement File.
    * Import of CSV data File Into Selected Database Table via Insert/Update.
    * Query Bucket for Storing/Organizing SQL Statements.
-   * Query Frame for Building Complex Select SQL Statements.
+   * Query Frame for Building Complex SQL Statements.
    * Search Frame for Running Generic LIKE Queries on All Tables in Database.
    * Simple Easy to Use Interface.
    * Simple and Advanced Table Sorting and Searching.
@@ -69,6 +70,7 @@ Requirements:
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
    * Java Runtime Environment, JRE 1.5 or Newer.
    * HSQL 1.8.0.8 - 1.8.1.3 (JDBC Integrated Into HSQLDB.jar)
+   * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
    * MySQL 5.0.7 - 5.084, JDBC 5.0.7, 5.1.5, 5.1.8.
    * Oracle 10g JDBC 14.
    * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801.
@@ -89,12 +91,12 @@ application execution.
 Update Notes:
 
    MyJSQLView updates need no special attention. Just install the latest
-release into your existing directory. For prior releases to Version 3.01
+release into your existing directory. For prior releases to Version 3.31
 though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.29 does not, will have an example configuration
+additional database, release v3.31 does, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
@@ -201,6 +203,9 @@ Version History:
 
 Production (2008-12-31):
 
+   * Versoin 3.31 HSQLDB2 and MSAccess Database Support. Bug fix for large SQL import files.
+                  Multi-language PDF support through the use of embedded fonts. Corrections
+                  to table definition generator unique key construction. Heatmap plugin. 
    * Versoin 3.30 Preliminary Production Release to Address/Correct Reported Problems With
 		  PDF Exports and Gnome Desktop Functionality.
    * Version 3.29 Summary Table sort/search history implementation and addition of
