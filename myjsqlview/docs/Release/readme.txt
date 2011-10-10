@@ -205,7 +205,7 @@ Production (2008-12-31):
 
    * Versoin 3.31 HSQLDB2 and MSAccess Database Support. Bug fix for large SQL import files.
                   Multi-language PDF support through the use of embedded fonts. Corrections
-                  to table definition generator unique key construction. Heatmap plugin. 
+                  to table definition generator unique key construction. 
    * Versoin 3.30 Preliminary Production Release to Address/Correct Reported Problems With
 		  PDF Exports and Gnome Desktop Functionality.
    * Version 3.29 Summary Table sort/search history implementation and addition of
