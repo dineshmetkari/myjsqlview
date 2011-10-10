@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.30 08/11/2011
+// Version 3.31 10/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,8 @@
 //                         3.29.
 //         3.30 08/11/2011 Comment Changes, Update to Class Instance myJSQLView_Version
 //                         for Release 3.30.
+//         3.31 10/10/2011 Comment Changes, Update to Class Instance myJSQLView_Version
+//                         for Release 3.31.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -224,7 +226,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.30 08/11/2011
+ * @version 3.31 10/10/2011
  */
 
 public class MyJSQLView implements ActionListener
@@ -246,7 +248,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.30", "Build ID: 20110811"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.31", "Build ID: 20111010"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
