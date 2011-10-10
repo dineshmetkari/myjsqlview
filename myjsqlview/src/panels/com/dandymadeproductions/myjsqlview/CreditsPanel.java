@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.5 06/20/2011
+// Version 3.6 10/10/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@
 //             Constructor. Added backgroundImage key for MSAccess.
 //         3.5 Constructor Conditional Check for HSQL Changed From equals to
 //             indexOf.
+//         3.6 Added developersNames/Titles iText Library & FreeFont.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +93,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.5 06/20/2011
+ * @version 3.6 10/10/2011
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -112,10 +113,10 @@ class CreditsPanel extends JPanel implements Runnable
 
    private String[] developersNames = {"Dana M. Proctor", "Jujubi", "Lookfwd",
                                        "Blarkin", "Nil_lin", "Gashogtoo", "Poisonerbg",
-                                       "Reydelcompas"};
+                                       "Reydelcompas", "itextpdf.com", "gnu.org/software/freefont/"};
    private String[] developersTitles = {"Project Manager", "Developer", "Design/Analysis",
                                         "Developer", "Developer", "Tester", "Developer",
-                                        "Tester"};
+                                        "Tester", "iText Library", "FreeFont"};
 
    //===========================================================
    // CreditsPanel Constructor
