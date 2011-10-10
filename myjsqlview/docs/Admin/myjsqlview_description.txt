@@ -1,0 +1,5 @@
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in the HSQL, MSAccess, MySQL,
+Oracle, PostgreSQL, and SQLite databases. A query frame allows the building
+of complex SELECT SQL statements. The application allows easy sorting,
+searching, and import/export of table data.
