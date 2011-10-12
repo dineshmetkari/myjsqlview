@@ -1,0 +1,39 @@
+MyJSQLView Version 3.31 Released
+
+The MyJSQLView project is pleased to release v3.31 to the public. The
+release marks the support for the HyperSQL 2 and MSAccess databases.
+Included with this update is several corrections for bugs involved with
+the import of large SQL dumps and table definition generation for unique
+keys. A multi-language PDF export inclusion is now implemented via
+unicode embedded fonts.
+
+Another aspect of the v3.31 release is the expansion of the capabilities
+of the Query Frame. Over the years the Query Frame in the MyJSQLView
+application as been some what limited to only SELECT SQL statements.
+These statements were normally retrieved into temporary tables that
+then could be used to build compound results. Much internal debate as
+been contemplated on even allowing a direct statement generation tool
+such as this in the application. After all MyJSQLView is all about data
+manipulation not managing the database. Most other tools in MyJSQLView's
+league has to do with database management and use direct query input.
+
+In this last development cycle the project decided to make a final chose
+on the fate of the Query Frame. Either it would be terminated or have
+its capabilities expanded. In the end it came down to wishing to give
+more power to the users rather than less. So in that regard the HSQL
+Swing Database Manager became the reference for duplication. Over the
+years I as project manager have used several tools out there for accessing
+databases and that one I found to be quite simple and versatile. The
+source code for that tool was found to be not compatible for use with
+MyJSQLView, but it designers provided a base foundation for their concepts
+into the SQL Statement entry form that MyJSQLView now sports. 
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend
+for viewing, adding, editing, or deleting entries in the HSQL, MSAccess,
+MySQL, Oracle, PostgreSQL, and SQLite databases. A query frame allows
+the building of complex SQL statements. The application allows easy
+sorting, searching, and import/export of table data.
