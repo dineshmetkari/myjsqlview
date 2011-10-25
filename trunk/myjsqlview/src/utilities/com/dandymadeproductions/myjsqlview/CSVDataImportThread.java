@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.8 06/23/2011
+// Version 5.9 10/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -128,6 +128,8 @@
 //         5.8 Chang to MSAcces Date/DateTime Fields to Quote With the # Character
 //             in Class Method importCSVFile(). In Same Method and Database Removal
 //             of Quotes for Field Values if Non-String.
+//         5.9 Replaced the Method formatDateString() Conversion Processing by the
+//             Standardized Process Already Supplied by the MyJSQLView_Utils Class.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -154,7 +156,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.7 06/11/2011
+ * @version 5.9 10/24/2011
  */
 
 class CSVDataImportThread implements Runnable
@@ -397,7 +399,9 @@ class CSVDataImportThread implements Runnable
                      // All Blob/Bytea, Binary Data Exported as Text
                      // 'Binary' in DataDumpThread for CSV.
                      
-                     else if ((columnClass != null && columnType != null) && ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+                     else if ((columnClass != null && columnType != null)
+                               && ((columnClass.indexOf("String") == -1
+                               && columnType.indexOf("BLOB") != -1) ||
                          (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                          (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
                          (columnType.indexOf("RAW") != -1)))
@@ -430,7 +434,8 @@ class CSVDataImportThread implements Runnable
                         if (columnType.equals("DATE"))
                         {
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i]) + "', 'YYYY-MM-DD')";
+                              lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i])
+                                                        + "', 'YYYY-MM-DD')";
                            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                               lineContent[i] = "#" + formatDateString(lineContent[i]) + "#";
                            else
@@ -460,13 +465,16 @@ class CSVDataImportThread implements Runnable
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
                               if (columnType.equals("TIMESTAMP"))
-                                 lineContent[i] = "TO_TIMESTAMP('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
+                                 lineContent[i] = "TO_TIMESTAMP('" + formatDateString(lineContent[i]) + time
+                                                                + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
                               
                               else if (columnType.equals("TIMESTAMPTZ"))
-                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS TZHTZM')";
+                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i]) + time
+                                                                   + "', 'YYYY-MM-DD HH24:MI:SS TZHTZM')";
                               // TIMESTAMPLTZ
                               else
-                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i]) + time + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM')";
+                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i])
+                                                                   + time + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM')";
                            }
                            // MSAccess
                            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
@@ -687,7 +695,7 @@ class CSVDataImportThread implements Runnable
    
    //==============================================================
    // Class method for converting the input date string into the
-   // required database format. The CVS import panel allows the
+   // required display format. The CVS import panel allows the
    // hint on how to convert the date field properly. Standard 
    // Date format for databases is YYYY-MM-dd.
    //==============================================================
@@ -695,61 +703,15 @@ class CSVDataImportThread implements Runnable
    private String formatDateString(String inputDateString)
    {
       DataImportProperties dataImportProperties;
-      String dateFormat, year, month, day;
-      int firstDashIndex, lastDashIndex;
+      String dateFormat;
       
       // Get the current Date import option.
       dataImportProperties = DBTablesPanel.getDataImportProperties();
       dateFormat = dataImportProperties.getDateFormat();
       
-      // Generally just replace all forward slashes to required dash
-      // and check to make sure there is some kind of valid format.
-      // Routine does not allow dates with spaces, ex. Jan. 01, 2009.
-      
-      if (inputDateString.indexOf("/") != -1)
-         inputDateString = inputDateString.replaceAll("/", "-");
-      
-      firstDashIndex = inputDateString.indexOf("-");
-      lastDashIndex = inputDateString.lastIndexOf("-");
-      if (firstDashIndex == -1 || lastDashIndex == -1)
-         return "";
-      
-      // Convert the input date string to the appropriate format.
-      
-      // yyyy-MM-dd
-      if (dateFormat.equals("yyyy-MM-dd") || dateFormat.equals("yyyy/MM/dd"))
-      {
-         year = inputDateString.substring(0, firstDashIndex);
-         month = inputDateString.substring(firstDashIndex + 1, lastDashIndex);
-         if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
-         day = inputDateString.substring(lastDashIndex + 1);
-      }
-      
-      // dd-MM-yyyy
-      else if (dateFormat.equals("dd-MM-yyyy") || dateFormat.equals("dd/MM/yyyy"))
-      {
-         year = inputDateString.substring(lastDashIndex + 1);
-         month = inputDateString.substring(firstDashIndex + 1, lastDashIndex);
-         if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
-         day = inputDateString.substring(0, firstDashIndex);
-      }
-      
-      // MM-dd-yyyy
-      else
-      {  
-         year = inputDateString.substring(lastDashIndex + 1);
-         month = inputDateString.substring(0, firstDashIndex);
-         if (month.length() > 2)
-            month = MyJSQLView_Utils.convertCharMonthToDecimal(month) + "";
-         day = inputDateString.substring(firstDashIndex + 1, lastDashIndex); 
-      }
-      
-      // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
-      return year + "-" + month + "-" + day;
+      return MyJSQLView_Utils.convertViewDateString_To_DBDateString(inputDateString, dateFormat);
    }
-
+   
    //==============================================================
    // Class method to refresh table tab panel.
    //==============================================================
