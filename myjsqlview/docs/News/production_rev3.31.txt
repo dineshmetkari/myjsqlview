@@ -15,9 +15,9 @@ then could be used to build compound results. Much internal debate as
 been contemplated on even allowing a direct statement generation tool
 such as this in the application. After all MyJSQLView is all about data
 manipulation not managing the database. Most other tools in MyJSQLView's
-league has to do with database management and use direct query input.
+league have to do with database management and use direct query input.
 
-In this last development cycle the project decided to make a final chose
+In this last development cycle the project decided to make a final choice
 on the fate of the Query Frame. Either it would be terminated or have
 its capabilities expanded. In the end it came down to wishing to give
 more power to the users rather than less. So in that regard the HSQL
