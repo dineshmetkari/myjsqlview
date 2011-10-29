@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.8 06/18/2011
+// Version 4.9 10/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,8 @@
 //             subProtocol With dataSourceType.
 //         4.8 The Loading of a HSQL TableTabPanel for Any IndexOf of Such for the
 //             dataSourceType in Method loadTable().
+//         4.9 Passing of a New String to the QueryBucket on sqlQueryBucketButton
+//             Action in actionPerformed().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -148,7 +150,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.8 06/18/2011
+ * @version 4.9 10/29/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -306,7 +308,10 @@ public class DBTablesPanel extends JPanel implements ActionListener
             TableTabPanel selectedTableTabPanel = getSelectedTableTabPanel();
             
             if (selectedTableTabPanel != null)
-               MyJSQLView_Frame.getSQLBucket().addSQLStatement(selectedTableTabPanel.getTableSQLStatement());
+            {
+               String sqlStatementString = new String(selectedTableTabPanel.getTableSQLStatement());
+               MyJSQLView_Frame.getSQLBucket().addSQLStatement(sqlStatementString);
+            }
          }
       }
      
