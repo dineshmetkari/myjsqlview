@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.6 10/05/2011
+// Version 6.7 10/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -165,6 +165,9 @@
 //         6.5 10/05/2011 Added Inner Class myjsqlviewFrameListener to Handle the Closing
 //                        Event to Insure the SQLQueryBucket List is Saved.
 //         6.6 10/05/2011 Threaded the Setup of the Query Bucket in the Constructor.
+//         6.7 10/29/2011 Argument Change to Pass Database Name to openLastUsedList() for the
+//                        SQLQueryBucketFrame in Constructor.
+//                        
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -194,7 +197,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.6 10/05/2011
+ * @version 6.7 10/29/2011
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -242,7 +245,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             sqlQueryBucketFrame.setSize(500, 450);
             sqlQueryBucketFrame.setResizable(false);
             sqlQueryBucketFrame.center();
-            sqlQueryBucketFrame.openLastUsedList();
+            sqlQueryBucketFrame.openLastUsedList(ConnectionManager.getConnectionProperties()
+               .getProperty(ConnectionProperties.DB));
          }
       }, "SQLQueryBucketFrame.saveActionThread");
       setUpQueryBucket.start();
