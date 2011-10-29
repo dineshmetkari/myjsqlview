@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.6 10/05/2011
+// Version 1.7 10/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,9 @@
 //         1.6 10/05/2011 Added Class Methods open/saveLastUsedList() to Handle
 //                        the Automatic Saving and Loading of the Bucket's List.
 //                        Added Class Instance DEFAULT_LIST_LAST_USED_FILENAME.
+//         1.7 10/29/2011 Added Class Instance databaseName and Changed the String
+//                        for DEFAULT_LIST_LAST_USED_FILENAME. Added to Argument
+//                        the Same for openLastUsedList(). Used in saveLastUsedList().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +74,7 @@ import javax.swing.*;
  * Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/05/2011
+ * @version 1.7 10/29/2011
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -91,6 +94,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private JButton dialog_colorButton;
 
    private MyJSQLView_ResourceBundle resourceBundle;
+   private String databaseName;
    private String fileSeparator, iconsDirectory;
    private String lastOpenSaveDirectory, savedFileName;
 
@@ -119,7 +123,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private static final String DIALOG_COLOR = "DialogColor";
 
    private static final String parameterDelimiter = "%;%";
-   private static final String DEFAULT_LIST_LAST_USED_FILENAME = "sqlquerybucket.txt";
+   private static final String DEFAULT_LIST_LAST_USED_FILENAME = "sqlquerybucket_";
 
    // ==============================================================
    // SQLQueryBucketFrame Constructor
@@ -1305,7 +1309,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    // Class Method to open the last used list by the bucket.
    //==============================================================
 
-   protected void openLastUsedList()
+   protected void openLastUsedList(String databaseName)
    {
       // Method Instances.
       FileReader fileReader;
@@ -1314,11 +1318,13 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       SQLQueryBucketListObject currentLoadingSQLObject;
       String currentLine;
       String[] sqlObjectParameters;
+      
+      this.databaseName = databaseName;
 
       try
       {
          fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
-                    + DEFAULT_LIST_LAST_USED_FILENAME; 
+                    + DEFAULT_LIST_LAST_USED_FILENAME + databaseName + ".txt"; 
          fileReader = new FileReader(fileName);
          bufferedReader = new BufferedReader(fileReader);
 
@@ -1377,7 +1383,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       listSize = listModel.getSize();
       stringBuffer = new StringBuffer();
       fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
-                 + DEFAULT_LIST_LAST_USED_FILENAME;  
+                 + DEFAULT_LIST_LAST_USED_FILENAME + databaseName + ".txt";  
 
       // Collect the list.
       int i = 0;
