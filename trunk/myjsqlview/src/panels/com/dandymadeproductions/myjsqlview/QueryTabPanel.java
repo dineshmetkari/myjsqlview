@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.9 09/14/2011
+// Version 9.0 11/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -209,6 +209,9 @@
 //         8.8 Minor Comment Changes.
 //         8.9 Class Method loadTable() Set validQuery to True if Loading Properly Takes
 //             Place, But False if Exception Generated.
+//         9.0 Removed Class Instances advancedSort/SearchButton & Replaced With
+//             advSortSearchApplyButton. Class Methods Effected actionPerformed() &
+//             setTableRowSize().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -240,7 +243,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 8.9 09/14/2011
+ * @version 9.0 11/02/2011
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -280,8 +283,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    private transient MouseListener summaryTablePopupListener;
 
    private AdvancedSortSearchForm advancedSortSearchFrame;
-   private JButton activateAdvancedSortSearchButton, advancedSortButton,
-                   advancedSearchButton;
+   private JButton activateAdvancedSortSearchButton, advSortSearchApplyButton;
    private boolean advancedSortSearch;
 
    private JPanel centerPanel;
@@ -688,18 +690,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             setRowsLabel((tableRowStart + 1), (tableRowStart + tableRowLimit));
          }
 
-         // Advanced Sort Action.
-         else if (panelSource == advancedSortButton)
-         {
-            advancedSortSearch = true;
-            loadTable(dbConnection, true);
-            tableModel.setValues(tableData);
-            tableScrollPane.getVerticalScrollBar().setValue(0);
-            centerCardLayout.show(centerPanel, sqlTable);
-         }
-
-         // Advanced Search Action.
-         else if (panelSource == advancedSearchButton)
+         // Advanced Sort/Search Apply Action.
+         else if (panelSource == advSortSearchApplyButton)
          {
             advancedSortSearch = true;
             searchComboBox.removeActionListener(this);
@@ -725,10 +717,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                                                                     columnClassHashMap, columnTypeHashMap,
                                                                     comboBoxFields);
 
-               advancedSortButton = advancedSortSearchFrame.sortButton;
-               advancedSortButton.addActionListener(this);
-               advancedSearchButton = advancedSortSearchFrame.searchButton;
-               advancedSearchButton.addActionListener(this);
+               advSortSearchApplyButton = advancedSortSearchFrame.applyButton;
+               advSortSearchApplyButton.addActionListener(this);
 
                advancedSortSearchFrame.pack();
                advancedSortSearchFrame.center();
@@ -2289,7 +2279,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    {
       tableRowLimit = numberOfRows;
       if (advancedSortSearch)
-         advancedSortButton.doClick();
+         advSortSearchApplyButton.doClick();
       else
          searchButton.doClick();
       setRowsLabel((tableRowStart + 1), (tableRowStart + tableRowLimit));
