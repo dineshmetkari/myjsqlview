@@ -156,11 +156,12 @@ TableViewForm.dialogmessage.ErrorWritingDataFile =
 
 AdvancedSortSearchForm.message.Title = 
 AdvancedSortSearchForm.label.Select = 
-AdvancedSortSearchForm.button.Sort = 
-AdvancedSortSearchForm.button.Search = 
+AdvancedSortSearchForm.label.Aggregate = 
+AdvancedSortSearchForm.button.Apply = 
 AdvancedSortSearchForm.button.Close = 
 AdvancedSortSearchForm.label.SortBy = 
 AdvancedSortSearchForm.label.Then = 
+AdvancedSortSearchForm.label.GroupBy = 
 AdvancedSortSearchForm.label.Search = 
 AdvancedSortSearchForm.dialogmessage.SetFields = 
 AdvancedSortSearchForm.dialogtitle.Alert = 
