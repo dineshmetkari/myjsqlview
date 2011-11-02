@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.83 06/12/2011
+// Version 4.84 11/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -165,6 +165,12 @@
 //                        Removed in Constructor Instance connectionProperties.
 //        4.83 06/12/2011 Class Method getAdvancedSortSearchSQL() Implements Quotes of # for
 //                        MS Access Datetime Fields Keys.
+//        4.84 11/02/2011 Implemented Aggregate & GROUP BY SQL. Added Class Instances
+//                        aggregateFunction/ComboBox, groupFormExpressionNumber, groupComboBox,
+//                        group_AscendingDecendingComboBox. Removed sort/searchButton & Replaced
+//                        with applyButton. Aggregate Implemented in Constructor via aggregatePanel
+//                        & GROUP BY createSortSearchInterface(). SQL Statements Generation Changes
+//                        to New Feature in getAdvancedSortSearchSQL().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -194,7 +200,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.83 06/12/2011
+ * @version 4.84 11/02/2011
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -216,8 +222,13 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private JPanel sortSearchPanel;
    private JButton questionButton;
    private JComboBox selectTypeComboBox;
+   private JComboBox aggregateFunctionComboBox, aggregateComboBox;
+   
    private static final int sortFormExpressionNumber = 3;
-   private JComboBox[] sortComboBox, ascendingDescendingComboBox;
+   private JComboBox[] sortComboBox, sort_AscendingDescendingComboBox;
+   
+   private static final int groupFormExpressionNumber = 3;
+   private JComboBox[] groupComboBox, group_AscendingDescendingComboBox;
    
    private static final int searchFormExpressionNumber = 5;
    private JComboBox[] searchComboBox, operatorComboBox, andOrComboBox;
@@ -225,7 +236,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private Vector<JComponent> stateComponents;
 
    private JButton closeButton, clearButton;
-   protected JButton sortButton, searchButton;
+   protected JButton applyButton;
 
    //==============================================================
    // AdvancedSortSearchForm Constructor
@@ -245,9 +256,10 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       this.comboBoxColumnNames = comboBoxColumnNames;
 
       // Constructor Instances
-      JPanel mainPanel, formPanel, northPanel, selectTypePanel;
+      JPanel mainPanel, formPanel, northPanel, selectTypePanel, aggregatePanel;
       JPanel helpPanel, southPanel, actionButtonPanel, clearPanel;
-      JLabel selectTypeLabel;
+      JLabel selectTypeLabel, aggregateLabel;
+      Object[] aggregateFunctions = {"", "Ave", "Count", "First", "Last", "Max", "Min", "Sum"};   
       String resource, iconsDirectory;
       ImageIcon questionIcon;
       ImageIcon clearIcon;
@@ -280,11 +292,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       formPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       formPanel.addMouseListener(MyJSQLView.getPopupMenuListener());
 
-      // Select Type Option */Distinct and Help
+      // Select Type Option */Distinct, Aggregate, & Help
 
-      northPanel = new JPanel(new GridLayout(1, 2, 0, 0));
-      northPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+      northPanel = new JPanel(gridbag);
 
+      // All/Distinct
       selectTypePanel = new JPanel();
       selectTypePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
@@ -300,9 +312,39 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       selectTypeComboBox.addItem("Distinct");
       stateComponents.addElement(selectTypeComboBox);
       selectTypePanel.add(selectTypeComboBox);
-
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 35, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(selectTypePanel, constraints);
       northPanel.add(selectTypePanel);
+      
+      // Aggregate
+      aggregatePanel = new JPanel();
+      aggregatePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+      
+      resource = resourceBundle.getResource("AdvancedSortSearchForm.label.Aggregate");
+      if (resource.equals(""))
+         aggregateLabel = new JLabel("Aggregate : ");
+      else
+         aggregateLabel = new JLabel(resource + " : ");
+      aggregatePanel.add(aggregateLabel);
 
+      aggregateFunctionComboBox = new JComboBox(aggregateFunctions);
+      stateComponents.addElement(aggregateFunctionComboBox);
+      aggregatePanel.add(aggregateFunctionComboBox);
+      
+      aggregateComboBox = new JComboBox(comboBoxColumnNames);
+      stateComponents.addElement(aggregateComboBox);
+      aggregatePanel.add(aggregateComboBox);
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 60, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(aggregatePanel, constraints);
+      northPanel.add(aggregatePanel);
+
+      // Help
       helpPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
       questionIcon = new ImageIcon(iconsDirectory + "bulbIcon.png");
@@ -312,17 +354,24 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       questionButton.addActionListener(this);
       helpPanel.add(questionButton);
 
+      buildConstraints(constraints, 2, 0, 1, 1, 60, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.EAST;
+      gridbag.setConstraints(helpPanel, constraints);
       northPanel.add(helpPanel);
+      
       mainPanel.add(northPanel, BorderLayout.NORTH);
 
-      // Sort/Search Interface
+      // Sort/Group/Search Interface
 
       sortSearchPanel = new JPanel();
       sortSearchPanel.setLayout(gridbag);
       sortSearchPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 
       sortComboBox = new JComboBox[sortFormExpressionNumber];
-      ascendingDescendingComboBox = new JComboBox[sortFormExpressionNumber];
+      sort_AscendingDescendingComboBox = new JComboBox[sortFormExpressionNumber];
+      groupComboBox = new JComboBox[groupFormExpressionNumber];
+      group_AscendingDescendingComboBox = new JComboBox[groupFormExpressionNumber];
       searchComboBox = new JComboBox[searchFormExpressionNumber];
       operatorComboBox = new JComboBox[searchFormExpressionNumber];
       andOrComboBox = new JComboBox[searchComboBox.length - 1];
@@ -345,24 +394,15 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       actionButtonPanel = new JPanel();
 
-      // Sort Button
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Sort");
+      // Apply Button
+      resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Apply");
       if (resource.equals(""))
-         sortButton = new JButton("Sort");
+         applyButton = new JButton("Apply");
       else
-         sortButton = new JButton(resource);
-      sortButton.setFocusPainted(false);
-      actionButtonPanel.add(sortButton);
-
-      // Search Button
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Search");
-      if (resource.equals(""))
-         searchButton = new JButton("Search");
-      else
-         searchButton = new JButton(resource);
-      searchButton.setFocusPainted(false);
-      actionButtonPanel.add(searchButton);
-
+         applyButton = new JButton(resource);
+      applyButton.setFocusPainted(false);
+      actionButtonPanel.add(applyButton);
+      
       // Close Button
       resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Close");
       if (resource.equals(""))
@@ -398,7 +438,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       mainPanel.add(southPanel, BorderLayout.SOUTH);
       getContentPane().add(mainPanel);
-      (this.getRootPane()).setDefaultButton(searchButton);
+      (this.getRootPane()).setDefaultButton(applyButton);
 
       // Adding WindowListener
       this.addWindowListener(tableEntryFormFrameListener);
@@ -454,8 +494,15 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                if (i < sortFormExpressionNumber)
                {
                   sortComboBox[i].setSelectedIndex(0);
-                  ascendingDescendingComboBox[i].setSelectedIndex(0);
+                  sort_AscendingDescendingComboBox[i].setSelectedIndex(0);
                }
+               
+               if (i < groupFormExpressionNumber)
+               {
+                  groupComboBox[i].setSelectedIndex(0);
+                  group_AscendingDescendingComboBox[i].setSelectedIndex(0);
+               }
+               
                searchComboBox[i].setSelectedIndex(0);
                operatorComboBox[i].setSelectedIndex(0);
                if (i < andOrComboBox.length)
@@ -514,10 +561,12 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private void createSortSearchInterface(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Method Instance
-      JPanel sortPanel, searchPanel;
-      String resourceSortBy, resourceThen, resourceSearch;
+      JPanel sortPanel, groupPanel, searchPanel;
+      String resourceSortBy, resourceThen, resourceGroupBy, resourceSearch;
       
-      JLabel[] sortByLabel, sortThenLabel, searchLabel;
+      JLabel[] sortByLabel, sortThenLabel; 
+      JLabel[] groupByLabel, groupThenLabel;
+      JLabel[] searchLabel;
       JComponent swapEndComponent;
 
       Object[] whereOperators;
@@ -590,16 +639,16 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(sortComboBox[i], constraints);
          sortPanel.add(sortComboBox[i]);
 
-         ascendingDescendingComboBox[i] = new JComboBox();
-         ascendingDescendingComboBox[i].addItem("Ascending");
-         ascendingDescendingComboBox[i].addItem("Descending");
-         stateComponents.addElement(ascendingDescendingComboBox[i]);
+         sort_AscendingDescendingComboBox[i] = new JComboBox();
+         sort_AscendingDescendingComboBox[i].addItem("Ascending");
+         sort_AscendingDescendingComboBox[i].addItem("Descending");
+         stateComponents.addElement(sort_AscendingDescendingComboBox[i]);
 
          buildConstraints(constraints, 2, i, 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
          constraints.anchor = GridBagConstraints.WEST;
-         gridbag.setConstraints(ascendingDescendingComboBox[i], constraints);
-         sortPanel.add(ascendingDescendingComboBox[i]);
+         gridbag.setConstraints(sort_AscendingDescendingComboBox[i], constraints);
+         sortPanel.add(sort_AscendingDescendingComboBox[i]);
          
          if (i < sortThenLabel.length)
          {
@@ -616,11 +665,78 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       }
       while (i < sortFormExpressionNumber);
       
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 37);
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 25);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sortPanel, constraints);
       sortSearchPanel.add(sortPanel);
+      
+      // ============================
+      // Group By Interface Setup
+      
+      groupPanel = new JPanel();
+      groupPanel.setLayout(gridbag);
+      groupPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
+                                          BorderFactory.createEmptyBorder(10, 6, 10, 6)));
+      
+      groupByLabel = new JLabel[groupFormExpressionNumber];
+      groupThenLabel = new JLabel[groupFormExpressionNumber -1];
+
+      resourceGroupBy = resourceBundle.getResource("AdvancedSortSearchForm.label.GroupBy");
+      if (resourceGroupBy.equals(""))
+         resourceGroupBy = "Group By : ";
+      
+      i = 0;
+      do
+      {
+         groupByLabel[i] = new JLabel(resourceGroupBy, JLabel.LEADING);
+        
+         buildConstraints(constraints, 0, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(groupByLabel[i], constraints);
+         groupPanel.add(groupByLabel[i]);
+
+         groupComboBox[i] = new JComboBox(comboBoxColumnNames);
+         stateComponents.addElement(groupComboBox[i]);
+
+         buildConstraints(constraints, 1, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(groupComboBox[i], constraints);
+         groupPanel.add(groupComboBox[i]);
+
+         group_AscendingDescendingComboBox[i] = new JComboBox();
+         group_AscendingDescendingComboBox[i].addItem("Ascending");
+         group_AscendingDescendingComboBox[i].addItem("Descending");
+         stateComponents.addElement(group_AscendingDescendingComboBox[i]);
+
+         buildConstraints(constraints, 2, i, 1, 1, 100, 100);
+         constraints.fill = GridBagConstraints.NONE;
+         constraints.anchor = GridBagConstraints.WEST;
+         gridbag.setConstraints(group_AscendingDescendingComboBox[i], constraints);
+         groupPanel.add(group_AscendingDescendingComboBox[i]);
+         
+         if (i < groupThenLabel.length)
+         {
+            groupThenLabel[i] = new JLabel(resourceThen, JLabel.LEADING);
+
+            buildConstraints(constraints, 3, i, 1, 1, 100, 100);
+            constraints.fill = GridBagConstraints.NONE;
+            constraints.anchor = GridBagConstraints.WEST;
+            gridbag.setConstraints(groupThenLabel[i], constraints);
+            groupPanel.add(groupThenLabel[i]);
+         }
+
+         i++;
+      }
+      while (i < groupFormExpressionNumber);
+      
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 25);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(groupPanel, constraints);
+      sortSearchPanel.add(groupPanel);
       
       // ============================
       // Search Interface Setup
@@ -700,7 +816,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
       stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
       
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 63);
+      buildConstraints(constraints, 0, 2, 1, 1, 100, 50);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(searchPanel, constraints);
@@ -717,19 +833,34 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    {
       // Method Instances
       StringBuffer sqlStatementString;
+      String aggregateFunctionString, aggregateField;
       String whereString, unionString, ascDescString;
       String columnNameString, columnClassString, columnTypeString;
       String operatorString, searchString;
-      boolean notFieldSort;
+      boolean notFieldSort, notFieldGroup;
 
       sqlStatementString = new StringBuffer();
       sqlStatementString.append("SELECT ");
 
       // ========================================
-      // Adding DISTINCT option as needed.
+      // Adding DISTINCT & aggregate options as needed.
 
       if (((String) selectTypeComboBox.getSelectedItem()).equals("All"))
+      {
+         aggregateFunctionString = (String) aggregateFunctionComboBox.getSelectedItem();
+         aggregateField = columnNamesHashMap.get((String) aggregateComboBox.getSelectedItem());
+         
+         if (aggregateField != null && !aggregateFunctionString.equals("")
+               && sqlTableFieldsString.indexOf(aggregateField) != -1)
+         {
+            aggregateField = identifierQuoteString + aggregateField + identifierQuoteString;
+            sqlTableFieldsString = sqlTableFieldsString.replace(aggregateField, aggregateFunctionString
+                                                                + "(" + aggregateField + ") AS "
+                                                                + aggregateField);
+         }
+            
          sqlStatementString.append(sqlTableFieldsString + " FROM " + sqlTable + " ");
+      }
       else
          sqlStatementString.append("DISTINCT " + sqlTableFieldsString + " FROM " + sqlTable + " ");
 
@@ -838,6 +969,43 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          whereString = "";
       }
       while (i < searchFormExpressionNumber);
+      
+      // ========================================
+      // Adding the sort(s), GROUP BY, option.
+      
+      columnNameString = columnNamesHashMap.get(groupComboBox[0].getSelectedItem());
+      ascDescString = "";
+      notFieldGroup = true;
+
+      if (columnNameString != null)
+      {
+         sqlStatementString.append("GROUP BY " + identifierQuoteString + columnNameString + identifierQuoteString
+                               + " ");
+         ascDescString = orderString(0, group_AscendingDescendingComboBox);
+         notFieldGroup = false;
+      }
+
+      columnNameString = columnNamesHashMap.get(groupComboBox[1].getSelectedItem());
+
+      if (columnNameString != null)
+      {
+         sqlStatementString.append(notFieldGroup ? "GROUP BY " : ascDescString + ", ");
+         sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
+         ascDescString = orderString(1, group_AscendingDescendingComboBox);
+         notFieldGroup = false;
+      }
+
+      columnNameString = columnNamesHashMap.get(groupComboBox[2].getSelectedItem());
+
+      if (columnNameString != null)
+      {
+         sqlStatementString.append(notFieldGroup ? "GROUP BY " : ascDescString + ", ");
+         sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
+         ascDescString = orderString(2, group_AscendingDescendingComboBox);
+      }
+
+      if (!ascDescString.equals(""))
+         sqlStatementString.append(ascDescString + " ");
        
       // ========================================
       // Adding the sort(s), ORDER BY, option.
@@ -850,7 +1018,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       {
          sqlStatementString.append("ORDER BY " + identifierQuoteString + columnNameString + identifierQuoteString
                                + " ");
-         ascDescString = orderString(0);
+         ascDescString = orderString(0, sort_AscendingDescendingComboBox);
          notFieldSort = false;
       }
 
@@ -860,7 +1028,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       {
          sqlStatementString.append(notFieldSort ? "ORDER BY " : ascDescString + ", ");
          sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
-         ascDescString = orderString(1);
+         ascDescString = orderString(1, sort_AscendingDescendingComboBox);
          notFieldSort = false;
       }
 
@@ -870,7 +1038,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       {
          sqlStatementString.append(notFieldSort ? "ORDER BY " : ascDescString + ", ");
          sqlStatementString.append(identifierQuoteString + columnNameString + identifierQuoteString + " ");
-         ascDescString = orderString(2);
+         ascDescString = orderString(2, sort_AscendingDescendingComboBox);
       }
 
       if (!ascDescString.equals(""))
@@ -904,14 +1072,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    // ORDER BY SQL statements using 'ASC' or 'DESC'.
    //==============================================================
 
-   private String orderString(int option)
+   private String orderString(int option, JComboBox[] orderComboBox)
    {
       // Method Instances.
       String ascendingDescendingString;
       
-      if (option >= 0 && option < ascendingDescendingComboBox.length)
+      if (option >= 0 && option < orderComboBox.length)
       {
-         if (ascendingDescendingComboBox[option].getSelectedIndex() == 0)
+         if (orderComboBox[option].getSelectedIndex() == 0)
             ascendingDescendingString = "ASC";
          else
             ascendingDescendingString = "DESC";
