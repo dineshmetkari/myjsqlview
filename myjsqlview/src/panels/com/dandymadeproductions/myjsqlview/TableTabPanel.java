@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.89 09/19/2011
+// Version 4.90 11/02/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,6 +193,9 @@
 //        4.88 Added Class Method setViewOnly() to Meet Interface Requirements.
 //        4.89 Modification of Processing for DateTime Field for MSAccess to Use the
 //             # Character for Quotes in deleteSelectedItems() Keys.
+//        4.90 Removed Class Instances advancedSort/SearchButton & Replaced With
+//             advSortSearchApplyButton. Class Methods Effected executeActions() &
+//             createAdvancedSortSearchFrame().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -226,7 +229,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.89 09/19/2011
+ * @version 4.90 11/02/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -279,7 +282,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    protected AdvancedSortSearchForm advancedSortSearchFrame;
    protected JButton activateAdvancedSortSearchButton;
-   private JButton advancedSortButton, advancedSearchButton;
+   private JButton advSortSearchApplyButton;
    protected boolean advancedSortSearch;
 
    private UpdateForm updateFrame;
@@ -1075,18 +1078,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             setRowsLabel((tableRowStart + 1), (tableRowStart + tableRowLimit));
          }
 
-         // Advanced Sort Action.
-         else if (panelSource == advancedSortButton)
-         {
-            advancedSortSearch = true;
-            loadTable(work_dbConnection);
-            tableModel.setValues(tableData);
-            tableScrollPane.getVerticalScrollBar().setValue(0);
-            centerCardLayout.show(centerPanel, sqlTable);
-         }
-
-         // Advanced Search Action.
-         else if (panelSource == advancedSearchButton)
+         // Advanced Sort/Search Apply Action.
+         else if (panelSource == advSortSearchApplyButton)
          {
             advancedSortSearch = true;
             tableRowStart = 0;
@@ -1520,10 +1513,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       advancedSortSearchFrame = new AdvancedSortSearchForm(schemaTableName, resourceBundle,
                                                            columnNamesHashMap, columnClassHashMap,
                                                            columnTypeHashMap, comboBoxFields);
-      advancedSortButton = advancedSortSearchFrame.sortButton;
-      advancedSortButton.addActionListener(this);
-      advancedSearchButton = advancedSortSearchFrame.searchButton;
-      advancedSearchButton.addActionListener(this);
+      advSortSearchApplyButton = advancedSortSearchFrame.applyButton;
+      advSortSearchApplyButton.addActionListener(this);
 
       advancedSortSearchFrame.pack();
       advancedSortSearchFrame.center();
