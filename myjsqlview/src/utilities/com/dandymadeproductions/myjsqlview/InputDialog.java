@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2011 Dana M. Proctor
-// Version 2.2 01/27/2011
+// Version 2.3 11/20/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //         2.0 Header Format Changes/Update.
 //         2.1 Changed Package to Reflect Dandy Made Productions Code.
 //         2.2 Copyright Update.
+//         2.3 Made Class Public so Outside Classes May Use.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -62,14 +63,14 @@ import java.awt.event.*;
 import javax.swing.*;
 
 /**
- * The InputDialog class is used to create a custom input dialog
+ *    The InputDialog class is used to create a custom input dialog
  * box.
  * 
  * @author Dana M. Proctor
- * @version 2.2 01/27/2011
+ * @version 2.3 11/20/2011
  */
 
-class InputDialog extends JDialog implements PropertyChangeListener
+public class InputDialog extends JDialog implements PropertyChangeListener
 {
    // Instance & Class Fields.
 
@@ -85,7 +86,7 @@ class InputDialog extends JDialog implements PropertyChangeListener
    // InputDialog Constructor
    //==============================================================
 
-   protected InputDialog(JFrame frame, String title, String ok, String cancel,
+   public InputDialog(JFrame frame, String title, String ok, String cancel,
                          Object[] content, ImageIcon icon)
    {
       super(frame, true);
@@ -179,7 +180,7 @@ class InputDialog extends JDialog implements PropertyChangeListener
    // enter action if possible.
    //==============================================================
 
-   void setOkDefaultButton(JComponent rootPane)
+   private void setOkDefaultButton(JComponent rootPane)
    {
       // Instances
       Component[] rootComponents = rootPane.getComponents();
@@ -222,7 +223,7 @@ class InputDialog extends JDialog implements PropertyChangeListener
    // Either the dialog was closed, canceled, or oked.
    //==============================================================
 
-   protected boolean isActionResult()
+   public boolean isActionResult()
    {
       if (actionResult.equals("ok"))
          return true;
@@ -234,7 +235,7 @@ class InputDialog extends JDialog implements PropertyChangeListener
    // Class method to actionResult string.
    //==============================================================
 
-   protected String getActionResult()
+   public String getActionResult()
    {
       return actionResult;
    }
@@ -243,7 +244,7 @@ class InputDialog extends JDialog implements PropertyChangeListener
    // Class method to center the frame.
    //==============================================================
 
-   protected void center()
+   public void center()
    {
       Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
       Dimension us = getSize();
