@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.90 11/02/2011
+// Version 4.91 11/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -196,6 +196,9 @@
 //        4.90 Removed Class Instances advancedSort/SearchButton & Replaced With
 //             advSortSearchApplyButton. Class Methods Effected executeActions() &
 //             createAdvancedSortSearchFrame().
+//        4.91 Implemented TableColumnModelListener for Detecting Moves in Columns for
+//             the listTable. Added Interface Requirements and Listener Addition in
+//             Constructor, setTableHeadings() & setViewOnly() Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -220,6 +223,10 @@ import java.util.LinkedList;
 import java.util.StringTokenizer;
 import java.util.Vector;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.TableColumn;
 
 /**
@@ -229,11 +236,11 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.90 11/02/2011
+ * @version 4.91 11/24/2011
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
-                                                       Printable
+                                                       TableColumnModelListener, Printable
 {
    // Class Instances.
    private static final long serialVersionUID = 3857137515618481882L;
@@ -569,6 +576,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       createListTablePopupMenu();
       listTable.addMouseListener(summaryTablePopupListener);
+      listTable.getColumnModel().addColumnModelListener(this);
 
       // Sizing columns
       Iterator<String> headings = currentTableHeadings.iterator();
@@ -763,7 +771,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       add(actionPanel, BorderLayout.SOUTH);
    }
-
+   
    //==============================================================
    // ActionEvent Listener method for detecting the inputs from
    // the panel and directing to the appropriate routine via
@@ -1345,7 +1353,80 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       if (keyChar == KeyEvent.VK_ENTER)
          searchButton.doClick();
    }
-
+   
+   //==============================================================
+   // TableColumnModelEvent Listener method for detecting column
+   // additions to full fill TableColumnModelListener Interface
+   // requirements.
+   //==============================================================
+   
+   public void columnAdded(TableColumnModelEvent evt)
+   {
+      // Do Nothing
+   }
+   
+   //==============================================================
+   // TableColumnModelEvent Listener method for detecting column
+   // margin changes to full fill TableColumnModelListener Interface
+   // requirements.
+   //==============================================================
+   
+   public void columnMarginChanged(ChangeEvent evt)
+   {
+      // Do Nothing 
+   }
+   
+   //==============================================================
+   // TableColumnModelEvent Listener method for detecting moves
+   // in columns so that the table field names sequence can be
+   // reconstituted.
+   //==============================================================
+   
+   public void columnMoved(TableColumnModelEvent evt)
+   {
+      /* Test Procedure.
+      for (int i = 0; i < listTable.getColumnCount(); i++)
+      {
+         int index = listTable.getColumnModel().getColumn(i).getModelIndex();
+         System.out.print(index + ",");
+      }
+      */
+      
+      if (evt.getFromIndex() != evt.getToIndex())
+      {
+         sqlTableFieldsString = "";
+         
+         for (int j = 0; j < listTable.getColumnCount(); j++)
+            sqlTableFieldsString += identifierQuoteString + columnNamesHashMap.get(listTable.getColumnName(j))
+                                       + identifierQuoteString + ", ";
+         
+         if (!sqlTableFieldsString.equals(""))
+            sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
+      }
+   }
+   
+   //==============================================================
+   // TableColumnModelEvent Listener method for detecting column
+   // removals to full fill TableColumnModelListener Interface
+   // requirements.
+   //==============================================================
+   
+   public void columnRemoved(TableColumnModelEvent evt)
+   {
+      // Do Nothing 
+   }
+   
+   //==============================================================
+   // TableColumnModelEvent Listener method for detecting column
+   // selection changes to full fill TableColumnModelListener
+   // Interface requirements.
+   //==============================================================
+   
+   public void columnSelectionChanged(ListSelectionEvent evt)
+   {
+      // Do Nothing 
+   }
+   
    //==============================================================
    // Class method to obtain the column names from the table.
    // 
@@ -2547,7 +2628,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    //==============================================================
    // Class method to allow classes to set the table heading fields.
    //==============================================================
-
+   
    public void setTableHeadings(Vector<String> newHeadingFields)
    {
       // Create connection, remove old summary table and
@@ -2592,7 +2673,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       listTable.getActionMap().put(TransferHandler.getPasteAction().getValue(Action.NAME),
                                    TransferHandler.getPasteAction());
       listTable.addMouseListener(summaryTablePopupListener);
-
+      listTable.getColumnModel().addColumnModelListener(this);
+      
       // Sizing columns
       headings = currentTableHeadings.iterator();
       TableColumn column = null;
@@ -2857,6 +2939,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       createListTablePopupMenu();
       listTable.addMouseListener(summaryTablePopupListener);
+      listTable.getColumnModel().addColumnModelListener(this);
    }
 
    //==============================================================
