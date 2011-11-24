@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 06/05/2011
+// Version 1.9 11/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@
 //         1.7 Changed the Conditional Check for saveAction by Removing the NOT Logic.
 //         1.8 Correction in loadTable() for Not Modifiying searchTextString
 //             During Composition When No Field Specified.
+//         1.9 Set sqlTableStatement to an Empty String Prior to Each New
+//             Assignment in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -78,7 +80,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.8 06/05/2011
+ * @version 1.9 11/24/2011
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -441,6 +443,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                                         + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
                                         + tableRowLimit + " " + "OFFSET " + tableRowStart;  
          }
+         sqlTableStatement = "";
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
