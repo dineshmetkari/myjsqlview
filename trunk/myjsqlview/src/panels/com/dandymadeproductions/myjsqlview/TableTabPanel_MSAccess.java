@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.2 09/19/2011
+// Version 1.3 11/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //             Fields to Not Include the # Character in loadTable().
 //         1.2 Class Method editSelectedItem() DateTime Fields Made Sure to
 //             Use editForm.setFormField(Object, Object). Correction.
+//         1.3 Set sqlTableStatement to an Empty String Prior to Each New
+//             Assignment in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -64,7 +66,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.2 09/19/2011
+ * @version 1.3 11/24/2011
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -465,6 +467,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString;  
          }
+         sqlTableStatement = "";
          sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
