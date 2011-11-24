@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.9 10/29/2011
+// Version 5.0 11/24/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,6 +116,7 @@
 //             dataSourceType in Method loadTable().
 //         4.9 Passing of a New String to the QueryBucket on sqlQueryBucketButton
 //             Action in actionPerformed().
+//         5.0 Undid Revision 4.9.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -150,7 +151,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 4.9 10/29/2011
+ * @version 5.0 11/24/2011
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -309,8 +310,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
             
             if (selectedTableTabPanel != null)
             {
-               String sqlStatementString = new String(selectedTableTabPanel.getTableSQLStatement());
-               MyJSQLView_Frame.getSQLBucket().addSQLStatement(sqlStatementString);
+               MyJSQLView_Frame.getSQLBucket().addSQLStatement(selectedTableTabPanel.getTableSQLStatement());
             }
          }
       }
