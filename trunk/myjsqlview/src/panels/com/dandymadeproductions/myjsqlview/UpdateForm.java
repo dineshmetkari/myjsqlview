@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.9 06/12/2011
+// Version 4.0 11/25/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -108,6 +108,8 @@
 //                        Also in Same the Exclusion of Quoting for Keys That Are Numeric for 
 //                        MS Access Database. Class Method updateTable() Closed sqlStatement
 //                        Before Continuing With Processing Update.
+//         4.0 11/25/2011 Modifications to stateString in Method getComponentsState() to Update
+//                        the AdvancedSortSearch Frame Because of Aggregation & GROUP BY Additions.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -140,7 +142,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 3.9 06/12/2011
+ * @version 4.0 11/25/2011
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -716,7 +718,7 @@ class UpdateForm extends JFrame implements ActionListener
       while (i < updateFormExpressionNumber);
       
       // Ok whats going on here? Well the Update Form uses the AdvancedSortSearchForm
-      // to perform the search. Data from this panel on find is sent to that form
+      // to perform the search. Data from this panel on FIND is sent to that form
       // via the setKeyComponents(). The string is parsed with delimiter, but does
       // not catch the whereTextField if its the last element if is empty. So the
       // panel complains since it does not think the correct number of paramerters
@@ -1236,10 +1238,14 @@ class UpdateForm extends JFrame implements ActionListener
       stateString = new StringBuffer("");
       delimiter = AdvancedSortSearchForm.getKeyComponentsDelimiter();
 
-      // Replicate the AdvancedSortSearchForm SORT empty state form
+      // Replicate the AdvancedSortSearchForm SELECT, AGGREGATE, SORT,
+      // & GROUP BY to an empty state form
 
-      stateString.append("0" + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0"
-                         + delimiter + "0" + delimiter + "0" + delimiter);
+      stateString.append("0" + delimiter + "0" + delimiter + "0" + delimiter + "0"
+                         + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0"
+                         + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0"
+                         + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter + "0"
+                         + delimiter + "0" + delimiter + "0" + delimiter + "0" + delimiter);
 
       // Cycle through the WHERE components to add to the state string.
       
