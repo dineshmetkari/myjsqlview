@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.3 09/13/2011
+// Version 4.4 11/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,7 @@
 //             Method updatePrefences() Add Instance viewOnlyState & Implemented
 //             With This Instance the Setting of the TableTablPanels setViewOnly()
 //             Method.
+//         4.4 Comment Changes in Method itemStateChanged().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,7 +126,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.3 09/13/2011
+ * @version 4.4 11/29/2011
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -283,9 +284,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    }
 
    //==============================================================
-   // ActionEvent Listener method for determining when the selections
-   // have been made so an update can be performed on the summary
-   // table being displayed in the tab(s).
+   // ItemEvent Listener method for determined when on of the
+   // selections has changed that the apply button made be enabled.
    //==============================================================
 
    public void itemStateChanged(ItemEvent evt)
