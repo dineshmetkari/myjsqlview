@@ -67,7 +67,7 @@
 //         3.2 Class Methods actionPerformed() & loadRowSize() Instance rowSizeSpinner
 //             Assigned via Integer.valueOf() Instead of new Integer().
 //         3.3 Copyright Update.
-//         3.4 Comment Changes in Method itemStateChanged().
+//         3.4 Comment Changes in Method stateChanged().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -218,7 +218,7 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
    }
 
    //==============================================================
-   // ItemEvent Listener method for determined when on of the
+   // ChangeEvent Listener method for determined when on of the
    // selections has changed that the apply button made be enabled.
    //==============================================================
 
