@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2011 Dana M. Proctor
-// Version 3.3 01/27/2011
+// Version 3.4 11/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //         3.2 Class Methods actionPerformed() & loadRowSize() Instance rowSizeSpinner
 //             Assigned via Integer.valueOf() Instead of new Integer().
 //         3.3 Copyright Update.
+//         3.4 Comment Changes in Method itemStateChanged().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +88,7 @@ import javax.swing.event.ChangeListener;
  * in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 3.3 01/27/2011
+ * @version 3.4 11/29/2011
  */
 
 class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -217,9 +218,8 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
    }
 
    //==============================================================
-   // ActionEvent Listener method for determining when the selections
-   // have been made so an update can be performed on the summary
-   // table being displayed in the tab(s).
+   // ItemEvent Listener method for determined when on of the
+   // selections has changed that the apply button made be enabled.
    //==============================================================
 
    public void stateChanged(ChangeEvent evt)
