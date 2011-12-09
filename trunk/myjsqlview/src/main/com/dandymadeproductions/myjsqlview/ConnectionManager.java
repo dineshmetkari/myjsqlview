@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.9 07/14/2011
+// Version 2.0 12/09/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,9 @@
 //         1.8 Added Static Class Instance HSQL2 & Returning As Such As Required
 //             in Class Method getDataSourceType().
 //         1.9 Added Static Class Instance catalogSeparator and Getter/Setter Methods.
+//         2.0 Added Additional Static Class Instances, Commented, That Can be Used
+//             to Collect All Information if Desired in Method loadDBTables() for 
+//             dbMetaData.getTables().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,6 +67,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+// import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -77,7 +81,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 1.9 07/14/2011
+ * @version 2.0 12/09/2011
  */
 
 public class ConnectionManager
@@ -106,11 +110,17 @@ public class ConnectionManager
    public static final String SQLITE = "sqlite";
    public static final String MSACCESS = "odbc";
    
-   //private static final String TABLE_CAT = "TABLE_CAT";
-   private static final String TABLE_TYPE = "TABLE_TYPE";
+   // private static final String TABLE_CAT = "TABLE_CAT";
    private static final String TABLE_SCHEM = "TABLE_SCHEM";
    private static final String TABLE_NAME = "TABLE_NAME";
-   //private static final String REMARKS = "REMARKS";
+   private static final String TABLE_TYPE = "TABLE_TYPE";
+   // private static final String REMARKS = "REMARKS";
+   // private static final String TYPE_CAT = "TYPE_CAT";
+   // /private static final String TYPE_SCHEM = "TYPE_SCHEM";
+   // private static final String TYPE_NAME = "TYPE_NAME";
+   // private static final String SELF_REFERENCING_COL_NAME = "SELF_REFERENCING_COL_NAME";
+   // private static final String REF_GENERATION = "REF_GENERATION";
+   
    
    //==============================================================
    // ConnectionManager Constructor
@@ -463,8 +473,8 @@ public class ConnectionManager
       ResultSet db_resultSet;
       HashSet<String> oracleSystemSchemaHash;
       String db, subProtocol;
-      String tableType, tableSchem, tableName;
-      //String tableCat, remarks;
+      String tableSchem, tableName, tableType;
+      // String tableCat, remarks, typeCat, typeSchem, typeName, selfReferencingColName, refGeneration;
       String grantee, user;
       
       try
@@ -483,7 +493,7 @@ public class ConnectionManager
          // ARGUMENTS TO GET THINGS TO WORK.
          // *******************************************************
          
-         //System.out.println(catalog + " " + schemaPattern + " " + tableNamePattern);
+         // System.out.println("'" + catalog + "' '" + schemaPattern + "' '" + tableNamePattern + "'");
          db_resultSet = dbMetaData.getTables(catalog, schemaPattern, tableNamePattern, tableTypes);
          
          // Setup some Oracle system exclusion schema.
@@ -506,20 +516,35 @@ public class ConnectionManager
          schemas.removeAllElements();
          tables.removeAllElements();
          
+         // ResultSetMetaData rsmd = db_resultSet.getMetaData();
+         // for (int i = 1; i <= rsmd.getColumnCount(); i++)
+         //    System.out.println(rsmd.getColumnName(i));
+
+         
          while (db_resultSet.next())
          {
-            //tableCat = db_resultSet.getString(TABLE_CAT);
-            tableType = db_resultSet.getString(TABLE_TYPE);
+            // tableCat = db_resultSet.getString(TABLE_CAT);
             tableSchem = db_resultSet.getString(TABLE_SCHEM);
             tableName = db_resultSet.getString(TABLE_NAME);
-            //remarks = db_resultSet.getString(REMARKS);
+            tableType = db_resultSet.getString(TABLE_TYPE);
+            // remarks = db_resultSet.getString(REMARKS);
+            // typeCat = db_resultSet.getString(TYPE_CAT);
+            // typeSchem = db_resultSet.getString(TYPE_SCHEM);
+            // typeName = db_resultSet.getString(TYPE_NAME);
+            // selfReferencingColName = db_resultSet.getString(SELF_REFERENCING_COL_NAME);
+            // refGeneration = db_resultSet.getString(REF_GENERATION);
             
             // All information, could be to much.
             // System.out.println("Table CAT: " + tableCat
-            //                   + " Table Schem: " + tableSchem
-            //                   + " Table Type: " + tableType
-            //                   + " Table Name: " + tableName
-            //                   + " Remarks: " + remarks);
+                               // + " Table Schem: " + tableSchem
+                               // + " Table Name: " + tableName
+                               // + " Table Type: " + tableType
+                               // + " Remarks: " + remarks
+                               // + " Type Cat: " + typeCat
+                               // + " Type Schem: " + typeSchem
+                               // + " Type Name: " + typeName
+                               // + " Self Referencing Col Name: " + selfReferencingColName
+                               // + " refGeneration: " + refGeneration);
 
             // Filter, only TABLEs & VIEWs allowed in MyJSQLView
             // application.
