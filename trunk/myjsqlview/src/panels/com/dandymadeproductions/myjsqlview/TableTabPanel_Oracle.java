@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.7 11/24/2011
+// Version 10.8 12/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -258,6 +258,8 @@
 //             in loadTable() for Advanced Sort Search.
 //        10.7 Set sqlTableStatement to an Empty String Prior to Each New
 //             Assignment in Class Method loadTable().
+//        10.8 Set sqlTableStatement to NULL and Then Created a new String() for it of
+//             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -290,7 +292,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.7 11/24/2011
+ * @version 10.8 12/11/2011
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -789,8 +791,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
                                         + searchQueryString.toString() + ") " + "WHERE dmprownumber BETWEEN "
                                         + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
          }
-         sqlTableStatement = "";
-         sqlTableStatement = sqlStatementString;
+         sqlTableStatement = null;
+         sqlTableStatement = new String(sqlStatementString);
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);

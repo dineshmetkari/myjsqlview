@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 11/24/2011
+// Version 1.4 12/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,8 @@
 //             Use editForm.setFormField(Object, Object). Correction.
 //         1.3 Set sqlTableStatement to an Empty String Prior to Each New
 //             Assignment in Class Method loadTable().
+//         1.4 Set sqlTableStatement to NULL and Then Created a new String() for it of
+//             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.3 11/24/2011
+ * @version 1.4 12/11/2011
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -467,8 +469,8 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString;  
          }
-         sqlTableStatement = "";
-         sqlTableStatement = sqlStatementString;
+         sqlTableStatement = null;
+         sqlTableStatement = new String(sqlStatementString);
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);

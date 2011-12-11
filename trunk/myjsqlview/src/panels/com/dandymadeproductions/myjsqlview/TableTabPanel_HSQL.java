@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.1 11/24/2011
+// Version 11.2 12/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -248,8 +248,10 @@
 //             addItem(), & editSelectedItem().
 //        11.0 Minor Change in LOB Collection in Method getColumnNames() for String Content
 //             Larger Than 65536.
-//        11.1 Set sqlTableStatement to an Empty String Prior to Each New
-//             Assignment in Class Method loadTable().
+//        11.1 Set sqlTableStatement to an Empty String Prior to Each New Assignment
+//             in Class Method loadTable().
+//        11.2 Set sqlTableStatement to NULL and Then Created a new String() for it of
+//             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -275,7 +277,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.1 11/24/2011
+ * @version 11.2 12/11/2011
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -668,8 +670,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString;
          }
-         sqlTableStatement = "";
-         sqlTableStatement = sqlStatementString;
+         sqlTableStatement = null;
+         sqlTableStatement = new String(sqlStatementString);
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
