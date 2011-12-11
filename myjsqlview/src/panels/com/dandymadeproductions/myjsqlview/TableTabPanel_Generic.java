@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.9 11/24/2011
+// Version 10.0 12/11/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -223,6 +223,8 @@
 //             the Processing of Data Types Clob to be Treated Like Text, LongVarCharacters.
 //         9.9 Set sqlTableStatement to an Empty String Prior to Each New
 //             Assignment in Class Method loadTable().
+//        10.0 Set sqlTableStatement to NULL and Then Created a new String() for it of
+//             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -248,7 +250,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 9.9 11/24/2011
+ * @version 10.0 12/11/2011
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -618,8 +620,8 @@ public class TableTabPanel_Generic extends TableTabPanel
                                         + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
                                         + tableRowLimit + " " + "OFFSET " + tableRowStart;  
          }
-         sqlTableStatement = "";
-         sqlTableStatement = sqlStatementString;
+         sqlTableStatement = null;
+         sqlTableStatement = new String(sqlStatementString);
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
