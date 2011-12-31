@@ -8,8 +8,8 @@
 //             << CSVImportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.3 10/01/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 3.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //                        getDateFormatOptions().
 //         3.3 10/01/2011 Set Date Format to DBTablesPanel.getGeneralProperties().getViewDateFormat()
 //                        on Restore Defaults in actionPerformed().
+//         3.4 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -97,7 +98,7 @@ import javax.swing.*;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.3 10/01/2011
+ * @version 3.4 01/01/2012
  */
 
 class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener

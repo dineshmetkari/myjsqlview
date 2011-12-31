@@ -9,8 +9,8 @@
 //                   << CreditsPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.6 10/10/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 3.7 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
 //         3.5 Constructor Conditional Check for HSQL Changed From equals to
 //             indexOf.
 //         3.6 Added developersNames/Titles iText Library & FreeFont.
+//         3.7 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -93,7 +94,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.6 10/10/2011
+ * @version 3.7 01/01/2012
  */
 
 class CreditsPanel extends JPanel implements Runnable

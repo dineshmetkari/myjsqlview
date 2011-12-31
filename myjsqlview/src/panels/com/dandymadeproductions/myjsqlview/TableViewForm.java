@@ -9,8 +9,8 @@
 //                 << TableViewForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.2 07/25/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 6.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,7 @@
 //                        is an Empty String.
 //         6.2 07/25/2011 Clob Types Treated as Text, Character, Data. Class Methods
 //                        Effected actionPerformed() & saveBlobTextField().
+//         6.3 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -172,7 +173,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.2 07/25/2011
+ * @version 6.3 01/01/2012
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener

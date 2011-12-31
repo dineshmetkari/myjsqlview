@@ -9,8 +9,8 @@
 //           << PreferencesPanelWinter.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 2.5 01/27/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 2.6 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@
 //                        Instances backgroundImage, offScreenGraphicsImage,
 //                        & snowFlakeImage.
 //         1.4 10/21/2008 MyJSQLView Project Common Source Code Formatting.
-//         1,5 12/16/2008 Class Methods updateSnowFlakes(), render(), checkImage(),
+//         1.5 12/16/2008 Class Methods updateSnowFlakes(), render(), checkImage(),
 //                        and timeStep() Made Private.
 //         1.6 05/25/2009 Check on Constructor Instance fileSeparator.
 //         1.7 06/12/2009 Class Method checkImage() Dimension Conditional For
@@ -60,6 +60,7 @@
 //                        render() and removed Setting of Border in Constructor.
 //         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         2.5 01/27/2011 Copyright Update.
+//         2.6 01/01/2012 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -82,7 +83,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.5 01/27/2011
+ * @version 2.6 01/01/2012
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable

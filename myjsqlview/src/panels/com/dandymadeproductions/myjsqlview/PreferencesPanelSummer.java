@@ -9,8 +9,8 @@
 //           << PreferencesPanelSummer.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 3.1 01/27/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 3.2 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //                        render() and removed Setting of Border in Constructor.
 //         3.0 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         3.1 01/27/2011 Copyright Update.
+//         3.2 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -85,12 +86,12 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 
 /**
- * The PreferencesPanelSummer class provides a generic panel used in the
+ *    The PreferencesPanelSummer class provides a generic panel used in the
  * Preferences Menu to highlight the top tree element during the northern
  * hemisphere's summer months, July-September.
  * @author Dana M. Proctor
  * 
- * @version 3.1 01/27/2011
+ * @version 3.2 01/01/2012
  */
 
 class PreferencesPanelSummer extends PreferencesPanel implements Runnable

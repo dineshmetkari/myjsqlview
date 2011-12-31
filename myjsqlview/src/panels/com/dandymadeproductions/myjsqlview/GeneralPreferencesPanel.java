@@ -8,8 +8,8 @@
 //             << GeneralPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.3 09/13/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //                        by Obtaining from MyJSQLView_Utils Class.
 //         1.3 09/13/2011 Constructor Obtained dateFormatComboBox From MyJSQLView_Utils.
 //                        getDateFormatOptions().
+//         1.4 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,7 +60,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.3 09/13/2011
+ * @version 1.4 01/01/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener

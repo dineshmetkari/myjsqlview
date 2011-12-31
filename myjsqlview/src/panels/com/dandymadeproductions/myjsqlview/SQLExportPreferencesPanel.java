@@ -8,8 +8,8 @@
 //            << SQLExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.2 10/01/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 4.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,7 @@
 //                        Effected.
 //         4.2 10/01/2011 Added Static Final Default and Other Common Class Instances. Used
 //                        to Setup Instances and Restoring Defaults in actionPerformed().
+//         4.3 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import javax.swing.*;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.2 10/01/2011
+ * @version 4.3 01/01/2012
  */
 
 class SQLExportPreferencesPanel extends JPanel implements ActionListener

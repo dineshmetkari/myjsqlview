@@ -9,8 +9,8 @@
 //                 << SitesTreePanel.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Dana M. Proctor
-// Version 4.2 02/04/2011
+// Copyright (C) 2006-2012 Dana M. Proctor
+// Version 4.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,7 @@
 //             renameSite() Methods Effected.
 //         4.1 Increased the PreferredSize of the treeScrollPane Instance.
 //         4.2 Class Instance connectionManagerFrame Changed to loginManagerFrame.
+//         4.3 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.2 02/04/2011
+ * @version 4.3 01/01/2012
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener

@@ -9,8 +9,8 @@
 //         << TableFieldSelectionPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.4 11/29/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 4.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,7 @@
 //             With This Instance the Setting of the TableTablPanels setViewOnly()
 //             Method.
 //         4.4 Comment Changes in Method itemStateChanged().
+//         4.5 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.4 11/29/2011
+ * @version 4.5 01/01/2012
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener

@@ -11,8 +11,8 @@
 //                  << TableTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.91 11/24/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 4.92 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,6 +199,7 @@
 //        4.91 Implemented TableColumnModelListener for Detecting Moves in Columns for
 //             the listTable. Added Interface Requirements and Listener Addition in
 //             Constructor, setTableHeadings() & setViewOnly() Methods.
+//        4.92 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -236,7 +237,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.91 11/24/2011
+ * @version 4.92 01/01/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
