@@ -7,8 +7,8 @@
 //             << PreferencesFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 8.2 05/28/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 8.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -167,6 +167,7 @@
 //             in actionPerformed() & createTableFieldsOptionPanel(). Removed Ref. to
 //             DBTablesPanel.Start/StopStatusTimer() and Reloaded Selected Table in actionPerformed()
 //             on OK.
+//         8.3 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -196,7 +197,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.2 05/02/2011
+ * @version 8.3 01/01/2012
  */
 
 //=================================================================

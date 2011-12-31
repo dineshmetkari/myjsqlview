@@ -9,8 +9,8 @@
 //                 << LoginManagerFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.9 02/04/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 5.0 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,7 @@
 //             actionPerformed() for Advanced Action.
 //         4.9 Renamed to LoginManagerFrame. All Instances That Reference The
 //             Old ConnectionManager Changed to LoginManager.
+//         5.0 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 4.8 01/29/2011
+ * @version 5.0 01/01/2012
  */
 
 class LoginManagerFrame extends JFrame implements ActionListener

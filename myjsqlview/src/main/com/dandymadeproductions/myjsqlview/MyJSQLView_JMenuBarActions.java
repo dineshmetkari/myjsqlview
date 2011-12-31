@@ -9,8 +9,8 @@
 //               << MyJSQLView_JMenuBarActions.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.34 10/05/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 7.35 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -255,6 +255,7 @@
 //        7.33 Increase of size of PreferencesFrame From 700x435 to 750x461.
 //        7.34 Added sqlQueryBucketFrame.saveLastUsedList() to Action Exit in Class
 //             Method actionSelection().
+//        7.35 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -287,7 +288,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.34 10/05/2011
+ * @version 7.35 01/01/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
