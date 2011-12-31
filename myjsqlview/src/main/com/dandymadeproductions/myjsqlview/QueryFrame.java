@@ -8,8 +8,8 @@
 //                  << QueryFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 7.5 09/18/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 7.6 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,7 @@
 //                        queryResultTextArea Instead of contentPane() in Constructor.
 //         7.5 09/18/2011 Limiting MSAccess Type Databases to SQL_Statement Queries Only via
 //                        the statementTypeComboBox Instance.
+//         7.6 01/01/2012 Minor Code Placement Movement and Copyright Update.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -228,7 +229,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.5 09/18/2011
+ * @version 7.6 01/01/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1546,6 +1547,19 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       gbc.weightx = wx;
       gbc.weighty = wy;
    }
+   
+   //==============================================================
+   // Class method to center the frame.
+   //==============================================================
+
+   protected void center()
+   {
+      Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
+      Dimension us = getSize();
+      int x = (screen.width - us.width) / 2;
+      int y = (screen.height - us.height) / 2;
+      setLocation(x, y);
+   }
 
    //==============================================================
    // Class method to provide a mechanism to clear the
@@ -1592,18 +1606,5 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    protected static void setQueryResultTextArea(String feedback)
    {
       queryResultTextArea.append(feedback + "\n");
-   }
-
-   //==============================================================
-   // Class method to center the frame.
-   //==============================================================
-
-   protected void center()
-   {
-      Dimension screen = Toolkit.getDefaultToolkit().getScreenSize();
-      Dimension us = getSize();
-      int x = (screen.width - us.width) / 2;
-      int y = (screen.height - us.height) / 2;
-      setLocation(x, y);
    }
 }
