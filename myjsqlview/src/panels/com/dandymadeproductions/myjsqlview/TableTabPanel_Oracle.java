@@ -12,8 +12,8 @@
 //              << TableTabPanel_Oracle.java >>
 //
 //================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 10.8 12/11/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 10.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -260,6 +260,8 @@
 //             Assignment in Class Method loadTable().
 //        10.8 Set sqlTableStatement to NULL and Then Created a new String() for it of
 //             sqlStatementString to Insure it is Flushed in Class Method loadTable().
+//        10.9 Set sqlTableStatement to Not be a new String() of sqlStatementString in
+//             Method loadTable().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -292,7 +294,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.8 12/11/2011
+ * @version 10.9 01/01/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -792,7 +794,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                                         + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
          }
          sqlTableStatement = null;
-         sqlTableStatement = new String(sqlStatementString);
+         sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
