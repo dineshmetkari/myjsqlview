@@ -12,8 +12,8 @@
 //           << TableTabPanel_HSQL.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 11.2 12/11/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 11.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,8 @@
 //             in Class Method loadTable().
 //        11.2 Set sqlTableStatement to NULL and Then Created a new String() for it of
 //             sqlStatementString to Insure it is Flushed in Class Method loadTable().
+//        11.3 Set sqlTableStatement to Not be a new String() of sqlStatementString in
+//             Method loadTable().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -277,7 +279,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.2 12/11/2011
+ * @version 11.3 01/01/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -671,7 +673,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                         + identifierQuoteString + " " + ascDescString;
          }
          sqlTableStatement = null;
-         sqlTableStatement = new String(sqlStatementString);
+         sqlTableStatement = sqlStatementString;
          // System.out.println(sqlStatementString);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
