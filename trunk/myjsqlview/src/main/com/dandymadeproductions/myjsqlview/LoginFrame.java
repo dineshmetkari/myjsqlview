@@ -11,8 +11,8 @@
 //                   << LoginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.81 07/14/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 6.82 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -257,6 +257,8 @@
 //             Entries for MS Access.
 //        6.81 Class Method accessCheck() Added Instance catalogSeparator and Collected
 //             in Same Along With Setting in ConnectionManager. Additional Comments.
+//        6.82 Minor Comment Changes. Update to Copyright. Change to Method accessCheck()
+//             ConnectionManager.setMemoryConnection() Routine That Was Renamed.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -291,7 +293,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.81 07/14/2011
+ * @version 6.82 01/01/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1121,7 +1123,7 @@ public class LoginFrame extends JFrame implements ActionListener
             {
                // The % character is interpreted as the start of a special escaped sequence,
                // two digit hexadeciaml value. So replace passwordString characters with that
-               // character with that characters hexadecimal value as sequence, %37. Jave
+               // character with that characters hexadecimal value as sequence, %37. Java
                // API URLDecoder.
                
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
@@ -1247,7 +1249,7 @@ public class LoginFrame extends JFrame implements ActionListener
                  || (subProtocol.indexOf(ConnectionManager.HSQL) != -1
                      && db.toLowerCase().indexOf("mem:") != -1))
             {
-               ConnectionManager.setMemoryConnectoin(DriverManager.getConnection(connectionString));
+               ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionString));
             }
             
             dbConnection.close();
