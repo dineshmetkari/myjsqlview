@@ -8,8 +8,8 @@
 //                 << ConnectionManager.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 2.0 12/09/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //         2.0 Added Additional Static Class Instances, Commented, That Can be Used
 //             to Collect All Information if Desired in Method loadDBTables() for 
 //             dbMetaData.getTables().
+//         2.1 Changed in Method Name setMemoryConnectoin() to setMemoryConnection().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -81,7 +82,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.0 12/09/2011
+ * @version 2.1 01/01/2012
  */
 
 public class ConnectionManager
@@ -774,7 +775,7 @@ public class ConnectionManager
    // Class method to set a memory type connection.
    //==============================================================
 
-   protected static void setMemoryConnectoin(Connection connection)
+   protected static void setMemoryConnection(Connection connection)
    {
       memoryConnection = connection;
    }
