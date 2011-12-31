@@ -8,8 +8,8 @@
 //                   << GraphicsCanvasPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.0 09/10/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 //=================================================================
 // Version 1.0 09/10/2010 Original GraphicsCanvasPanel Class.
 //         1.1 01/27/2011 Copyright Update.
+//         1.2 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,7 +49,7 @@ import javax.swing.*;
  * supplied image as its main component.
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/27/2011
+ * @version 1.2 01/01/2012
  */
 
 class GraphicsCanvasPanel extends JPanel

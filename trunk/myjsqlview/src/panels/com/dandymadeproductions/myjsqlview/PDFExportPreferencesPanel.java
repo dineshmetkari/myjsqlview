@@ -8,8 +8,8 @@
 //             << PDFExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.9 10/02/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //                        & setPDFExportProperties().
 //         2.0 10/04/2011 Correction in fillFontPageLayoutPanel() pageLayoutLabel Resource
 //                        Identification Name.
+//         2.1 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +81,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 2.0 10/04/2011
+ * @version 2.1 01/01/2012
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener

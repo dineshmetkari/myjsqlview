@@ -9,8 +9,8 @@
 //                 << QueryTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 9.0 11/02/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 9.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -212,6 +212,7 @@
 //         9.0 Removed Class Instances advancedSort/SearchButton & Replaced With
 //             advSortSearchApplyButton. Class Methods Effected actionPerformed() &
 //             setTableRowSize().
+//         9.1 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -243,7 +244,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.0 11/02/2011
+ * @version 9.1 01/01/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable

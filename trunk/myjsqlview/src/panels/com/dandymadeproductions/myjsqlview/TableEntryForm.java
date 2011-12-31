@@ -8,8 +8,8 @@
 //                  << TableEntryForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 8.87 09/17/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 8.88 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -347,6 +347,7 @@
 //        8.87 09/17/2011 Class Method addUpdateTableEntry() Modification to Handle MSAccess
 //                        Binary Fields That Are Empty, NULL, So That Their Values Are Set in
 //                        The Initial PrepareStatement. Likewise for Removing.
+//        8.88 01/01/2012 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -380,7 +381,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.87 09/17/2011
+ * @version 8.88 01/01/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener

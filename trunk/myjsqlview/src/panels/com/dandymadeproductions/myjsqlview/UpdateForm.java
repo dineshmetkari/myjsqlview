@@ -9,8 +9,8 @@
 //                      << UpdateForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.0 11/25/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 4.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -110,6 +110,7 @@
 //                        Before Continuing With Processing Update.
 //         4.0 11/25/2011 Modifications to stateString in Method getComponentsState() to Update
 //                        the AdvancedSortSearch Frame Because of Aggregation & GROUP BY Additions.
+//         4.1 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -142,7 +143,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.0 11/25/2011
+ * @version 4.1 01/01/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener

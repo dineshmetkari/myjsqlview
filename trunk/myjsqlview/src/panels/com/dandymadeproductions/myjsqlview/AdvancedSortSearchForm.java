@@ -9,8 +9,8 @@
 //              << AdvancedSorSearchForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 4.85 11/13/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 4.86 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,7 @@
 //                        aggregateComboBox in actionPerformed(). Resource Collection for Ascending
 //                        Descending in createSortSearchInterface(). Changes in orderString() to
 //                        Accomodate for Empty String in Order ComboBoxes.
+//        4.86 01/01/2012 Copyright Update.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -206,7 +207,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.85 11/13/2011
+ * @version 4.86 01/01/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -1076,7 +1077,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Return the resultant query.
 
-      System.out.println(sqlStatementString);
+      // System.out.println(sqlStatementString);
       return sqlStatementString.toString();
       
       // Sample outline of what a basic SQL SELECT query should be.

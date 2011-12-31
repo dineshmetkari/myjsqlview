@@ -8,8 +8,8 @@
 //                    << SQLTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.6 09/18/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.7 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //             in SQLTableModel Inner Class.
 //         1.6 Modification to Method executeSQL() to Accomodate MSAccess
 //             by Limiting db_resultSet Collection to Only Once.
+//         1.7 Copyright Update.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -79,7 +80,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.5 08/19/2011
+ * @version 1.7 01/01/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
