@@ -8,8 +8,8 @@
 //                << HelpFrame.java >>
 //
 //=================================================================
-// Copyright (C) 1999-2011 Dana M. Proctor
-// Version 2.3 05/16/2011
+// Copyright (C) 1999-2012 Dana M. Proctor
+// Version 2.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //             Display Error Information.
 //         2.2 Copyright Update.
 //         2.3 Made Class, Constructor, Method center() public.
+//         2.4 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +75,7 @@ import java.io.IOException;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/16/2011
+ * @version 2.4 01/01/2012
  */
 
 public class HelpFrame extends JFrame

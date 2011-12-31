@@ -8,8 +8,8 @@
 //               << MyJSQLView_JToolBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.4 03/23/2011
+// Copyright (C) 2005-2012 Dana M. Proctor.
+// Version 2.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 //             ToolBar Button.
 //         2.3 Copyright Update.
 //         2.4 Added Tools | SQL Query Bucket ToolBar Button.
+//         2.5 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.4 03/23/2011
+ * @version 2.5 01/01/2012
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands

@@ -8,8 +8,8 @@
 //                << SQLQueryBucketFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.7 10/29/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.8 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.7 10/29/2011 Added Class Instance databaseName and Changed the String
 //                        for DEFAULT_LIST_LAST_USED_FILENAME. Added to Argument
 //                        the Same for openLastUsedList(). Used in saveLastUsedList().
+//         1.8 01/01/2012 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +75,7 @@ import javax.swing.*;
  * Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.7 10/29/2011
+ * @version 1.8 01/01/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener

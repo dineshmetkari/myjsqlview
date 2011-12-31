@@ -8,8 +8,8 @@
 //                  << SearchFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.8 09/03/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 3.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,7 @@
 //             Said Button.
 //         3.8 Class Method actionPerformed() Introduced Instance progressBarMax and
 //             Set searchProgressBar Maximum to It.
+//         3.9 Copyright Update.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.8 09/03/2011
+ * @version 3.9 01/01/2012
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener

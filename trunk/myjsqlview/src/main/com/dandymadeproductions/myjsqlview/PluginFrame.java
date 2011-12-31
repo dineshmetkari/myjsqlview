@@ -7,8 +7,8 @@
 //                   << PluginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.4 02/05/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,8 @@
 //         1.4 Added Loading Plugins Capability. Added Class Instances
 //             loadingPluginsList, loadingPluginViewTableData, tableModelLoadingPlugins,
 //             & loadingPluginViewTable. New Class Methods createLoadingPluginsViewPanel,
-//             & displayLoadingPluginsData(). 
+//             & displayLoadingPluginsData().
+//         1.5 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -78,7 +79,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.4 02/05/2011
+ * @version 1.5 01/01/2012
  */
 
 //=================================================================
