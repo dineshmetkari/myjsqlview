@@ -14,8 +14,8 @@
 //                  << MyJSQLView.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 3.31 10/10/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 3.32 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,6 +193,8 @@
 //                         for Release 3.30.
 //         3.31 10/10/2011 Comment Changes, Update to Class Instance myJSQLView_Version
 //                         for Release 3.31.
+//         3.32 01/01/2012 Setting of Query Bucket List Loading Upon Instantiation of MyJSQLView_
+//                         Frame in actionPerformed().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -226,7 +228,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.31 10/10/2011
+ * @version 3.32 01/01/2012
  */
 
 public class MyJSQLView implements ActionListener
@@ -248,7 +250,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.31", "Build ID: 20111010"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.32", "Build ID: 20120101"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -363,6 +365,7 @@ public class MyJSQLView implements ActionListener
             // Create the MyJSQLView main application frame.
 
             myJSQLViewFrame = new MyJSQLView_Frame(myJSQLView_Version, webSiteString);
+            myJSQLViewFrame.loadQueryBucketList();
             myJSQLViewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             myJSQLViewFrame.createGUI();
             myJSQLViewFrame.addMouseListener(myJSQLViewPopupListener);
