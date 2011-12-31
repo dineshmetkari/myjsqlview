@@ -10,8 +10,8 @@
 //                   << MyJSQLView_Frame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 6.7 10/29/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 6.8 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -167,6 +167,8 @@
 //         6.6 10/05/2011 Threaded the Setup of the Query Bucket in the Constructor.
 //         6.7 10/29/2011 Argument Change to Pass Database Name to openLastUsedList() for the
 //                        SQLQueryBucketFrame in Constructor.
+//         6.8 01/01/2012 Moved the Loading of the Query Bucket List From Constructor to its
+//                        Own Method.
 //                        
 //
 //-----------------------------------------------------------------
@@ -197,7 +199,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.7 10/29/2011
+ * @version 6.8 01/01/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -236,20 +238,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
 
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
-      
-      // Thread the setup of the Query Bucket.
-      Thread setUpQueryBucket = new Thread(new Runnable()
-      {
-         public void run()
-         {
-            sqlQueryBucketFrame.setSize(500, 450);
-            sqlQueryBucketFrame.setResizable(false);
-            sqlQueryBucketFrame.center();
-            sqlQueryBucketFrame.openLastUsedList(ConnectionManager.getConnectionProperties()
-               .getProperty(ConnectionProperties.DB));
-         }
-      }, "SQLQueryBucketFrame.saveActionThread");
-      setUpQueryBucket.start();
       
       //==================================================
       // Frame Window closing listener to detect the frame
@@ -491,24 +479,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    }
    
    //==============================================================
-   // Class Method to return the current loaded plugins.
-   //==============================================================
-   
-   protected static Vector<MyJSQLView_PluginModule> getPlugins()
-   {
-      return loadedPluginModules;
-   }
-   
-   //==============================================================
-   // Class Method to return the SQL Bucket Frame.
-   //==============================================================
-   
-   public static SQLQueryBucketFrame getSQLBucket()
-   {
-      return sqlQueryBucketFrame;
-   }
-   
-   //==============================================================
    // Class Method to reload the DBTablesPanel. Essentially the
    // panel is left intact, static, just components cleared/reset
    // then redisplayed.
@@ -566,5 +536,45 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       }
       
       ConnectionManager.closeConnection(dbConnection, "TableTabPanel_Frame reloadDBTables()");
-   }  
+   }
+   
+   //==============================================================
+   // Class Method to load the Query Buckets default last saved
+   // list on closing. Based on database connection.
+   //==============================================================
+   
+   protected void loadQueryBucketList()
+   {
+      // Thread the setup of the Query Bucket.
+      Thread loadQueryBucketList = new Thread(new Runnable()
+      {
+         public void run()
+         {
+            sqlQueryBucketFrame.setSize(500, 450);
+            sqlQueryBucketFrame.setResizable(false);
+            sqlQueryBucketFrame.center();
+            sqlQueryBucketFrame.openLastUsedList(ConnectionManager.getConnectionProperties()
+               .getProperty(ConnectionProperties.DB));
+         }
+      }, "MyJSQLView_Frame.loadQueryBucketList");
+      loadQueryBucketList.start();
+   }
+   
+   //==============================================================
+   // Class Method to return the current loaded plugins.
+   //==============================================================
+   
+   protected static Vector<MyJSQLView_PluginModule> getPlugins()
+   {
+      return loadedPluginModules;
+   }
+   
+   //==============================================================
+   // Class Method to return the SQL Bucket Frame.
+   //==============================================================
+   
+   public static SQLQueryBucketFrame getSQLBucket()
+   {
+      return sqlQueryBucketFrame;
+   }
 }
