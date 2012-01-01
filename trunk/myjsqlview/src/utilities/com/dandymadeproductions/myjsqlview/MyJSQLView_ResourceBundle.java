@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 01/01/2012
+// Version 1.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,7 @@
 //         1.6 06/27/2010 Added Constructor Argument localeDirectory.
 //         1.7 01/27/2011 Copyright Update.
 //         1.8 01/01/2012 Copyright Update.
+//         1.9 01/01/2012 Implemented Class is Serializable.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,6 +60,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Hashtable;
 
 import javax.swing.JOptionPane;
@@ -69,12 +71,14 @@ import javax.swing.JOptionPane;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.8 01/01/2012
+ * @version 1.9 01/01/2012
  */
 
-public class MyJSQLView_ResourceBundle
+public class MyJSQLView_ResourceBundle implements Serializable
 {
    // Class Instances.
+   private static final long serialVersionUID = -6752902010674915905L;
+   
    private Hashtable<String, String> localeListData;
 
    //==============================================================
