@@ -7,8 +7,8 @@
 //           << DataImportProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana Proctor
-// Version 2.0 09/09/2011
+// Copyright (C) 2007-2012 Dana Proctor
+// Version 2.1 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.9 Copyright Update.
 //         2.0 Set Default dateFormat to MyJSQLView_Utils.MMddyyyy_DASH in the
 //             Constructor.
+//         2.1 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -59,7 +60,7 @@ import java.util.prefs.Preferences;
  * data import properties storage.
  * 
  * @author Dana M. Proctor
- * @version 2.0 09/09/2011
+ * @version 2.1 01/01/2012
  */
 
 class DataImportProperties

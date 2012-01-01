@@ -8,8 +8,8 @@
 //             << TableTabInterface.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 3.4 09/13/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 3.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,6 +62,7 @@
 //         3.2 Copyright Update.
 //         3.3 Added Interface Method saveHistory().
 //         3.4 Added Interface Method setViewOnly().
+//         3.5 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -82,7 +83,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.4 09/13/2011
+ * @version 3.5 01/01/2012
  */
 
 interface TableTabInterface

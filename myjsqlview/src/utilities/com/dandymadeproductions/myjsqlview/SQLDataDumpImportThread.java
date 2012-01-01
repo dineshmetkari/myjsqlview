@@ -10,8 +10,8 @@
 //              << SQLDataDumpImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 4.8 09/25/2011
+// Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
+// Version 4.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -108,7 +108,8 @@
 //             Eliminate the HeapSize Error Created by Overloading a String by the
 //             Complete Data Dump. Now the Dump is Read a Single Line at a Time
 //             Then Once a Query is Built is Execute, to Reiterate Again. Removed
-//             Class Method separateQueries(). 
+//             Class Method separateQueries().
+//         4.9 Copyright Update.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -134,7 +135,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.8 09/25/2011
+ * @version 4.9 01/01/2012
  */
 
 class SQLDataDumpImportThread implements Runnable

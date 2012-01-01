@@ -9,8 +9,8 @@
 //                 << SQLDatabaseDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 7.7 07/26/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 7.8 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,6 +199,7 @@
 //         7.7 Change in the Format for Dump of Binary Data for HSQL2 in Class Methods
 //             insertReplace/explicitStatementData(). Same Methods the Addition of
 //             Processing for Bit Varying Data Types.
+//         7.8 Copyright Update.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -230,7 +231,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.7 07/26/2011
+ * @version 7.8 01/01/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable

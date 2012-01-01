@@ -10,8 +10,8 @@
 //                  << WriteDataFile.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 2.3 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //                        dumpProgressBar to Short-Circuit &&. Organized imports.
 //         2.2 06/28/2010 Made Class Public in Addition to mainWriteDataString().
 //         2.3 01/27/2011 Copyright Update.
+//         2.4 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import javax.swing.JOptionPane;
  * also provides a generic means to output byte[] data to a file.
  * 
  * @author Dana M. Proctor
- * @version 2.3 01/27/2011
+ * @version 2.4 01/01/2012
  */
 
 public class WriteDataFile

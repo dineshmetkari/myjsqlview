@@ -8,8 +8,8 @@
 //                   << ImageUtil.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Vivek Singh, Dana M. Proctor
-// Version 1.8 02/13/2011
+// Copyright (C) 2006-2012 Vivek Singh, Dana M. Proctor
+// Version 1.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 //         1.8 02/13/2011 Changed in Constructor and Method saveImage() of JComponent
 //                        to Component. Check of component Moved to Just Constructor
 //                        and Check for Width & Height.
+//         1.9 01/01/2012 Copyright Update.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +70,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.8 02/13/2011
+ * @version 1.9 01/01/2012
  */
 
 public class ImageUtil

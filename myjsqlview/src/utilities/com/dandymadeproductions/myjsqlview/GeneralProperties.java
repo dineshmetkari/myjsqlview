@@ -7,8 +7,8 @@
 //              << GeneralProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Dana Proctor
-// Version 1.1 05/07/2011
+// Copyright (C) 2006-2012 Dana Proctor
+// Version 1.2 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 //=================================================================
 // Version 1.0 Initial GeneralProperties Class.
 //         1.1 Made Class public Along With Class Method getViewDateFormat().
+//         1.2 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -45,7 +46,7 @@ import java.util.prefs.Preferences;
  * MyJSQLView general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.1 05/07/2011
+ * @version 1.2 01/01/2012
  */
 
 public class GeneralProperties

@@ -9,8 +9,8 @@
 //                   << SQLDataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Borislav Gizdov, Dana M. Proctor
-// Version 6.92 07/26/2011
+// Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
+// Version 6.93 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -279,6 +279,7 @@
 //        6.92 Change in the Format for Dump of Binary Data for HSQL2 in Class Methods
 //             insertReplace/explicitStatementData(). Same Methods the Addition of
 //             Processing for Bit Varying Data Types.
+//        6.93 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -311,7 +312,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.92 07/26/2011
+ * @version 6.93 01/01/2012
  */
 
 class SQLDataDumpThread implements Runnable

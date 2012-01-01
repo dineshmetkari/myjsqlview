@@ -9,8 +9,8 @@
 //               << MyJSQLView_ResourceBundle.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.7 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.8 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //                        For When IOException Created in Unable to Load Resource.
 //         1.6 06/27/2010 Added Constructor Argument localeDirectory.
 //         1.7 01/27/2011 Copyright Update.
+//         1.8 01/01/2012 Copyright Update.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import javax.swing.JOptionPane;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.7 01/27/2011
+ * @version 1.8 01/01/2012
  */
 
 public class MyJSQLView_ResourceBundle

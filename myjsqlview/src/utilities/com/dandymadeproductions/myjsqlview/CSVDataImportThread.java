@@ -10,8 +10,8 @@
 //                 << CSVDataImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 5.9 10/24/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 6.0 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,7 @@
 //             of Quotes for Field Values if Non-String.
 //         5.9 Replaced the Method formatDateString() Conversion Processing by the
 //             Standardized Process Already Supplied by the MyJSQLView_Utils Class.
+//         6.0 Copyright Update.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -156,7 +157,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 5.9 10/24/2011
+ * @version 6.0 01/01/2012
  */
 
 class CSVDataImportThread implements Runnable
