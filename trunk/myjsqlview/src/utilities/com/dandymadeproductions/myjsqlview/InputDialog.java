@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2011 Dana M. Proctor
-// Version 2.3 11/20/2011
+// Version 2.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@
 //         2.1 Changed Package to Reflect Dandy Made Productions Code.
 //         2.2 Copyright Update.
 //         2.3 Made Class Public so Outside Classes May Use.
+//         2.4 Cloned Passed Argument Instance content to Like Class Instance
+//             to Isolate.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import javax.swing.*;
  * box.
  * 
  * @author Dana M. Proctor
- * @version 2.3 11/20/2011
+ * @version 2.4 01/01/2012
  */
 
 public class InputDialog extends JDialog implements PropertyChangeListener
@@ -85,7 +87,7 @@ public class InputDialog extends JDialog implements PropertyChangeListener
    //==============================================================
    // InputDialog Constructor
    //==============================================================
-
+   
    public InputDialog(JFrame frame, String title, String ok, String cancel,
                          Object[] content, ImageIcon icon)
    {
@@ -109,7 +111,7 @@ public class InputDialog extends JDialog implements PropertyChangeListener
       else
          nonConfirmationString = "cancel";
 
-      this.content = content;
+      this.content = content.clone();
       Object[] options = {confirmationString, nonConfirmationString};
 
       // Creating and showing.
