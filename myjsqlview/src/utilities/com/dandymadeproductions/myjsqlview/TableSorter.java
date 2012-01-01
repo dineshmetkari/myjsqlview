@@ -35,14 +35,15 @@
  * sorting - giving a way to initiate a compound sort.
  * </ul>
  * <p/>
- * This is a long overdue rewrite of a class of the same name that first
+ * 2.0 02/27/04 This is a long overdue rewrite of a class of the same name that first
  * appeared in the swing table demos in 1997.
  * 
  * @author Philip Milne
  * @author Brendon McLean
  * @author Dan van Enckevort
  * @author Parwinder Sekhon
- * @version 2.0 02/27/04
+ * @author Dana M. Proctor
+ * @version 2.3 01/01/2012
  * 
  * <ul>
  * <li>
@@ -54,10 +55,12 @@
  * Class Instances mouseListener & tableModelListener Transient. Class
  * Arrow.paintIcon Changed integer Denominator to Double 2.0. Mucked With
  * Arrow Icon Color.
+ * 2.3 01/01/2012 Made Inner Class Row Serializable So That Class Instance
+ * viewToModel is Serialized Properly.
  * </ul>
  * 
  * @author Dana M. Proctor
- * @version 2.2 08/19/2011
+ * @version 2.3 01/01/2012
  */
 
 package com.dandymadeproductions.myjsqlview;
@@ -75,6 +78,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.Serializable;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -397,8 +401,9 @@ public class TableSorter extends AbstractTableModel
    }
 
    // Helper classes
-   private class Row implements Comparable<Object>
+   private class Row implements Serializable, Comparable<Object>
    {
+      private static final long serialVersionUID = 487077012483672607L;
       private int modelIndex;
 
       public Row(int index)
