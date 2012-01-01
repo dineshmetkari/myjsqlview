@@ -9,8 +9,8 @@
 //            << SQLDatabaseSchemeDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.8 01/26/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 1.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //             to Obtain Connections and Display SQL Errors. Also identifierQuoteString
 //             and Tables Names Collected From ConnectionManager. Added Methods Instances
 //             connectionProperties, hostName & databaseName in generateHeaders().
+//         1.9 Copyright Update.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -66,7 +67,7 @@ import java.util.Iterator;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 1.7 01/15/2011
+ * @version 1.9 01/01/2012
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable

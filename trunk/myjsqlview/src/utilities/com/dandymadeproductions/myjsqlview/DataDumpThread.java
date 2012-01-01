@@ -8,8 +8,8 @@
 //                   << DataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Dana M. Proctor
-// Version 6.3 09/24/2011
+// Copyright (C) 2006-2012 Dana M. Proctor
+// Version 6.4 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,6 +117,7 @@
 //         6.3 Replacement of Multiple dbResultSet Retrieval for a Single Column
 //             to Only One for Each Row in Data Collection in run(). Limitation
 //             for Some Databases, MSAccess, to Limiting Only One Call to ResultSet.
+//         6.4 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -139,7 +140,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.3 09/24/2011
+ * @version 6.4 01/01/2012
  */
 
 class DataDumpThread implements Runnable

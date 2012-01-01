@@ -8,8 +8,8 @@
 //                << SearchDatabaseThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor.
-// Version 2.9 09/03/2011
+// Copyright (C) 2005-2012 Dana M. Proctor.
+// Version 3.0 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //         2.9 Optimized by Not Processing Non-Selected Tables for Search in run().
 //             Correction in Class Method createColumnsSQLQuery() for Oracle columnsSQLQuery
 //             String Creation.
+//         3.0 Copyright Update.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -95,7 +96,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 2.9 09/03/2011
+ * @version 3.0 01/01/2012
  */
 
 class SearchDatabaseThread implements Runnable

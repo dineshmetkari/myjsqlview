@@ -7,8 +7,8 @@
 //                << ConnectionProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana Proctor
-// Version 1.1 01/28/2011
+// Copyright (C) 2005-2012 Dana Proctor
+// Version 1.2 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 //=================================================================
 // Version 1.0 Initial ConnectionProperties Class.
 //         1.1 Made Class Public Along With Class Method getProperty().
+//         1.2 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,7 +45,7 @@ package com.dandymadeproductions.myjsqlview;
  * connection properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/28/2011
+ * @version 1.2 01/01/2012
  */
 
 public class ConnectionProperties

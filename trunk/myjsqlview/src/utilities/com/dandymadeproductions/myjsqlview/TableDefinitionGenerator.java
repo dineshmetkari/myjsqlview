@@ -8,8 +8,8 @@
 //              << TableDefinitionGenerator.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 4.8 09/24/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 4.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,6 +131,7 @@
 //         4.7 Improved Efficiency by Use a Map.Entry Set in createPostgreSQLTableDefinition().
 //         4.8 Added Framework for MSAccess Table Definition Generation. Information
 //             Only at This Time.
+//         4.9 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -155,7 +156,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.8 09/24/2011
+ * @version 4.9 01/01/2012
  */
 
 class TableDefinitionGenerator

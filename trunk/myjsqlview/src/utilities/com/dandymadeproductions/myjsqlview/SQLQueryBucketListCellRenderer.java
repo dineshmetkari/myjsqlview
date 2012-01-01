@@ -7,8 +7,8 @@
 //            << SQLQueryBucketListCellRenderer.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.2 05/22/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.3 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 //         1.1 Class Method getListCellRendererComponent() Added Instances
 //             buttonColor, & buttonFont. Set background() in Same.
 //         1.2 Set the Font to BOLD in getListCellRendererComponent().
+//         1.3 Copyright Update.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,7 +55,7 @@ import javax.swing.ListCellRenderer;
  * list cell renderer component used in the SQLQueryBucketFrame JList.
  * 
  * @author Dana M. Proctor
- * @version 1.2 05/22/2011
+ * @version 1.3 01/01/2012
  */
 
 class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements ListCellRenderer

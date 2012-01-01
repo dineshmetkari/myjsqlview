@@ -8,9 +8,9 @@
 //
 //=================================================================
 // 
-// Copyright (c) 2007-2011, Sun Microsystems, Inc., Chet, Dana M. Proctor
+// Copyright (c) 2007-2012, Sun Microsystems, Inc., Chet, Dana M. Proctor
 // All rights reserved.
-// Version 1.4 09/18/2011
+// Version 1.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //                        Button's Derived Font to BOLD. Also Increased Value of alphaValue.
 //         1.4 09/18/2011 Set the Components setContentAreaFilled() to false in the
 //                        Method constructSQLQueryBucketListObject().
+//         1.5 01/01/2012 Copyright Update.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +65,7 @@ import javax.swing.JButton;
  * Swing button that exempts translucency.
  * 
  * @author Chet, Dana M. Proctor
- * @version 1.4 09/18/2011
+ * @version 1.5 01/01/2012
  */
 
 class SQLQueryBucketListObject extends JButton

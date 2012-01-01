@@ -7,8 +7,8 @@
 //           << DataExportProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Dana Proctor
-// Version 3.9 10/04/2011
+// Copyright (C) 2006-2012 Dana Proctor
+// Version 4.0 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,7 @@
 //             of Fonts. Implemented Creating Embedded Fonts From the Fonts
 //             Directory in Class Method loadPDFFonts(). Added Inner Classes
 //             FileFilter & FileNameFilter.
+//         4.0 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -114,7 +115,7 @@ import com.itextpdf.text.pdf.BaseFont;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 3.9 10/04/2011
+ * @version 4.0 01/01/2012
  */
 
 class DataExportProperties

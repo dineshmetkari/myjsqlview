@@ -9,8 +9,8 @@
 //             << MyJSQLView_PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 2.4 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.5 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@
 //         2.2 Added Instance pathFileName and Protected Methods get/setPath_FileName().
 //         2.3 Added Argument String path to Method initPlugin().
 //         2.4 Copyright Update.
+//         2.5 Copyright Update.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +75,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.4 01/27/2011
+ * @version 2.5 01/01/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface

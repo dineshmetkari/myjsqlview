@@ -9,8 +9,8 @@
 //             << SQLDatabaseDump_ProgressBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.9 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.0 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 //         1.7 Added Class Instance resourceBundle and Implemented Internationalization.
 //         1.8 Correction to Initialize Class Instance resourceBundle.
 //         1.9 Copyright Update.
+//         2.0 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import javax.swing.*;
  * during a MyJSQLView SQL database dump.
  * 
  * @author Dana M. Proctor
- * @version 1.9 01/27/2011
+ * @version 2.0 01/01/2012
  */
 
 class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener

@@ -8,8 +8,8 @@
 //                 << TableClearingThread.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2011 Dana M. Proctor
-// Version 1.8 06/19/2011
+// Copyright (C) 2007-2012 Dana M. Proctor
+// Version 1.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,7 +42,8 @@
 //             from New Class ConnectionManager. Also identifierQuoteString in Method
 //             clearHSQL/OracleDBMemoryTables(). Added Instance subProtocol to run().
 //         1.7 Replaced Method Instance subProtocol in run() With dataSourceType.
-//         1.8 Change for HSQL Conditional Check in run() from equals to indexOf. 
+//         1.8 Change for HSQL Conditional Check in run() from equals to indexOf.
+//         1.9 Copyright Update.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -61,7 +62,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.8 06/19/2011
+ * @version 1.9 01/01/2012
  */
 
 class TableClearingThread implements Runnable

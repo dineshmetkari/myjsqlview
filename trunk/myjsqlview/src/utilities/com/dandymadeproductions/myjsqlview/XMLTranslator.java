@@ -8,8 +8,8 @@
 //                  << XMLTranslator.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Nil_lin, Dana Proctor
-// Version 4.7 01/12/2011
+// Copyright (C) 2006-2012 Nil_lin, Dana Proctor
+// Version 4.8 01/01/2012
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,46 +31,41 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 11/27/2006 Initial XMLTranslator, Nil_lin.
-//         1.1 12/01/2006 Initial Integration Into MyJSQLView,
-//                        Open Software Header and Version
-//                        Indicator Comments.
-//         1.2 12/10/2006 Completely Rebuilt to Meet Requirements
-//                        Specified by the Task. myjsqlview.xml
-//                        Configuration File. Spec. Not Met.
+//         1.1 12/01/2006 Initial Integration Into MyJSQLView, Open Software
+//                        Header and Version Indicator Comments.
+//         1.2 12/10/2006 Completely Rebuilt to Meet Requirements Specified
+//                        by the Task. myjsqlview.xml Configuration File. Spec.
+//                        Not Met.
 //         1.2 12/10/2006 Class Method getSites() Completed.
-//         1.3 12/14/2006 Class Method getSites() Added "Database"
-//                        NodeValue Setting in SiteParameter.
-//         1.4 12/15/2006 Robustnous in Handling XML Document Handling,
-//                        Class Method displayErrors() & Class
-//                        Instance errorInTranslation.
-//         1.5 12/15/2006 File Handling .myjsqlview.xml and Sample
-//                        myjsqlview.xml.
-//         1.6 12/16/2006 Made .myjsqlview Directory in User Home
-//                        and Loaded Sample myjsqlview.xml to That
-//                        Location Under myjsqlview.xml Name.
+//         1.3 12/14/2006 Class Method getSites() Added "Database" NodeValue
+//                        Setting in SiteParameter.
+//         1.4 12/15/2006 Robustnous in Handling XML Document Handling, Class
+//                        Method displayErrors() & Class Instance
+//                        errorInTranslation.
+//         1.5 12/15/2006 File Handling .myjsqlview.xml and Sample myjsqlview.xml.
+//         1.6 12/16/2006 Made .myjsqlview Directory in User Home and Loaded
+//                        Sample myjsqlview.xml to That Location Under
+//                        myjsqlview.xml Name.
 //         1.7 12/16/2006 Implemented Class Method getLastSite().
 //         1.8 12/16/2006 Implemented Class Method setLastSite();
 //         1.9 12/16/2006 Added Class Method saveXML() Per Nil.
-//         2.0 12/22/2006 Modified Class Method getSites() to Place
-//                        the Sites Key as Concatenation of SiteName
-//                        Database.
+//         2.0 12/22/2006 Modified Class Method getSites() to Place the Sites
+//                        Key as Concatenation of SiteName Database.
 //         2.1 01/18/2007 Completed Class Method setSites().
-//         2.2 01/19/2007 Removed '/n' From XML File for Removed
-//                        Childnodes in Class Method saveXML().
-//         2.3 01/19/2007 Reviewed Implementation and Cleaned/Commented.
-//                        Fixed Class Method setSites() password to "".
-//         2.4 01/19/2007 Class Method saveXML() Fixed newFileContent
-//                        String to Start with "<".
-//         2.5 01/21/2007 Class WriteDataFile Boolean Argument Addition,
-//                        false.
-//         2.6 01/22/2007 Class ReadDataFile Boolean Argument Addition,
-//                        false.
+//         2.2 01/19/2007 Removed '/n' From XML File for Removed Childnodes
+//                        in Class Method saveXML().
+//         2.3 01/19/2007 Reviewed Implementation and Cleaned/Commented. Fixed
+//                        Class Method setSites() password to "".
+//         2.4 01/19/2007 Class Method saveXML() Fixed newFileContent String
+//                        to Start with "<".
+//         2.5 01/21/2007 Class WriteDataFile Boolean Argument Addition, false.
+//         2.6 01/22/2007 Class ReadDataFile Boolean Argument Addition, false.
 //         2.7 04/19/2007 Saved Password.
 //         2.8 09/06/2007 Cleaned Out Some Unused Instances.
 //         2.9 09/08/2007 Code Cleanup.
-//         3.0 09/09/2007 Removed New String Creation for currentKey in
-//                        Class Method setSites(). Final Class Instances
-//                        xmlFileName & sampleXMLFileName to Static.
+//         3.0 09/09/2007 Removed New String Creation for currentKey in Class
+//                        Method setSites(). Final Class Instances xmlFileName
+//                        & sampleXMLFileName to Static.
 //         3.1 10/18/2007 Removed Instantiation of Instance currentParameter
 //                        in Class Method setSites().
 //         3.2 12/12/2007 Header Update.
@@ -109,6 +104,7 @@
 //         4.6 05/20/2010 Parameterized siteKeys in Class Method setSites().
 //         4.7 01/12/2011 Class Method getSites() Changed currentSiteName Instance to a
 //                        StringBuffer.
+//         4.8 01/01/2012 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -134,7 +130,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.7 01/12/2011
+ * @version 4.8 01/01/2012
  */
 
 class XMLTranslator

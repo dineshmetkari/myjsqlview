@@ -8,8 +8,8 @@
 //                  << PrintManager.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 1.9 01/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.6 Header Format Changes/Update.
 //         1.7 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 Copyright Update.
+//         1.9 Copyright Update.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com 
@@ -53,7 +54,7 @@ import java.awt.print.PrinterJob;
  * various MyJSQLView data panes using the Java Print Service API.
  * 
  * @author Dana Proctor
- * @version 1.8 01/27/2011
+ * @version 1.9 01/01/2012
  */
 
 class PrintManager extends MyJSQLView
