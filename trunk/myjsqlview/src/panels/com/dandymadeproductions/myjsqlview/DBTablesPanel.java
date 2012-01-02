@@ -10,8 +10,8 @@
 //                 << DBTablesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 5.0 11/24/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 5.1 01/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -117,6 +117,7 @@
 //         4.9 Passing of a New String to the QueryBucket on sqlQueryBucketButton
 //             Action in actionPerformed().
 //         5.0 Undid Revision 4.9.
+//         5.1 Copyright Update.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -151,7 +152,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.0 11/24/2011
+ * @version 5.1 01/02/2012
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -167,7 +168,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static JLabel statusIndicator = new JLabel("", JLabel.LEFT);
    private static JTextField statusLabel = new JTextField("Idle", 8);
    private JButton sqlQueryBucketButton;
-   private static JComboBox tableSelectionComboBox = new JComboBox();;
+   private static JComboBox tableSelectionComboBox = new JComboBox();
    private static HashMap<String, TableTabPanel> tableTabHashMap = new HashMap <String, TableTabPanel>();
    private static boolean disableActions = false;
    private static long statusTimer;
