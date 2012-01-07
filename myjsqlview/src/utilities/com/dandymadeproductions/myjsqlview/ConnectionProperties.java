@@ -1,14 +1,14 @@
 //=================================================================
 //               ConnectionProperties Class
 //=================================================================
-// This class provides the structure for the connection properties
+//    This class provides the structure for the connection properties
 // storage.
 //
 //                << ConnectionProperties.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana Proctor
-// Version 1.2 01/01/2012
+// Version 1.3 01/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 // Version 1.0 Initial ConnectionProperties Class.
 //         1.1 Made Class Public Along With Class Method getProperty().
 //         1.2 Copyright Update.
+//         1.3 Made Class Public Along With Methods get/setConnection()
+//             & setProperty().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -45,7 +47,7 @@ package com.dandymadeproductions.myjsqlview;
  * connection properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.2 01/01/2012
+ * @version 1.3 01/07/2012
  */
 
 public class ConnectionProperties
@@ -77,14 +79,14 @@ public class ConnectionProperties
    // ConnectionProperties Constructor
    //==============================================================
 
-   protected ConnectionProperties(){}
+   public ConnectionProperties(){}
    
    //==============================================================
    // Class methods to allow classes to get the connection property
    // objects.
    //==============================================================
    
-   protected String getConnectionString()
+   public String getConnectionString()
    {
       return connectionProperties;
    }
@@ -121,12 +123,12 @@ public class ConnectionProperties
    // objects.
    //==============================================================
    
-   protected void setConnectionString(String connectionProperties)
+   public void setConnectionString(String connectionProperties)
    {
       this.connectionProperties = connectionProperties;
    }
    
-   protected void setProperty(String property, String value)
+   public void setProperty(String property, String value)
    {
       if (property.equals(DRIVER))
          driver = value;
