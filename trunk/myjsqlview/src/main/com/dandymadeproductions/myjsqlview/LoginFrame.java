@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.82 01/01/2012
+// Version 6.83 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -259,6 +259,8 @@
 //             in Same Along With Setting in ConnectionManager. Additional Comments.
 //        6.82 Minor Comment Changes. Update to Copyright. Change to Method accessCheck()
 //             ConnectionManager.setMemoryConnection() Routine That Was Renamed.
+//        6.83 Modified Class Method accessCheck() to Accomodate HSQL File and Resource
+//             Database Connections via db Name.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -293,7 +295,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.82 01/01/2012
+ * @version 6.83 01/11/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1102,8 +1104,9 @@ public class LoginFrame extends JFrame implements ActionListener
                // System.out.println(connectionString);
                dbConnection = DriverManager.getConnection(connectionString);
             }
-            // HSQL Memory
-            else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 && db.indexOf("mem:") != -1)
+            // HSQL Memory, File, & Resource
+            else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 &&
+                      (db.indexOf("mem:") != -1) || db.indexOf("file:") != -1 || db.indexOf("res:") != -1)
             {
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
                connectionString += "hsqldb:" + db + "?user=" + user
