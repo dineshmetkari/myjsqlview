@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.0 01/06/2012
+// Version 1.1 01/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial ConnectionManagerHSQL Class.
+//         1.1 Made Constructor Public.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -51,7 +52,7 @@ import javax.swing.JOptionPane;
  * manage connections to a HSQL database.
  * 
  * @author Dana M. Proctor
- * @version 1.0 01/06/2012
+ * @version 1.1 01/10/2012
  */
 
 public class ConnectionManagerHSQL
@@ -93,7 +94,7 @@ public class ConnectionManagerHSQL
    // ConnectionManagerHSQL Constructor
    //==============================================================
 
-   protected ConnectionManagerHSQL(String memoryDatabase)
+   public ConnectionManagerHSQL(String memoryDatabase)
    {
       // Constructor Instances
       String passwordString;
