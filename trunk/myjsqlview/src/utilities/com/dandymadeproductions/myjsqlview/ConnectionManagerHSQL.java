@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.1 01/10/2012
+// Version 1.2 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,9 @@
 //=================================================================
 // Version 1.0 Initial ConnectionManagerHSQL Class.
 //         1.1 Made Constructor Public.
+//         1.2 Modified to Handle Connection Type Memory, File, Resource, and Server
+//             Types. Major Changes Throughout, Made Class Methods loadDBParameters()
+//             & loadDBTables() Private. Removed Most static Instances and Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +55,7 @@ import javax.swing.JOptionPane;
  * manage connections to a HSQL database.
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/10/2012
+ * @version 1.2 01/11/2012
  */
 
 public class ConnectionManagerHSQL
@@ -61,20 +64,21 @@ public class ConnectionManagerHSQL
    private static Connection memoryConnection;
    private static ConnectionProperties connectionProperties = new ConnectionProperties();
 
-   private static String dbProductNameVersion;
-   private static String catalog, schemaPattern, tableNamePattern;
-   private static String[] tableTypes;
-   private static Vector<String> schemas = new Vector<String>();
-   private static Vector<String> tables = new Vector<String>();
+   private String dbProductNameVersion;
+   private String schemaPattern, tableNamePattern;
+   private String[] tableTypes;
+   private Vector<String> schemas;
+   private Vector<String> tables;
 
-   private static String catalogSeparator;
-   private static String identifierQuoteString;
-   private static boolean filter = true;
-   private static boolean debug = true;
+   private String catalogSeparator;
+   private String identifierQuoteString;
+   private static boolean debug = false;
 
    public static final String HSQL = "hsql";
    public static final String HSQL2 = "hsql2";
    public static final String MEMORY = "Memory";
+   public static final String FILE = "File";
+   public static final String RESOURCE = "Resource";
 
    private static final String TABLE_SCHEM = "TABLE_SCHEM";
    private static final String TABLE_NAME = "TABLE_NAME";
@@ -85,22 +89,40 @@ public class ConnectionManagerHSQL
    private static final String SUBPROTOCOL = "hsqldb:hsql";
    private static final String HOST = "localhost";
    private static final String PORT = "9001";
-   private static final String DB = "mem:dbname";
+   private static final String DB = "dbname";
    private static final String USER = "sa";
    private static final String PASSWORD = " ";
    private static final String SSH = "false";
 
    //==============================================================
-   // ConnectionManagerHSQL Constructor
+   // ConnectionManagerHSQL Constructors
+   // databaseType - HSQL, MEMORY, FILE, RESOURCE.
    //==============================================================
+   
+   public ConnectionManagerHSQL()
+   {
+      // Default to a Memory.
+      this(MEMORY, HOST, PORT, DB, USER, PASSWORD);
+   }
+   
+   public ConnectionManagerHSQL(String databaseType, String databaseName)
+   {
+      // Easy Entry for Memory, File, or Resource.
+      this(databaseType, HOST, PORT, databaseName, USER, PASSWORD);
+   }
 
-   public ConnectionManagerHSQL(String memoryDatabase)
+   public ConnectionManagerHSQL(String databaseType, String host, String port, String databaseName,
+                                String user, String password)
    {
       // Constructor Instances
       String passwordString;
       String connectionString;
       Connection dbConnection;
       DatabaseMetaData dbMetaData;
+      
+      // Setup
+      schemas = new Vector<String>();
+      tables = new Vector<String>();
 
       // Load Driver.
       try
@@ -126,30 +148,40 @@ public class ConnectionManagerHSQL
       // Connection Requirements.
       try
       {
+         passwordString = password.replaceAll("%", "%" + Integer.toHexString(37));
          connectionString = PROTOCOL + ":";
-
-         if (memoryDatabase.equals(MEMORY))
+         
+         if (databaseType.equals(MEMORY))
          {
-            passwordString = PASSWORD.replaceAll("%", "%" + Integer.toHexString(37));
-            connectionString += "hsqldb:" + DB + "?user=" + USER + "&password=" + passwordString + "&useSSL="
-                                + SSH;
+            connectionString += "hsqldb:mem:" + databaseName + "?user=" + user + "&password=" + passwordString
+                                 + "&useSSL=" + SSH;
          }
+         else if (databaseType.equals(FILE))
+         {
+            connectionString += "hsqldb:file:" + databaseName + "?user=" + user + "&password=" + passwordString
+            + "&useSSL=" + SSH;
+         }
+         else if (databaseType.equals(RESOURCE))
+         {
+            connectionString += "hsqldb:res:" + databaseName + "?user=" + user + "&password=" + passwordString
+            + "&useSSL=" + SSH;
+         }
+         // Default to HSQL server.
          else
          {
-            passwordString = PASSWORD.replaceAll("%", "%" + Integer.toHexString(37));
-            connectionString += SUBPROTOCOL + "://" + HOST + ":" + PORT + "/" + DB + "?user=" + USER
+            connectionString += SUBPROTOCOL + "://" + host + ":" + port + "/" + databaseName + "?user=" + user
                                 + "&password=" + passwordString + "&useSSL=" + SSH;
          }
-         // System.out.println(connectionString);
+         System.out.println(connectionString);
 
          connectionProperties.setConnectionString(connectionString);
          connectionProperties.setProperty(ConnectionProperties.DRIVER, DRIVER);
          connectionProperties.setProperty(ConnectionProperties.PROTOCOL, PROTOCOL);
          connectionProperties.setProperty(ConnectionProperties.SUBPROTOCOL, SUBPROTOCOL);
-         connectionProperties.setProperty(ConnectionProperties.HOST, HOST);
-         connectionProperties.setProperty(ConnectionProperties.PORT, PORT);
-         connectionProperties.setProperty(ConnectionProperties.DB, DB);
-         connectionProperties.setProperty(ConnectionProperties.USER, USER);
+         connectionProperties.setProperty(ConnectionProperties.HOST, host);
+         connectionProperties.setProperty(ConnectionProperties.PORT, port);
+         connectionProperties.setProperty(ConnectionProperties.DB, databaseName);
+         connectionProperties.setProperty(ConnectionProperties.USER, user);
          connectionProperties.setProperty(ConnectionProperties.PASSWORD, passwordString);
          connectionProperties.setProperty(ConnectionProperties.SSH, SSH);
 
@@ -194,7 +226,7 @@ public class ConnectionManagerHSQL
          loadDBTables(dbConnection);
 
          // Setting Memory Connection.
-         if (memoryDatabase.equals(MEMORY))
+         if (databaseType.equals(MEMORY))
             setMemoryConnection(dbConnection);
       }
       catch (SQLException e)
@@ -313,25 +345,22 @@ public class ConnectionManagerHSQL
    // parameters.
    //==============================================================
 
-   protected static void loadDBParameters(Connection dbConnection) throws SQLException
+   private void loadDBParameters(Connection dbConnection) throws SQLException
    {
       // Method Instances
       DatabaseMetaData dbMetaData;
       ResultSet db_resultSet;
 
-      String db, subProtocol;
+      String subProtocol;
 
       // ======================================================
       // Collect the appropriate default database information.
 
-      filter = true;
-      db = connectionProperties.getProperty(ConnectionProperties.DB);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
 
       // HSQL
       if (subProtocol.indexOf(HSQL) != -1)
       {
-         catalog = null;
          schemaPattern = "%";
          tableNamePattern = "%";
          // db_resultSet = dbMetaData.getTables(null, "%", "%", tableTypes);
@@ -339,14 +368,10 @@ public class ConnectionManagerHSQL
       // Unknown
       else
       {
-         catalog = null;
          schemaPattern = null;
          tableNamePattern = null;
          // db_resultSet = dbMetaData.getTables(null, null, null, tableTypes);
       }
-
-      if (db.toLowerCase().equals("null"))
-         catalog = null;
 
       try
       {
@@ -382,12 +407,13 @@ public class ConnectionManagerHSQL
    // database schemas & tables.
    //==============================================================
 
-   protected static void loadDBTables(Connection dbConnection) throws SQLException
+   private void loadDBTables(Connection dbConnection) throws SQLException
    {
       // Method Instances
       DatabaseMetaData dbMetaData;
       ResultSet db_resultSet;
       String tableSchem, tableName, tableType;
+      boolean filter = true;
 
       try
       {
@@ -398,7 +424,7 @@ public class ConnectionManagerHSQL
 
          // System.out.println("'" + catalog + "' '" + schemaPattern + "' '" +
          // tableNamePattern + "'");
-         db_resultSet = dbMetaData.getTables(catalog, schemaPattern, tableNamePattern, tableTypes);
+         db_resultSet = dbMetaData.getTables(null, schemaPattern, tableNamePattern, tableTypes);
 
          // Clear the tables vector and load it with the databases
          // tables.
@@ -464,7 +490,7 @@ public class ConnectionManagerHSQL
    // Class method to get the current database catalog separator.
    //==============================================================
 
-   protected static String getCatalogSeparator()
+   public String getCatalogSeparator()
    {
       return catalogSeparator;
    }
@@ -482,7 +508,7 @@ public class ConnectionManagerHSQL
    // Class method to get the current data source type.
    //==============================================================
 
-   public static String getDataSourceType()
+   public String getDataSourceType()
    {
       // Method Instances.
       String subProtocol;
@@ -505,7 +531,7 @@ public class ConnectionManagerHSQL
    // version.
    //==============================================================
 
-   public static String getDBProductName_And_Version()
+   public String getDBProductName_And_Version()
    {
       return dbProductNameVersion;
    }
@@ -515,7 +541,7 @@ public class ConnectionManagerHSQL
    // that is used by the database.
    //==============================================================
 
-   public static String getIdentifierQuoteString()
+   public String getIdentifierQuoteString()
    {
       return identifierQuoteString;
    }
@@ -525,7 +551,7 @@ public class ConnectionManagerHSQL
    // schemas names.
    //==============================================================
 
-   public static Vector<String> getSchemas()
+   public Vector<String> getSchemas()
    {
       Vector<String> schemasVector = new Vector<String>();
       Iterator<String> schemasIterator = schemas.iterator();
@@ -541,7 +567,7 @@ public class ConnectionManagerHSQL
    // names.
    //==============================================================
 
-   public static Vector<String> getTableNames()
+   public Vector<String> getTableNames()
    {
       Vector<String> tablesVector = new Vector<String>();
       Iterator<String> tablesIterator = tables.iterator();
@@ -556,14 +582,13 @@ public class ConnectionManagerHSQL
    // Class method to set the current database catalog separator.
    //==============================================================
 
-   protected static void setCatalogSeparator(String separator)
+   public void setCatalogSeparator(String separator)
    {
       catalogSeparator = separator;
    }
 
    //==============================================================
-   // Class method to set the current database product name &
-   // version.
+   // Class method to set the connection properties.
    //==============================================================
 
    public static void setConnectionProperties(ConnectionProperties properties)
@@ -576,7 +601,7 @@ public class ConnectionManagerHSQL
    // version.
    //==============================================================
 
-   public static void setDBProductName_And_Version(String name_And_Version)
+   public void setDBProductName_And_Version(String name_And_Version)
    {
       dbProductNameVersion = name_And_Version;
    }
@@ -586,7 +611,7 @@ public class ConnectionManagerHSQL
    // logged.
    //==============================================================
 
-   public static void setIdentifierQuoteString(String identifier)
+   public void setIdentifierQuoteString(String identifier)
    {
       identifierQuoteString = identifier;
    }
@@ -604,7 +629,7 @@ public class ConnectionManagerHSQL
    // Class method to set the schemaPattern.
    //==============================================================
 
-   public static void setSchemaPattern(String pattern)
+   public void setSchemaPattern(String pattern)
    {
       schemaPattern = pattern;
    }
