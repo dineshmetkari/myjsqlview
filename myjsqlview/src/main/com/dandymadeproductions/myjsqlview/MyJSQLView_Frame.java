@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.8 01/01/2012
+// Version 6.9 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -169,6 +169,8 @@
 //                        SQLQueryBucketFrame in Constructor.
 //         6.8 01/01/2012 Moved the Loading of the Query Bucket List From Constructor to its
 //                        Own Method.
+//         6.9 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
+//                        ConnectionManager.getConnection() in createGUI() & reloadDBTables().
 //                        
 //
 //-----------------------------------------------------------------
@@ -199,7 +201,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.8 01/01/2012
+ * @version 6.9 01/11/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -336,7 +338,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             
             // Obtain a database connection & resources.
             
-            dbConnection = (Connection) ConnectionManager.getConnection("MyJSQLView_Frame createGUI()");
+            dbConnection = ConnectionManager.getConnection("MyJSQLView_Frame createGUI()");
             resourceBundle = MyJSQLView.getLocaleResourceBundle();
             
             dbTablesPanel = new DBTablesPanel(dbConnection, ConnectionManager.getTableNames());
@@ -494,7 +496,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
       
-      dbConnection = (Connection) ConnectionManager.getConnection("TableTabPanel_Frame reloadDBTables()");
+      dbConnection = ConnectionManager.getConnection("TableTabPanel_Frame reloadDBTables()");
       
       if (dbConnection == null)
          return;
