@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.88 01/01/2012
+// Version 8.89 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -348,6 +348,8 @@
 //                        Binary Fields That Are Empty, NULL, So That Their Values Are Set in
 //                        The Initial PrepareStatement. Likewise for Removing.
 //        8.88 01/01/2012 Copyright Update.
+//        8.89 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
+//                        ConnectionManager.getConnection() in addUpdateTableEntry().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -1169,8 +1171,7 @@ class TableEntryForm extends JFrame implements ActionListener
       int keyColumn = 0;
 
       // Get Connection to Database.
-      Connection db_Connection = (Connection) ConnectionManager.getConnection(
-         "TableEntryForm addUpdateTableEntry()");
+      Connection db_Connection = ConnectionManager.getConnection("TableEntryForm addUpdateTableEntry()");
 
       if (db_Connection == null)
       {
