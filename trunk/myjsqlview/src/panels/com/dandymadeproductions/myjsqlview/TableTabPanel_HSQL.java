@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.3 01/01/2012
+// Version 11.4 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -254,6 +254,8 @@
 //             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //        11.3 Set sqlTableStatement to Not be a new String() of sqlStatementString in
 //             Method loadTable().
+//        11.4 Removed Method Instance sqlStatementString & Replaced With Parent
+//             Class Instance sqlTableStatement.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -279,7 +281,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.3 01/01/2012
+ * @version 11.4 01/11/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -510,7 +512,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
-      String sqlStatementString;
       String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
@@ -623,18 +624,20 @@ public class TableTabPanel_HSQL extends TableTabPanel
             if (lobLessFieldsString.endsWith(", "))
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
+         
+         sqlTableStatement = "";
 
          if (advancedSortSearch)
          {
             // Complete With All Fields.
-            sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
+            sqlTableStatement = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit);
 
             // Clean up if no criteral specified, HSQL LIMIT Problem.
-            if (sqlStatementString.indexOf("ORDER") == -1 && sqlStatementString.indexOf("WHERE") == -1)
+            if (sqlTableStatement.indexOf("ORDER") == -1 && sqlTableStatement.indexOf("WHERE") == -1)
             {
-               sqlStatementString = sqlStatementString.substring(0, sqlStatementString.indexOf("LIMIT"));
-               sqlStatementString = sqlStatementString.replaceFirst("SELECT",
+               sqlTableStatement = sqlTableStatement.substring(0, sqlTableStatement.indexOf("LIMIT"));
+               sqlTableStatement = sqlTableStatement.replaceFirst("SELECT",
                                                                     "SELECT LIMIT "
                                                                     + tableRowStart
                                                                     + " " + tableRowLimit);
@@ -658,7 +661,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          }
          else
          {
-            sqlStatementString = "SELECT LIMIT " + tableRowStart + " " + tableRowLimit + " " 
+            sqlTableStatement = "SELECT LIMIT " + tableRowStart + " " + tableRowLimit + " " 
                                  + sqlTableFieldsString + " FROM " + schemaTableName + " "
                                  + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                  + identifierQuoteString
@@ -672,9 +675,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString;
          }
-         sqlTableStatement = null;
-         sqlTableStatement = sqlStatementString;
-         // System.out.println(sqlStatementString);
+         // System.out.println(sqlTableStatement);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 

@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.0 01/11/2012
+// Version 11.1 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -264,6 +264,8 @@
 //             Method loadTable().
 //        11.0 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in setTableHeadings().
+//        11.1 Removed Method Instance sqlStatementString & Replaced With Parent
+//             Class Instance sqlTableStatement.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -296,7 +298,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.0 01/11/2012
+ * @version 11.1 01/11/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -577,7 +579,6 @@ public class TableTabPanel_Oracle extends TableTabPanel
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
-      String sqlStatementString;
       String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
@@ -699,6 +700,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
             if (lobLessFieldsString.endsWith(", "))
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
+         
+         sqlTableStatement = "";
 
          if (advancedSortSearch)
          {
@@ -706,7 +709,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
             String sqlOrderString = "", lobLess_sqlOrderString = "";
 
             // Complete With All Fields.
-            sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
+            sqlTableStatement = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit);
             // Summary Table Without LOBs
             lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
@@ -716,40 +719,40 @@ public class TableTabPanel_Oracle extends TableTabPanel
             // for the key word LIMIT.
 
             // Collect WHERE & ORDER structure.
-            if (sqlStatementString.indexOf("WHERE") != -1)
+            if (sqlTableStatement.indexOf("WHERE") != -1)
             {
-               if (sqlStatementString.indexOf("ORDER") != -1)
+               if (sqlTableStatement.indexOf("ORDER") != -1)
                {
-                  sqlWhereString = sqlStatementString.substring(sqlStatementString.indexOf("WHERE"),
-                                                                sqlStatementString.indexOf("ORDER") - 1);
+                  sqlWhereString = sqlTableStatement.substring(sqlTableStatement.indexOf("WHERE"),
+                                                                sqlTableStatement.indexOf("ORDER") - 1);
                   lobLess_sqlWhereString = lobLessSQLStatementString.substring(
                                                        lobLessSQLStatementString.indexOf("WHERE"),
                                                        lobLessSQLStatementString.indexOf("ORDER") - 1);
                }
                else
                {
-                  sqlWhereString = sqlStatementString.substring(sqlStatementString.indexOf("WHERE"),
-                                                                sqlStatementString.indexOf("LIMIT") - 1);
+                  sqlWhereString = sqlTableStatement.substring(sqlTableStatement.indexOf("WHERE"),
+                                                                sqlTableStatement.indexOf("LIMIT") - 1);
                   lobLess_sqlWhereString = lobLessSQLStatementString.substring(
                                                      lobLessSQLStatementString.indexOf("WHERE"),
                                                      lobLessSQLStatementString.indexOf("LIMIT") - 1);
                }
             }
-            if (sqlStatementString.indexOf("ORDER") != -1)
+            if (sqlTableStatement.indexOf("ORDER") != -1)
             {
-               sqlOrderString = sqlStatementString.substring(sqlStatementString.indexOf("ORDER"),
-                                                             sqlStatementString.indexOf("LIMIT") - 1);
+               sqlOrderString = sqlTableStatement.substring(sqlTableStatement.indexOf("ORDER"),
+                                                             sqlTableStatement.indexOf("LIMIT") - 1);
                lobLess_sqlOrderString = lobLessSQLStatementString.substring(
                                                      lobLessSQLStatementString.indexOf("ORDER"),
                                                      lobLessSQLStatementString.indexOf("LIMIT") - 1);
             }
             
             // Finish creating modifed SQL.
-            sqlStatementString = sqlStatementString.substring(0, sqlStatementString.indexOf("FROM") + 5);
+            sqlTableStatement = sqlTableStatement.substring(0, sqlTableStatement.indexOf("FROM") + 5);
             lobLessSQLStatementString = lobLessSQLStatementString.substring(0,
                                                           lobLessSQLStatementString.indexOf("FROM") + 5);
 
-            sqlStatementString += "(SELECT ROW_NUMBER() "
+            sqlTableStatement += "(SELECT ROW_NUMBER() "
                                   + ((sqlOrderString.equals("")) ? ("OVER (ORDER BY "
                                   + (sqlTableFieldsString.indexOf(",") != -1 ?
                                                         sqlTableFieldsString.substring(0, sqlTableFieldsString.indexOf(','))
@@ -777,7 +780,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
          }
          else
          {
-            sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + "(SELECT ROW_NUMBER() OVER "
+            sqlTableStatement = "SELECT " + sqlTableFieldsString + " FROM " + "(SELECT ROW_NUMBER() OVER "
                                  + "(ORDER BY " + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString + ") " + "AS dmprownumber, "
@@ -795,9 +798,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                                         + searchQueryString.toString() + ") " + "WHERE dmprownumber BETWEEN "
                                         + (tableRowStart + 1) + " AND " + (tableRowStart + tableRowLimit);
          }
-         sqlTableStatement = null;
-         sqlTableStatement = sqlStatementString;
-         // System.out.println(sqlStatementString);
+         // System.out.println(sqlTableStatement);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
 
