@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.0 01/01/2012
+// Version 6.1 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,6 +131,8 @@
 //         5.9 Replaced the Method formatDateString() Conversion Processing by the
 //             Standardized Process Already Supplied by the MyJSQLView_Utils Class.
 //         6.0 Copyright Update.
+//         6.1 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in importCSVFile().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -157,7 +159,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.0 01/01/2012
+ * @version 6.1 01/11/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -258,8 +260,7 @@ class CSVDataImportThread implements Runnable
 
       // Obtain database connection & setting up.
 
-      dbConnection = (Connection) ConnectionManager.getConnection(
-         "CSVDataImportThread importCSVFile()");
+      dbConnection = ConnectionManager.getConnection("CSVDataImportThread importCSVFile()");
       
       if (dbConnection == null)
       {
