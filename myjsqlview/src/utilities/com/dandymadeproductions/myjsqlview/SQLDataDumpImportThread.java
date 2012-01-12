@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 4.9 01/01/2012
+// Version 5.0 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -110,6 +110,8 @@
 //             Then Once a Query is Built is Execute, to Reiterate Again. Removed
 //             Class Method separateQueries().
 //         4.9 Copyright Update.
+//         5.0 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in importSQLFile().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -135,7 +137,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 4.9 01/01/2012
+ * @version 5.0 01/12/2012
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -222,8 +224,7 @@ class SQLDataDumpImportThread implements Runnable
 
       // Obtain database connection & setting up.
 
-      dbConnection = (Connection) ConnectionManager.getConnection(
-         "SQLDataDumpImportThread importSQLFile()");
+      dbConnection = ConnectionManager.getConnection("SQLDataDumpImportThread importSQLFile()");
       
       if (dbConnection == null)
       {
