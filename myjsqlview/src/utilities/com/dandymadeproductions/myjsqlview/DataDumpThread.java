@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.4 01/01/2012
+// Version 6.5 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,8 @@
 //             to Only One for Each Row in Data Collection in run(). Limitation
 //             for Some Databases, MSAccess, to Limiting Only One Call to ResultSet.
 //         6.4 Copyright Update.
+//         6.5 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -140,7 +142,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.4 01/01/2012
+ * @version 6.5 01/11/2012
  */
 
 class DataDumpThread implements Runnable
@@ -210,7 +212,7 @@ class DataDumpThread implements Runnable
       dumpProgressBar = new MyJSQLView_ProgressBar(exportedTable + " Dump");
 
       // Get Connection to Database.
-      Connection db_Connection = (Connection) ConnectionManager.getConnection("DataDumpThread run()");
+      Connection db_Connection = ConnectionManager.getConnection("DataDumpThread run()");
       
       if (db_Connection == null)
          return;
