@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 6.93 01/01/2012
+// Version 6.94 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -280,6 +280,8 @@
 //             insertReplace/explicitStatementData(). Same Methods the Addition of
 //             Processing for Bit Varying Data Types.
 //        6.93 Copyright Update.
+//        6.94 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in run().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -414,7 +416,7 @@ class SQLDataDumpThread implements Runnable
       ResultSet rs;
 
       // Get Connection to Database.
-      Connection dbConnection = (Connection) ConnectionManager.getConnection("SQLDataDumpThread run()");
+      Connection dbConnection = ConnectionManager.getConnection("SQLDataDumpThread run()");
       
       if (dbConnection == null)
          return;
