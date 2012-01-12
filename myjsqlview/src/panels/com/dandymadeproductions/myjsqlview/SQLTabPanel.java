@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 01/01/2012
+// Version 1.8 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,8 @@
 //         1.6 Modification to Method executeSQL() to Accomodate MSAccess
 //             by Limiting db_resultSet Collection to Only Once.
 //         1.7 Copyright Update.
+//         1.8 Removed the Casting of (Connection) for the Returned Instance for
+//             the ConnectionManager.getConnection() executeSQL().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +82,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.7 01/01/2012
+ * @version 1.8 01/11/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -246,8 +248,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       }
 
       // Setting up a connection.
-      dbConnection = (Connection) ConnectionManager
-            .getConnection("SQLTabPanel executeSQL()");
+      dbConnection = ConnectionManager.getConnection("SQLTabPanel executeSQL()");
       
       if (dbConnection == null)
       {
