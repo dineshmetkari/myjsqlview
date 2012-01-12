@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.1 01/01/2012
+// Version 4.2 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,8 @@
 //         4.0 11/25/2011 Modifications to stateString in Method getComponentsState() to Update
 //                        the AdvancedSortSearch Frame Because of Aggregation & GROUP BY Additions.
 //         4.1 01/01/2012 Copyright Update.
+//         4.2 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
+//                        ConnectionManager.getConnection() in updateTable().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -143,7 +145,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.1 01/01/2012
+ * @version 4.2 01/11/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -761,7 +763,7 @@ class UpdateForm extends JFrame implements ActionListener
 
       // Obtain connection to database & setup.
 
-      Connection dbConnection = (Connection) ConnectionManager.getConnection("UpdateForm updateTable()");
+      Connection dbConnection = ConnectionManager.getConnection("UpdateForm updateTable()");
 
       if (dbConnection == null)
          return false;
