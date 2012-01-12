@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.1 01/02/2012
+// Version 5.2 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,9 @@
 //             Action in actionPerformed().
 //         5.0 Undid Revision 4.9.
 //         5.1 Copyright Update.
+//         5.2 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in actionPerformed(), getTableTabPanel(),
+//             & setSelectedTableTabPanel().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -152,7 +155,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.1 01/02/2012
+ * @version 5.2 01/11/2012
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -338,7 +341,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
                {
                   public void run()
                   {
-                     Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
+                     Connection work_dbConnection = ConnectionManager.getConnection(
                         "DBTablesPanel actionPerformed()");
                      String tableName = (String) tableSelectionComboBox.getSelectedItem();
                      
@@ -577,7 +580,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // Table not loaded so load it.
       if (tableTabHashMap.get(tableName) == null)
       {
-         Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
+         Connection work_dbConnection = ConnectionManager.getConnection(
             "DBTablesPanel getTableTabPanel()");
          
          loadTable(tableName, work_dbConnection);
@@ -635,7 +638,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
          if (tableTabHashMap.get(tableName) == null)
          {
             String connectionString = "DBTablesPanel setSelectedTableTabPanel()";
-            Connection work_dbConnection = (Connection) ConnectionManager.getConnection(connectionString);
+            Connection work_dbConnection = ConnectionManager.getConnection(connectionString);
             
             loadTable(tableName, work_dbConnection);
             
