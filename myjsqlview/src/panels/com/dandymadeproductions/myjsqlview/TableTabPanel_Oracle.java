@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 10.9 01/01/2012
+// Version 11.0 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -262,6 +262,8 @@
 //             sqlStatementString to Insure it is Flushed in Class Method loadTable().
 //        10.9 Set sqlTableStatement to Not be a new String() of sqlStatementString in
 //             Method loadTable().
+//        11.0 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in setTableHeadings().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -294,7 +296,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.9 01/01/2012
+ * @version 11.0 01/11/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -1651,7 +1653,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
       // Create connection, remove old summary table and
       // reload the center panel.
 
-      Connection work_dbConnection = (Connection) ConnectionManager.getConnection(
+      Connection work_dbConnection = ConnectionManager.getConnection(
          "TableTabPanel_Oracle setTableHeadings()");
       
       if (work_dbConnection == null)
