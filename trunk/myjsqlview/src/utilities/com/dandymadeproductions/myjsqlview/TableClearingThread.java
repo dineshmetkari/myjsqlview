@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //         1.7 Replaced Method Instance subProtocol in run() With dataSourceType.
 //         1.8 Change for HSQL Conditional Check in run() from equals to indexOf.
 //         1.9 Copyright Update.
+//         2.0 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in run().
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -62,7 +64,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 1.9 01/01/2012
+ * @version 2.0 01/12/2012
  */
 
 class TableClearingThread implements Runnable
@@ -96,7 +98,7 @@ class TableClearingThread implements Runnable
       String dataSourceType;
       
       // Get Connection to Database & Export Options.
-      Connection dbConnection = (Connection) ConnectionManager.getConnection("ClearingTableThread run()");
+      Connection dbConnection = ConnectionManager.getConnection("ClearingTableThread run()");
 
       // Remove the appropriate Memory/Temporary Table(s) for HSQL
       // or Oracle databases.

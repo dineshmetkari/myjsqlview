@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 7.8 01/01/2012
+// Version 7.9 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -200,6 +200,8 @@
 //             insertReplace/explicitStatementData(). Same Methods the Addition of
 //             Processing for Bit Varying Data Types.
 //         7.8 Copyright Update.
+//         7.9 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in run().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -231,7 +233,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.8 01/01/2012
+ * @version 7.9 01/12/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -287,7 +289,7 @@ class SQLDatabaseDumpThread implements Runnable
       ResultSet rs;
 
       // Get Connection to Database & Export Options.
-      Connection dbConnection = (Connection) ConnectionManager.getConnection("SQLDatabaseDumpThread run()");
+      Connection dbConnection = ConnectionManager.getConnection("SQLDatabaseDumpThread run()");
       
       if (dbConnection == null)
          return;

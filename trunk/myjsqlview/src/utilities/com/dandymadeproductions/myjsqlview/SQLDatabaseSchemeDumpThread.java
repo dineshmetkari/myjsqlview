@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,8 @@
 //             and Tables Names Collected From ConnectionManager. Added Methods Instances
 //             connectionProperties, hostName & databaseName in generateHeaders().
 //         1.9 Copyright Update.
+//         2.0 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in run().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import java.util.Iterator;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 1.9 01/01/2012
+ * @version 2.0 01/12/2012
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable
@@ -107,8 +109,7 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       Object dumpData;
 
       // Get Connection to Database.
-      Connection dbConnection = (Connection) ConnectionManager.getConnection(
-         "DatabaseSchemeDumpThread run()");
+      Connection dbConnection = ConnectionManager.getConnection("DatabaseSchemeDumpThread run()");
 
       if (dbConnection == null)
          return;
