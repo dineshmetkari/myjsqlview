@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.35 01/01/2012
+// Version 7.36 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -256,6 +256,8 @@
 //        7.34 Added sqlQueryBucketFrame.saveLastUsedList() to Action Exit in Class
 //             Method actionSelection().
 //        7.35 Copyright Update.
+//        7.36 Removed the Casting of (Connection) for the Returned Instance for the
+//             ConnectionManager.getConnection() in flushPrivileges().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -288,7 +290,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.35 01/01/2012
+ * @version 7.36 01/11/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1177,8 +1179,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       boolean flushSuccess;
 
       // Get Connection to Database.
-      Connection dbConnection = (Connection) ConnectionManager
-            .getConnection("MyJSQLView_JMenuBarActions.flushPrivileges()");
+      Connection dbConnection = ConnectionManager.getConnection(
+         "MyJSQLView_JMenuBarActions.flushPrivileges()");
       
       if (dbConnection == null)
          return false;
