@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.6 01/01/2012
+// Version 7.7 01/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -192,6 +192,8 @@
 //         7.5 09/18/2011 Limiting MSAccess Type Databases to SQL_Statement Queries Only via
 //                        the statementTypeComboBox Instance.
 //         7.6 01/01/2012 Minor Code Placement Movement and Copyright Update.
+//         7.7 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
+//                        ConnectionManager.getConnection() in Constructor.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -357,7 +359,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       }
 
       // Setting up a connection.
-      query_dbConnection = (Connection) ConnectionManager.getConnection("QueryFrame");
+      query_dbConnection = ConnectionManager.getConnection("QueryFrame");
       
       //==================================================
       // Frame Window Closing Addition. Also method for
