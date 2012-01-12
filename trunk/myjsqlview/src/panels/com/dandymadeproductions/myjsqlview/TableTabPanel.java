@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.93 01/11/2012
+// Version 4.94 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,7 @@
 //        4.92 Copyright Update.
 //        4.93 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in executeActions() & setTableHeadings().
+//        4.94 Class Method getTableSQLStatement() Returned toString().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -239,7 +240,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.93 01/11/2012
+ * @version 4.94 01/12/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2426,7 +2427,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public String getTableSQLStatement()
    {
-      return sqlTableStatement;
+      return sqlTableStatement.toString();
    }
 
    //==============================================================
