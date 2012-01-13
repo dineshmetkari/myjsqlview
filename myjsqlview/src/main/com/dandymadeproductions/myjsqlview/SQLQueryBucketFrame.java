@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 01/12/2012
+// Version 2.0 01/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,12 @@
 //         1.9 01/12/2012 Removed Class Instance DEFAULT_LIST_LAST_USED_FILENAME &
 //                        Added SQL_QUERY_BUCKET_DIRECTORY. Implemented New Directory
 //                        Structure for Save Bucket Lists in open/saveLastUsedList().
+//         2.0 01/13/2012 Added Class Instances sqlTextArea, resourceFile/Open/Save, &
+//                        DIALOG_STATEMENT_OPEN/SAVE. Removed Class Instances DIALOG_
+//                        STATEMENT & dialog_sqlStatementButton. Redesigned the SQL
+//                        Object Dialog to Handle SQL Statement String Directly in 
+//                        Class Method createSQLObjectDialog(). Modified actionPerformed(),
+//                        & save/openSQLStatementFile() Methods Accordingly.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -79,7 +85,7 @@ import javax.swing.*;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.9 01/12/2012
+ * @version 2.0 01/13/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -95,13 +101,14 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private JButton editButton;
    private JButton deleteButton;
    
-   private JButton dialog_sqlStatementButton;
+   private JTextArea dialog_sqlTextArea;
    private JButton dialog_colorButton;
 
    private MyJSQLView_ResourceBundle resourceBundle;
    private String databaseName;
    private String fileSeparator, iconsDirectory;
    private String lastOpenSaveDirectory, savedFileName;
+   private String resourceFile, resourceOpen, resourceSave;
 
    private String fileName;
    private StringBuffer stringBuffer;
@@ -124,8 +131,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private static final String EDIT = "Edit";
    private static final String DELETE = "Delete";
    
-   private static final String DIALOG_SQLSTATEMENT = "DialogSQLStatement";
-   private static final String DIALOG_COLOR = "DialogColor";
+   private static final String DIALOG_SQLSTATEMENT_OPEN = "DialogSQLStatementOpen";
+   private static final String DIALOG_SQLSTATEMENT_SAVE = "DialogSQLStatementSave";
+   private static final String DIALOG_SQLSTATEMENT_COLOR = "DialogColor";
 
    private static final String parameterDelimiter = "%;%";
    private static final String SQL_QUERY_BUCKET_DIRECTORY = "SQLQueryBucket";
@@ -483,64 +491,21 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             }
          }
          
-         // SQL Statement Editor Pane
-         else if (actionCommand.equals(DIALOG_SQLSTATEMENT))
+         // SQL Statement Dialog Open Script
+         else if (actionCommand.equals(DIALOG_SQLSTATEMENT_OPEN))
          {
-            JEditorPane editorPane;
-            InputDialog textDialog;
-            String textContent;
-            JMenuBar editorMenuBar;
-            
-            // Create an EditorPane to view/edit content.
-            
-            textContent = processingBucketListObject.getSQLStatementString();
-            editorPane = new JEditorPane("text/plain", textContent);
-            editorPane.addMouseListener(MyJSQLView.getPopupMenuListener());
-
-            // Create Appropriate Dialog.
-            if (lastActionCommand.equals(VIEW))
-            {
-               textDialog = MyJSQLView_Utils.createTextDialog(false, editorPane);
-               editorMenuBar = MyJSQLView_Utils.createEditMenu(false);
-            }
-            // Edit
-            else
-            {
-               textDialog = MyJSQLView_Utils.createTextDialog(true, editorPane);
-               editorMenuBar = MyJSQLView_Utils.createEditMenu(true);
-            }
-            
-            textDialog.setJMenuBar(editorMenuBar);
-            textDialog.pack();
-            textDialog.center();
-            textDialog.setVisible(true);
-            
-            // Check to see if save data is desired..
-            if (textDialog.isActionResult())
-            {
-               if (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD))
-               {
-                  String editorPaneSQLStatement = editorPane.getText();
-                  
-                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\r\n", " ");
-                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\r", " ");
-                  editorPaneSQLStatement = editorPaneSQLStatement.replaceAll("\n", " ");
-                  processingBucketListObject.setSQLStatementString(editorPaneSQLStatement);
-               }
-               else
-                  saveSQLStatementFile();
-            }
-            else if (!textDialog.getActionResult().equals("close")
-                     && (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD)))
-            {
+            if (lastActionCommand.equals(EDIT) || lastActionCommand.equals(ADD))
                openSQLStatementFile();
-            }
-
-            textDialog.dispose();
+         }
+         
+         // SQL Statement Dialog Save Script
+         else if (actionCommand.equals(DIALOG_SQLSTATEMENT_SAVE))
+         {
+            saveSQLStatementFile();
          }
          
          // SQL Object Color Setting
-         else if (actionCommand.equals(DIALOG_COLOR))
+         else if (actionCommand.equals(DIALOG_SQLSTATEMENT_COLOR))
          {
             String resource = resourceBundle.getResource("SQLQueryBucketFrame.title.ItemListColor");
             if (resource.equals(""))
@@ -622,28 +587,29 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       JButton logoIconItem;
 
       // File Menu
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.File");
-      if (resource.equals(""))
+      resourceFile = resourceBundle.getResource("SQLQueryBucketFrame.menu.File");
+      if (resourceFile.equals(""))
          fileMenu = new JMenu("File");
       else
-         fileMenu = new JMenu(resource);
+         fileMenu = new JMenu(resourceFile);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       fileMenu.addSeparator();
 
       // Open
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Open");
-      if (resource.equals(""))
+      resourceOpen = resourceBundle.getResource("SQLQueryBucketFrame.menu.Open");
+      if (resourceOpen.equals(""))
          fileMenu.add(menuItem("Open", FILE_OPEN));
       else
-         fileMenu.add(menuItem(resource, FILE_OPEN));
+         fileMenu.add(menuItem(resourceOpen, FILE_OPEN));
       fileMenu.addSeparator();
 
       // Save
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Save");
-      if (resource.equals(""))
+      resourceSave = resourceBundle.getResource("SQLQueryBucketFrame.menu.Save");
+      if (resourceSave.equals(""))
          fileMenu.add(menuItem("Save", FILE_SAVE));
       else
-         fileMenu.add(menuItem(resource, FILE_SAVE));
+         fileMenu.add(menuItem(resourceSave, FILE_SAVE));
+      
       resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.SaveAs");
       if (resource.equals(""))
          fileMenu.add(menuItem("Save As...", FILE_SAVE_AS));
@@ -955,17 +921,37 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    {
       // Method Instances
       InputDialog formDialog;
+      JMenuBar formMenuBar;
+      JMenu fileMenu;
       
       JPanel componentHoldingPanel;
       JPanel namePanel, sqlStatementPanel;
+      JPanel limitPanel, colorPanel;
       JTextField listItemNameTextField;
       JLabel sqlStatementLabel, colorLabel, limitLabel;
       JCheckBox limitCheckBox;
       
       String resource, resourceOK, resourceCancel;
+      String sqlStatementString;
       
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
+      
+      // Create a menbar for the dialog.
+      
+      formMenuBar = new JMenuBar();
+      formMenuBar.setBorder(BorderFactory.createEtchedBorder());
+      
+      fileMenu = new JMenu(resourceFile);
+      fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
+      fileMenu.addSeparator();
+
+      fileMenu.add(menuItem(resourceOpen, DIALOG_SQLSTATEMENT_OPEN));
+      fileMenu.addSeparator();
+
+      fileMenu.add(menuItem(resourceSave, DIALOG_SQLSTATEMENT_SAVE));
+      
+      formMenuBar.add(fileMenu);
       
       // Create container to hold the components for the dialog.
       
@@ -978,16 +964,17 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       // Name
       namePanel = new JPanel();
-      namePanel.setBorder(BorderFactory.createRaisedBevelBorder());
+      namePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
+                                          BorderFactory.createEmptyBorder(2, 0, 2, 0)));
       
-      listItemNameTextField = new JTextField(35);
+      listItemNameTextField = new JTextField(40);
       listItemNameTextField.setMargin(new Insets(1, 0, 0, 0));
       
       if (actionCommand.equals(VIEW) || actionCommand.equals(EDIT))
          listItemNameTextField.setText(processingBucketListObject.getText());
       
       if (actionCommand.equals(VIEW))
-         listItemNameTextField.setEnabled(false);
+         listItemNameTextField.setEditable(false);
          
       namePanel.add(listItemNameTextField);
       
@@ -1000,38 +987,51 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // SQL Statement
       sqlStatementPanel = new JPanel(gridbag);
       sqlStatementPanel.getInsets(new Insets(1, 1, 1, 1));
-      sqlStatementPanel.setBorder(BorderFactory.createCompoundBorder(
-                             BorderFactory.createLoweredBevelBorder(),
-                             BorderFactory.createEmptyBorder(4, 1, 4, 1)));
-      
-      dialog_sqlStatementButton = new JButton(new ImageIcon(iconsDirectory + "editSQLQueryIcon.png"));
-      dialog_sqlStatementButton.setFocusable(false);
-      dialog_sqlStatementButton.setMargin(new Insets(0, 0, 0, 0));
-      dialog_sqlStatementButton.setActionCommand(DIALOG_SQLSTATEMENT);
-      dialog_sqlStatementButton.addActionListener(this);
-      
-      buildConstraints(constraints, 0, 0, 1, 1, 10, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(dialog_sqlStatementButton, constraints);
-      sqlStatementPanel.add(dialog_sqlStatementButton);
+      sqlStatementPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+         BorderFactory.createEmptyBorder(4, 1, 4, 1)));
       
       resource = resourceBundle.getResource("SQLQueryBucketFrame.label.SQLStatementString");
       if (resource.equals(""))
          sqlStatementLabel = new JLabel("SQL Statement String");
       else
          sqlStatementLabel = new JLabel(resource);
+      sqlStatementLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
       
-      buildConstraints(constraints, 1, 0, 1, 1, 90, 100);
+      buildConstraints(constraints, 0, 0, 2, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
+      constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sqlStatementLabel, constraints);
       sqlStatementPanel.add(sqlStatementLabel);
       
+      dialog_sqlTextArea = new JTextArea(5, 40);
+      dialog_sqlTextArea.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
+         BorderFactory.createEmptyBorder(5, 5, 5, 5)));
+      dialog_sqlTextArea.setLineWrap(true);
+      
+      if (actionCommand.equals(VIEW))
+         dialog_sqlTextArea.setEditable(false);
+      else
+      {
+         dialog_sqlTextArea.setDragEnabled(true);
+         dialog_sqlTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());  
+      }
+      
+      dialog_sqlTextArea.setText(processingBucketListObject.getSQLStatementString());
+      
+      JScrollPane sqlTextScrollPane = new JScrollPane(dialog_sqlTextArea);
+      
+      buildConstraints(constraints, 0, 1, 2, 1, 100, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(sqlTextScrollPane, constraints);
+      sqlStatementPanel.add(sqlTextScrollPane);
+      
       // LIMIT
+      limitPanel = new JPanel();
+      
       limitCheckBox = new JCheckBox(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
       limitCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
-      limitCheckBox.setPreferredSize(dialog_sqlStatementButton.getPreferredSize());
+      limitCheckBox.setPreferredSize(new Dimension(22, 22));
       limitCheckBox.setMargin(new Insets(4, 1, 4, 1));
       limitCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
       limitCheckBox.setSelected(processingBucketListObject.isLimited());
@@ -1039,53 +1039,51 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       if (actionCommand.equals(VIEW))
          limitCheckBox.setEnabled(false);
       
-      buildConstraints(constraints, 0, 1, 1, 1, 0, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(limitCheckBox, constraints);
-      sqlStatementPanel.add(limitCheckBox);
+      limitPanel.add(limitCheckBox);
       
       resource = resourceBundle.getResource("SQLQueryBucketFrame.label.LIMIT");
       if (resource.equals(""))
-         limitLabel = new JLabel("LIMIT");
+         limitLabel = new JLabel("LIMIT", JLabel.LEADING);
       else
-         limitLabel = new JLabel(resource);
+         limitLabel = new JLabel(resource, JLabel.LEADING);
       
-      buildConstraints(constraints, 1, 1, 1, 1, 0, 100);
+      limitPanel.add(limitLabel);
+      
+      buildConstraints(constraints, 0, 2, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(limitLabel, constraints);
-      sqlStatementPanel.add(limitLabel);
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitPanel, constraints);
+      sqlStatementPanel.add(limitPanel);
       
       // Color
+      colorPanel = new JPanel();
+      
       dialog_colorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
       dialog_colorButton.setBackground(processingBucketListObject.getBackground());
       dialog_colorButton.setFocusable(false);
       dialog_colorButton.setMargin(new Insets(0, 0, 0, 0));
-      dialog_colorButton.setActionCommand(DIALOG_COLOR);
+      dialog_colorButton.setActionCommand(DIALOG_SQLSTATEMENT_COLOR);
       
       if (actionCommand.equals(VIEW))
          dialog_colorButton.setEnabled(false);
       else
          dialog_colorButton.addActionListener(this);
       
-      buildConstraints(constraints, 0, 2, 1, 1, 0, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(dialog_colorButton, constraints);
-      sqlStatementPanel.add(dialog_colorButton);
+      colorPanel.add(dialog_colorButton);
       
       resource = resourceBundle.getResource("SQLQueryBucketFrame.label.Color");
       if (resource.equals(""))
-         colorLabel = new JLabel("Color");
+         colorLabel = new JLabel("Color", JLabel.LEADING);
       else
-         colorLabel = new JLabel(resource);
+         colorLabel = new JLabel(resource, JLabel.LEADING);
       
-      buildConstraints(constraints, 1, 2, 1, 1, 0, 100);
+      colorPanel.add(colorLabel);
+      
+      buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(colorLabel, constraints);
-      sqlStatementPanel.add(colorLabel);
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(colorPanel, constraints);
+      sqlStatementPanel.add(colorPanel);
       
       buildConstraints(constraints, 0, 1, 1, 1, 100, 75);
       constraints.fill = GridBagConstraints.BOTH;
@@ -1109,8 +1107,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       formDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                    content, null);
+      formDialog.setJMenuBar(formMenuBar);
       formDialog.pack();
-      formDialog.setResizable(false);
       formDialog.center();
       formDialog.setVisible(true);
       
@@ -1122,13 +1120,15 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          if (!actionCommand.equals(VIEW))
          {  
             if (listItemNameTextField.getText().equals(""))
-               processingBucketListObject.setText("");
+               processingBucketListObject.setText(" ");
             else
                processingBucketListObject.setText(listItemNameTextField.getText());
             
-            // Don't Set it here, already set or will be if edited
-            // via the Action Event DIALOG_STATEMENT.
-            //processingBucketListObject.setSQLStatementString();
+            sqlStatementString = dialog_sqlTextArea.getText();
+            sqlStatementString = sqlStatementString.replaceAll("\r\n", " ");
+            sqlStatementString = sqlStatementString.replaceAll("\r", " ");
+            sqlStatementString = sqlStatementString.replaceAll("\n", " ");
+            processingBucketListObject.setSQLStatementString(sqlStatementString);
             
             processingBucketListObject.setLimited(limitCheckBox.isSelected());
             processingBucketListObject.setBackground(dialog_colorButton.getBackground());
@@ -1154,7 +1154,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // Setting up a file separator instance.
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
       
-      buf = processingBucketListObject.getSQLStatementString().getBytes();
+      buf = this.dialog_sqlTextArea.getText().getBytes();
 
       // Choosing the file to export data to.
       exportDataChooser = new JFileChooser();
@@ -1252,7 +1252,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                while ((inputString = filebuff.readLine()) != null)
                   textString.append(inputString);
                
-               processingBucketListObject.setSQLStatementString(textString.toString());
+               this.dialog_sqlTextArea.setText(textString.toString());
                
                filebuff.close();
                fileReader.close();
