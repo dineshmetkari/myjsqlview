@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 01/01/2012
+// Version 1.9 01/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,9 @@
 //                        for DEFAULT_LIST_LAST_USED_FILENAME. Added to Argument
 //                        the Same for openLastUsedList(). Used in saveLastUsedList().
 //         1.8 01/01/2012 Copyright Update.
+//         1.9 01/12/2012 Removed Class Instance DEFAULT_LIST_LAST_USED_FILENAME &
+//                        Added SQL_QUERY_BUCKET_DIRECTORY. Implemented New Directory
+//                        Structure for Save Bucket Lists in open/saveLastUsedList().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,6 +66,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.regex.Matcher;
 
 import javax.swing.*;
 
@@ -71,11 +75,11 @@ import javax.swing.*;
 //=================================================================
 
 /**
- * This SQLQueryBucketFrame class provides the main frame for the storage of SQL
- * Query statements derived from MyJSQLView.
+ *    The SQLQueryBucketFrame class provides the main frame for the
+ * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 1.8 01/01/2012
+ * @version 1.9 01/12/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -124,11 +128,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    private static final String DIALOG_COLOR = "DialogColor";
 
    private static final String parameterDelimiter = "%;%";
-   private static final String DEFAULT_LIST_LAST_USED_FILENAME = "sqlquerybucket_";
+   private static final String SQL_QUERY_BUCKET_DIRECTORY = "SQLQueryBucket";
 
-   // ==============================================================
+   //==============================================================
    // SQLQueryBucketFrame Constructor
-   // ==============================================================
+   //==============================================================
 
    protected SQLQueryBucketFrame()
    {
@@ -1310,22 +1314,28 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    // Class Method to open the last used list by the bucket.
    //==============================================================
 
-   protected void openLastUsedList(String databaseName)
+   protected void openLastUsedList(String dbName)
    {
       // Method Instances.
       FileReader fileReader;
-      String fileName;
+      String fileSeparator, sqlQueryBucketDirectory, fileName;
       BufferedReader bufferedReader;
       SQLQueryBucketListObject currentLoadingSQLObject;
       String currentLine;
       String[] sqlObjectParameters;
       
-      this.databaseName = databaseName;
+      databaseName = dbName.replaceAll("/", "_");
+      String slash = "\\";
+      databaseName = databaseName.replaceAll(Matcher.quoteReplacement(slash), "_");
+      
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
       try
       {
-         fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
-                    + DEFAULT_LIST_LAST_USED_FILENAME + databaseName + ".txt"; 
+         sqlQueryBucketDirectory = MyJSQLView_Utils.getMyJSQLViewDirectory() + fileSeparator
+                                   + SQL_QUERY_BUCKET_DIRECTORY + fileSeparator
+                                   + ConnectionManager.getDataSourceType();
+         fileName = sqlQueryBucketDirectory + fileSeparator + databaseName + ".txt";
          fileReader = new FileReader(fileName);
          bufferedReader = new BufferedReader(fileReader);
 
@@ -1377,14 +1387,38 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       int listSize;
       DefaultListModel listModel;
       SQLQueryBucketListObject currentSQLBucketObject;
-      String fileName;
+      String sqlQueryBucketDirectory, fileSeparator, fileName;
 
       // Setup
       listModel = ((DefaultListModel) sqlQueryList.getModel());
       listSize = listModel.getSize();
       stringBuffer = new StringBuffer();
-      fileName = MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
-                 + DEFAULT_LIST_LAST_USED_FILENAME + databaseName + ".txt";  
+      
+      // Make the default SQL Query Bucket where files will be
+      // save if needed.
+      
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      
+      sqlQueryBucketDirectory = MyJSQLView_Utils.getMyJSQLViewDirectory() + fileSeparator
+                                + SQL_QUERY_BUCKET_DIRECTORY + fileSeparator
+                                + ConnectionManager.getDataSourceType();
+      
+      File sqlQueryBucketDirectoryFile = new File(sqlQueryBucketDirectory);
+      if (!sqlQueryBucketDirectoryFile.isDirectory())
+      {
+         try
+         {
+            sqlQueryBucketDirectoryFile.mkdirs();
+         }
+         catch (SecurityException se)
+         {
+            if (MyJSQLView.getDebug())
+                  System.out.println("Failed to Make SQL Query Bucket Directory.\n"
+                                     + se.toString());
+            return;
+         }
+      }
+      fileName = sqlQueryBucketDirectory + fileSeparator + databaseName + ".txt";
 
       // Collect the list.
       int i = 0;
