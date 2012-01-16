@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.2 01/11/2012
+// Version 4.3 01/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,9 @@
 //         4.1 01/01/2012 Copyright Update.
 //         4.2 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
 //                        ConnectionManager.getConnection() in updateTable().
+//         4.3 01/16/2012 Added Class Instance updateComboBoxColumnNames & Initialized Along With
+//                        comboBoxColumnNames to Copy of Input columnNames. Insures That the Find
+//                        Action on Updating AdvancedSortSearchForm Are Appropriate.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -145,7 +148,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.2 01/11/2012
+ * @version 4.3 01/16/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -160,6 +163,7 @@ class UpdateForm extends JFrame implements ActionListener
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypeHashMap;
    private HashMap<String, Integer> columnSizeHashMap;
+   private Vector<String> updateComboBoxColumnNames;
    private Vector<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -196,16 +200,15 @@ class UpdateForm extends JFrame implements ActionListener
                         HashMap<String, String> columnClassHashMap,
                         HashMap<String, String> columnTypeHashMap,
                         HashMap<String, Integer> columnSizeHashMap,
-                        Vector<String> comboBoxColumnNames)
+                        Vector<String> columnNames)
    {
       sqlTable = table;
       this.columnNamesHashMap = columnNamesHashMap;
-      this.comboBoxColumnNames = comboBoxColumnNames;
       this.columnClassHashMap = columnClassHashMap;
       this.columnTypeHashMap = columnTypeHashMap;
       this.columnSizeHashMap = columnSizeHashMap;
       this.resourceBundle = resourceBundle;
-
+      
       // Constructor Instances
       ImageIcon statusIdleIcon, statusWorkingIcon;
       JPanel mainPanel, formPanel;
@@ -215,7 +218,17 @@ class UpdateForm extends JFrame implements ActionListener
       ImageIcon questionIcon;
       ImageIcon clearIcon;
 
-      // Setting up a icons directory and other instances.
+      // Setting up vectors, icons directory and other instances.
+      
+      updateComboBoxColumnNames = new Vector<String> ();
+      comboBoxColumnNames = new Vector<String> ();
+      
+      // Isolate these.
+      for (int i = 0; i < columnNames.size(); i++)
+      {
+         updateComboBoxColumnNames.add(columnNames.get(i));
+         comboBoxColumnNames.add(columnNames.get(i));
+      }
       
       resource = resourceBundle.getResource("UpdateForm.message.Title");
       if (resource.equals(""))
@@ -604,7 +617,7 @@ class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(setLabel, constraints);
       updatePanel.add(setLabel);
 
-      updateColumnComboBox = new JComboBox(comboBoxColumnNames);
+      updateColumnComboBox = new JComboBox(updateComboBoxColumnNames);
       updateColumnComboBox.removeItemAt(0);
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
