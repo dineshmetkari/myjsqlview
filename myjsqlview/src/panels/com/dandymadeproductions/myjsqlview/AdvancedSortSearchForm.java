@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.86 01/01/2012
+// Version 4.87 01/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -178,6 +178,9 @@
 //                        Descending in createSortSearchInterface(). Changes in orderString() to
 //                        Accomodate for Empty String in Order ComboBoxes.
 //        4.86 01/01/2012 Copyright Update.
+//        4.87 01/16/2012 Made a Copy of columnNames Argument to comboBoxColumnNames in Constructor.
+//                        Correction in Class Method createSortSearchSQL() to GROUP BY SQL Creation
+//                        to Properly Exclude When ascDescString is Empty String.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -207,7 +210,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.86 01/01/2012
+ * @version 4.87 01/16/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -253,15 +256,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                     HashMap<String, String> columnNamesHashMap,
                                     HashMap<String, String> columnClassHashMap,
                                     HashMap<String, String> columnTypesHashMap,
-                                    Vector<String> comboBoxColumnNames)
+                                    Vector<String> columnNames)
    {
       sqlTable = table;
       this.resourceBundle = resourceBundle;
       this.columnNamesHashMap = columnNamesHashMap;
       this.columnClassHashMap = columnClassHashMap;
       this.columnTypesHashMap = columnTypesHashMap;
-      this.comboBoxColumnNames = comboBoxColumnNames;
-
+      
       // Constructor Instances
       JPanel mainPanel, formPanel, northPanel, selectTypePanel, aggregatePanel;
       JPanel helpPanel, southPanel, actionButtonPanel, clearPanel;
@@ -271,7 +273,12 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       ImageIcon questionIcon;
       ImageIcon clearIcon;
 
-      // Setting up a icons directory and other instances.
+      // Setting up icons directory and other instances.
+      
+      comboBoxColumnNames = new Vector<String> ();
+      
+      for (int i = 0; i < columnNames.size(); i++)
+         comboBoxColumnNames.add(columnNames.get(i));
       
       dataSourceType = ConnectionManager.getDataSourceType();
       
@@ -870,7 +877,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       sqlStatementString.append("SELECT ");
 
       // ========================================
-      // Adding DISTINCT & aggregate options as needed.
+      // Adding DISTINCT & Aggregate options as needed.
 
       if (((String) selectTypeComboBox.getSelectedItem()).equals("All"))
       {
@@ -1008,11 +1015,10 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       do
       {
          columnNameString = columnNamesHashMap.get(groupComboBox[i].getSelectedItem());
+         ascDescString = orderString(i, group_AscendingDescendingComboBox);
          
-         if (columnNameString != null)
+         if (columnNameString != null && (!ascDescString.equals("")))
          {
-            ascDescString = orderString(i, group_AscendingDescendingComboBox);
-            ascDescString = ascDescString.equals("") ? ascDescString : " " + ascDescString; 
             orderString = identifierQuoteString + columnNameString + identifierQuoteString + ascDescString + ", ";
             sqlStatementString.append((notFieldGroup ? "GROUP BY " : "") + orderString);
             
