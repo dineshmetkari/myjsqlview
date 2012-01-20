@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.89 01/11/2012
+// Version 8.90 01/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -350,6 +350,8 @@
 //        8.88 01/01/2012 Copyright Update.
 //        8.89 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
 //                        ConnectionManager.getConnection() in addUpdateTableEntry().
+//        8.90 01/20/2012 Explicit Declaration of dateTimeValue on New Instance Creations to java.
+//                        sql.Timestamp in Method addUpdateTableEntry() for Timestamp Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -383,7 +385,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.88 01/01/2012
+ * @version 8.90 01/20/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -2065,7 +2067,7 @@ class TableEntryForm extends JFrame implements ActionListener
                            else
                               dateParse = timeStampFormat.parse(dateTimeFormString);
 
-                           dateTimeValue = new Timestamp(dateParse.getTime());
+                           dateTimeValue = new java.sql.Timestamp(dateParse.getTime());
                            // System.out.println(dateTimeValue);
                            prepared_sqlStatement.setTimestamp(i++, dateTimeValue);
                         }
