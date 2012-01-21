@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.87 01/16/2012
+// Version 4.88 01/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -181,6 +181,8 @@
 //        4.87 01/16/2012 Made a Copy of columnNames Argument to comboBoxColumnNames in Constructor.
 //                        Correction in Class Method createSortSearchSQL() to GROUP BY SQL Creation
 //                        to Properly Exclude When ascDescString is Empty String.
+//        4.88 01/21/2012 Correction After Revision 4.87 Changed ascDescString Determination Outside
+//                        Conditional Check for GROUP BY Aspect.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -210,7 +212,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.87 01/16/2012
+ * @version 4.88 01/21/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -1015,10 +1017,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       do
       {
          columnNameString = columnNamesHashMap.get(groupComboBox[i].getSelectedItem());
-         ascDescString = orderString(i, group_AscendingDescendingComboBox);
          
-         if (columnNameString != null && (!ascDescString.equals("")))
+         if (columnNameString != null)
          {
+            ascDescString = orderString(i, group_AscendingDescendingComboBox);    
+            ascDescString = ascDescString.equals("") ? ascDescString : " " + ascDescString;
             orderString = identifierQuoteString + columnNameString + identifierQuoteString + ascDescString + ", ";
             sqlStatementString.append((notFieldGroup ? "GROUP BY " : "") + orderString);
             
