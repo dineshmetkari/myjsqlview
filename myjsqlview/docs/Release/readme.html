@@ -6,17 +6,17 @@
 		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
 		<meta name="Description" content="MyJSQLView ReadMe.">
 		<meta name="keywords" content="MyJSQLView, Readme, Dana Proctor">		
-		<meta name="Copyright" content="2005-2011">
+		<meta name="Copyright" content="2005-2012">
 		
 		<title>MyJSQLView README</title>
 	</head>
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.31<br></u></b>
+			<b><u>MyJSQLView Version 3.33<br></u></b>
 		</p>
 		<p align="center">
-			Copyright 2005-2011<br>
+			Copyright 2005-2012<br>
 			by <a href="mailto:danap@dandymadeproductions.com">Dana Proctor</a><br>
 			<a href="http://dandymadeproductions.com">http://dandymadeproductions.com</a>
 		</p>
@@ -60,10 +60,12 @@
 		<ul>
 			<li>Plugin Framework.</li>			
 			<li>Internationalization Support.</li>
+			<li>Simple Easy to Use Interface.</li>
 			<li>User Connection Preferences Saving/Managing.</li>
 			<li>User Preferences Summary Table Column Selection &#038; Sizing.</li>
 			<li>User Preferences Summary Table Row Sizing.</li>
 			<li>Access to All User Tables in Database During Session.</li>
+			<li>Simple and Advanced Table Sorting and Searching.</li>
 			<li>Summary Table State Saving/Loading.</li>
 			<li>Viewing, Adding, Editing, and Deleting All Table Fields.</li>
 			<li>Update Multiple Rows of Selected Table Field.</li>
@@ -82,15 +84,14 @@
 			<li>Query Bucket for Storing/Organizing SQL Statements.</li>
     			<li>Query Frame for Building Complex SQL Statements.</li>
 			<li>Search Frame for Running Generic LIKE Queries on All Tables in Database.</li>
-			<li>Simple Easy to Use Interface.</li>
-			<li>Simple and Advanced Table Sorting and Searching.</li>
+			<li>In Memory Data Analysis Capability</li>
 		</ul>
 		<p><b><u>Requirements:</u></b></p>
 		
 		<ul>
   			<li> Microsoft<sup>&reg;</sup> Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, &amp; X-Window Environment.</li>
                     	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.5</font> or Newer.</li>
-			<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.3</font> (JDBC Integrated Into HSQLDB.jar)</li>
+			<li>HSQL <font color="#ff0000">2.2.5 - 2.2.7</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 			<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge, Control Panel Data Sources.</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
@@ -119,7 +120,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.31</b> does, will have an example configuration
+			additional database, release <b>v3.33</b> does not, will have an example configuration
 			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -142,19 +143,20 @@
 			that allows Java to communicate to the HSQL, MySQL, Oracle, PostgreSQL, or SQLite
 			database. The programs are available on the Internet free of charge. Check with
 			the sites
-			<a href="http://hsqldb.org" target="_blank">hsqldb.org</a>,
 			<a href="http://dev.mysql.com" target="_blank">dev.mysql.com</a>,
 			<a href="http://oracle.com" target="_blank">oracle.com</a>,
 			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>, and
-			<a href="http://www.xerial.org/trac/Xerial" target="_blank">www.xerial.org</a>. Note,
-			the HSQLDB contains no separate JDBC, it is embedded in the HSQLDB.jar. The
+			<a href="http://www.xerial.org/trac/Xerial" target="_blank">www.xerial.org</a>. The
 			jar file for these extensions needs to be installed to the JRE /lib/ext directory.
 			On a Windows system this JRE directory in normally under C:/Windows/java. On a
 			Linux/Unix system the directory is normally under the /usr/lib directory, and is most
 			easily found by typing the command "which java" in a console. Please consult with
 			each vendor for specific installation instructions for these JDBC pieces of code.
 			Similarly if other databases are to be accessed via the application then again
-			installed the recommended  driver(s) to the Java Runtime /lib/ext directory.<br><br>
+			installed the recommended  driver(s) to the Java Runtime /lib/ext directory. The
+                        exception JDBC installation is for the HSQL database which uses an integrated JDBC
+			built into the application. MyJSQLView as of v3.33 includes this database so no
+			additional installation need take place.<br><br>
 			
 			&nbsp;&nbsp;&nbsp;&nbsp;The new login interface and Connection Manager use
 			a XML configuration file for saving user preferences. Upon first running
@@ -230,6 +232,14 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+		<tr>
+      				<td width="20%">Version 3.33</td>
+      				<td width="80%">Integration of HSQLDB2, HyperSQL, database for In-Memory data
+						Analysis. HyperSQL database File and Jar resource connection support.
+						Advanced Sort/Search interface Aggregation and GROUP BY feature.
+						SQL Query Bucket Fixes and interface changes to increase efficiency
+						of use. HeatMapper Plugin.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.31</td>
       				<td width="80%">HSQLDB2 and MSAccess Database Support. Bug fix for large SQL import files.
