@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.0 01/13/2012
+// Version 2.1 01/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@
 //                        Object Dialog to Handle SQL Statement String Directly in 
 //                        Class Method createSQLObjectDialog(). Modified actionPerformed(),
 //                        & save/openSQLStatementFile() Methods Accordingly.
+//         2.1 01/21/2012 Class Method createSQLObjectDialog() Set formDialog.setMinimumSize().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,7 +86,7 @@ import javax.swing.*;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.0 01/13/2012
+ * @version 2.1 01/21/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -1108,6 +1109,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       formDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                    content, null);
       formDialog.setJMenuBar(formMenuBar);
+      formDialog.setMinimumSize(new Dimension(500, 350));
       formDialog.pack();
       formDialog.center();
       formDialog.setVisible(true);
