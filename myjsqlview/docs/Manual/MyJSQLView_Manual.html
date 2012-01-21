@@ -17,9 +17,9 @@
 
 	<p style="color: rgb(0, 0, 0); background-color: rgb(255, 255, 255);" alink="#ff0000" link="#0000ff" vlink="#551a8b">
 	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
-	<p align="center">Copyright &copy; 2005-2011 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
+	<p align="center">Copyright &copy; 2005-2012 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
 	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
-	<p align="center"><font size="+1">October 2011</font></p>
+	<p align="center"><font size="+1">January 2012</font></p>
 
 	<hr size="2" width="100%">
 	<strong><font size="+3">Table of Contents</font></strong>
@@ -85,7 +85,7 @@
 	<a name="Introduction"></a>
 	<p><font size="+3"><strong>1 Introduction</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle and SQLite just JDBC, and PostgreSQL JDBC3. The HSQL database has an integrated JDBC that is part of the application. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.31</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle and SQLite just JDBC, and PostgreSQL JDBC3. <font style="border: 2px solid yellow;" size="+1">*</font>The HSQL database is now fully integrated into the MyJSQLView application as a library so an additional JDBC need not be installed. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of this version of MyJSQLView, <b>v3.33</b>, the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
 
 	<hr>
 	
@@ -93,10 +93,12 @@
 	<ul>
 		<li>Plugin Framework.</li>			
 		<li>Internationalization Support.</li>
+		<li>Simple Easy to Use Interface.</li>
 		<li>User Connection Preferences Saving/Managing.</li>
 		<li>User Preferences Summary Table Column Selection &#038; Sizing.</li>
 		<li>User Preferences Summary Table Row Sizing.</li>
 		<li>Access to All User Tables in Database During Session.</li>
+		<li>Simple and Advanced Table Sorting and Searching.</li>
 		<li>Summary Table State Saving/Loading.</li>
 		<li>Viewing, Adding, Editing, and Deleting All Table Fields.</li>
 		<li>Update Multiple Rows of Selected Table Field.</li>
@@ -115,8 +117,7 @@
 		<li>Query Bucket for Storing/Organizing SQL Statements.</li>
     		<li>Query Frame for Building Complex SQL Statements.</li>
 		<li>Search Frame for Running Generic LIKE Queries on All Tables in Database.</li>
-		<li>Simple Easy to Use Interface.</li>
-		<li>Simple and Advanced Table Sorting and Searching.</li>
+		<li>In Memory Data Analysis Capability</li>
 	</ul>
 	
 	<hr>
@@ -165,7 +166,7 @@
 	<p>The tested databases supported by MyJSQlView are:</p>
 
 	<ul>
-		<li>HSQL <font color="#ff0000">1.8.0.8 - 1.8.1.3</font> (JDBC Integrated Into HSQLDB.jar)</li>
+		<li>HSQL <font color="#ff0000">2.2.5 - 2.2.7</font>. <font style="border: 2px solid yellow;" size="+1">*</font><b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 		<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge.</li>
 		<li>MySQL <font color="#ff0000">5.0.7 - 5.084</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 		<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
@@ -186,7 +187,7 @@
 	<a name="GeneralInstallationInstructions"></a>
 	<p><font size="+1"><strong>General Installation Instructions</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does require the JRE to be installed. The minimum runtime environment needs to be <b>JRE-1.5</b>. In addition to the JRE an extension needs to be installed that allows Java to communicate to the HSQL, MySQL, Oracle, PostgreSQL, or SQLite database. The programs are available on the Internet free of charge and for MySQL is called <b>MySQL Connector/J</b>. The PostgreSQL program is called <b>JDBC3</b> and Oracle, SQLite just <b>JDBC</b>. The HSQL database uses an integrated <b>JDBC</b> built into the application. The jar file for these extensions needs to be installed to the JRE /lib/ext directory. Please consult with installation instructions for these pieces of code from the vendor, or see the MyJSQView README file for additional information.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;The login interface and Connection Manager uses a XML configuration file for saving user preferences. Upon first running MyJSQLView a reference XML file, myjsqlview.xml, located in the installation directory is read then copied to the user's home directory under a newly created directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On Windows &reg; XP, Vista, and Windows 7 the new directory will be in the user's home folder. On a Linux system the new directory will be '/home/user/.myjsqview'. All saved changes performed in site management will be stored in the XML file located in the above referenced directory. As of <b>v2.72</b>++ of MyJSQLView the XML configuration file once saved with a user's passwords will not be able to be used on another system, encrypted password data is none transferable. The user is encouraged to make a backup of this file on occasional. The .myjsqlview directory in addition to holding the XML configuration file will also contain the file myjsqlview_locale.txt which holds the entry that allows control of language support.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with in order to work. It is beyond the scope of this document for installing and setting up this type of application, but insure the correct access <b>grant rights</b> are specified for the user and database tables that are desired to be reached. All databases normally have some form of privilege configuration for selective control to access rights. So just because you have local access rights does not mean the database will let you also login from a remote machine. Remember also that the MyJSQLView application uses TCP/IP, Transmission Control Protocol/Internet Protocol, for its connection to the database. <font style="border: 2px solid yellow;" size="+1">*</font> Many of the default installations for these databases limit connections to just from the local host only.</p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does require the JRE to be installed. The minimum runtime environment needs to be <b>JRE-1.5</b>. In addition to the JRE an extension needs to be installed that allows Java to communicate to the MySQL, Oracle, PostgreSQL, or SQLite database. The programs are available on the Internet free of charge and for MySQL is called <b>MySQL Connector/J</b>. The PostgreSQL program is called <b>JDBC3</b>, Oracle, and SQLite just <b>JDBC</b>. The jar file for these extensions needs to be installed to the JRE /lib/ext directory. Please consult with installation instructions for these pieces of code from the vendor, or see the MyJSQView README file for additional information. The HSQL database uses an integrated <b>JDBC</b> built into the application and MyJSQLView as of <b>v3.33</b> includes this database so no additional installation need take place.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;The login interface and Connection Manager uses a XML configuration file for saving user preferences. Upon first running MyJSQLView a reference XML file, myjsqlview.xml, located in the installation directory is read then copied to the user's home directory under a newly created directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On Windows &reg; XP, Vista, and Windows 7 the new directory will be in the user's home folder. On a Linux system the new directory will be '/home/user/.myjsqview'. All saved changes performed in site management will be stored in the XML file located in the above referenced directory. As of <b>v2.72</b>++ of MyJSQLView the XML configuration file once saved with a user's passwords will not be able to be used on another system, encrypted password data is not transferable. The user is encouraged to make a backup of this file on occasional. The .myjsqlview directory in addition to holding the XML configuration file will also contain the file myjsqlview_locale.txt which holds the entry that allows control of language support.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with in order to work. It is beyond the scope of this document for installing and setting up this type of application, but insure the correct access <b>grant rights</b> are specified for the user and database tables that are desired to be reached. All databases normally have some form of privilege configuration for selective control to access rights. So just because you have local access rights does not mean the database will let you also login from a remote machine. Remember also that the MyJSQLView application uses TCP/IP, Transmission Control Protocol/Internet Protocol, for its connection to the database. <font style="border: 2px solid yellow;" size="+1">*</font> Many of the default installations for these databases limit connections to just from the local host only.</p>
 
 	<a name="AddingaShortcut"></a>
 	<p><strong><font size="+1">Adding a Shortcut</font></strong></p>
@@ -274,7 +275,7 @@
 	<a name="General_Summary_Table_Overview"></a>
 	<p><font size="+2"><strong>General Summary Table Overview</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;Each table view in MyJSQLView has essential the same user interface. <b>Figure 7</b> below outlines this Summary Table view. At the top of the Summary Table is a panel that provides a generalized sort and search with history indexing. In the sort panel each table has a specific set of fields/columns that may be used to sort the table summary in the center of the view. All fields that a user has access to will be available from the pull down menu for sorting. Likewise in the search panel all fields that are viewable by the user will be available to be searched according to the entry in the text area to the right of this pull down menu. Percent, %, characters are automatically inserted at the beginning and ending of the text by the MyJSQLView application in the phrase to be searched. Most databases treat this character as a wild card so that a generalized search may be automatically obtained. As an example to search for the word "dog" in a particular column field one could either enter "dog" or "do". Of course many other entries with "do" in the latter case will also appear as a resultant search match. If the column to be searched is left blank and a key word/phrase is entered then all columns will be searched for the entry. An advanced sort/search may also be be applied on the selected table by activating the Advanced Sort/Search Interface. The advanced sort/search form is very similar to the general sort/search input, but does not add any wild cards to the search phrase. <b>LIKE</b> searches use an exact match. For additional information about advanced sort/searches activate the help frame through the button with the question mark at the top right. The final panel in the summary tab that will be of use to the user will be the panel at the bottom. The panel contains several buttons that allow the selected table entry to be viewed, edited, or deleted. A new entry to the table may also be added and the whole table summary view forwarded or reversed through row entries. The Summary Table normally just shows fifty entries at one time. The row label in the bottom right of the panel indicates the position in the selected table that the Summary Table is displaying. If the selected table has more than than fifty entries press the down arrow button to advance to the next fifty entries in the table. The up arrow button will index back to the previous fifty entries in the table. A refresh of table data is accomplished through the button to the left of the row indicator. Besides viewing, and editing table entries one can also update rows via the Update Form. The Update Form allows the updating of a single field in multiple rows at one time.</p><br>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;Each table view in MyJSQLView has essential the same user interface. <b>Figure 7</b> below outlines this Summary Table view. At the top of the Summary Table is a panel that provides a generalized sort and search with history indexing. In the sort panel each table has a specific set of fields/columns that may be used to sort the table summary in the center of the view. All fields that a user has access to will be available from the pull down menu for sorting. Likewise in the search panel all fields that are viewable by the user will be available to be searched according to the entry in the text area to the right of this pull down menu. Percent, %, characters are automatically inserted at the beginning and ending of the text by the MyJSQLView application in the phrase to be searched. Most databases treat this character as a wild card so that a generalized search may be automatically obtained. As an example to search for the word "dog" in a particular column field one could either enter "dog" or "do". Of course many other entries with "do" in the latter case will also appear as a resultant search match. If the column to be searched is left blank and a key word/phrase is entered then all columns will be searched for the entry. An advanced sort/search may also be be applied on the selected table by activating the Advanced Sort/Search Interface. The advanced sort/search form is very similar to the general sort/search input, but does not add any wild cards to the search phrase. <b>LIKE</b> searches use an exact match. The Advanced Sort/Search also includes an Aggregation and GROUP BY feature. For additional information about advanced sort/searches activate the help frame through the button with the question mark at the top right. The final panel in the summary tab that will be of use to the user will be the panel at the bottom. The panel contains several buttons that allow the selected table entry to be viewed, edited, or deleted. A new entry to the table may also be added and the whole table summary view forwarded or reversed through row entries. The Summary Table normally just shows fifty entries at one time. The row label in the bottom right of the panel indicates the position in the selected table that the Summary Table is displaying. If the selected table has more than than fifty entries press the down arrow button to advance to the next fifty entries in the table. The up arrow button will index back to the previous fifty entries in the table. A refresh of table data is accomplished through the button to the left of the row indicator. Besides viewing, and editing table entries one can also update rows via the Update Form. The Update Form allows the updating of a single field in multiple rows at one time.</p><br>
 	
 	<div style="text-align: center;">
 		<img alt="" src="tabsummary.png" style="width: 600px; height: 500px;"><br>
@@ -440,7 +441,6 @@
   		<tbody>
     			<tr align="center">
       				<td><b>Expression Type</b></td>
-				<td><b>HSQL</b></td>
 				<td><b>HSQL2</b></td>
 				<td><b>MSAccess</b></td>
       				<td><b>MySQL</b></td>
@@ -452,7 +452,6 @@
       				<td>Singular</td>
 				<td align="center">Yes</td>
 				<td align="center">Yes</td>
-				<td align="center">Yes</td>
       				<td align="center">Yes</td>
 				<td align="center">Yes</td>
       				<td align="center">Yes</td>
@@ -460,7 +459,6 @@
     			</tr>
     			<tr>
       				<td>Plural</td>
-				<td align="center">No</td>
 				<td align="center">Yes</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
@@ -470,7 +468,6 @@
     			</tr>
     			<tr>
       				<td>Explicit</td>
-				<td align="center">No</td>
 				<td align="center">No</td>
 				<td align="center">No</td>
       				<td align="center">Yes</td>
