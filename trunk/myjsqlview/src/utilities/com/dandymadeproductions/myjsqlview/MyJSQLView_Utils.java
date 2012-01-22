@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.1 01/01/2012
+// Version 7.2 01/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,8 @@
 //         7.0 Changed Class Instance dateFormatOptions From public to private.
 //             Added Class Method getDateFormatOptions().
 //         7.1 Copyright Update.
+//         7.2 Recoded getConditionString() Method to Handle GROUP BY in Query. Commented
+//             Method getDateFormat().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -163,7 +165,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.1 01/01/2012
+ * @version 7.2 01/22/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -667,7 +669,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // Class Method to parse the WHERE condition given a SQL query
    // statement.
    //==============================================================
-
+   
    public static String getConditionString(String query)
    {
       // Method Instances.
@@ -680,34 +682,53 @@ public class MyJSQLView_Utils extends MyJSQLView
          return conditionString;
       
       query = query.replaceAll("(?i)where", "WHERE");
-      
+     
+      // Oracle
       if (dataSourceType.equals(ConnectionManager.ORACLE))
       {
          if (query.toUpperCase().indexOf("BETWEEN") != -1)
             query = getUnlimitedSQLStatementString(query);
          
-         if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
+         if (query.toUpperCase().indexOf(" GROUP BY ") != -1)
             conditionString = query.substring(query.indexOf("WHERE"),
-                                      query.toUpperCase().indexOf(" ORDER BY "));
-         else
-            conditionString = query.substring(query.indexOf("WHERE"));
-      }
-      else
-      {
-         if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
-            conditionString = query.substring(query.indexOf("WHERE"),
-                                      query.toUpperCase().indexOf(" ORDER BY "));
+                                      query.toUpperCase().indexOf(" GROUP BY "));
          else
          {
-            if (query.toUpperCase().indexOf("LIMIT") != -1)
+            if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
                conditionString = query.substring(query.indexOf("WHERE"),
-                                      query.toUpperCase().indexOf(" LIMIT"));
+                                         query.toUpperCase().indexOf(" ORDER BY "));
             else
                conditionString = query.substring(query.indexOf("WHERE"));
          }
       }
+      // All Other Databases.
+      else
+      {
+         if (query.toUpperCase().indexOf(" GROUP BY ") != -1)
+            conditionString = query.substring(query.indexOf("WHERE"),
+                                      query.toUpperCase().indexOf(" GROUP BY "));
+         else
+         {
+            if (query.toUpperCase().indexOf(" ORDER BY ") != -1)
+               conditionString = query.substring(query.indexOf("WHERE"),
+                                         query.toUpperCase().indexOf(" ORDER BY "));
+            else
+            {
+               if (query.toUpperCase().indexOf("LIMIT") != -1)
+                  conditionString = query.substring(query.indexOf("WHERE"),
+                                         query.toUpperCase().indexOf(" LIMIT"));
+               else
+                  conditionString = query.substring(query.indexOf("WHERE"));
+            } 
+         }
+      }
       return conditionString;
    }
+   
+   //==============================================================
+   // Class method to return a copy of the Date Format options that
+   // MyJSQLView recognizes as value dates, example MM/dd/YYYY.
+   //==============================================================
    
    public static Object[] getDateFormatOption()
    {
