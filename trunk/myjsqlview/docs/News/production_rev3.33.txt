@@ -1,0 +1,27 @@
+MyJSQLView Version 3.33 Released
+
+The MyJSQLView project is pleased to release v3.33 to the public. The
+release includes improvements in the efficiency of use for the SQL Query
+Bucket and an Aggregation/GROUP BY feature for the Advanced Sort/Search
+Form. The new release also brings a new default plugin called HeatMapper
+that allows the plotting of multi-variable numeric data. Initial tests
+for the HeatMapper plugin used latitude, longitude, and temperature
+data from measurements in the Alantic with over 90k records. The coding
+for this plugin solidified the selection of HyperSQL for in memory data
+analysis.
+
+The selection of HyperSQL for in memory data analysis voids the backward
+compatibility of MyJSQLView with HSQL 1.8x. As of version 3.33 MyJSQLView
+will not work with databases with that format and also may crash if the
+earlier hsqldb.jar is placed in the Java class path. The HyperSQL database
+and JDBC are now included as a library component of the MyJSQLView download.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend
+for viewing, adding, editing, or deleting entries in the HSQL, MSAccess,
+MySQL, Oracle, PostgreSQL, and SQLite databases. A query frame allows
+the building of complex SQL statements. The application allows easy
+sorting, searching, and import/export of table data.
