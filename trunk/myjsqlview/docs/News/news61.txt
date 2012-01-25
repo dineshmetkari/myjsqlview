@@ -1,0 +1,44 @@
+   The development for the next release of MyJSQLView has solidified into
+a set of tasks to be accomplished. The task list is surprising short as
+compared to prior release cycle undertakings. The main reason for this is
+the lack of additional work that really needs to be performed on the core
+architecture of the the application. The list of tasks only has three
+items that have to due with the main applications code. The rest, seven,
+are either reviewing visualization and data mining programs or plugin work.
+The latter has been in progress for the last month with the result of a
+multi-variable false color plotter, heat mapper. The image shown here with
+this news release is a screen shot of the preliminary work with that plugin
+for a data set of ocean temperatures. The plugin will be provided as a
+default tab with the next release of MyJSQLView.
+
+   The work with the false color plotter plugin has been a very critical
+task with the MyJSQLView application. Just like MyJSQLView's first full
+feature plugin, the Table Field Profiler, the mapper has several key
+features that have to do with data and the way the main application helps
+with willowing. The Query Bucket for MyJSQLView is the central interface
+that has been setup to allow users to save and create queries that may
+then be dropped into a plugin for execution. With that comes the need to
+allow a method for storing data temporarily from a query of the database.
+After review of several memory options it has pretty much been decided to
+use SQLite in either file or memory storage mode for temporary storage.
+Implemented properly users should be able to store data locally for
+access rather than from a database. The efficiency and performance
+increase for analyzing data through a plugin being the desired goal here.
+
+   The release of the next version of MyJSQLView should take place by the
+end of January next year. So far no major bugs have been discovered or
+reported with the last release of MyJSQLView beside some immutable string
+problems with the Query Bucket. The link below provides a larger screenshot
+of the application with the false color plotter of ocean temperatures for
+those interested.
+
+Ocean Temperatures Screenshot
+
+Dana M. Proctor
+MyJSQLView Project Manager
+
+   MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in the HSQL, MSAccess, MySQL,
+Oracle, PostgreSQL, and SQLite databases. A query frame allows the building
+of complex SQL statements. The application allows easy sorting, searching,
+and import/export of table data.
