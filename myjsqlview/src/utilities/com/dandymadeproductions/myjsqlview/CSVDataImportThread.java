@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.1 01/11/2012
+// Version 6.2 02/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -133,6 +133,10 @@
 //         6.0 Copyright Update.
 //         6.1 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in importCSVFile().
+//         6.2 Added a finally in importCSVFile() to Close the fileReader & bufferedReader
+//             in Case Exception is Thrown so File is Not Left Open on File System.
+//             Class Method firstLetterToUpperCase() Check for Input String is Not
+//             Empty.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -159,7 +163,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.1 01/11/2012
+ * @version 6.2 02/09/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -281,6 +285,8 @@ class CSVDataImportThread implements Runnable
       columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
 
+      fileReader = null;
+      bufferedReader = null;
       fileLineLength = 0;
       line = 0;
 
@@ -610,6 +616,21 @@ class CSVDataImportThread implements Runnable
             ConnectionManager.displaySQLErrors(e, "CSVDataImportThread importCSVFile() rollback failed");
          }
       }
+      finally
+      {
+         try
+         {
+            if (fileReader != null)
+            {
+               fileReader.close();
+               bufferedReader.close();
+            }
+         }
+         catch (IOException ioe)
+         {
+            // Tried
+         }  
+      }
    }
 
    //==============================================================
@@ -665,9 +686,14 @@ class CSVDataImportThread implements Runnable
    {
       String firstLetter;
 
-      firstLetter = capitalizeString.substring(0, 1);
-      firstLetter = firstLetter.toUpperCase();
-      return firstLetter + capitalizeString.substring(1);
+      if (capitalizeString.length() >= 1)
+      {
+         firstLetter = capitalizeString.substring(0, 1);
+         firstLetter = firstLetter.toUpperCase();
+         return firstLetter + capitalizeString.substring(1);
+      }
+      else
+         return capitalizeString;   
    }
 
    //==============================================================
