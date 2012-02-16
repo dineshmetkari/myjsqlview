@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.7 01/11/2012
+// Version 7.8 02/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -194,6 +194,8 @@
 //         7.6 01/01/2012 Minor Code Placement Movement and Copyright Update.
 //         7.7 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
 //                        ConnectionManager.getConnection() in Constructor.
+//         7.8 02/16/2012 Added sqlQueryBucketButton & Implemented With it SQL Query Bucket Drops.
+//                        Setup in Constructor and Action Event in actionPerformed().
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -231,7 +233,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.6 01/01/2012
+ * @version 7.8 02/16/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -260,6 +262,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private JLabel statusIndicator;
    private String[] status = new String[maxTabs];
    private JTextField statusLabel;
+   private JButton sqlQueryBucketButton;
    private JComboBox statementTypeComboBox;
    private int[] tabStatementType = new int[maxTabs];
    
@@ -306,8 +309,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       JPanel framePanel, mainPanel;
       JPanel queryPanel, centerPanel, queryResultPanel;
-      JPanel statusControlPanel, statusPanel, buttonPanel;
+      JPanel statusControlPanel, controlPanel, statusPanel, buttonPanel;
       
+      ImageIcon sqlQueryBucketIcon;
       ConnectionProperties connectionProperties;
       String hostName, databaseName, resource;
       
@@ -350,6 +354,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
       statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
+      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "addSQLQueryIcon.png");
 
       for (int i = 0; i < maxTabs; i++)
       {
@@ -436,11 +441,28 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       statusControlPanel = new JPanel(gridbag);
       statusControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
-      // Status Indicator
-      statusPanel = new JPanel(gridbag);
-      statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
-                                                               BorderFactory.createEmptyBorder(0, 2, 0, 1)));
+      // Query Bucket, SQL Type & Status Indicator
+      
+      controlPanel = new JPanel(gridbag);
+      
+      // SQL Query Bucket Drop Button.
+      sqlQueryBucketButton = new JButton(sqlQueryBucketIcon);
+      sqlQueryBucketButton.setMargin(new Insets(0, 0, 0, 0));
+      sqlQueryBucketButton.setBorder(BorderFactory.createCompoundBorder(
+                                                    BorderFactory.createRaisedBevelBorder(),
+                                                    sqlQueryBucketButton.getBorder()));
+      sqlQueryBucketButton.setFocusPainted(false);
+      sqlQueryBucketButton.addActionListener(this);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 1, 100);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(sqlQueryBucketButton, constraints);
+      controlPanel.add(sqlQueryBucketButton);
+      
+      // SQL Query Type
       statementTypeComboBox = new JComboBox();
+      statementTypeComboBox.setBorder(BorderFactory.createRaisedBevelBorder());
       
       // SQL_STATEMENT_TYPE:0
       resource = resourceBundle.getResource("QueryFrame.combobox.SQLStatement");
@@ -459,11 +481,21 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             statementTypeComboBox.addItem(resource + " : ");
       }
       
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
+      buildConstraints(constraints, 1, 0, 1, 1, 99, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(statementTypeComboBox, constraints);
-      statusControlPanel.add(statementTypeComboBox);
+      controlPanel.add(statementTypeComboBox);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(controlPanel, constraints);
+      statusControlPanel.add(controlPanel);
+      
+      statusPanel = new JPanel(gridbag);
+      statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
+                                                               BorderFactory.createEmptyBorder(0, 2, 0, 1)));
       
       statusIndicator = new JLabel("", JLabel.LEFT);
       statusIndicator.setIcon(statusIdleIcon);
@@ -595,6 +627,16 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
    {
       Object panelSource = evt.getSource();
 
+      // SQL Query Bucket Drop
+      if (panelSource == sqlQueryBucketButton)
+      {
+         String query = queryTextArea.getText();
+         
+         if (!query.equals(""))
+            MyJSQLView_Frame.getSQLBucket().addSQLStatement(query);
+         return;
+      }
+      
       // Execute SQL Action
       if (panelSource == executeButton)
       {
