@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.2 02/09/2012
+// Version 6.3 03/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -137,6 +137,11 @@
 //             in Case Exception is Thrown so File is Not Left Open on File System.
 //             Class Method firstLetterToUpperCase() Check for Input String is Not
 //             Empty.
+//         6.3 Method importCSVFile() sqlStatementString Change to StringBuffer, Addition
+//             of dateFormat & dataImportProperties. In Same sqlValueString Change to
+//             StringBuffer. Same Method Removal of Quotes for Numeric Types All Databases.
+//             Removal of Class Method formatDateString and Conversion Done Directly
+//             With MyJSQLView_Utils.convertViewDateString_To_DBDateString().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -163,7 +168,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.2 02/09/2012
+ * @version 6.3 03/09/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -180,13 +185,15 @@ class CSVDataImportThread implements Runnable
    CSVDataImportThread(String fileName, String csvOption, boolean temporaryDataFile)
    {
       // Constructor Instances
-      
+
       this.fileName = fileName;
       this.csvOption = csvOption;
       this.temporaryDataFile = temporaryDataFile;
-      
+
+      // Setup some needed instances.
       dataSourceType = ConnectionManager.getDataSourceType();
 
+      // Proceed with the process.
       importThread = new Thread(this, "CSVDataImportThread");
       importThread.start();
    }
@@ -211,11 +218,13 @@ class CSVDataImportThread implements Runnable
          importCSVFile();
 
          // Refreshing table panel to see new inserted data and
-         // removing the file if needed.
+         // removing the  temporary file, clipboard pastes, if
+         // needed.
+         
          if (validImport)
          {
             refreshTableTabPanel();
-            
+
             if (temporaryDataFile)
             {
                try
@@ -245,7 +254,7 @@ class CSVDataImportThread implements Runnable
       Statement sqlStatement;
       StringBuffer sqlFieldNamesString, sqlValuesString;
       String sqlKeyString;
-      String sqlStatementString;
+      StringBuffer sqlStatementString;
 
       FileReader fileReader;
       BufferedReader bufferedReader;
@@ -261,29 +270,34 @@ class CSVDataImportThread implements Runnable
       String[] lineContent;
 
       MyJSQLView_ProgressBar csvImportProgressBar;
+      DataImportProperties dataImportProperties;
+      String dateFormat;
 
       // Obtain database connection & setting up.
 
       dbConnection = ConnectionManager.getConnection("CSVDataImportThread importCSVFile()");
-      
+
       if (dbConnection == null)
       {
          validImport = false;
          return;
       }
-      
+
       importTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
-      
+
       csvImportProgressBar = new MyJSQLView_ProgressBar("CSV Import To: " + importTable);
 
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
-      
+
       primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
-      tableFields = new Vector <String>();
-      fields = new Vector <String>();
+      tableFields = new Vector<String>();
+      fields = new Vector<String>();
       columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
+
+      dataImportProperties = DBTablesPanel.getDataImportProperties();
+      dateFormat = dataImportProperties.getDateFormat();
 
       fileReader = null;
       bufferedReader = null;
@@ -304,7 +318,7 @@ class CSVDataImportThread implements Runnable
 
          // Only MySQL & PostgreSQL supports.
          if (dataSourceType.equals(ConnectionManager.MYSQL)
-               || dataSourceType.equals(ConnectionManager.POSTGRESQL))
+             || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
          try
@@ -330,6 +344,8 @@ class CSVDataImportThread implements Runnable
             bufferedReader = new BufferedReader(fileReader);
 
             sqlFieldNamesString = new StringBuffer();
+            sqlValuesString = new StringBuffer();
+            sqlStatementString = new StringBuffer();
             fieldNumber = 0;
             line = 1;
 
@@ -363,101 +379,107 @@ class CSVDataImportThread implements Runnable
                   for (int i = 0; i < fieldNumber; i++)
                   {
                      if (csvOption.equals("Insert"))
-                        sqlFieldNamesString.append(identifierQuoteString + lineContent[i] 
-                                               + identifierQuoteString + ", ");
+                        sqlFieldNamesString.append(identifierQuoteString + lineContent[i]
+                                                   + identifierQuoteString + ", ");
                      tableFields.add(parseColumnNameField(lineContent[i]));
                      fields.add(lineContent[i]);
                   }
                   if (csvOption.equals("Insert"))
                   {
-                     sqlFieldNamesString.delete((sqlFieldNamesString.length() - 2), sqlFieldNamesString.length());
+                     sqlFieldNamesString.delete((sqlFieldNamesString.length() - 2),
+                                                sqlFieldNamesString.length());
                      sqlFieldNamesString.append(") VALUES (");
                   }
                }
-               
+
                // Create SQL statement data field content.
                else
                {
                   // Reset strings for each line of data.
-                  sqlValuesString = new StringBuffer();
+                  sqlValuesString.delete(0, sqlValuesString.length());
+                  sqlStatementString.delete(0, sqlStatementString.length());
                   sqlKeyString = "";
 
                   lineContent = separateTokens(currentLine, fieldNumber);
-                  
+
                   for (int i = 0; i < lineContent.length; i++)
                   {
                      columnClass = columnClassHashMap.get(tableFields.get(i));
                      columnType = columnTypeHashMap.get(tableFields.get(i));
-                     //  System.out.println("ColumnClass: " + columnClass + " " + "ColumnType: " + columnType + " " +
-                     //                   lineContent[i]);
+                     // System.out.println("ColumnClass: " + columnClass + " " + "ColumnType: "
+                     // + columnType + " " + lineContent[i]);
 
                      // Make sure and catch all null default entries first.
-                     
+
                      if (lineContent[i].toLowerCase().equals("null")
-                           || lineContent[i].toLowerCase().equals("default"))
+                         || lineContent[i].toLowerCase().equals("default"))
                      {
                         // Do Nothing.
                      }
-                     
+
                      // Just set lineContent with no data to default.
-                     
+
                      else if (lineContent[i].equals(""))
                         lineContent[i] = "default";
-                     
+
                      // All Blob/Bytea, Binary Data Exported as Text
                      // 'Binary' in DataDumpThread for CSV.
-                     
+
                      else if ((columnClass != null && columnType != null)
-                               && ((columnClass.indexOf("String") == -1
-                               && columnType.indexOf("BLOB") != -1) ||
-                         (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
-                         (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                         (columnType.indexOf("RAW") != -1)))
+                              && ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
+                                  || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
+                                  || (columnType.indexOf("BYTEA") != -1)
+                                  || (columnType.indexOf("BINARY") != -1) || (columnType.indexOf("RAW") != -1)))
                      {
                         lineContent[i] = "null";
                      }
-                     
+
                      // MySQL Bit Fields
-                     
-                     else if (dataSourceType.equals(ConnectionManager.MYSQL) &&
-                              columnType != null && columnType.indexOf("BIT") != -1)
+
+                     else if (dataSourceType.equals(ConnectionManager.MYSQL) && columnType != null
+                              && columnType.indexOf("BIT") != -1)
                      {
                         lineContent[i] = "B'" + lineContent[i] + "'";
                      }
-                     
+
                      // PostgreSQL Geometric Fields
-                     
-                     else if (dataSourceType.equals(ConnectionManager.POSTGRESQL) &&
-                              columnClass != null && columnClass.indexOf("geometric") != -1)
+
+                     else if (dataSourceType.equals(ConnectionManager.POSTGRESQL) && columnClass != null
+                              && columnClass.indexOf("geometric") != -1)
                      {
                         lineContent[i] = "'" + lineContent[i] + "'::" + columnType;
                      }
-                     
+
                      // Date, DateTime, & Timestamp Fields
-                     
-                     else if ((columnType != null) && (columnType.equals("DATE") ||
-                                                       columnType.equals("DATETIME") ||
-                                                       columnType.indexOf("TIMESTAMP") != -1))
+
+                     else if ((columnType != null)
+                              && (columnType.equals("DATE") || columnType.equals("DATETIME") || columnType
+                                    .indexOf("TIMESTAMP") != -1))
                      {
                         if (columnType.equals("DATE"))
                         {
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              lineContent[i] = "TO_DATE('" + formatDateString(lineContent[i])
-                                                        + "', 'YYYY-MM-DD')";
+                              lineContent[i] = "TO_DATE('"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  lineContent[i], dateFormat) + "', 'YYYY-MM-DD')";
                            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-                              lineContent[i] = "#" + formatDateString(lineContent[i]) + "#";
+                              lineContent[i] = "#"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  lineContent[i], dateFormat) + "#";
                            else
-                              lineContent[i] = "'" + formatDateString(lineContent[i]) + "'";
+                              lineContent[i] = "'"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  lineContent[i], dateFormat) + "'";
                         }
                         // DateTime & Timestamps.
                         else
                         {
                            int firstSpace;
                            String time;
-                           
+
                            // Try to get the time separated before formatting
                            // the date.
-                           
+
                            if (lineContent[i].indexOf(" ") != -1)
                            {
                               firstSpace = lineContent[i].indexOf(" ");
@@ -466,81 +488,87 @@ class CSVDataImportThread implements Runnable
                            }
                            else
                               time = "";
-                           
+
                            // Process accordingly.
-                           
+
                            // Oracle Timestamps
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
                               if (columnType.equals("TIMESTAMP"))
-                                 lineContent[i] = "TO_TIMESTAMP('" + formatDateString(lineContent[i]) + time
-                                                                + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
-                              
+                                 lineContent[i] = "TO_TIMESTAMP('"
+                                                  + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                     lineContent[i], dateFormat) + time
+                                                  + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
+
                               else if (columnType.equals("TIMESTAMPTZ"))
-                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i]) + time
-                                                                   + "', 'YYYY-MM-DD HH24:MI:SS TZHTZM')";
+                                 lineContent[i] = "TO_TIMESTAMP_TZ('"
+                                                  + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                     lineContent[i], dateFormat) + time
+                                                  + "', 'YYYY-MM-DD HH24:MI:SS TZHTZM')";
                               // TIMESTAMPLTZ
                               else
-                                 lineContent[i] = "TO_TIMESTAMP_TZ('" + formatDateString(lineContent[i])
-                                                                   + time + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM')";
+                                 lineContent[i] = "TO_TIMESTAMP_TZ('"
+                                                  + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                     lineContent[i], dateFormat) + time
+                                                  + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM')";
                            }
                            // MSAccess
                            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-                              lineContent[i] = "#" + formatDateString(lineContent[i]) + time + "#";
+                              lineContent[i] = "#"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  lineContent[i], dateFormat) + time + "#";
                            // All others
                            else
-                              lineContent[i] = "'" + formatDateString(lineContent[i]) + time + "'";
+                              lineContent[i] = "'"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  lineContent[i], dateFormat) + time + "'";
                         }
                      }
-                     
+
                      // Normal Fields
-                     
+
                      else
                      {
-                        lineContent[i] = "'" + lineContent[i] + "'";
+                        // Don't Quote Numeric Values.
+                        if (columnClass != null && columnClass.indexOf("Integer") == -1
+                              && columnClass.indexOf("Long") == -1 && columnClass.indexOf("Float") == -1
+                              && columnClass.indexOf("Double") == -1 && columnClass.indexOf("Byte") == -1
+                              && columnClass.indexOf("BigDecimal") == -1 && columnClass.indexOf("Short") == -1)
+                              
+                           lineContent[i] = "'" + lineContent[i] + "'";
                      }
-                     
+
                      // Now that the content data as been derived create the
                      // appropriate Insert or Update SQL statement.
-                     
+
                      // Insert SQL.
                      if (csvOption.equals("Insert"))
                         sqlValuesString.append(lineContent[i] + ", ");
                      // Update SQL
                      else
                      {
-                        // Remove quotes for numeric fields if MSAccess
-                        // database. This may need to be revisited for
-                        // all databases.
-                        
-                        if (dataSourceType.equals(ConnectionManager.MSACCESS)
-                            && columnClass.toLowerCase().indexOf("string") == -1)
-                           lineContent[i] = lineContent[i].replaceAll("'", "");
-                        
                         // Capture key data for SQL.
                         if (primaryKeys.contains(fields.get(i)))
                         {
                            if (sqlKeyString.equals(""))
                            {
                               sqlKeyString = "WHERE " + identifierQuoteString + fields.get(i)
-                                             + identifierQuoteString + "=" + lineContent[i] 
-                                             + " AND ";
+                                             + identifierQuoteString + "=" + lineContent[i] + " AND ";
                            }
                            else
                            {
-                              sqlKeyString += identifierQuoteString + fields.get(i)
-                                              + identifierQuoteString + "=" + lineContent[i]
-                                              + " AND ";
+                              sqlKeyString += identifierQuoteString + fields.get(i) + identifierQuoteString
+                                              + "=" + lineContent[i] + " AND ";
                            }
                         }
                         // Normal content.
                         else
                            sqlValuesString.append(identifierQuoteString + fields.get(i)
-                                              + identifierQuoteString + "=" + lineContent[i] + ", ");
-                     }   
+                                                  + identifierQuoteString + "=" + lineContent[i] + ", ");
+                     }
                   }
                   // System.out.println(sqlValuesString);
-                  
+
                   // Finishing the Insert or Update SQL statement.
                   if (csvOption.equals("Insert"))
                   {
@@ -557,11 +585,11 @@ class CSVDataImportThread implements Runnable
                         sqlValuesString.append(" " + sqlKeyString);
                   }
 
-                  sqlStatementString = sqlFieldNamesString.toString() + sqlValuesString.toString();
+                  sqlStatementString.append(sqlFieldNamesString.toString() + sqlValuesString.toString());
                   // System.out.println(sqlStatementString);
 
                   // Insert/Update current line's data.
-                  sqlStatement.executeUpdate(sqlStatementString);
+                  sqlStatement.executeUpdate(sqlStatementString.toString());
                }
                csvImportProgressBar.setCurrentValue(line++);
             }
@@ -629,7 +657,7 @@ class CSVDataImportThread implements Runnable
          catch (IOException ioe)
          {
             // Tried
-         }  
+         }
       }
    }
 
@@ -645,7 +673,7 @@ class CSVDataImportThread implements Runnable
       // Class Methods.
       StringTokenizer field;
       StringBuffer columnName;
-      
+
       // Initialize.
       columnName = new StringBuffer();
 
@@ -693,7 +721,7 @@ class CSVDataImportThread implements Runnable
          return firstLetter + capitalizeString.substring(1);
       }
       else
-         return capitalizeString;   
+         return capitalizeString;
    }
 
    //==============================================================
@@ -709,10 +737,10 @@ class CSVDataImportThread implements Runnable
       // Check characters?
       if (delimiter.indexOf("\"") == -1)
          inputLine = inputLine.replaceAll("\"", "");
-      
+
       if (delimiter.indexOf("'") == -1)
          inputLine = inputLine.replaceAll("'", "''");
-      
+
       if (delimiter.indexOf("`") == -1)
          inputLine = inputLine.replaceAll("`", "''");
 
@@ -720,26 +748,7 @@ class CSVDataImportThread implements Runnable
       tokens = inputLine.split(delimiter, limit);
       return tokens;
    }
-   
-   //==============================================================
-   // Class method for converting the input date string into the
-   // required display format. The CVS import panel allows the
-   // hint on how to convert the date field properly. Standard 
-   // Date format for databases is YYYY-MM-dd.
-   //==============================================================
-   
-   private String formatDateString(String inputDateString)
-   {
-      DataImportProperties dataImportProperties;
-      String dateFormat;
-      
-      // Get the current Date import option.
-      dataImportProperties = DBTablesPanel.getDataImportProperties();
-      dateFormat = dataImportProperties.getDateFormat();
-      
-      return MyJSQLView_Utils.convertViewDateString_To_DBDateString(inputDateString, dateFormat);
-   }
-   
+
    //==============================================================
    // Class method to refresh table tab panel.
    //==============================================================
