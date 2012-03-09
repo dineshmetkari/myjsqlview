@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.5 01/11/2012
+// Version 6.6 03/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,9 @@
 //         6.4 Copyright Update.
 //         6.5 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
+//         6.6 Introduced binaryContent in run() to Handle Binary Types to getBytes()
+//             Instead of getString() & Conversion For columnClass.toUpperCase() for
+//             Blob Checks Because HSQL 2.0 is Uppercase for That Data Type.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -142,7 +145,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.5 01/11/2012
+ * @version 6.6 03/09/2012
  */
 
 class DataDumpThread implements Runnable
@@ -302,13 +305,13 @@ class DataDumpThread implements Runnable
                // Blob/Bytea data.
                
                if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
-                   (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+                   (columnClass.toUpperCase().indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                    (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
                    (columnType.indexOf("RAW") != -1))
                {
-                  fieldContent = dbResultSet.getString(i);
+                  Object binaryContent = dbResultSet.getBytes(i);
                   
-                  if (fieldContent != null)
+                  if (binaryContent != null)
                      dumpData = dumpData + "Binary" + dataDelimiter;
                   else
                      dumpData = dumpData + "NULL" + dataDelimiter;
