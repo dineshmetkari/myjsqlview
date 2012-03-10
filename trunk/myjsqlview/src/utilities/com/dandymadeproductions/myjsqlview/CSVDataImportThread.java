@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.3 03/09/2012
+// Version 6.4 03/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,10 @@
 //             StringBuffer. Same Method Removal of Quotes for Numeric Types All Databases.
 //             Removal of Class Method formatDateString and Conversion Done Directly
 //             With MyJSQLView_Utils.convertViewDateString_To_DBDateString().
+//         6.4 Exclusion of the Processing of Array Timestamp Types. Instead Leave
+//             Them As Is, importCSVFile(). Commented Out the Removal of Double Quotes
+//             in Method separateTokens(), Screws Up the Processing of Array, Point,
+//             etc. Types.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -168,7 +172,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.3 03/09/2012
+ * @version 6.4 03/10/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -453,8 +457,9 @@ class CSVDataImportThread implements Runnable
                      // Date, DateTime, & Timestamp Fields
 
                      else if ((columnType != null)
-                              && (columnType.equals("DATE") || columnType.equals("DATETIME") || columnType
-                                    .indexOf("TIMESTAMP") != -1))
+                              && (columnType.equals("DATE") || columnType.equals("DATETIME")
+                                    || (columnType.indexOf("TIMESTAMP") != -1)
+                                        && columnClass.indexOf("Array") == -1))
                      {
                         if (columnType.equals("DATE"))
                         {
@@ -735,8 +740,8 @@ class CSVDataImportThread implements Runnable
       String delimiter = DBTablesPanel.getDataImportProperties().getDataDelimiter();
 
       // Check characters?
-      if (delimiter.indexOf("\"") == -1)
-         inputLine = inputLine.replaceAll("\"", "");
+      //if (delimiter.indexOf("\"") == -1)
+      //   inputLine = inputLine.replaceAll("\"", "");
 
       if (delimiter.indexOf("'") == -1)
          inputLine = inputLine.replaceAll("'", "''");
