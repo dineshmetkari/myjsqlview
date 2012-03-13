@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.0 03/12/2012
+// Version 8.1 03/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -206,6 +206,8 @@
 //             Instances columnNamesString, firstField, & currentTableIncrement in
 //             insertReplace/explicitStatementData(). Change in These Same Methods to
 //             Force the Block Reading of Results Sets for Table Exports by limitIncrement.
+//         8.1 Removed Static From Class Instance limitIncrement & Set in run() With
+//             sqlDataExportProperties.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -237,7 +239,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.0 03/12/2012
+ * @version 8.1 03/12/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -257,11 +259,10 @@ class SQLDatabaseDumpThread implements Runnable
    private TableTabPanel currentTableTabPanel;
 
    private boolean insertReplaceDump, updateDump;
+   private int limitIncrement;
    private DataExportProperties sqlDataExportOptions;
    private BufferedOutputStream filebuff;
    private SQLDatabaseDump_ProgressBar databaseDumpProgressBar;
-   
-   private static int limitIncrement = 10000;
 
    //==============================================================
    // SQLDatabaseDumpThread Constructor.
@@ -304,6 +305,7 @@ class SQLDatabaseDumpThread implements Runnable
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
+      limitIncrement = sqlDataExportOptions.getLimitIncrement();
 
       // Setting up OutputStream
       try
