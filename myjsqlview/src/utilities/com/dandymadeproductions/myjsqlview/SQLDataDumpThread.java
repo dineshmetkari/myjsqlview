@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 6.95 03/12/2012
+// Version 6.96 03/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -285,6 +285,8 @@
 //             Instances columnNamesString, firstField, & currentTableIncrement in
 //             insertReplace/explicitStatementData(). Change in These Same Methods to
 //             Force the Block Reading of Results Sets for Table Exports by limitIncrement.
+//        6.96 Removed Static From Class Instance limitIncrement & Set in Constructor
+//             sqlDataExportProperties.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -317,7 +319,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.95 03/12/2012
+ * @version 6.96 03/12/2012
  */
 
 class SQLDataDumpThread implements Runnable
@@ -337,11 +339,10 @@ class SQLDataDumpThread implements Runnable
    private String[] myJSQLView_Version;
 
    private boolean limits, insertReplaceDump, updateDump;
+   private int limitIncrement;
    private DataExportProperties sqlDataExportOptions;
    private BufferedOutputStream filebuff;
    private MyJSQLView_ProgressBar dumpProgressBar;
-   
-   private static int limitIncrement = 10000;
 
    //==============================================================
    // SQLDataDumpThread Constructor.
@@ -383,6 +384,7 @@ class SQLDataDumpThread implements Runnable
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
+      limitIncrement = sqlDataExportOptions.getLimitIncrement();
 
       // Create the appropriate SQL table name qualifier.
       if (exportedTable.indexOf(".") != -1)
