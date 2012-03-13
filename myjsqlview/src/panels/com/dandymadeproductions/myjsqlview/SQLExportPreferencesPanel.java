@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.3 01/01/2012
+// Version 4.4 03/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,10 @@
 //         4.2 10/01/2011 Added Static Final Default and Other Common Class Instances. Used
 //                        to Setup Instances and Restoring Defaults in actionPerformed().
 //         4.3 01/01/2012 Copyright Update.
+//         4.4 03/12/2012 Implemented Limit Increment. Class Instance limitIncrementSpinner
+//                        Added Along With Setup in Constructor. Addition of ChangeListener
+//                        to Detect Changes in the New Object. get/setSQLExportOptions()
+//                        Updated.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -111,6 +115,8 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *    The SQLExportPreferencesPanel class provides a generic panel
@@ -118,10 +124,10 @@ import javax.swing.*;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.3 01/01/2012
+ * @version 4.4 03/12/2012
  */
 
-class SQLExportPreferencesPanel extends JPanel implements ActionListener
+class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -2687714755497016988L;
@@ -138,6 +144,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    private JComboBox insertReplaceUpdateComboBox;
    private JComboBox insertTypeComboBox, replaceTypeComboBox, updateTypeComboBox;
    private JTextField identifierQuoteTextField;
+   private JSpinner limitIncrementSpinner;
 
    private JButton restoreDefaultsButton, applyButton;
    private String dataSourceType;
@@ -164,6 +171,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    protected static final String PRIORITY_LOW = "Low_Priority";
    protected static final String PRIORITY_DELAYED = "Delayed";
    protected static final String PRIORITY_IGNORE = "Ignore";
+   
+   protected static final int DEFAULT_LIMIT_INCREMENT = 10000;
 
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -177,9 +186,16 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       JPanel identifierQuotePanel;
       JPanel sqlExportPanel, dataContentPanel;
       JPanel insertOptionsPanel, replaceOptionsPanel, updateOptionsPanel;
+      JPanel limitIncrementPanel;
+      
+      SpinnerNumberModel limitIncrementSpinnerModel;
+      final int minimumLimitIncrementSize = 2;
+      final int maxLimitIncrementSize = 100000;
+      final int spinnerLimitIncrementStep = 1000;
 
       JPanel buttonPanel;
-      JLabel warningLabel, tableStructureWarningLabel, identifierQuoteLabel;
+      JLabel warningLabel, tableStructureWarningLabel;
+      JLabel identifierQuoteLabel, limitIncrementLabel;
       
       String resource;
       
@@ -254,7 +270,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       tableDataCheckBox.setFocusPainted(false);
       tableDataCheckBox.addActionListener(this);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 18);
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 10);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(tableDataCheckBox, constraints);
@@ -348,12 +364,45 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       dataContentPanel.add(dataContentOptionsPanel);
 
-      buildConstraints(constraints, 0, 1, 2, 1, 100, 82);
+      buildConstraints(constraints, 0, 1, 2, 1, 100, 80);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(dataContentPanel, constraints);
       dataPanel.add(dataContentPanel);
 
+      // Limit Increment
+      limitIncrementPanel = new JPanel(gridbag);
+      limitIncrementPanel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
+
+      limitIncrementSpinnerModel = new SpinnerNumberModel(DEFAULT_LIMIT_INCREMENT,
+         minimumLimitIncrementSize, maxLimitIncrementSize, spinnerLimitIncrementStep);
+      limitIncrementSpinner = new JSpinner(limitIncrementSpinnerModel);
+      limitIncrementSpinner.addChangeListener(this);
+
+      buildConstraints(constraints, 0, 0, 1, 1, 30, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitIncrementSpinner, constraints);
+      limitIncrementPanel.add(limitIncrementSpinner);
+
+      resource = resourceBundle.getResource("SQLExportPreferencesPanel.label.LimitIcrement");
+      if (resource.equals(""))
+         limitIncrementLabel = new JLabel(" Limit Increment");
+      else
+         limitIncrementLabel = new JLabel(" " + resource);
+
+      buildConstraints(constraints, 1, 0, 1, 1, 70, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitIncrementLabel, constraints);
+      limitIncrementPanel.add(limitIncrementLabel);
+
+      buildConstraints(constraints, 1, 2, 1, 1, 100, 10);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitIncrementPanel, constraints);
+      dataPanel.add(limitIncrementPanel);
+      
       sqlExportPanel.add(dataPanel, BorderLayout.CENTER);
       add(sqlExportPanel, BorderLayout.CENTER);
 
@@ -432,6 +481,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
             replaceTypeComboBox.setEnabled(false);
             updateTypeComboBox.setSelectedItem(PRIORITY_LOW);
             updateTypeComboBox.setEnabled(false);
+            
+            limitIncrementSpinner.setValue(Integer.valueOf(DEFAULT_LIMIT_INCREMENT));
 
             applyButton.setEnabled(true);
          }
@@ -535,6 +586,20 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
          // Something changed so let it be applied.
          applyButton.setEnabled(true);
       }
+   }
+   
+   //==============================================================
+   // ChangeEvent Listener method for determined when the limit
+   // increment spinner has changed so that the apply button can be
+   // enabled.
+   //==============================================================
+
+   public void stateChanged(ChangeEvent evt)
+   {
+      Object panelSource = evt.getSource();
+
+      if (panelSource instanceof JSpinner && applyButton != null)
+         applyButton.setEnabled(true);
    }
 
    //==============================================================
@@ -836,6 +901,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       newDataProperties.setInsertTypeSetting((String) insertTypeComboBox.getSelectedItem());
       newDataProperties.setReplaceTypeSetting((String) replaceTypeComboBox.getSelectedItem());
       newDataProperties.setUpdateTypeSetting((String) updateTypeComboBox.getSelectedItem());
+      
+      newDataProperties.setLimitIncrement(Integer.parseInt(limitIncrementSpinner.getValue().toString()));
 
       return newDataProperties;
    }
@@ -878,5 +945,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       updateTypeComboBox.setSelectedItem(dataProperties.getUpdateTypeSetting());
       updateTypeComboBox.setEnabled(updateTypeCheckBox.isSelected());
+      
+      limitIncrementSpinner.setValue(Integer.valueOf(dataProperties.getLimitIncrement()));
    }
 }
