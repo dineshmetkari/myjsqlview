@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 7.9 01/12/2012
+// Version 8.0 03/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,10 @@
 //         7.8 Copyright Update.
 //         7.9 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
+//         8.0 Introduction of Class Instance limitIncrement. Addition of Class Method
+//             Instances columnNamesString, firstField, & currentTableIncrement in
+//             insertReplace/explicitStatementData(). Change in These Same Methods to
+//             Force the Block Reading of Results Sets for Table Exports by limitIncrement.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -233,7 +237,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 7.9 01/12/2012
+ * @version 8.0 03/12/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -256,6 +260,8 @@ class SQLDatabaseDumpThread implements Runnable
    private DataExportProperties sqlDataExportOptions;
    private BufferedOutputStream filebuff;
    private SQLDatabaseDump_ProgressBar databaseDumpProgressBar;
+   
+   private static int limitIncrement = 10000;
 
    //==============================================================
    // SQLDatabaseDumpThread Constructor.
@@ -528,7 +534,8 @@ class SQLDatabaseDumpThread implements Runnable
 
    private void insertReplaceStatementData(Connection dbConnection)
    {
-      // Class Method Instances
+   // Class Method Instances
+      StringBuffer columnNamesString;
       Iterator<String> columnNamesIterator;
       HashMap<Integer, String> autoIncrementFieldIndexes;
       Vector<Integer> blobFieldIndexes;
@@ -540,9 +547,10 @@ class SQLDatabaseDumpThread implements Runnable
       Vector<Integer> yearIndexes;
       Vector<Integer> arrayIndexes;
       String field, columnClass, columnType;
-      String sqlFieldValuesString;
+      String firstField, sqlFieldValuesString;
       String expressionType;
-      int rowsCount, currentRow, columnsCount;
+      int rowsCount, currentTableIncrement, currentRow;
+      int columnsCount;
 
       String sqlStatementString;
       Statement sqlStatement;
@@ -553,20 +561,19 @@ class SQLDatabaseDumpThread implements Runnable
 
       insertReplaceDump = true;
       sqlFieldValuesString = (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase()
-                              + sqlDataExportOptions.getType().toUpperCase() + "INTO " 
-                              + schemaTableName + " (");
+                              + sqlDataExportOptions.getType().toUpperCase() 
+                              + "INTO " + schemaTableName + " (");
 
       if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT"))
          expressionType = sqlDataExportOptions.getInsertExpression();
       else
          expressionType = sqlDataExportOptions.getReplaceExpression();
 
-      // Obtain the table fields and obtain list of
-      // fields that are blob data while at the same
-      // time begin creating the data select SQLStatement.
+      // Obtain the table fields and obtain list of specific
+      // fields that need special handling.
 
       columnsCount = 0;
-      sqlStatementString = "SELECT ";
+      columnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
       autoIncrementFieldIndexes = new HashMap <Integer, String>();
       blobFieldIndexes = new Vector <Integer>();
@@ -586,7 +593,7 @@ class SQLDatabaseDumpThread implements Runnable
          // System.out.println("field:" + field + " class:" + columnClass +
          //                   "type:" + columnType);
 
-         // Save the index of autoIncrement field.
+         // Save the index of autoIncrement entries.
          if (currentTableTabPanel.getAutoIncrementHashMap().containsKey(field))
          {
             if (dataSourceType.equals(ConnectionManager.ORACLE))
@@ -612,7 +619,7 @@ class SQLDatabaseDumpThread implements Runnable
                bitFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
-         // Save the indox of TimeStamp Fields.
+         // Save the index of TimeStamp Fields.
          if (columnType.indexOf("TIMESTAMP") != -1)
          {
             timeStampIndexes.add(Integer.valueOf(columnsCount + 1));
@@ -654,25 +661,21 @@ class SQLDatabaseDumpThread implements Runnable
          if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              columnType.equals("TIMESTAMPLTZ"))
          {
-            sqlStatementString += "TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
-                                  + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", ";
+            columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                       + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
+                                       + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                       + dbIdentifierQuoteString + ", ");
          }
          else
-            sqlStatementString += dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", ";
+            columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+                                       + dbIdentifierQuoteString + ", ");
          sqlFieldValuesString += (identifierQuoteString + tableColumnNames.get(field) 
                                  + identifierQuoteString + ", ");
 
          columnsCount++;
       }
-
-      // Finishing creating the Select statement to retrieve data.
-
-      sqlStatementString = sqlStatementString.substring(0, sqlStatementString.length() - 2);
-      sqlStatementString += " FROM " + dbSchemaTableName;
-      //System.out.println(sqlStatementString);
+      columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
+      firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
 
       // Do an initial dump of data created so far.
 
@@ -682,7 +685,18 @@ class SQLDatabaseDumpThread implements Runnable
 
       dumpChunkOfData(dumpData);
       dumpData = "";
+      
+      // Collect the row count of the table and setting
+      // up a progress bar for tracking/canceling.
+      
+      rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      
+      currentTableIncrement = 0;
+      currentRow = 0;
 
+      // Start a progress bar for tracking/canceling.
+      databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
+      
       // Ok now ready so beginning by connecting to database for
       // data and proceeding with building the dump data.
       try
@@ -690,249 +704,264 @@ class SQLDatabaseDumpThread implements Runnable
          sqlStatement = dbConnection.createStatement();
 
          // Setting up to begin insert statements.
-         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
-         currentRow = 0;
-
-         // Start the table progress bar.
-         databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
-         
-         rs = sqlStatement.executeQuery(sqlStatementString);
-
-         // Begin the creation of insert statements.
-         while (rs.next() && !databaseDumpProgressBar.isCanceled())
+         do
          {
-            databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), currentRow++);
-
-            // SQL Singular Statement
-            if (expressionType.equals("Singular"))
-               dumpData = dumpData + "(";
-            // SQL Plural Statement
+            // Finishing creating the Select statement to retrieve data.
+            // Oracle
+            if (dataSourceType.equals(ConnectionManager.ORACLE))
+                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
+                + "AS dmprownumber, " + columnNamesString.toString() + " "
+                + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
+                + (currentTableIncrement + 1) + " AND " + (currentTableIncrement + limitIncrement);
             else
-               dumpData = dumpData + ("\n(");
-
-            for (int i = 1; i <= columnsCount; i++)
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                     + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
+                                     + currentTableIncrement;
+            // System.out.println(sqlStatementString);
+            
+            rs = sqlStatement.executeQuery(sqlStatementString);
+            
+            // Begin the creation of insert statements.
+            while (rs.next() && !databaseDumpProgressBar.isCanceled())
             {
-               // System.out.print(i + " ");
+               databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""),
+                                                                currentRow++);
 
-               // Determining binary types and acting appropriately.
-               if (blobFieldIndexes.contains(Integer.valueOf(i)))
-               {
-                  byte[] theBytes = rs.getBytes(i);
-
-                  if (theBytes != null)
-                  {
-                     if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-                        dumpData = dumpData + "E'";
-                     else if (dataSourceType.equals(ConnectionManager.HSQL))
-                        dumpData = dumpData + "'";
-                     else if (dataSourceType.equals(ConnectionManager.HSQL2))
-                        dumpData = dumpData + "x'";
-                     else if (dataSourceType.equals(ConnectionManager.ORACLE))
-                        dumpData = dumpData + "HEXTORAW('";
-                     else if (dataSourceType.equals(ConnectionManager.SQLITE))
-                        dumpData = dumpData + "x'";
-                     else
-                     {
-                        if (theBytes.length != 0)
-                           dumpData = dumpData + "0x";
-                        else
-                           dumpData = dumpData + "''";
-                     }
-
-                     // Go convert to hexadecimal/octal values
-                     // and dump data as we go for blob/bytea.
-                     dumpBinaryData(theBytes);
-                  }
-                  else
-                     dumpData = dumpData + "NULL, ";
-               }
-               // Regular Fields
+               // SQL Singular Statement
+               if (expressionType.equals("Singular"))
+                  dumpData = dumpData + "(";
+               // SQL Plural Statement
                else
-               {
-                  // Check for an AutoIncrement
-                  if (autoIncrementFieldIndexes.containsKey(Integer.valueOf(i))
-                      && sqlDataExportOptions.getAutoIncrement())
-                  {
-                     if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-                     {
-                        schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                        tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
-                                                               identifierQuoteString, "");
+                  dumpData = dumpData + ("\n(");
 
-                        dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
-                                   + autoIncrementFieldIndexes.get(Integer.valueOf(i)) + "_seq\"'), ";
-                     }
-                     else if (dataSourceType.equals(ConnectionManager.ORACLE))
+               for (int i = 1; i <= columnsCount; i++)
+               {
+                  // System.out.print(i + " ");
+
+                  // Determining binary types and acting appropriately.
+                  if (blobFieldIndexes.contains(Integer.valueOf(i)))
+                  {
+                     byte[] theBytes = rs.getBytes(i);
+
+                     if (theBytes != null)
                      {
-                        dumpData = dumpData + identifierQuoteString
-                                   + autoIncrementFieldIndexes.get(Integer.valueOf(i)) 
-                                   + identifierQuoteString + ".NEXTVAL, ";
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                           dumpData = dumpData + "E'";
+                        else if (dataSourceType.equals(ConnectionManager.HSQL))
+                           dumpData = dumpData + "'";
+                        else if (dataSourceType.equals(ConnectionManager.HSQL2))
+                           dumpData = dumpData + "x'";
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
+                           dumpData = dumpData + "HEXTORAW('";
+                        else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                           dumpData = dumpData + "x'";
+                        else
+                        {
+                           if (theBytes.length != 0)
+                              dumpData = dumpData + "0x";
+                           else
+                              dumpData = dumpData + "''";
+                        }
+
+                        // Go convert to hexadecimal/octal values
+                        // and dump data as we go for blob/bytea.
+                        dumpBinaryData(theBytes);
                      }
                      else
                         dumpData = dumpData + "NULL, ";
                   }
+                  // Regular Fields
                   else
                   {
-                     // Check for a TimeStamp
-                     if (timeStampIndexes.contains(Integer.valueOf(i)) && sqlDataExportOptions.getTimeStamp())
+                     // Check for an AutoIncrement
+                     if (autoIncrementFieldIndexes.containsKey(Integer.valueOf(i))
+                         && sqlDataExportOptions.getAutoIncrement())
                      {
-                        if (arrayIndexes.contains(Integer.valueOf(i)))
-                           dumpData = dumpData + "'{NOW()}', ";
-                        else
+                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                         {
-                           if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              dumpData = dumpData + "SYSTIMESTAMP, ";
-                           else
-                              dumpData = dumpData + "NOW(), ";
-                        }
-                     }
+                           schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
+                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                                  identifierQuoteString, "");
 
-                     // Check for Oracle TimeStamp(TZ)
-                     else if (oracleTimeStamp_TZIndexes.contains(Integer.valueOf(i))
-                              && !sqlDataExportOptions.getTimeStamp())
-                     {
-                        Object currentData = rs.getTimestamp(i);
-                        
-                        if (currentData != null)
-                           dumpData = dumpData + "TO_TIMESTAMP('" + currentData
-                                      + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
+                           dumpData = dumpData + "nextval('" + schemaName + tableName + "_"
+                                      + autoIncrementFieldIndexes.get(Integer.valueOf(i)) + "_seq\"'), ";
+                        }
+                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
+                        {
+                           dumpData = dumpData + identifierQuoteString
+                                      + autoIncrementFieldIndexes.get(Integer.valueOf(i)) 
+                                      + identifierQuoteString + ".NEXTVAL, ";
+                        }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
-
-                     // Check for a Date
-                     else if (dateIndexes.contains(Integer.valueOf(i)))
+                     else
                      {
-                        if (dataSourceType.equals(ConnectionManager.ORACLE))
+                        // Check for a TimeStamp
+                        if (timeStampIndexes.contains(Integer.valueOf(i)) && sqlDataExportOptions.getTimeStamp())
                         {
-                           java.sql.Date dateValue = rs.getDate(i);
+                           if (arrayIndexes.contains(Integer.valueOf(i)))
+                              dumpData = dumpData + "'{NOW()}', ";
+                           else
+                           {
+                              if (dataSourceType.equals(ConnectionManager.ORACLE))
+                                 dumpData = dumpData + "SYSTIMESTAMP, ";
+                              else
+                                 dumpData = dumpData + "NOW(), ";
+                           }
+                        }
+
+                        // Check for Oracle TimeStamp(TZ)
+                        else if (oracleTimeStamp_TZIndexes.contains(Integer.valueOf(i))
+                                 && !sqlDataExportOptions.getTimeStamp())
+                        {
+                           Object currentData = rs.getTimestamp(i);
                            
-                           if (dateValue != null)
-                              dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
+                           if (currentData != null)
+                              dumpData = dumpData + "TO_TIMESTAMP('" + currentData
+                                         + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
                            else
                               dumpData = dumpData + "NULL, ";
                         }
-                        else
-                        {
-                           String dateString = rs.getString(i);
-                           
-                           if (dateString != null)
-                              dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
-                           else
-                              dumpData = dumpData + "NULL, ";     
-                        }
-                     }
 
-                     // Check for a Year
-                     else if (yearIndexes.contains(Integer.valueOf(i)))
-                     {
-                        // Fix for a bug in connectorJ, I think, that returns
-                        // a whole date YYYY-MM-DD. Don't know what else
-                        // to do it hangs my imports, but works with
-                        // mysql console.
-                        
-                        String yearValue = rs.getString(i);
-                        
-                        if (yearValue != null)
+                        // Check for a Date
+                        else if (dateIndexes.contains(Integer.valueOf(i)))
                         {
-                           if (yearValue.length() > 4)
-                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
-                           else
-                              dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
-                        }
-                        else
-                           dumpData = dumpData + "NULL, ";
-                     }
-
-                     // Check for Bit fields.
-                     else if (bitFieldIndexes.contains(Integer.valueOf(i)))
-                     {
-                        String bitValue = rs.getString(i);
-                        
-                        if (bitValue != null)
-                        {
-                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
-                               || dataSourceType.equals(ConnectionManager.HSQL2))
+                           if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
-                              if (arrayIndexes.contains(Integer.valueOf(i)))
-                                 dumpData = dumpData + "'" + bitValue + "', ";
+                              java.sql.Date dateValue = rs.getDate(i);
+                              
+                              if (dateValue != null)
+                                 dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
                               else
-                                 dumpData = dumpData + "B'" + bitValue + "', ";
+                                 dumpData = dumpData + "NULL, ";   
                            }
                            else
                            {
-                              try
-                              {
-                                 dumpData = dumpData + "B'"
-                                            + Integer.toBinaryString(Integer.parseInt(bitValue))
-                                            + "', ";
-                              }
-                              catch (NumberFormatException e)
-                              {
-                                 dumpData = dumpData + "B'0', ";
-                              }
+                              String dateString = rs.getString(i);
+                              
+                              if (dateString != null)
+                                 dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
+                              else
+                                 dumpData = dumpData + "NULL, ";    
                            }
                         }
-                        else
-                           dumpData = dumpData + "NULL, ";
-                     }
 
-                     // All other fields
-                     else
-                     {
-                        // Do not remove. Oracle LONG Types, which are
-                        // processed here, only alows the resultSet get once.
-
-                        String contentString = rs.getString(i);
-
-                        if (contentString != null)
+                        // Check for a Year
+                        else if (yearIndexes.contains(Integer.valueOf(i)))
                         {
-                           // Check for Oracle TimeStampLTZ
-                           if (oracleTimeStamp_LTZIndexes.contains(Integer.valueOf(i)) &&
-                               !sqlDataExportOptions.getTimeStamp())
-                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
-                                         + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                           // Fix for a bug in connectorJ, I think, that returns
+                           // a whole date YYYY-MM-DD. Don't know what else
+                           // to do it hangs my imports, but works with
+                           // mysql console.
+                           
+                           String yearValue = rs.getString(i);
+                           
+                           if (yearValue != null)
+                           {
+                              if (yearValue.length() > 4)
+                                 dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
+                              else
+                                 dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
+                           }
                            else
-                              dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
+                              dumpData = dumpData + "NULL, ";
                         }
+
+                        // Check for Bit fields.
+                        else if (bitFieldIndexes.contains(Integer.valueOf(i)))
+                        {
+                           String bitValue = rs.getString(i);
+                           
+                           if (bitValue != null)
+                           {
+                              if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                                  || dataSourceType.equals(ConnectionManager.HSQL2))
+                              {
+                                 if (arrayIndexes.contains(Integer.valueOf(i)))
+                                    dumpData = dumpData + "'" + bitValue + "', ";
+                                 else
+                                    dumpData = dumpData + "B'" + bitValue + "', ";
+                              }
+                              else
+                              {
+                                 try
+                                 {
+                                    dumpData = dumpData + "B'"
+                                               + Integer.toBinaryString(Integer.parseInt(bitValue))
+                                               + "', ";
+                                 }
+                                 catch (NumberFormatException e)
+                                 {
+                                    dumpData = dumpData + "B'0', ";
+                                 }
+                              }
+                           }
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
+
+                        // All other fields
                         else
-                           dumpData = dumpData + "NULL, ";
+                        {
+                           // Do not remove. Oracle LONG Types, which are
+                           // processed here, only alows the resultSet get once.
+
+                           String contentString = rs.getString(i);
+
+                           if (contentString != null)
+                           {
+                              // Check for Oracle TimeStampLTZ
+                              if (oracleTimeStamp_LTZIndexes.contains(Integer.valueOf(i)) &&
+                                  !sqlDataExportOptions.getTimeStamp())
+                                 dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
+                                            + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                              else
+                                 dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
+                           }
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
                      }
                   }
                }
-            }
-            dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+               dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
 
-            // SQL Singular Statement
-            if (expressionType.equals("Singular"))
-               dumpData = dumpData + ");\n";
-            // SQL Plural Statement
-            else
-               dumpData = dumpData + "),";
-
-            if (currentRow >= rowsCount)
-            {
                // SQL Singular Statement
                if (expressionType.equals("Singular"))
-                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+                  dumpData = dumpData + ");\n";
                // SQL Plural Statement
                else
-                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1);
-               dumpChunkOfData(dumpData);
-               dumpData = "";
-               currentRow = 0;
-            }
-            else
-            {
-               dumpChunkOfData(dumpData);
-               // SQL Singular Statement Resetup
-               if (expressionType.equals("Singular"))
-                  dumpData = sqlFieldValuesString;
-               // SQL Plural Statement
-               else
+                  dumpData = dumpData + "),";
+
+               if (currentRow >= rowsCount)
+               {
+                  // SQL Singular Statement
+                  if (expressionType.equals("Singular"))
+                     dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+                  // SQL Plural Statement
+                  else
+                     dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1);
+                  dumpChunkOfData(dumpData);
                   dumpData = "";
+                  currentRow = 0;
+               }
+               else
+               {
+                  dumpChunkOfData(dumpData);
+                  // SQL Singular Statement Resetup
+                  if (expressionType.equals("Singular"))
+                     dumpData = sqlFieldValuesString;
+                  // SQL Plural Statement
+                  else
+                     dumpData = "";
+               }
             }
+            currentTableIncrement += limitIncrement;
          }
+         while (currentTableIncrement < rowsCount && !databaseDumpProgressBar.isCanceled());
+
          // Closing out
          rs.close();
          sqlStatement.close();
@@ -956,10 +985,11 @@ class SQLDatabaseDumpThread implements Runnable
       StringBuffer columnNamesString;
       Iterator<String> columnNamesIterator;
       String field, columnClass, columnType;
+      String firstField;
       
       Vector<String> keys;
       StringBuffer keyStringStatement;
-      int rowsCount, currentRow;
+      int rowsCount, currentTableIncrement, currentRow;
 
       String sqlStatementString;
       Statement sqlStatement;
@@ -974,7 +1004,7 @@ class SQLDatabaseDumpThread implements Runnable
 
       // Setting up the initial dump data string with insert/replace/update,
       // type, and table.
-
+      
       dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
       dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
 
@@ -994,7 +1024,6 @@ class SQLDatabaseDumpThread implements Runnable
       // Obtain the table fields and create select statement
       // to obtain the data.
 
-      sqlStatementString = "SELECT ";
       columnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
 
@@ -1015,13 +1044,23 @@ class SQLDatabaseDumpThread implements Runnable
                                   + dbIdentifierQuoteString + ", ");
       }
       columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
-      sqlStatementString += columnNamesString.toString() + " FROM " + dbSchemaTableName;
-      // System.out.println(sqlStatementString);
-
+      firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
+      
       // Do an initial dump of data created so far.
       dumpChunkOfData(dumpData);
       dumpData = "";
+      
+      // Collect the row count of the table and setting
+      // up a progress bar for tracking/canceling.
+      
+      rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      
+      currentTableIncrement = 0;
+      currentRow = 0;
 
+      // Start a progress bar for tracking/canceling.
+      databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
+      
       // Ok now ready so beginning by connecting to database for
       // data and proceeding with building the dump data.
       try
@@ -1029,299 +1068,316 @@ class SQLDatabaseDumpThread implements Runnable
          sqlStatement = dbConnection.createStatement();
 
          // Setting up to begin update statements.
-         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
-         currentRow = 0;
-         
-         // Start the table progress bar.
-         databaseDumpProgressBar.setTableDumpTaskLength(rowsCount);
-
-         rs = sqlStatement.executeQuery(sqlStatementString);
-
-         // Begin the creation of statements.
-         while (rs.next() && !databaseDumpProgressBar.isCanceled())
+         do
          {
-            databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), currentRow++);
-            columnNamesIterator = columnNameFields.iterator();
-
-            // Cycle through each field and set value.
-            while (columnNamesIterator.hasNext())
+            // Oracle
+            if (dataSourceType.equals(ConnectionManager.ORACLE))
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) "
+                                    + "AS dmprownumber, " + columnNamesString.toString() + " "
+                                    + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
+                                    + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                    + limitIncrement);
+            else
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
+                                    + currentTableIncrement;
+           
+            // System.out.println(sqlStatementString);
+            
+            rs = sqlStatement.executeQuery(sqlStatementString);
+            
+            // Begin the creation of statements.
+            while (rs.next() && !databaseDumpProgressBar.isCanceled())
             {
-               field = (String) columnNamesIterator.next();
-               columnClass = tableColumnClassHashMap.get(field);
-               columnType = tableColumnTypeHashMap.get(field);
-               // System.out.println("field:" + field + " class:" + columnClass
-               //                   + " type:" + columnType);
+               databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""),
+                                                                currentRow++);
+               columnNamesIterator = columnNameFields.iterator();
 
-               // Setting up WHERE Statement for Update Dump.
-               if (keys.contains(tableColumnNames.get(field)) && updateDump)
+               // Cycle through each field and set value.
+               while (columnNamesIterator.hasNext())
                {
-                  keyStringStatement.append(identifierQuoteString + tableColumnNames.get(field) 
-                                            + identifierQuoteString + "=");
+                  field = (String) columnNamesIterator.next();
+                  columnClass = tableColumnClassHashMap.get(field);
+                  columnType = tableColumnTypeHashMap.get(field);
+                  // System.out.println("field:" + field + " class:" + columnClass
+                  //                   + " type:" + columnType);
 
-                  String keyValue = rs.getString(tableColumnNames.get(field));
-                  
-                  if (keyValue != null)
+                  // Setting up WHERE Statement for Update Dump.
+                  if (keys.contains(tableColumnNames.get(field)) && updateDump)
                   {
-                     // Character data gets single quotes for some databases,
-                     // not numbers though.
+                     keyStringStatement.append(identifierQuoteString + tableColumnNames.get(field) 
+                                               + identifierQuoteString + "=");
                      
-                     if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                     String keyValue = rs.getString(tableColumnNames.get(field));
+
+                     if (keyValue != null)
                      {
-                        if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
-                           keyStringStatement.append("'" + keyValue + "' AND ");
-                        else
-                           keyStringStatement.append(keyValue + " AND ");     
-                     }
-                     else
-                        keyStringStatement.append("'" + keyValue + "' AND ");
-                  }
-                  else
-                     keyStringStatement.append("NULL AND ");
-               }
-               else
-               {
-                  dumpData = dumpData + identifierQuoteString + (tableColumnNames.get(field))
-                             + identifierQuoteString + "=";
-
-                  // Blob/Bytea/Binary data adding
-                  if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("RAW") != -1))
-                  {
-                     byte[] theBytes = rs.getBytes(tableColumnNames.get(field));
-
-                     if (theBytes != null)
-                     {
-                        // Let Oracle & SQLite LOBs fall through if not update
-                        // since an explicit statement is not supported. Allows
-                        // to convert these to MySQL compatible dump.
-
-                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-                           dumpData = dumpData + "E'";
-                        else if (dataSourceType.equals(ConnectionManager.HSQL))
-                           dumpData = dumpData + "'";
-                        else if (dataSourceType.equals(ConnectionManager.HSQL2))
-                           dumpData = dumpData + "x'";
-                        else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
-                           dumpData = dumpData + "HEXTORAW('";
-                        else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
-                           dumpData = dumpData + "x'";
-                        else
+                        // Character data gets single quotes for some databases,
+                        // not numbers though.
+                        
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
                         {
-                           if (theBytes.length != 0)
-                              dumpData = dumpData + "0x";
+                           if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
+                              keyStringStatement.append("'" + keyValue + "' AND ");
                            else
-                              dumpData = dumpData + "''";
+                              keyStringStatement.append(keyValue + " AND ");   
                         }
-
-                        // Go convert to hexadecimal/octal values
-                        // and dump data as we go for blob/bytea.
-                        dumpBinaryData(theBytes);
+                        else
+                           keyStringStatement.append("'" + keyValue + "' AND ");    
                      }
                      else
-                        dumpData = dumpData + "NULL, ";
+                        keyStringStatement.append("NULL AND ");
                   }
-                  // Normal field
                   else
                   {
-                     // Setting Auto-Increment Fields
-                     if (currentTableTabPanel.getAutoIncrementHashMap().containsKey(field)
-                         && sqlDataExportOptions.getAutoIncrement())
-                     {
-                        if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-                        {
-                           schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
-                           tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
-                                                                  identifierQuoteString, "");
+                     dumpData = dumpData + identifierQuoteString + (tableColumnNames.get(field))
+                                + identifierQuoteString + "=";
 
-                           dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
-                                      + "_seq\"'), ";
-                        }
-                        else if (dataSourceType.equals(ConnectionManager.ORACLE))
+                     // Blob/Bytea/Binary data adding
+                     if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+                         (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+                         (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
+                         (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("RAW") != -1))
+                     {
+                        byte[] theBytes = rs.getBytes(tableColumnNames.get(field));
+
+                        if (theBytes != null)
                         {
-                           dumpData = dumpData
-                                      + identifierQuoteString
-                                      + DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field) 
-                                      + identifierQuoteString + ".NEXTVAL, ";
+                           // Let Oracle & SQLite LOBs fall through if not update
+                           // since an explicit statement is not supported. Allows
+                           // to convert these to MySQL compatible dump.
+
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                              dumpData = dumpData + "E'";
+                           else if (dataSourceType.equals(ConnectionManager.HSQL))
+                              dumpData = dumpData + "'";
+                           else if (dataSourceType.equals(ConnectionManager.HSQL2))
+                              dumpData = dumpData + "x'";
+                           else if (dataSourceType.equals(ConnectionManager.ORACLE) && updateDump)
+                              dumpData = dumpData + "HEXTORAW('";
+                           else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
+                              dumpData = dumpData + "x'";
+                           else
+                           {
+                              if (theBytes.length != 0)
+                                 dumpData = dumpData + "0x";
+                              else
+                                 dumpData = dumpData + "''";
+                           }
+
+                           // Go convert to hexadecimal/octal values
+                           // and dump data as we go for blob/bytea.
+                           dumpBinaryData(theBytes);
                         }
                         else
                            dumpData = dumpData + "NULL, ";
                      }
-
-                     // Setting TimeStamp Fields
-                     else if (columnType.indexOf("TIMESTAMP") != -1 && sqlDataExportOptions.getTimeStamp())
+                     // Normal field
+                     else
                      {
-                        if (columnType.indexOf("_") != -1)
-                           dumpData = dumpData + "'{NOW()}'. ";
-                        else
+                        // Setting Auto-Increment Fields
+                        if (currentTableTabPanel.getAutoIncrementHashMap()
+                              .containsKey(field)
+                            && sqlDataExportOptions.getAutoIncrement())
+                        {
+                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                           {
+                              schemaName = schemaTableName.substring(0, schemaTableName.indexOf(".") + 2);
+                              tableName = (schemaTableName.substring(schemaTableName.indexOf(".") + 1)).replaceAll(
+                                                                     identifierQuoteString, "");
+
+                              dumpData = dumpData + "nextval('" + schemaName + tableName + "_" + field
+                                         + "_seq\"'), ";
+                           }
+                           else if (dataSourceType.equals(ConnectionManager.ORACLE))
+                           {
+                              dumpData = dumpData
+                                         + identifierQuoteString
+                                         + currentTableTabPanel.getAutoIncrementHashMap().get(field)
+                                         + identifierQuoteString + ".NEXTVAL, ";
+                           }
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
+
+                        // Setting TimeStamp Fields
+                        else if (columnType.indexOf("TIMESTAMP") != -1 && sqlDataExportOptions.getTimeStamp())
+                        {
+                           if (columnType.indexOf("_") != -1)
+                              dumpData = dumpData + "'{NOW()}'. ";
+                           else
+                           {
+                              if (dataSourceType.equals(ConnectionManager.ORACLE))
+                                 dumpData = dumpData + "SYSTIMESTAMP, ";
+                              else
+                                 dumpData = dumpData + "NOW(), ";
+                           }
+                        }
+
+                        // Setting Oracle TimeStamp(TZ)
+                        else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")) &&
+                                 dataSourceType.equals(ConnectionManager.ORACLE) &&
+                                 !sqlDataExportOptions.getTimeStamp())
+                        {
+                           Object currentData = rs.getTimestamp(tableColumnNames.get(field));
+                           
+                           if (currentData != null)
+                              dumpData = dumpData + "TO_TIMESTAMP('" + currentData
+                                         + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
+
+                        // Setting Date Fields
+                        else if (columnType.equals("DATE"))
                         {
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
-                              dumpData = dumpData + "SYSTIMESTAMP, ";
-                           else
-                              dumpData = dumpData + "NOW(), ";
-                        }
-                     }
-
-                     // Setting Oracle TimeStamp(TZ)
-                     else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")) &&
-                              dataSourceType.equals(ConnectionManager.ORACLE) &&
-                              !sqlDataExportOptions.getTimeStamp())
-                     {
-                        Object currentData = rs.getTimestamp(tableColumnNames.get(field));
-                        
-                        if (currentData != null)
-                           dumpData = dumpData + "TO_TIMESTAMP('" + currentData
-                                      + "', 'YYYY-MM-DD HH24:MI:SS:FF'), ";
-                        else
-                           dumpData = dumpData + "NULL, ";
-                     }
-
-                     // Setting Date Fields
-                     else if (columnType.equals("DATE"))
-                     {
-                        if (dataSourceType.equals(ConnectionManager.ORACLE))
-                        {
-                           java.sql.Date dateValue = rs.getDate(tableColumnNames.get(field));
-                           
-                           if (dateValue != null)
-                              dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
-                           else
-                              dumpData = dumpData + "NULL, ";   
-                        }
-                        else
-                        {
-                           String dateString = rs.getString(tableColumnNames.get(field));
-                           
-                           if (dateString != null)
-                              dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
-                           else
-                              dumpData = dumpData + "NULL, ";    
-                        }
-                     }
-
-                     // Fix for a bug in connectorJ, I think, that returns
-                     // a whole date YYYY-MM-DD. Don't know what else
-                     // to do it hangs my imports, but works with
-                     // mysql console.
-                     else if (columnType.equals("YEAR"))
-                     {
-                        String yearValue = rs.getString(tableColumnNames.get(field));
-                        
-                        if (yearValue != null)
-                        {
-                           if (yearValue.length() > 4)
-                              dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
-                           else
-                              dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
-                        }
-                        else
-                           dumpData = dumpData + "NULL, ";
-                     }
-
-                     // Setting Bit Fields
-                     else if (columnType.indexOf("BIT") != -1)
-                     {
-                        String bitValue = rs.getString(tableColumnNames.get(field));
-                        
-                        if (bitValue != null)
-                        {
-                           if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
-                               || dataSourceType.equals(ConnectionManager.HSQL2))
                            {
-                              if (columnType.indexOf("_") != -1)
-                                 dumpData = dumpData + "'" + bitValue + "', ";
+                              java.sql.Date dateValue = rs.getDate(tableColumnNames.get(field));
+                              
+                              if (dateValue != null)
+                                 dumpData = dumpData + "TO_DATE('" + dateValue + "', 'YYYY-MM-DD'), ";
                               else
-                                 dumpData = dumpData + "B'" + bitValue + "', ";
-                           }
-                           else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-                           {
-                              dumpData = dumpData + "'" + bitValue + "', ";
+                                 dumpData = dumpData + "NULL, ";   
                            }
                            else
                            {
-                              try
-                              {
-                                 dumpData = dumpData + "B'"
-                                            + Integer.toBinaryString(Integer.parseInt(bitValue)) + "', ";
-                              }
-                              catch (NumberFormatException e)
-                              {
-                                 dumpData = dumpData + "B'0', ";
-                              }
+                              String dateString = rs.getString(tableColumnNames.get(field));
+                              
+                              if (dateString != null)
+                                 dumpData = dumpData + "'" + addEscapes(dateString) + "', ";
+                              else
+                                 dumpData = dumpData + "NULL, ";    
                            }
                         }
-                        else
-                           dumpData = dumpData + "NULL, ";
-                     }
 
-                     // All other fields
-                     else
-                     {
-                        // Do not remove. Oracle LONG Types, which are
-                        // processed here, only alows the resultSet get once.
-                        // Oh, Oracle doesn't support the explicit INSERT,
-                        // but what the hell maybe someone will use to export
-                        // from Oracle to import into a MySQL database.
-
-                        String contentString = rs.getString(tableColumnNames.get(field));
-
-                        if (contentString != null)
+                        // Fix for a bug in connectorJ, I think, that returns
+                        // a whole date YYYY-MM-DD. Don't know what else
+                        // to do it hangs my imports, but works with
+                        // mysql console.
+                        else if (columnType.equals("YEAR"))
                         {
-                           if (columnType.equals("TIMESTAMPLTZ") &&
-                               dataSourceType.equals(ConnectionManager.ORACLE))
-                              dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
-                                         + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                           String yearValue = rs.getString(tableColumnNames.get(field));
+                           
+                           if (yearValue != null)
+                           {
+                              if (yearValue.length() > 4)
+                                 dumpData = dumpData + "'" + addEscapes(yearValue.substring(0, 4)) + "', ";
+                              else
+                                 dumpData = dumpData + "'" + addEscapes(yearValue) + "', ";
+                           }
                            else
-                              dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
+                              dumpData = dumpData + "NULL, ";
                         }
+
+                        // Setting Bit Fields
+                        else if (columnType.indexOf("BIT") != -1)
+                        {
+                           String bitValue = rs.getString(tableColumnNames.get(field));
+                           
+                           if (bitValue != null)
+                           {
+                              if (dataSourceType.equals(ConnectionManager.POSTGRESQL)
+                                  || dataSourceType.equals(ConnectionManager.HSQL2))
+                              {
+                                 if (columnType.indexOf("_") != -1)
+                                    dumpData = dumpData + "'" + bitValue + "', ";
+                                 else
+                                    dumpData = dumpData + "B'" + bitValue + "', ";
+                              }
+                              else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                              {
+                                 dumpData = dumpData + "'" + bitValue + "', ";
+                              }
+                              else
+                              {
+                                 try
+                                 {
+                                    dumpData = dumpData + "B'"
+                                               + Integer.toBinaryString(Integer.parseInt(bitValue)) + "', ";
+                                 }
+                                 catch (NumberFormatException e)
+                                 {
+                                    dumpData = dumpData + "B'0', ";
+                                 }
+                              }
+                           }
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
+
+                        // All other fields
                         else
-                           dumpData = dumpData + "NULL, ";
+                        {
+                           // Do not remove. Oracle LONG Types, which are
+                           // processed here, only alows the resultSet get once.
+                           // Oh, Oracle doesn't support the explicit INSERT,
+                           // but what the hell maybe someone will use to export
+                           // from Oracle to import into a MySQL database.
+
+                           String contentString = rs.getString(tableColumnNames.get(field));
+
+                           if (contentString != null)
+                           {
+                              if (columnType.equals("TIMESTAMPLTZ") &&
+                                  dataSourceType.equals(ConnectionManager.ORACLE))
+                                 dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
+                                            + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                              else
+                                 dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
+                           }
+                           else
+                              dumpData = dumpData + "NULL, ";
+                        }
                      }
                   }
                }
-            }
 
-            // Creating end of extended SQL statement and
-            // setting up for the next as needed.
+               // Creating end of extended SQL statement and
+               // setting up for the next as needed.
 
-            if (currentRow < rowsCount)
-            {
-               dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
-
-               if (updateDump && !keys.isEmpty())
-                  dumpData = (String) dumpData
-                             + keyStringStatement.delete((keyStringStatement.length() - 5),
-                                                          keyStringStatement.length())
-                             + ";\n";
-               else
-                  dumpData = dumpData + (";\n");
-
-               dumpChunkOfData(dumpData);
-               dumpData = "";
-
-               keyStringStatement.delete(0, keyStringStatement.length());
-               keyStringStatement.append(" WHERE ");
-
-               dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
-               dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
-
-               if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT") ||
-                   sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("REPLACE"))
-                  dumpData = dumpData + "INTO ";
-
-               dumpData = dumpData + schemaTableName + " SET ";
-            }
-            else
-            {
-               if (updateDump)
-                  dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2)
-                             + keyStringStatement.delete((keyStringStatement.length() - 5),
-                                                          keyStringStatement.length());
-               else
+               if (currentRow < rowsCount)
+               {
                   dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+
+                  if (updateDump && !keys.isEmpty())
+                     dumpData = (String) dumpData
+                                + keyStringStatement.delete((keyStringStatement.length() - 5),
+                                                             keyStringStatement.length())
+                                + ";\n";
+                  else
+                     dumpData = dumpData + (";\n");
+
+                  dumpChunkOfData(dumpData);
+                  dumpData = "";
+
+                  keyStringStatement.delete(0, keyStringStatement.length());
+                  keyStringStatement.append(" WHERE ");
+
+                  dumpData = dumpData + sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase();
+                  dumpData = dumpData + sqlDataExportOptions.getType().toUpperCase();
+
+                  if (sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("INSERT") ||
+                      sqlDataExportOptions.getInsertReplaceUpdate().toUpperCase().equals("REPLACE"))
+                     dumpData = dumpData + "INTO ";
+
+                  dumpData = dumpData + schemaTableName + " SET ";
+               }
+               else
+               {
+                  if (updateDump)
+                     dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2)
+                                + keyStringStatement.delete((keyStringStatement.length() - 5),
+                                                             keyStringStatement.length());
+                  else
+                     dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+               }
             }
+            currentTableIncrement += limitIncrement;  
          }
+         while (currentTableIncrement < rowsCount && !databaseDumpProgressBar.isCanceled());
+         
          // Closing out
          rs.close();
          sqlStatement.close();
@@ -1330,7 +1386,7 @@ class SQLDatabaseDumpThread implements Runnable
       catch (SQLException e)
       {
          databaseDumpProgressBar.setCanceled(true);
-         ConnectionManager.displaySQLErrors(e, "SQLDatabaseDumpThread explicitStatementData()");
+         ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread explicitStatementData()");
       }
    }
 
