@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 5.0 01/12/2012
+// Version 5.1 01/14/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,8 @@
 //         4.9 Copyright Update.
 //         5.0 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in importSQLFile().
+//         5.1 Removed Method Instances query & multiLineQueries in importSQLFile()
+//             Along With Processing of Input Lines, Simplified.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -137,7 +139,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.0 01/12/2012
+ * @version 5.1 01/14/2012
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -160,6 +162,7 @@ class SQLDataDumpImportThread implements Runnable
       dataSourceType = ConnectionManager.getDataSourceType();
 
       importThread = new Thread(this, "SQLDataDumpImportThread");
+      // System.out.println("SQL Data Dumb Import Thread");
 
       importThread.start();
    }
@@ -214,9 +217,7 @@ class SQLDataDumpImportThread implements Runnable
       BufferedReader bufferedReader;
 
       String currentLine;
-      StringBuffer query;
       StringBuffer queryStatement;
-      String[] multiLineQueries;
       String failedQuery;
       int fileLineLength, line;
       
@@ -276,8 +277,8 @@ class SQLDataDumpImportThread implements Runnable
             bufferedReader = new BufferedReader(fileReader);
             
             line = 1;
-            query = new StringBuffer();
-
+            queryStatement = new StringBuffer();
+            
             while ((currentLine = bufferedReader.readLine()) != null)
             {
                // System.out.println(currentLine);
@@ -289,78 +290,39 @@ class SQLDataDumpImportThread implements Runnable
                   break;
                }
                
-               // Collect input lines.
-               query.append(currentLine + "\n");
+               // Check for some form of valid input before
+               // processing.
                
-               // Check to see if a complete query statement has
-               // been collect, determined by ending with a semicolon.
-               // Small chance that TEXT field could end with that,
-               // but very low.
-               
-               if (!currentLine.equals("") && currentLine.endsWith(";"))
+               if (!currentLine.isEmpty())
                {
-                  queryStatement = new StringBuffer((query.toString()).trim());
-                  queryStatement.substring(0, (queryStatement.length() - 1));
-                  
-                  // Process the possibly multi-line statement.
-
-                  if (!(queryStatement.toString()).equals(""))
+                  if (currentLine.length() >= 2
+                        && (currentLine.startsWith("--") || currentLine.startsWith("/*")
+                              || currentLine.startsWith("*") || currentLine.startsWith("*/")))
                   {
-                     // Parse the query further to remove commented
-                     // lines as needed, The standard is --, but also
-                     // include /*, *, & */
-                     
-                     multiLineQueries = (queryStatement.toString()).split("\n");
-                     
-                     if (multiLineQueries.length > 1)
-                     {
-                        int j = 0;
-                        queryStatement.delete(0, queryStatement.length());
-                        
-                        while (j < multiLineQueries.length)
-                        {
-                           multiLineQueries[j] = multiLineQueries[j].trim();
-                           // System.out.println("multi: " + multiLineQueries[j]);
-                           
-                           // Continue with building the query.
-                           
-                           if (multiLineQueries[j].length() < 2 && !multiLineQueries[j].isEmpty())
-                              queryStatement.append(multiLineQueries[j] + "\n");
-                           else
-                           {
-                              if (!multiLineQueries[j].isEmpty())
-                              {
-                                 if (multiLineQueries[j].length() >= 2 &&
-                                     !(multiLineQueries[j].substring(0, 2)).matches("^-{2}?"))
-                                 {
-                                    queryStatement.append(multiLineQueries[j] + "\n");
-                                 }
-                              }
-                           }
-                           j++;
-                        }
-                     }
-                     
-                     // Check for empty queries and just commented
-                     // single line queries.
-                     
-                     if (((queryStatement.toString()).equals(""))
-                         || (queryStatement.length() >= 2 && ((queryStatement.toString()).substring(0, 2)).matches("^-{2}?")))
-                        continue;
+                     sqlImportProgressBar.setCurrentValue(line++);
+                     continue;
+                  }
+                  
+                  // Check to see if complete query obtained.
+                  if (currentLine.endsWith(";"))
+                  {
+                     queryStatement.append(currentLine.substring(0, currentLine.length() - 1));
                      
                      // Save the query in case exception thrown.
                      if (queryStatement.length() > 50)
                         failedQuery = queryStatement.substring(0, 50);
                      else
                         failedQuery = queryStatement.toString();
-
-                     // Process the query.
                      
+                     // Process the query.
                      // System.out.println("query: " + queryStatement);
                      sqlStatement.execute(queryStatement.toString());
+                     
+                     queryStatement.delete(0, queryStatement.length());
                   }
-                  query = new StringBuffer();
-               }
+                  else
+                     queryStatement.append(currentLine);  
+               } 
                sqlImportProgressBar.setCurrentValue(line++);
             }
             sqlImportProgressBar.dispose();
