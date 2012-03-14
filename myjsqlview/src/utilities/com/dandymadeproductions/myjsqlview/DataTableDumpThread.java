@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.0 01/01/2012
+// Version 3.1 03/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,8 @@
 //             MyJSQLView_Utils.
 //         2.9 Change in currentEntry Clipping by the delimiterString.length in run().
 //         3.0 Copyright Update.
+//         3.1 Exclusion of Array Types From Date, DateTime Conversions in run() &
+//             Some Minor Formatting Changes.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -87,7 +89,7 @@ import javax.swing.JTable;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 3.0 01/01/2012
+ * @version 3.1 03/13/2012
  */
 
 class DataTableDumpThread implements Runnable
@@ -123,7 +125,7 @@ class DataTableDumpThread implements Runnable
    //==============================================================
    // Class Method for Normal Start of the Thread.
    //==============================================================
-   
+
    public void run()
    {
       // Class Method Instances
@@ -152,7 +154,8 @@ class DataTableDumpThread implements Runnable
       {
          currentTableFieldName = summaryListTable.getColumnName(i);
          currentEntry.append(tableColumnNamesHashMap.get(currentTableFieldName) + delimiterString);
-         summaryListTableNameTypes.put(Integer.toString(i), tableColumnTypeHashMap.get(currentTableFieldName));
+         summaryListTableNameTypes.put(Integer.toString(i),
+                                       tableColumnTypeHashMap.get(currentTableFieldName));
       }
       if (currentEntry.length() != 0)
       {
@@ -167,7 +170,7 @@ class DataTableDumpThread implements Runnable
 
          // Collecting rows of data & formatting date & timestamps
          // as needed according to the CSV Export Properties.
-         
+
          if (summaryListTable.getValueAt(i, 0) != null)
          {
             for (int j = 0; j < summaryListTable.getColumnCount(); j++)
@@ -175,23 +178,25 @@ class DataTableDumpThread implements Runnable
                currentString = summaryListTable.getValueAt(i, j) + "";
                currentString = currentString.replaceAll("\n", "");
                currentString = currentString.replaceAll("\r", "");
-               
-               // Format Date & Timestamp Fields as Needed.
+
+               // Format Date & Timestamp fields as needed. PostgreSQL
+               // Array Timestamps to NOT be processed, identified by
+               // underscore.
                currentType = summaryListTableNameTypes.get(Integer.toString(j));
-               
-               if ((currentType != null) && (currentType.equals("DATE") ||
-                                             currentType.equals("DATETIME") ||
-                                             currentType.indexOf("TIMESTAMP") != -1))
+
+               if ((currentType != null)
+                   && (currentType.equals("DATE") || currentType.equals("DATETIME")
+                       || (currentType.indexOf("TIMESTAMP") != -1) && currentType.indexOf("_") == -1))
                {
                   if (!currentString.toLowerCase().equals("null"))
                   {
                      int firstSpace;
                      String time;
-                        
+
                      // Dates fall through DateTime and Timestamps try
                      // to get the time separated before formatting
                      // the date.
-                     
+
                      if (currentString.indexOf(" ") != -1)
                      {
                         firstSpace = currentString.indexOf(" ");
@@ -200,12 +205,11 @@ class DataTableDumpThread implements Runnable
                      }
                      else
                         time = "";
-                        
+
                      currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
                         DBTablesPanel.getGeneralProperties().getViewDateFormat());
                      currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
                         DBTablesPanel.getDataExportProperties().getCSVDateFormat()) + time;
-                        
                   }
                }
                currentEntry.append(currentString + delimiterString);
