@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.6 03/09/2012
+// Version 6.7 03/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,7 @@
 //         6.6 Introduced binaryContent in run() to Handle Binary Types to getBytes()
 //             Instead of getString() & Conversion For columnClass.toUpperCase() for
 //             Blob Checks Because HSQL 2.0 is Uppercase for That Data Type.
+//         6.7 Exclusion of Array Types From Date, DateTime Conversions in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -145,7 +146,7 @@ import java.util.Vector;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.6 03/09/2012
+ * @version 6.7 03/13/2012
  */
 
 class DataDumpThread implements Runnable
@@ -267,7 +268,7 @@ class DataDumpThread implements Runnable
          // System.out.println(sqlStatementString);
 
          dbResultSet = sqlStatement.executeQuery(sqlStatementString);
-
+         
          dumpData = "";
          currentRow = 0;
 
@@ -279,7 +280,7 @@ class DataDumpThread implements Runnable
                        + dataDelimiter;
          dumpData = ((String) dumpData).substring(0,
                            ((String) dumpData).length() - dataDelimiter.length()) + "\n";
-
+         
          // Constructing lines of data & progress bar.
          dumpProgressBar.setTaskLength(rowNumber);
          dumpProgressBar.pack();
@@ -394,8 +395,8 @@ class DataDumpThread implements Runnable
                }
                
                // Format Date & Timestamp Fields as Needed.
-               else if (columnType.equals("DATE") || columnType.equals("DATETIME") ||
-                        columnType.indexOf("TIMESTAMP") != -1)
+               else if (columnType.equals("DATE") || columnType.equals("DATETIME")
+                        || (columnType.indexOf("TIMESTAMP") != -1 && columnClass.indexOf("Array") == -1))
                {
                   if (columnType.equals("DATE"))
                   {
