@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 6.96 03/12/2012
+// Version 6.97 03/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -287,6 +287,8 @@
 //             Force the Block Reading of Results Sets for Table Exports by limitIncrement.
 //        6.96 Removed Static From Class Instance limitIncrement & Set in Constructor
 //             sqlDataExportProperties.
+//        6.97 Correction in insertReplace/explicitStatementData() Methods to Correctly
+//             Create the sqlStatementString from MSAccess.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -319,7 +321,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.96 03/12/2012
+ * @version 6.97 03/13/2012
  */
 
 class SQLDataDumpThread implements Runnable
@@ -781,6 +783,10 @@ class SQLDataDumpThread implements Runnable
                   + "AS dmprownumber, " + columnNamesString.toString() + " "
                   + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
                   + (currentTableIncrement + 1) + " AND " + (currentTableIncrement + limitIncrement);
+               // MSAccess
+               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                        + dbSchemaTableName;
                else
                   sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                        + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
@@ -1159,6 +1165,10 @@ class SQLDataDumpThread implements Runnable
                   + "AS dmprownumber, " + columnNamesString.toString() + " "
                   + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
                   + (currentTableIncrement + 1) + " AND " + (currentTableIncrement + limitIncrement);
+               // MSAccess
+               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                        + dbSchemaTableName;
                else
                   sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                        + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
