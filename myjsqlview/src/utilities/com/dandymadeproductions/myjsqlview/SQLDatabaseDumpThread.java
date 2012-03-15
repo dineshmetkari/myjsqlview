@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.2 03/13/2012
+// Version 8.3 03/14/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -210,6 +210,9 @@
 //             sqlDataExportProperties.
 //         8.2 Correction in insertReplace/explicitStatementData() Methods to Correctly
 //             Create the sqlStatementString from MSAccess.
+//         8.3 Addition of oracleColumnNamesString in insertReplace/explicitStatementData()
+//             Methods to Correct Oracle SELECT Query. Un-quoting Numeric Fields in Same
+//             Methods.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -241,7 +244,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.2 03/12/2012
+ * @version 8.3 03/14/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -538,8 +541,9 @@ class SQLDatabaseDumpThread implements Runnable
 
    private void insertReplaceStatementData(Connection dbConnection)
    {
-   // Class Method Instances
+      // Class Method Instances
       StringBuffer columnNamesString;
+      StringBuffer oracleColumnNamesString;
       Iterator<String> columnNamesIterator;
       HashMap<Integer, String> autoIncrementFieldIndexes;
       Vector<Integer> blobFieldIndexes;
@@ -550,6 +554,7 @@ class SQLDatabaseDumpThread implements Runnable
       Vector<Integer> dateIndexes;
       Vector<Integer> yearIndexes;
       Vector<Integer> arrayIndexes;
+      Vector<Integer> numericIndexes;
       String field, columnClass, columnType;
       String firstField, sqlFieldValuesString;
       String expressionType;
@@ -578,6 +583,7 @@ class SQLDatabaseDumpThread implements Runnable
 
       columnsCount = 0;
       columnNamesString = new StringBuffer();
+      oracleColumnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
       autoIncrementFieldIndexes = new HashMap <Integer, String>();
       blobFieldIndexes = new Vector <Integer>();
@@ -588,6 +594,7 @@ class SQLDatabaseDumpThread implements Runnable
       dateIndexes = new Vector <Integer>();
       yearIndexes = new Vector <Integer>();
       arrayIndexes = new Vector <Integer>();
+      numericIndexes = new Vector <Integer>();
 
       while (columnNamesIterator.hasNext())
       {
@@ -660,24 +667,38 @@ class SQLDatabaseDumpThread implements Runnable
          {
             arrayIndexes.add(Integer.valueOf(columnsCount + 1));
          }
+         
+         // Save the index of numeric entries.
+         if (columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1
+             || columnClass.indexOf("Float") != -1 || columnClass.indexOf("Double") != -1
+             || columnClass.indexOf("Byte") != -1 || columnClass.indexOf("BigDecimal") != -1
+             || columnClass.indexOf("Short") != -1)
+         {
+            numericIndexes.add(Integer.valueOf(columnsCount + 1));
+         }
 
          // Modify Statement as needed for Oracle TIMESTAMPLTZ Fields.
          if (dataSourceType.equals(ConnectionManager.ORACLE) &&
              columnType.equals("TIMESTAMPLTZ"))
          {
-            columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                       + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
-                                       + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                       + dbIdentifierQuoteString + ", ");
+            oracleColumnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
+                                           + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", ");
          }
          else
-            columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
-                                       + dbIdentifierQuoteString + ", ");
+            oracleColumnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", ");
+         // Unmodified Names.
+         columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+                                  + dbIdentifierQuoteString + ", ");
          sqlFieldValuesString += (identifierQuoteString + tableColumnNames.get(field) 
-                                 + identifierQuoteString + ", ");
+                                  + identifierQuoteString + ", ");
 
          columnsCount++;
       }
+      oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
+                                      oracleColumnNamesString.length());
       columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
       firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
 
@@ -714,10 +735,11 @@ class SQLDatabaseDumpThread implements Runnable
             // Oracle
             if (dataSourceType.equals(ConnectionManager.ORACLE))
                 sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
-                + "AS dmprownumber, " + columnNamesString.toString() + " "
-                + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
-                + (currentTableIncrement + 1) + " AND " + (currentTableIncrement + limitIncrement);
+                                     + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) "
+                                     + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
+                                     + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
+                                     + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                     + limitIncrement);
             // MSAccess
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
@@ -925,6 +947,9 @@ class SQLDatabaseDumpThread implements Runnable
                                   !sqlDataExportOptions.getTimeStamp())
                                  dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
                                             + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                              // Don't Quote Numeric Values.
+                              else if (numericIndexes.contains(Integer.valueOf(i))) 
+                                 dumpData = dumpData + contentString + ", ";
                               else
                                  dumpData = dumpData + "'" + addEscapes(contentString) + "', ";
                            }
@@ -991,6 +1016,7 @@ class SQLDatabaseDumpThread implements Runnable
    {
       // Class Method Instances
       StringBuffer columnNamesString;
+      StringBuffer oracleColumnNamesString;
       Iterator<String> columnNamesIterator;
       String field, columnClass, columnType;
       String firstField;
@@ -1033,6 +1059,7 @@ class SQLDatabaseDumpThread implements Runnable
       // to obtain the data.
 
       columnNamesString = new StringBuffer();
+      oracleColumnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
 
       while (columnNamesIterator.hasNext())
@@ -1042,15 +1069,20 @@ class SQLDatabaseDumpThread implements Runnable
          if (dataSourceType.equals(ConnectionManager.ORACLE)
              && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
          {
-            columnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
-                                  + dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", ");
+            oracleColumnNamesString.append("TO_CHAR(" + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS "
+                                           + dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", ");
          }
          else
-            columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+            oracleColumnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
+                                           + dbIdentifierQuoteString + ", ");
+         // Unmodified Names.
+         columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
                                   + dbIdentifierQuoteString + ", ");
       }
+      oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
+                                      oracleColumnNamesString.length());
       columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
       firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
       
@@ -1082,7 +1114,7 @@ class SQLDatabaseDumpThread implements Runnable
             if (dataSourceType.equals(ConnectionManager.ORACLE))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                     + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) "
-                                    + "AS dmprownumber, " + columnNamesString.toString() + " "
+                                    + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
                                     + "FROM " + dbSchemaTableName + ") " + "WHERE dmprownumber BETWEEN "
                                     + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
                                     + limitIncrement);
@@ -1336,6 +1368,11 @@ class SQLDatabaseDumpThread implements Runnable
                                   dataSourceType.equals(ConnectionManager.ORACLE))
                                  dumpData = dumpData + "TO_TIMESTAMP_TZ('" + contentString
                                             + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
+                              else if (columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1
+                                       || columnClass.indexOf("Float") != -1 || columnClass.indexOf("Double") != -1
+                                       || columnClass.indexOf("Byte") != -1 || columnClass.indexOf("BigDecimal") != -1
+                                       || columnClass.indexOf("Short") != -1)
+                                 dumpData = dumpData + contentString + ", ";
                               else
                                  dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
                            }
