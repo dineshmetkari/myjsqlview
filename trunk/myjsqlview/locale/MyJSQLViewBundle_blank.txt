@@ -346,6 +346,7 @@ PreferencesFrame.message.Warning =
 PreferencesFrame.message.RowSizeWarning = 
 
 GeneralPreferencesPanel.label.DateFormat = 
+GeneralPreferencesPanel.label.TableReadLimitIcrement = 
 GeneralPreferencesPanel.button.RestoreDefaults = 
 GeneralPreferencesPanel.button.Apply = 
 
