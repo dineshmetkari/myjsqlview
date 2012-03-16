@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.3 03/14/2012
+// Version 8.4 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -213,6 +213,8 @@
 //         8.3 Addition of oracleColumnNamesString in insertReplace/explicitStatementData()
 //             Methods to Correct Oracle SELECT Query. Un-quoting Numeric Fields in Same
 //             Methods.
+//         8.4 Obtained limitIncrement From GeneralProperties Instead of sqlExportOptions
+//             in Constructor.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -244,7 +246,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.3 03/14/2012
+ * @version 8.4 03/16/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -310,7 +312,7 @@ class SQLDatabaseDumpThread implements Runnable
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
-      limitIncrement = sqlDataExportOptions.getLimitIncrement();
+      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
 
       // Setting up OutputStream
       try
