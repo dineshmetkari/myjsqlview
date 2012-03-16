@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 01/01/2012
+// Version 1.5 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,9 @@
 //         1.3 09/13/2011 Constructor Obtained dateFormatComboBox From MyJSQLView_Utils.
 //                        getDateFormatOptions().
 //         1.4 01/01/2012 Copyright Update.
+//         1.5 03/16/2012 Implement Limit Increment Option. Added Class Instances limit
+//                        IncrementSpinner & DEFAULT_LIMIT_INCREMENT. Created in Constructor.
+//                        Added set/getter to get/setGeneralOptionsProperties() Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,9 +51,18 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -60,7 +72,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/01/2012
+ * @version 1.5 03/16/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -69,7 +81,10 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    private static final long serialVersionUID = 4715186260795158107L;
    
    private JComboBox dateFormatComboBox;
+   private JSpinner limitIncrementSpinner;
    private JButton restoreDefaultsButton, applyButton;
+   
+   protected static final int DEFAULT_LIMIT_INCREMENT = 10000;
 
    //===========================================================
    // GeneralPreferencesPanel Constructor
@@ -78,9 +93,14 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    protected GeneralPreferencesPanel(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Instances
-      JPanel mainPanel, dateFormatPanel;
+      JPanel mainPanel, dateFormatPanel, limitIncrementPanel;
+      JPanel centerPanel;
       JPanel buttonPanel;
-      JLabel dateFormatLabel;
+      JLabel dateFormatLabel, limitIncrementLabel;;
+      SpinnerNumberModel limitIncrementSpinnerModel;
+      final int minimumLimitIncrementSize = 2;
+      final int maxLimitIncrementSize = 100000;
+      final int spinnerLimitIncrementStep = 1000;
       String resource;
 
       // Setting up
@@ -89,7 +109,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
 
-      mainPanel = new JPanel(new BorderLayout());
+      mainPanel = new JPanel(new GridLayout(2, 1, 2, 2));
       mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0),
                           BorderFactory.createLoweredBevelBorder()));
       
@@ -107,7 +127,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
          dateFormatLabel = new JLabel(resource);
       dateFormatLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
       
-      buildConstraints(constraints, 0, 0, 1, 1, 24, 100);
+      buildConstraints(constraints, 0, 0, 1, 1, 50, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(dateFormatLabel, constraints);
@@ -116,14 +136,53 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
       
-      buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
+      buildConstraints(constraints, 1, 0, 1, 1, 50, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(dateFormatComboBox, constraints);
       dateFormatPanel.add(dateFormatComboBox);
       
-      mainPanel.add(dateFormatPanel, BorderLayout.NORTH);
-      add(mainPanel, BorderLayout.CENTER);
+      mainPanel.add(dateFormatPanel);
+      
+      // =====================================================
+      // Limit Increment Panel & Components
+      
+      limitIncrementPanel = new JPanel(gridbag);
+      limitIncrementPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
+
+      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.TableReadLimitIcrement");
+      if (resource.equals(""))
+         limitIncrementLabel = new JLabel(" Table Read Limit Increment");
+      else
+         limitIncrementLabel = new JLabel(" " + resource);
+
+      buildConstraints(constraints, 0, 0, 1, 1, 50, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitIncrementLabel, constraints);
+      limitIncrementPanel.add(limitIncrementLabel);
+      
+      
+      limitIncrementSpinnerModel = new SpinnerNumberModel(DEFAULT_LIMIT_INCREMENT,
+         minimumLimitIncrementSize, maxLimitIncrementSize, spinnerLimitIncrementStep);
+      limitIncrementSpinner = new JSpinner(limitIncrementSpinnerModel);
+      limitIncrementSpinner.addChangeListener(this);
+
+      buildConstraints(constraints, 1, 0, 1, 1, 50, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(limitIncrementSpinner, constraints);
+      limitIncrementPanel.add(limitIncrementSpinner);
+
+      mainPanel.add(limitIncrementPanel);
+      
+      add(mainPanel, BorderLayout.NORTH);
+      
+      // Dummy Center Panel
+      centerPanel = new JPanel();
+      centerPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      add(centerPanel, BorderLayout.CENTER);
 
       // Button Action Options Panel
       buttonPanel = new JPanel();
@@ -166,6 +225,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
          if (formSource == restoreDefaultsButton)
          {
             dateFormatComboBox.setSelectedIndex(0);
+            limitIncrementSpinner.setValue(Integer.valueOf(DEFAULT_LIMIT_INCREMENT));
             applyButton.setEnabled(true);
          }
 
@@ -186,11 +246,11 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       }
    }
 
-   //================================================================
-   // ActionEvent Listener method for determining when the selections
-   // have been made so an update can be performed on the DataExport
-   // Properties.
-   //================================================================
+   //==============================================================
+   // ChangeEvent Listener method for determined when the limit
+   // increment spinner has changed so that the apply button can be
+   // enabled.
+   //==============================================================
 
    public void stateChanged(ChangeEvent evt)
    {
@@ -223,8 +283,9 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    {
       GeneralProperties newGeneralProperties = DBTablesPanel.getGeneralProperties();
       
-      // Date Format
+      // Date Format & Limit Increment
       newGeneralProperties.setViewDateFormat((String)dateFormatComboBox.getSelectedItem());
+      newGeneralProperties.setLimitIncrement(Integer.parseInt(limitIncrementSpinner.getValue().toString()));
 
       return newGeneralProperties;
    }
@@ -235,7 +296,8 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
 
    protected void setGeneralProperties(GeneralProperties generalProperties)
    {
-      // Date Format
+      // Date Format & Limit Increment
       dateFormatComboBox.setSelectedItem(generalProperties.getViewDateFormat());
+      limitIncrementSpinner.setValue(Integer.valueOf(generalProperties.getLimitIncrement()));
    }
 }
