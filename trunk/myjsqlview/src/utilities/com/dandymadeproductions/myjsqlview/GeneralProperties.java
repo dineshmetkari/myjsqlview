@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 1.2 01/01/2012
+// Version 1.3 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 // Version 1.0 Initial GeneralProperties Class.
 //         1.1 Made Class public Along With Class Method getViewDateFormat().
 //         1.2 Copyright Update.
+//         1.3 Added Class Instance limitIncrement and Corresponding get/setter
+//             Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,7 +48,7 @@ import java.util.prefs.Preferences;
  * MyJSQLView general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.2 01/01/2012
+ * @version 1.3 01/16/2012
  */
 
 public class GeneralProperties
@@ -54,10 +56,12 @@ public class GeneralProperties
    // Class Instances.
    
    private String viewDateFormat;
+   private int limitIncrement;
    
    private Preferences generalPreferences;
 
    private static final String VIEWDATEFORMAT = "ViewDateFormat";
+   private static final String LIMITINCREMENT = "LimitIncrement";
    
    //==============================================================
    // GeneralProperties Constructor
@@ -68,6 +72,7 @@ public class GeneralProperties
       // Set Default State.
       
       viewDateFormat = "MM-dd-YYYY";
+      limitIncrement = GeneralPreferencesPanel.DEFAULT_LIMIT_INCREMENT;
       
       // Try to retrieve state from Preferences.
       try
@@ -79,7 +84,7 @@ public class GeneralProperties
       try
       {
          viewDateFormat = generalPreferences.get(VIEWDATEFORMAT, "MM-DD-YYYY");
-         
+         limitIncrement = generalPreferences.getInt(LIMITINCREMENT, limitIncrement);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -95,6 +100,11 @@ public class GeneralProperties
       return viewDateFormat;
    }
    
+   protected int getLimitIncrement()
+   {
+      return limitIncrement;
+   }
+   
    //==============================================================
    // Class methods to allow classes to set the data export
    // object components.
@@ -104,6 +114,12 @@ public class GeneralProperties
    {
       viewDateFormat = content;
       savePreference(VIEWDATEFORMAT, content);
+   }
+   
+   protected void setLimitIncrement(int value)
+   {
+      limitIncrement = value;
+      savePreference(LIMITINCREMENT, value);
    }
    
    //==============================================================
@@ -134,7 +150,6 @@ public class GeneralProperties
       catch (IllegalStateException ise){}
    }
    
-   /*
    private void savePreference(String key, int value)
    {
       try
@@ -145,7 +160,6 @@ public class GeneralProperties
       catch (IllegalArgumentException iae){}
       catch (IllegalStateException ise){}
    }
-   */
    
    //==============================================================
    // Class method to properly implement the toString() method
@@ -157,6 +171,7 @@ public class GeneralProperties
       StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
       
       parameters.append("[viewDataFormat = " + viewDateFormat + "]");
+      parameters.append("[limitIncrement = " + limitIncrement + "]");
 
       return parameters.toString();
    }
