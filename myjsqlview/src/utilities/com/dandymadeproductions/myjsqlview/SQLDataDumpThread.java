@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 6.98 03/14/2012
+// Version 6.99 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -292,6 +292,8 @@
 //        6.98 Addition of oracleColumnNamesString in insertReplace/explicitStatementData()
 //             Methods to Correct Oracle SELECT Query. Un-quoting Numeric Fields in Same
 //             Methods.
+//        6.99 Obtained limitIncrement From GeneralProperties Instead of sqlExportOptions
+//             in Constructor.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -324,7 +326,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 6.98 03/14/2012
+ * @version 6.99 03/16/2012
  */
 
 class SQLDataDumpThread implements Runnable
@@ -389,7 +391,7 @@ class SQLDataDumpThread implements Runnable
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
-      limitIncrement = sqlDataExportOptions.getLimitIncrement();
+      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
 
       // Create the appropriate SQL table name qualifier.
       if (exportedTable.indexOf(".") != -1)
