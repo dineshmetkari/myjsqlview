@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 4.1 03/12/2012
+// Version 4.2 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -90,6 +90,7 @@
 //         4.0 Copyright Update.
 //         4.1 Added Class Instance limitIncrement and Corresponding get/setter
 //             Methods.
+//         4.2 Backed Out 4.1 Moved to GeneralProperties Class.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import com.itextpdf.text.pdf.BaseFont;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 4.1 03/12/2012
+ * @version 4.2 03/16/2012
  */
 
 class DataExportProperties
@@ -142,7 +143,7 @@ class DataExportProperties
    private String replaceTypeSetting;
    private String updateTypeSetting;
    private String identifierQuoteString;
-   private int limitIncrement;
+   
 
    // CSV
    private boolean textInclusion;
@@ -186,7 +187,6 @@ class DataExportProperties
    private static final String INSERTTYPESETTING = "InsertTypeSetting";
    private static final String REPLACETYPESETTING = "ReplaceTypeSetting";
    private static final String UPDATETYPESETTING = "UpdateTypeSetting";
-   private static final String LIMITINCREMENT = "LimitIncrement";
 
    // CSV
    private static final String TEXTINCLUSION = "TextInclusion";
@@ -234,7 +234,6 @@ class DataExportProperties
       replaceTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       updateTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
-      limitIncrement = SQLExportPreferencesPanel.DEFAULT_LIMIT_INCREMENT;
 
       // CSV
       textInclusion = CSVExportPreferencesPanel.DEFAULT_CHAR_INCLUSION;
@@ -282,7 +281,6 @@ class DataExportProperties
          insertTypeSetting = dataExportPreferences.get(INSERTTYPESETTING, insertTypeSetting);
          replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, replaceTypeSetting);
          updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, updateTypeSetting);
-         limitIncrement = dataExportPreferences.getInt(LIMITINCREMENT, limitIncrement);
          
          // CSV
          textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, textInclusion);
@@ -577,11 +575,6 @@ class DataExportProperties
       return identifierQuoteString;
    }
    
-   protected int getLimitIncrement()
-   {
-      return limitIncrement;
-   }
-   
    //==========
    // CSV
 
@@ -789,12 +782,6 @@ class DataExportProperties
    {
       identifierQuoteString = content;
    }
-
-   protected void setLimitIncrement(int value)
-   {
-      limitIncrement = value;
-      savePreference(LIMITINCREMENT, value);
-   }
    
    //===========
    // CSV
@@ -962,7 +949,6 @@ class DataExportProperties
       parameters.append("[insertTypeSetting = " + insertTypeSetting + "]");
       parameters.append("[replaceTypeSetting = " + replaceTypeSetting + "]");
       parameters.append("[updateTypeSetting = " + updateTypeSetting + "]");
-      parameters.append("[limitIncrement = " + limitIncrement + "]");
       
       // CSV
       
