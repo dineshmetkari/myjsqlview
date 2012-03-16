@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.7 03/13/2012
+// Version 6.8 03/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,7 @@
 //             & fileBuff. Added Instances in run() oracleColumnNamesString, field,
 //             firstField, & currentTableIncrement. Major Changes to run() to Achieve
 //             New Way of Handling Data.
+//         6.9 Obtained limitIncrement From GeneralProperties in Constructor.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -157,7 +158,7 @@ import javax.swing.JOptionPane;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.8 03/15/2012
+ * @version 6.9 03/16/2012
  */
 
 class DataDumpThread implements Runnable
@@ -192,7 +193,7 @@ class DataDumpThread implements Runnable
       this.exportedTable = exportedTable;
       this.fileName = fileName;
       
-      limitIncrement = 10000;
+      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
 
       // Create and start the class thread.
       t = new Thread(this, "DataDumpThread");
