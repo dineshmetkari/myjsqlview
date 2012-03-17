@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 01/01/2012
+// Version 2.2 03/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@
 //             to Collect All Information if Desired in Method loadDBTables() for 
 //             dbMetaData.getTables().
 //         2.1 Changed in Method Name setMemoryConnectoin() to setMemoryConnection().
+//         2.2 Change in Method getConnection() to Handle HSQL File & Resource
+//             Connnections Using Separate Arguments for User & Password.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -82,7 +84,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.1 01/01/2012
+ * @version 2.2 03/17/2012
  */
 
 public class ConnectionManager
@@ -159,6 +161,8 @@ public class ConnectionManager
       user = connectionProperties.getProperty(ConnectionProperties.USER);
       passwordString = connectionProperties.getPassword();
       
+      // System.out.println(connectionString);
+      
       // Select and try to return an appropriate connection
       // type.
       
@@ -169,8 +173,10 @@ public class ConnectionManager
          
          // Create the appropriate connection as needed.
          
-         // Oracle & MS Access
-         if (subProtocol.indexOf(ORACLE) != -1 || subProtocol.equals(MSACCESS))
+         // Oracle, MS Access, & HSQL File or Resource
+         if (subProtocol.indexOf(ORACLE) != -1 || subProtocol.equals(MSACCESS)
+               || (subProtocol.indexOf(HSQL) != -1 && (db.toLowerCase().indexOf("file:") != -1
+                                                       || db.toLowerCase().indexOf("res:") != -1)))
             return DriverManager.getConnection(connectionString, user, passwordString);
          
          // HSQL & SQLite Memory Connections
