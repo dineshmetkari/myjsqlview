@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.96 01/16/2012
+// Version 4.97 03/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -205,6 +205,8 @@
 //        4.94 Class Method getTableSQLStatement() Returned toString().
 //        4.95 Retracted Version Changed 4.94.
 //        4.96 Class Method setViewOnly() Check to Insure Action Buttons Not NULL.
+//        4.97 Commented Out dbConnection.setAutoCommit() Statements and commit()
+//             for Deletes of All Table Data, deleteAllItems().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -242,7 +244,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.96 01/16/2012
+ * @version 4.97 03/17/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2145,7 +2147,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          // Connect to database to delete the selected row(s).
          try
          {
-            dbConnection.setAutoCommit(false);
+            // dbConnection.setAutoCommit(false);
             sqlStatement = dbConnection.createStatement();
 
             // HSQL & Oracle does not support.
@@ -2162,9 +2164,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             // System.out.println(sqlStatementString);
             sqlStatement.executeUpdate(sqlStatementString);
 
-            dbConnection.commit();
+            // dbConnection.commit();
             sqlStatement.close();
-            dbConnection.setAutoCommit(true);
+            // dbConnection.setAutoCommit(true);
          }
          catch (SQLException e)
          {
