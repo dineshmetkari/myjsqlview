@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.8 03/16/2012
+// Version 6.10 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,7 @@
 //             firstField, & currentTableIncrement. Major Changes to run() to Achieve
 //             New Way of Handling Data.
 //         6.9 Obtained limitIncrement From GeneralProperties in Constructor.
+//        6.10 Moved Class Instance limitIncrement to Method run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -158,7 +159,7 @@ import javax.swing.JOptionPane;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.9 03/16/2012
+ * @version 6.10 03/19/2012
  */
 
 class DataDumpThread implements Runnable
@@ -171,7 +172,6 @@ class DataDumpThread implements Runnable
    private HashMap<String, String> tableColumnTypeHashMap;
    private HashMap<String, Integer> tableColumnSizeHashMap;
    private String exportedTable, fileName;
-   private int limitIncrement;
    private BufferedOutputStream filebuff;
 
    //==============================================================
@@ -193,8 +193,6 @@ class DataDumpThread implements Runnable
       this.exportedTable = exportedTable;
       this.fileName = fileName;
       
-      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
-
       // Create and start the class thread.
       t = new Thread(this, "DataDumpThread");
       // System.out.println("Data Dumb Thread");
@@ -220,6 +218,7 @@ class DataDumpThread implements Runnable
       String identifierQuoteString;
       String fieldContent;
       int columnSize, rowsCount, currentTableIncrement, currentRow;
+      int limitIncrement;
 
       String sqlStatementString;
       Statement sqlStatement;
@@ -228,6 +227,7 @@ class DataDumpThread implements Runnable
       // Setting up
       rowsCount = 0;
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
+      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       dataSourceType = ConnectionManager.getDataSourceType();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
