@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 03/16/2012
+// Version 1.6 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,10 @@
 //         1.5 03/16/2012 Implement Limit Increment Option. Added Class Instances limit
 //                        IncrementSpinner & DEFAULT_LIMIT_INCREMENT. Created in Constructor.
 //                        Added set/getter to get/setGeneralOptionsProperties() Methods.
+//         1.6 03/19/2012 Implemented Batch Size Option. Added Class Instances batchSizeSpinner,
+//                        batchEnabledCheckBox, DEFAULT_BATCH_SIZE_ENABLED, & DEFAULT_BATCH
+//                        _SIZE. Created Components in Constructor. Added set/getter to get/
+//                        setGeneralProperties() Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,6 +61,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -72,7 +77,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.5 03/16/2012
+ * @version 1.6 03/19/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -82,9 +87,13 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    
    private JComboBox dateFormatComboBox;
    private JSpinner limitIncrementSpinner;
+   private JSpinner batchSizeSpinner;
+   private JCheckBox batchEnabledCheckBox;
    private JButton restoreDefaultsButton, applyButton;
    
    protected static final int DEFAULT_LIMIT_INCREMENT = 10000;
+   protected static final boolean DEFAULT_BATCH_SIZE_ENABLED = false;
+   protected static final int DEFAULT_BATCH_SIZE = 50000;
 
    //===========================================================
    // GeneralPreferencesPanel Constructor
@@ -93,14 +102,23 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    protected GeneralPreferencesPanel(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Instances
-      JPanel mainPanel, dateFormatPanel, limitIncrementPanel;
+      JPanel mainPanel;
+      JPanel dateFormatPanel, limitIncrementPanel, batchPanel;
       JPanel centerPanel;
       JPanel buttonPanel;
-      JLabel dateFormatLabel, limitIncrementLabel;;
+      JLabel dateFormatLabel, limitIncrementLabel;
+      JLabel batchSizeLabel;
+      
       SpinnerNumberModel limitIncrementSpinnerModel;
       final int minimumLimitIncrementSize = 2;
       final int maxLimitIncrementSize = 100000;
       final int spinnerLimitIncrementStep = 1000;
+      
+      SpinnerNumberModel batchSizeSpinnerModel;
+      final int minimumBatchSize = 2;
+      final int maxBatchSize = 500000;
+      final int spinnerBatchSizeStep = 10000;
+      
       String resource;
 
       // Setting up
@@ -109,7 +127,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
 
-      mainPanel = new JPanel(new GridLayout(2, 1, 2, 2));
+      mainPanel = new JPanel(new GridLayout(3, 1, 2, 2));
       mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0),
                           BorderFactory.createLoweredBevelBorder()));
       
@@ -177,6 +195,52 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
 
       mainPanel.add(limitIncrementPanel);
       
+      // =====================================================
+      // Batch Size Panel & Components
+      
+      batchPanel = new JPanel(gridbag);
+      batchPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
+      
+      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.EnableTableWriteBatch");
+      if (resource.equals(""))
+         batchEnabledCheckBox = new JCheckBox("Enable Table Write Batch", false);
+      else
+         batchEnabledCheckBox = new JCheckBox(resource, false);
+      batchEnabledCheckBox.setFocusPainted(false);
+      batchEnabledCheckBox.addActionListener(this);
+
+      buildConstraints(constraints, 0, 0, 1, 1, 34, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(batchEnabledCheckBox, constraints);
+      batchPanel.add(batchEnabledCheckBox);
+      
+      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.BatchSize");
+      if (resource.equals(""))
+         batchSizeLabel = new JLabel(" Batch Size");
+      else
+         batchSizeLabel = new JLabel(" " + resource);
+
+      buildConstraints(constraints, 1, 0, 1, 1, 33, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(batchSizeLabel, constraints);
+      batchPanel.add(batchSizeLabel);
+      
+      batchSizeSpinnerModel = new SpinnerNumberModel(DEFAULT_BATCH_SIZE,
+         minimumBatchSize, maxBatchSize, spinnerBatchSizeStep);
+      batchSizeSpinner = new JSpinner(batchSizeSpinnerModel);
+      batchSizeSpinner.addChangeListener(this);
+
+      buildConstraints(constraints, 2, 0, 1, 1, 33, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(batchSizeSpinner, constraints);
+      batchPanel.add(batchSizeSpinner);
+      
+      mainPanel.add(batchPanel);
+      
       add(mainPanel, BorderLayout.NORTH);
       
       // Dummy Center Panel
@@ -226,6 +290,8 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
          {
             dateFormatComboBox.setSelectedIndex(0);
             limitIncrementSpinner.setValue(Integer.valueOf(DEFAULT_LIMIT_INCREMENT));
+            batchEnabledCheckBox.setSelected(DEFAULT_BATCH_SIZE_ENABLED);
+            batchSizeSpinner.setValue(Integer.valueOf(DEFAULT_BATCH_SIZE));
             applyButton.setEnabled(true);
          }
 
@@ -240,7 +306,8 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       // Triggering the apply button back to enabled
       // when option changes and controlling the
       // other textfield.
-      if (formSource instanceof JRadioButton || formSource instanceof JComboBox)
+      if (formSource instanceof JRadioButton || formSource instanceof JComboBox
+            || formSource instanceof JCheckBox)
       {
          applyButton.setEnabled(true);
       }
@@ -286,6 +353,8 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       // Date Format & Limit Increment
       newGeneralProperties.setViewDateFormat((String)dateFormatComboBox.getSelectedItem());
       newGeneralProperties.setLimitIncrement(Integer.parseInt(limitIncrementSpinner.getValue().toString()));
+      newGeneralProperties.setBatchSizeEnabled(batchEnabledCheckBox.isSelected());
+      newGeneralProperties.setBatchSize(Integer.parseInt(batchSizeSpinner.getValue().toString()));
 
       return newGeneralProperties;
    }
@@ -299,5 +368,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       // Date Format & Limit Increment
       dateFormatComboBox.setSelectedItem(generalProperties.getViewDateFormat());
       limitIncrementSpinner.setValue(Integer.valueOf(generalProperties.getLimitIncrement()));
+      batchEnabledCheckBox.setSelected(generalProperties.getBatchSizeEnabled());
+      batchSizeSpinner.setValue(Integer.valueOf(generalProperties.getBatchSize()));
    }
 }
