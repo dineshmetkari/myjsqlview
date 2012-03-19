@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 1.3 03/16/2012
+// Version 1.4 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 //         1.2 Copyright Update.
 //         1.3 Added Class Instance limitIncrement and Corresponding get/setter
 //             Methods.
+//         1.4 Added Class Instance batchSize and Corresponding get/setter
+//             Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,7 +50,7 @@ import java.util.prefs.Preferences;
  * MyJSQLView general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.3 01/16/2012
+ * @version 1.4 01/19/2012
  */
 
 public class GeneralProperties
@@ -57,11 +59,13 @@ public class GeneralProperties
    
    private String viewDateFormat;
    private int limitIncrement;
+   private int batchSize;
    
    private Preferences generalPreferences;
 
    private static final String VIEWDATEFORMAT = "ViewDateFormat";
    private static final String LIMITINCREMENT = "LimitIncrement";
+   private static final String BATCHSIZE = "BatchSize";
    
    //==============================================================
    // GeneralProperties Constructor
@@ -73,6 +77,7 @@ public class GeneralProperties
       
       viewDateFormat = "MM-dd-YYYY";
       limitIncrement = GeneralPreferencesPanel.DEFAULT_LIMIT_INCREMENT;
+      batchSize = GeneralPreferencesPanel.DEFAULT_BATCH_SIZE;
       
       // Try to retrieve state from Preferences.
       try
@@ -85,6 +90,7 @@ public class GeneralProperties
       {
          viewDateFormat = generalPreferences.get(VIEWDATEFORMAT, "MM-DD-YYYY");
          limitIncrement = generalPreferences.getInt(LIMITINCREMENT, limitIncrement);
+         batchSize = generalPreferences.getInt(BATCHSIZE, batchSize);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -105,6 +111,11 @@ public class GeneralProperties
       return limitIncrement;
    }
    
+   protected int getBatchSize()
+   {
+      return batchSize;
+   }
+   
    //==============================================================
    // Class methods to allow classes to set the data export
    // object components.
@@ -120,6 +131,12 @@ public class GeneralProperties
    {
       limitIncrement = value;
       savePreference(LIMITINCREMENT, value);
+   }
+   
+   protected void setBatchSize(int value)
+   {
+      batchSize = value;
+      savePreference(BATCHSIZE, value);
    }
    
    //==============================================================
@@ -172,6 +189,7 @@ public class GeneralProperties
       
       parameters.append("[viewDataFormat = " + viewDateFormat + "]");
       parameters.append("[limitIncrement = " + limitIncrement + "]");
+      parameters.append("[batchSize = " + batchSize + "]");
 
       return parameters.toString();
    }
