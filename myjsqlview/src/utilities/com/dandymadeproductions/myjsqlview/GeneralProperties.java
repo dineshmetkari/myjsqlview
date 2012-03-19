@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 1.4 03/19/2012
+// Version 1.5 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,9 @@
 //             Methods.
 //         1.4 Added Class Instance batchSize and Corresponding get/setter
 //             Methods.
+//         1.5 Added Class Instance batchSizeEnabled and Corresponding get/setter
+//             Methods. Enabled Commented Out savePreference(String, boolean)
+//             Method.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -50,7 +53,7 @@ import java.util.prefs.Preferences;
  * MyJSQLView general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/19/2012
+ * @version 1.5 01/19/2012
  */
 
 public class GeneralProperties
@@ -59,12 +62,14 @@ public class GeneralProperties
    
    private String viewDateFormat;
    private int limitIncrement;
+   private boolean batchSizeEnabled;
    private int batchSize;
    
    private Preferences generalPreferences;
 
    private static final String VIEWDATEFORMAT = "ViewDateFormat";
    private static final String LIMITINCREMENT = "LimitIncrement";
+   private static final String BATCHSIZEENABLED = "BatchSizeEnabled";
    private static final String BATCHSIZE = "BatchSize";
    
    //==============================================================
@@ -77,6 +82,7 @@ public class GeneralProperties
       
       viewDateFormat = "MM-dd-YYYY";
       limitIncrement = GeneralPreferencesPanel.DEFAULT_LIMIT_INCREMENT;
+      batchSizeEnabled = GeneralPreferencesPanel.DEFAULT_BATCH_SIZE_ENABLED;
       batchSize = GeneralPreferencesPanel.DEFAULT_BATCH_SIZE;
       
       // Try to retrieve state from Preferences.
@@ -90,6 +96,7 @@ public class GeneralProperties
       {
          viewDateFormat = generalPreferences.get(VIEWDATEFORMAT, "MM-DD-YYYY");
          limitIncrement = generalPreferences.getInt(LIMITINCREMENT, limitIncrement);
+         batchSizeEnabled = generalPreferences.getBoolean(BATCHSIZEENABLED, batchSizeEnabled);
          batchSize = generalPreferences.getInt(BATCHSIZE, batchSize);
       }
       catch (NullPointerException npe){}
@@ -109,6 +116,11 @@ public class GeneralProperties
    protected int getLimitIncrement()
    {
       return limitIncrement;
+   }
+   
+   protected boolean getBatchSizeEnabled()
+   {
+      return batchSizeEnabled;
    }
    
    protected int getBatchSize()
@@ -133,6 +145,12 @@ public class GeneralProperties
       savePreference(LIMITINCREMENT, value);
    }
    
+   protected void setBatchSizeEnabled(boolean value)
+   {
+      batchSizeEnabled = value;
+      savePreference(BATCHSIZEENABLED, value);
+   }
+   
    protected void setBatchSize(int value)
    {
       batchSize = value;
@@ -143,7 +161,6 @@ public class GeneralProperties
    // Class methods to try and save the preferences state. 
    //==============================================================
 
-   /*
    private void savePreference(String key, boolean value)
    {
       try
@@ -154,7 +171,6 @@ public class GeneralProperties
       catch (IllegalArgumentException iae){}
       catch (IllegalStateException ise){}
    }
-   */
    
    private void savePreference(String key, String content)
    {
