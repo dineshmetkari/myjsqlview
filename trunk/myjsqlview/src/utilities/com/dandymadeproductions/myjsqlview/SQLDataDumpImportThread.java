@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 5.1 01/14/2012
+// Version 5.2 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,9 @@
 //             ConnectionManager.getConnection() in importSQLFile().
 //         5.1 Removed Method Instances query & multiLineQueries in importSQLFile()
 //             Along With Processing of Input Lines, Simplified.
+//         5.2 Added Batching to the Process of Inserting Data Into the Database.
+//             Introduced Instances currentBatchRows, batchSize, & batchSizeEnabled
+//             in importCSVFile() to Accomplish.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -139,7 +142,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.1 01/14/2012
+ * @version 5.2 03/19/2012
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -220,6 +223,8 @@ class SQLDataDumpImportThread implements Runnable
       StringBuffer queryStatement;
       String failedQuery;
       int fileLineLength, line;
+      int currentBatchRows, batchSize;
+      boolean batchSizeEnabled;
       
       MyJSQLView_ProgressBar sqlImportProgressBar;
 
@@ -234,9 +239,11 @@ class SQLDataDumpImportThread implements Runnable
       }
       
       sqlImportProgressBar = new MyJSQLView_ProgressBar("SQL Import");
+      failedQuery = "";
       fileLineLength = 0;
       line = 0;
-      failedQuery = "";
+      batchSize = DBTablesPanel.getGeneralProperties().getBatchSize();
+      batchSizeEnabled = DBTablesPanel.getGeneralProperties().getBatchSizeEnabled();
       
       // Begin the processing of the input SQL file by reading
       // each line and checking before insert if it is valid
@@ -277,6 +284,7 @@ class SQLDataDumpImportThread implements Runnable
             bufferedReader = new BufferedReader(fileReader);
             
             line = 1;
+            currentBatchRows = 0;
             queryStatement = new StringBuffer();
             
             while ((currentLine = bufferedReader.readLine()) != null)
@@ -319,6 +327,18 @@ class SQLDataDumpImportThread implements Runnable
                      sqlStatement.execute(queryStatement.toString());
                      
                      queryStatement.delete(0, queryStatement.length());
+                     
+                     // Commit on Batch Size if Desired.
+                     if (batchSizeEnabled)
+                     {
+                        if (currentBatchRows > batchSize)
+                        {
+                           dbConnection.commit();
+                           currentBatchRows = 0;
+                        }
+                        else
+                           currentBatchRows++;
+                     }     
                   }
                   else
                      queryStatement.append(currentLine);  

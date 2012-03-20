@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.4 03/10/2012
+// Version 6.5 03/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,9 @@
 //             Them As Is, importCSVFile(). Commented Out the Removal of Double Quotes
 //             in Method separateTokens(), Screws Up the Processing of Array, Point,
 //             etc. Types.
+//         6.5 Added Batching to the Process of Inserting Data Into the Database.
+//             Introduced Instances currentBatchRows, batchSize, & batchSizeEnabled
+//             in importCSVFile() to Accomplish.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -172,7 +175,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.4 03/10/2012
+ * @version 6.5 03/19/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -272,9 +275,10 @@ class CSVDataImportThread implements Runnable
       String currentLine, columnClass, columnType;
       int fileLineLength, fieldNumber, line;
       String[] lineContent;
-
+      int currentBatchRows, batchSize;
+      boolean batchSizeEnabled;
+      
       MyJSQLView_ProgressBar csvImportProgressBar;
-      DataImportProperties dataImportProperties;
       String dateFormat;
 
       // Obtain database connection & setting up.
@@ -300,8 +304,9 @@ class CSVDataImportThread implements Runnable
       columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
 
-      dataImportProperties = DBTablesPanel.getDataImportProperties();
-      dateFormat = dataImportProperties.getDateFormat();
+      dateFormat = DBTablesPanel.getDataImportProperties().getDateFormat();
+      batchSize = DBTablesPanel.getGeneralProperties().getBatchSize();
+      batchSizeEnabled = DBTablesPanel.getGeneralProperties().getBatchSizeEnabled();
 
       fileReader = null;
       bufferedReader = null;
@@ -350,6 +355,7 @@ class CSVDataImportThread implements Runnable
             sqlFieldNamesString = new StringBuffer();
             sqlValuesString = new StringBuffer();
             sqlStatementString = new StringBuffer();
+            currentBatchRows = 0;
             fieldNumber = 0;
             line = 1;
 
@@ -595,6 +601,18 @@ class CSVDataImportThread implements Runnable
 
                   // Insert/Update current line's data.
                   sqlStatement.executeUpdate(sqlStatementString.toString());
+                  
+                  // Commit on Batch Size if Desired.
+                  if (batchSizeEnabled)
+                  {
+                     if (currentBatchRows > batchSize)
+                     {
+                        dbConnection.commit();
+                        currentBatchRows = 0;
+                     }
+                     else
+                        currentBatchRows++;
+                  }   
                }
                csvImportProgressBar.setCurrentValue(line++);
             }
