@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 01/01/2012
+// Version 2.4 03/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //         2.2 10/05/2011 Updated errorString Information in run for URL ClassLoader
 //                        and Class Loading Exceptions.
 //         2.3 01/01/2012 Copyright Update.
+//         2.4 03/21/2012 Change in loadPluginEntry() to Throw IOException Through Finally
+//                        to Close fileWriter. Calling Method run() try and catch.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +94,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.3 01/01/2012
+ * @version 2.4 03/21/2012
  */
 
 class PluginLoader implements Runnable
@@ -161,7 +163,13 @@ class PluginLoader implements Runnable
       
       // Plugin Management Tool Load
       if (!pluginFileName.equals(""))
-         loadPluginEntry(pluginFileName);
+      {
+         try
+         {
+            loadPluginEntry(pluginFileName);
+         }
+         catch (IOException ioe){};
+      }
       
       // Default lib/plugin and configuration load.
       else
@@ -177,18 +185,21 @@ class PluginLoader implements Runnable
    // the MyJSQLView Plugin Management tool in the top tab.
    //==============================================================
 
-   private void loadPluginEntry(String fileName)
+   private void loadPluginEntry(String fileName) throws IOException
    {
       // Method Instances
       String pathKey, className, currentFileName, pluginEntry;
       ZipFile jarFile;
       File configurationFile;
+      FileWriter fileWriter;
       
       // Check for a a valid jar file to be processed
       // then search for a plugin module.
       
       if (!fileName.toLowerCase().endsWith(".jar"))
          return;
+      
+      fileWriter = null;
       
       try
       {
@@ -228,11 +239,10 @@ class PluginLoader implements Runnable
                WriteDataFile.mainWriteDataString(pluginConfigFileString, pluginEntry.getBytes(), false);
             else
             {
-               FileWriter fileWriter = new FileWriter(pluginConfigFileString, true);
+               fileWriter = new FileWriter(pluginConfigFileString, true);
                char[] buffer = new char[pluginEntry.length()];
                pluginEntry.getChars(0, pluginEntry.length(), buffer, 0);
                fileWriter.write(buffer);
-               fileWriter.close();
             }
          }
       }
@@ -241,6 +251,11 @@ class PluginLoader implements Runnable
          String errorString = "PluginLoader loadPluginEntry() Exception: " + fileName + "\n"
                               + e.toString();
          displayErrors(errorString);
+      }
+      finally
+      {
+         if (fileWriter != null)
+            fileWriter.close();
       }
    }
 
