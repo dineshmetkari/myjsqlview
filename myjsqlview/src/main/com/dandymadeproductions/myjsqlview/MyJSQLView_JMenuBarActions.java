@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.36 01/11/2012
+// Version 7.37 03/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -258,6 +258,9 @@
 //        7.35 Copyright Update.
 //        7.36 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in flushPrivileges().
+//        7.37 Change in flushPrivileges() to Throw SQLException Through Finally
+//             to Close mysqlStatement. Calling Method actionsSelections() try and
+//             catch Added Along With flushed Instance.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -290,7 +293,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.36 01/11/2012
+ * @version 7.37 03/21/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -637,7 +640,17 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Flush Privileges for root/mysql
       if (actionCommand.equals(ACTION_FLUSH))
       {
-         if (flushPrivileges())
+         boolean flushed = false;
+         try
+         {
+            flushed = flushPrivileges();
+         }
+         catch (SQLException e)
+         {
+            ConnectionManager.displaySQLErrors(e, "MyJSQLView_JMenuBarActions.actionsSelection()");
+         }
+         
+         if (flushed)
          {
             Thread flushSoundThread = new Thread(new Runnable()
             {
@@ -1170,7 +1183,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
    // the user being root and connected to a mysql database.
    //==============================================================
 
-   private static boolean flushPrivileges()
+   private static boolean flushPrivileges() throws SQLException
    {
       // Class Method Instances.
       String sqlStatementString;
@@ -1181,6 +1194,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Get Connection to Database.
       Connection dbConnection = ConnectionManager.getConnection(
          "MyJSQLView_JMenuBarActions.flushPrivileges()");
+      mysqlStatement = null;
       
       if (dbConnection == null)
          return false;
@@ -1198,13 +1212,17 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          db_resultSet = mysqlStatement.executeQuery(sqlStatementString);
 
          db_resultSet.close();
-         mysqlStatement.close();
          flushSuccess = true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "MyJSQLView_JMenuBarActions.flushPrivileges()");
          flushSuccess = false;
+      }
+      finally
+      {
+         if (mysqlStatement != null)
+            mysqlStatement.close();
       }
 
       ConnectionManager.closeConnection(dbConnection, "MyJSQLView_JMenuBarActions.flushPrivileges()");
