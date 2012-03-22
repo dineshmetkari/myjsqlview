@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.98 03/20/2012
+// Version 4.99 03/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -208,6 +208,9 @@
 //        4.97 Commented Out dbConnection.setAutoCommit() Statements and commit()
 //             for Deletes of All Table Data, deleteAllItems().
 //        4.98 Backed Out Revision 4.97.
+//        4.99 Change in deleteAllItems() to Use TRUNCATE Instead of DELETE SQL
+//             Command for HSQL Because of Heap Memory Errors for Tables With a
+//             Large Number of Rows, 300k+.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -245,7 +248,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.98 03/20/2012
+ * @version 4.99 03/22/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2151,16 +2154,19 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             dbConnection.setAutoCommit(false);
             sqlStatement = dbConnection.createStatement();
 
-            // HSQL & Oracle does not support.
-            
             dataSourceType = ConnectionManager.getDataSourceType();
-            
+         
+            // HSQL & Oracle does not support.
             if (dataSourceType.equals(ConnectionManager.MYSQL)
                 || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                sqlStatement.executeUpdate("BEGIN");
 
             // SQL statement creation.
-            sqlStatementString = "DELETE FROM " + schemaTableName;
+            if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
+               sqlStatementString = "TRUNCATE TABLE " + schemaTableName + " RESTART IDENTITY "
+                                    + " AND COMMIT";
+            else
+               sqlStatementString = "DELETE FROM " + schemaTableName;
 
             // System.out.println(sqlStatementString);
             sqlStatement.executeUpdate(sqlStatementString);
