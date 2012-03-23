@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.43 01/11/2012
+// Version 11.44 03/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -474,6 +474,9 @@
 //             Method loadTable().
 //       11.43 Removed Method Instance sqlStatementString & Replaced With Parent
 //             Class Instance sqlTableStatement.
+//       11.44 Class Method addItem() Added a try catch for setSpecialFields(). Methods
+//             viewSelectedItem(), editSelectedItem() & getColumnNames() Throws for
+//             SQLException Through finally Clause for Closing sqlStatment.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -498,7 +501,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.43 01/11/2012
+ * @version 11.44 03/23/2012
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -522,7 +525,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
    // type, etc., are also stored away for future use.
    //==============================================================
 
-   public boolean getColumnNames(Connection dbConnection)
+   public boolean getColumnNames(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -536,6 +539,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -673,13 +679,17 @@ public class TableTabPanel_MySQL extends TableTabPanel
          */
 
          db_resultSet.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL getColumnNames()");
          return false;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1373,7 +1383,14 @@ public class TableTabPanel_MySQL extends TableTabPanel
          if (columnEnumHashMap.containsKey(currentColumnName)
              || columnSetHashMap.containsKey(currentColumnName))
          {
-            setSpecialFieldData(addForm, dbConnection, currentColumnName, null);
+            try
+            {
+               setSpecialFieldData(addForm, dbConnection, currentColumnName, null);
+            }
+            catch (SQLException e)
+            {
+               ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL addItem()");
+            }  
          }
 
          // DATE Type Field
