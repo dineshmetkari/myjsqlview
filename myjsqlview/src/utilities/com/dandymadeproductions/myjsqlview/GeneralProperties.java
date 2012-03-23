@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 1.5 03/19/2012
+// Version 1.6 03/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //         1.5 Added Class Instance batchSizeEnabled and Corresponding get/setter
 //             Methods. Enabled Commented Out savePreference(String, boolean)
 //             Method.
+//         1.6 Made Method getLimitIncrement() public.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import java.util.prefs.Preferences;
  * MyJSQLView general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/19/2012
+ * @version 1.6 03/23/2012
  */
 
 public class GeneralProperties
@@ -113,7 +114,7 @@ public class GeneralProperties
       return viewDateFormat;
    }
    
-   protected int getLimitIncrement()
+   public int getLimitIncrement()
    {
       return limitIncrement;
    }
