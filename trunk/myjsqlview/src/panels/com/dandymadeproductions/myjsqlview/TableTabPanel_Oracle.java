@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.1 01/11/2012
+// Version 11.2 03/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -266,6 +266,8 @@
 //             ConnectionManager.getConnection() in setTableHeadings().
 //        11.1 Removed Method Instance sqlStatementString & Replaced With Parent
 //             Class Instance sqlTableStatement.
+//        11.2 Methods viewSelectedItem(), editSelectedItem() & getColumnNames() Throws
+//             for SQLException Through finally Clause for Closing sqlStatment. 
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -298,7 +300,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.1 01/11/2012
+ * @version 11.2 03/23/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -323,7 +325,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
    // size, type, etc., are also stored away for future use.
    //==============================================================
 
-   public boolean getColumnNames(Connection dbConnection)
+   public boolean getColumnNames(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -339,6 +341,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -561,13 +566,17 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
          rs.close();
          db_resultSet.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle getColumnNames()");
          return false;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1007,7 +1016,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
    // Class method to view the current selected item in the table.
    //=============================================================
 
-   public void viewSelectedItem(Connection dbConnection, int rowToView)
+   public void viewSelectedItem(Connection dbConnection, int rowToView) throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1021,6 +1030,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entry.
+      
+      sqlStatement = null;
+      
       try
       {
          // Begin the SQL statement creation.
@@ -1241,11 +1253,15 @@ public class TableTabPanel_Oracle extends TableTabPanel
             i++;
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle viewSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1352,6 +1368,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
    //==============================================================
 
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
+                                throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1387,6 +1404,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entries field data.
+      
+      sqlStatement = null;
 
       try
       {
@@ -1637,11 +1656,15 @@ public class TableTabPanel_Oracle extends TableTabPanel
             }
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_Oracle editSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
    
