@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 01/11/2012
+// Version 2.3 03/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,9 @@
 //             Method loadTable().
 //         2.2 Removed Method Instance sqlStatementString & Replaced With Parent
 //             Class Instance sqlTableStatement.
+//         2.3 Class Method addItem() Added a try catch for setSpecialFields(). Methods
+//             viewSelectedItem(), editSelectedItem() & getColumnNames() Throws for
+//             SQLException Through finally Clause for Closing sqlStatment. 
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -86,7 +89,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.2 01/11/2012
+ * @version 2.3 03/23/2012
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -110,7 +113,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
    // type, etc., are also stored away for future use.
    //==============================================================
 
-   public boolean getColumnNames(Connection dbConnection)
+   public boolean getColumnNames(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -126,6 +129,9 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -293,13 +299,17 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
          rs.close();
          db_resultSet.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_SQLite getColumnNames()");
          return false;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -639,7 +649,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
    // Class method to view the current selected item in the table.
    //==============================================================
 
-   public void viewSelectedItem(Connection dbConnection, int rowToView)
+   public void viewSelectedItem(Connection dbConnection, int rowToView) throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -653,6 +663,9 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entry.
+      
+      sqlStatement = null;
+      
       try
       {
          // Begin the SQL statement creation.
@@ -840,11 +853,15 @@ public class TableTabPanel_SQLite extends TableTabPanel
             i++;
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_SQLite viewSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -908,7 +925,14 @@ public class TableTabPanel_SQLite extends TableTabPanel
          if (columnEnumHashMap.containsKey(currentColumnName)
              || columnSetHashMap.containsKey(currentColumnName))
          {
-            setSpecialFieldData(addForm, dbConnection, currentColumnName, null);
+            try
+            {
+               setSpecialFieldData(addForm, dbConnection, currentColumnName, null);
+            }
+            catch (SQLException e)
+            {
+               ConnectionManager.displaySQLErrors(e, "TableTabPanel_SQLite addItem()");
+            }  
          }
 
          // DATE Type Field
@@ -945,6 +969,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
    //==============================================================
 
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
+                                throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -981,6 +1006,8 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entries field data.
+      
+      sqlStatement = null;
 
       try
       {
@@ -1218,11 +1245,15 @@ public class TableTabPanel_SQLite extends TableTabPanel
             }
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_SQLite editSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 }
