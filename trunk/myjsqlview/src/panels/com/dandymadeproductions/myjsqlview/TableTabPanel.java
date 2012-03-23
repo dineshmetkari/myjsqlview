@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.99 03/22/2012
+// Version 5.00 03/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -211,6 +211,11 @@
 //        4.99 Change in deleteAllItems() to Use TRUNCATE Instead of DELETE SQL
 //             Command for HSQL Because of Heap Memory Errors for Tables With a
 //             Large Number of Rows, 300k+.
+//        5.00 Addition of validColumnNames Instance to Constructor. Class Methods
+//             setSpecialFieldData(), deleteSelectedItems(), & deleteAllItems()
+//             to Throw SQLException With finally for Closing SQLStatement. Try
+//             catch Statement in executeActions() for These Methods in Addition
+//             to editSelectedItem() Call. 
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -248,7 +253,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 4.99 03/22/2012
+ * @version 5.00 03/23/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -347,6 +352,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       // Constructor Instances.
       String iconsDirectory, resource;
+      boolean validColumnNames;
       
       JPanel stateSortSearchPanel, statePanel, sortPanel, sortOrderButtonPanel;
       JPanel searchPanel, actionPanel, actionButtonPanel;
@@ -357,6 +363,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // character, & proper table name qualifier.
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      validColumnNames = false;
 
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(sqlTable);
@@ -472,7 +479,15 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // the application can detect this later in the checking
       // for successful initialization.
 
-      if (!getColumnNames(setup_dbConnection))
+      try
+      {
+         validColumnNames = getColumnNames(setup_dbConnection);
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+      }
+      if (!validColumnNames)
       {
          fields = null;
          return;
@@ -1134,7 +1149,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                id = listTable.getValueAt(selectedRow, primaryKeyColumn);
                if (id != null)
                {
-                  viewSelectedItem(work_dbConnection, selectedRow);
+                  try
+                  {
+                     viewSelectedItem(work_dbConnection, selectedRow);
+                  }
+                  catch (SQLException e)
+                  {
+                     ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+                  }
                   centerCardLayout.show(centerPanel, sqlTable + " Form");
                   tableViewForm.setFocus();
                }
@@ -1165,7 +1187,16 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                id = listTable.getValueAt(selectedRow, primaryKeyColumn);
                columnName = columnNamesHashMap.get(listTable.getColumnName(primaryKeyColumn));
                if (id != null)
-                  editSelectedItem(work_dbConnection, selectedRow, columnName, id);
+               {
+                  try
+                  {
+                     editSelectedItem(work_dbConnection, selectedRow, columnName, id);
+                  }
+                  catch (SQLException e)
+                  {
+                     ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+                  }
+               }
             }
          }
 
@@ -1195,7 +1226,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
                if (id != null)
                {
-                  deleteSelectedItems(work_dbConnection);
+                  try
+                  {
+                     deleteSelectedItems(work_dbConnection);
+                  }
+                  catch (SQLException e)
+                  {
+                     ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+                  }
                   loadTable(work_dbConnection);
                   tableModel.setValues(tableData);
                   centerCardLayout.show(centerPanel, sqlTable);
@@ -1206,7 +1244,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          // Delete All Action.
          else if (panelSource == deleteAllButton)
          {
-            deleteAllItems(work_dbConnection);
+            try
+            {
+               deleteAllItems(work_dbConnection);
+            }
+            catch (SQLException e)
+            {
+               ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+            }
             loadTable(work_dbConnection);
             tableModel.setValues(tableData);
             centerCardLayout.show(centerPanel, sqlTable);
@@ -1250,7 +1295,14 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                if (id != null)
                {
                   tableViewForm.clearBlobBytesHashMap();
-                  viewSelectedItem(work_dbConnection, selectedRow);
+                  try
+                  {
+                     viewSelectedItem(work_dbConnection, selectedRow);
+                  }
+                  catch (SQLException e)
+                  {
+                     ConnectionManager.displaySQLErrors(e, "TableTabPanel executeActions()");
+                  }
                   centerCardLayout.show(centerPanel, sqlTable + " Form");
                   tableViewForm.setFocus();
                }
@@ -1805,12 +1857,15 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    
    protected void setSpecialFieldData(TableEntryForm fillForm, Connection dbConnection,
                                       Object currentColumnName, Object currentContentData)
+                                      throws SQLException
    {
       // Method Instances
       Statement sqlStatement;
       ResultSet db_resultSet;
 
       // Setting up & Filling ComboBox Fields
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -1869,12 +1924,16 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                fillForm.setComboBoxField(currentColumnName, comboBoxList, currentContentData);
             else
                fillForm.setSetFields(currentColumnName, comboBoxList, currentContentData);
-         }
-         sqlStatement.close();
+         } 
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel setSpecialFieldData()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
    
@@ -1883,7 +1942,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Either single or multiple entries can be removed.
    //==============================================================
 
-   public void deleteSelectedItems(Connection dbConnection)
+   public void deleteSelectedItems(Connection dbConnection) throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1931,6 +1990,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          if (deleteDialog.isActionResult())
          {
             // Connect to database to delete the selected row(s).
+            sqlStatement = null;
+            
             try
             {
                dbConnection.setAutoCommit(false);
@@ -2074,8 +2135,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                   }
                }
                dbConnection.commit();
-               sqlStatement.close();
-               dbConnection.setAutoCommit(true);
             }
             catch (SQLException e)
             {
@@ -2083,13 +2142,18 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                try
                {
                   dbConnection.rollback();
-                  dbConnection.setAutoCommit(true);
                }
                catch (SQLException error)
                {
                   ConnectionManager.displaySQLErrors(e,
                                      "TableTabPanel deleteSelectedItems() rollback failed");
                }
+            }
+            finally
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+               dbConnection.setAutoCommit(true);
             }
          }
          deleteDialog.dispose();
@@ -2100,7 +2164,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to delete all table entry items.
    //==============================================================
 
-   public void deleteAllItems(Connection dbConnection)
+   public void deleteAllItems(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -2149,6 +2213,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       if (deleteAllDialog.isActionResult() && confirmCheckbox.isSelected())
       {
          // Connect to database to delete the selected row(s).
+         sqlStatement = null;
+         
          try
          {
             dbConnection.setAutoCommit(false);
@@ -2172,21 +2238,24 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             sqlStatement.executeUpdate(sqlStatementString);
 
             dbConnection.commit();
-            sqlStatement.close();
-            dbConnection.setAutoCommit(true);
          }
          catch (SQLException e)
          {
             ConnectionManager.displaySQLErrors(e, "TableTabPanel deleteAllItems()");
             try
             {
-               dbConnection.rollback();
-               dbConnection.setAutoCommit(true);
+               dbConnection.rollback(); 
             }
             catch (SQLException error)
             {
-               ConnectionManager.displaySQLErrors(e, "TableTabPanel deleteAllItems() rollback failed");
+               ConnectionManager.displaySQLErrors(error, "TableTabPanel deleteAllItems() rollback failed");
             }
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+            dbConnection.setAutoCommit(true);
          }
       }
       deleteAllDialog.dispose();
