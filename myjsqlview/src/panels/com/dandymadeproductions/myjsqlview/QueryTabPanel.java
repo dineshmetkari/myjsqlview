@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.1 01/01/2012
+// Version 9.2 03/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -213,6 +213,9 @@
 //             advSortSearchApplyButton. Class Methods Effected actionPerformed() &
 //             setTableRowSize().
 //         9.1 Copyright Update.
+//         9.2 Change in getColumnNames() & viewSelectedItem() to Throw SQLException
+//             Through Finally to Close sqlStatement. Try & catch in Constructor
+//             & actionPerformed() for Calls to These Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -244,7 +247,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.1 01/01/2012
+ * @version 9.2 03/21/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -390,7 +393,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Connecting to the database table for obtaining
       // the column names. Sets up the base vectors, hashmaps.
-      getColumnNames(dbConnection, query);
+      try
+      {
+         getColumnNames(dbConnection, query);
+      }
+      catch (SQLException sqle)
+      {
+         QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
+      }
 
       sortComboBox = new JComboBox(comboBoxFields);
       sortComboBox.addActionListener(this);
@@ -768,7 +778,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                                                     closeViewButton, nextViewButton);
 
                   centerPanel.add(sqlTable + " Form", tableViewForm);
-                  viewSelectedItem(dbConnection);
+                  try
+                  {
+                     viewSelectedItem(dbConnection);
+                  }
+                  catch (SQLException sqle)
+                  {
+                     QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
+                  }
                   centerCardLayout.show(centerPanel, sqlTable + " Form");
                   tableViewForm.setFocus();
                }
@@ -816,7 +833,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                id = listTable.getValueAt(listTable.getSelectedRow(), 0);
                if (id != null)
                {
-                  viewSelectedItem(dbConnection);
+                  try
+                  {
+                     viewSelectedItem(dbConnection);
+                  }
+                  catch (SQLException sqle)
+                  {
+                     QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
+                  }
                   centerCardLayout.show(centerPanel, sqlTable + " Form");
                   tableViewForm.setFocus();
                }
@@ -936,7 +960,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // type, are also stored away for future use.
    //==============================================================
 
-   private void getColumnNames(Connection dbConnection, String query)
+   private void getColumnNames(Connection dbConnection, String query) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -950,6 +974,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Connecting to the data base, to obtain
       // meta data, and column names.
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -1089,7 +1115,6 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          }
          sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
          db_resultSet.close();
-         sqlStatement.close();
 
          // Looks good so validate.
          validQuery = true;
@@ -1100,6 +1125,11 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                               + e.getSQLState() + " " + "VendorError: " + e.getErrorCode();
          QueryFrame.setQueryResultTextArea(errorString);
          return;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1861,7 +1891,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // Class method to view the current selected item in the table.
    //==============================================================
 
-   private void viewSelectedItem(Connection dbConnection)
+   private void viewSelectedItem(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -1885,6 +1915,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Connecting to the data base, to obtain
       // the selected entry.
+      sqlStatement = null;
+      
       try
       {
          // Begin the SQL statement creation.
@@ -2136,11 +2168,15 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             i++;
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "QueryTabPanel viewSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
