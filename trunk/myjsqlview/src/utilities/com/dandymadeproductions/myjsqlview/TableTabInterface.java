@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.5 01/01/2012
+// Version 3.6 03/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //         3.3 Added Interface Method saveHistory().
 //         3.4 Added Interface Method setViewOnly().
 //         3.5 Copyright Update.
+//         3.6 Added throws SQLException to getColumnNames(), viewSelectedItem(),
+//             editSelectedItem(), deleteSelectedItems(), & deleteAllItems().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -73,6 +75,7 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.Graphics;
 import java.awt.print.PageFormat;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Vector;
 import javax.swing.JTable;
@@ -83,7 +86,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.5 01/01/2012
+ * @version 3.6 03/22/2012
  */
 
 interface TableTabInterface
@@ -92,7 +95,7 @@ interface TableTabInterface
    // Class method to collect the column names from the table.
    //==============================================================
 
-   boolean getColumnNames(Connection dbConnection);
+   boolean getColumnNames(Connection dbConnection) throws SQLException;
 
    //==============================================================
    // Class method to load the table data into the summary view.
@@ -110,7 +113,7 @@ interface TableTabInterface
    // Class method to view the current selected item in the table.
    //==============================================================
 
-   void viewSelectedItem(Connection dbConnection, int rowToView);
+   void viewSelectedItem(Connection dbConnection, int rowToView) throws SQLException;
 
    //==============================================================
    // Class method to add a table entry.
@@ -122,20 +125,21 @@ interface TableTabInterface
    // Class method to edit the current selected item.
    //==============================================================
 
-   void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id);
+   void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
+                         throws SQLException;
 
    //==============================================================
    // Class method to delete table entry item(s) from the database.
    // Either single or multiple entries can be removed.
    //==============================================================
 
-   void deleteSelectedItems(Connection dbConnection);
+   void deleteSelectedItems(Connection dbConnection) throws SQLException;
 
    //==============================================================
    // Class method to delete all table entries from the database.
    //==============================================================
 
-   void deleteAllItems(Connection dbConnection);
+   void deleteAllItems(Connection dbConnection) throws SQLException;
 
    //==============================================================
    // Class method to paste the clipboard contents into the selected
