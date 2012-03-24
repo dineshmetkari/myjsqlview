@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.9 01/01/2012
+// Version 5.0 03/24/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,10 @@
 //         4.8 Added Framework for MSAccess Table Definition Generation. Information
 //             Only at This Time.
 //         4.9 Copyright Update.
+//         5.0 Each Supported Database Definition Generator Method throws a SQLException
+//             on finally for Close SQLStatements. Try catch in getTableDefinition().
+//             Made tableDefinition a Class Instance and Each Method No Longer Returning
+//             tableDefinition String.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -156,7 +160,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 4.9 01/01/2012
+ * @version 5.0 03/24/2012
  */
 
 class TableDefinitionGenerator
@@ -167,6 +171,7 @@ class TableDefinitionGenerator
    private String dbIdentifierQuoteString;
    private String identifierQuoteString;
    private DataExportProperties sqlDataExportOptions;
+   private StringBuffer tableDefinition;
 
    //==============================================================
    // TableDefinitionGenerator Constructor.
@@ -199,23 +204,25 @@ class TableDefinitionGenerator
          schemaName = "";
          tableName = schemaTableName.replaceAll(dbIdentifierQuoteString, "");
       }
+      tableDefinition = new StringBuffer("");
    }
 
    //==============================================================
    // Class method for creating a given MySQL TABLE definition.
    //==============================================================
 
-   private String createMySQLTableDefinition()
+   private void createMySQLTableDefinition() throws SQLException
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer("");
-
       String sqlStatementString;
       Statement sqlStatement;
       ResultSet resultSet;
 
       // Beginning the creation of the string description
       // of the table Structure.
+      
+      sqlStatement = null;
+      
       try
       {
          // Setup a connection statement.
@@ -239,13 +246,15 @@ class TableDefinitionGenerator
          tableDefinition.append(resultSet.getString(2) + ";\n");
 
          resultSet.close();
-         sqlStatement.close();
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createMySQLTableDefinition()");
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -253,10 +262,9 @@ class TableDefinitionGenerator
    // Class method for creating a given PostgreSQL TABLE definition.
    //==============================================================
 
-   private String createPostgreSQLTableDefinition()
+   private void createPostgreSQLTableDefinition() throws SQLException
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer();
       String tableType;
       String columnName, columnType, constraint;
       StringBuffer primaryKeys, uniqueKeys;
@@ -272,6 +280,10 @@ class TableDefinitionGenerator
 
       // Beginning the creation of the string description
       // of the table Structure.
+      
+      sqlStatement = null;
+      sqlStatement2 = null;
+      
       try
       {
          // Setup a connection statement.
@@ -326,9 +338,6 @@ class TableDefinitionGenerator
                                       + " AS " + resultSet.getString(1) + "\n");
             }
             resultSet.close();
-            sqlStatement2.close();
-            sqlStatement.close();
-            return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
          }
          // TABLE
          else
@@ -617,14 +626,17 @@ class TableDefinitionGenerator
          tableDefinition.append("\n);\n");
 
          resultSet.close();
-         sqlStatement2.close();
-         sqlStatement.close();
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createPostgreSQLTableDefinition()");
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
+         if (sqlStatement2 != null)
+            sqlStatement2.close();
       }
    }
 
@@ -632,10 +644,9 @@ class TableDefinitionGenerator
    // Class method for creating a given HSQL TABLE definition.
    //================================================================
 
-   private String createHSQLTableDefinition()
+   private void createHSQLTableDefinition() throws SQLException
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer();
       String dataSourceType;
       String tableType;
       String catalogName;
@@ -665,6 +676,7 @@ class TableDefinitionGenerator
       timeTMZFieldsHashMap = new HashMap<String, String>();
       intervalFieldsHashMap = new HashMap<String, String>();
       columnPrecisionHashMap = new HashMap<String, Integer>();
+      sqlStatement = null;
       
       try
       {
@@ -729,8 +741,6 @@ class TableDefinitionGenerator
                                        + " AS " + resultSet.getString(1) + ";\n");
             }
             resultSet.close();
-            sqlStatement.close();
-            return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
          }
          // TABLE
          else
@@ -1051,13 +1061,15 @@ class TableDefinitionGenerator
          tableDefinition.append("\n);\n");
 
          resultSet.close();
-         sqlStatement.close();
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createHSQLTableDefinition()");
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1065,10 +1077,9 @@ class TableDefinitionGenerator
    // Class method for creating a given Oracle TABLE definition.
    //================================================================
 
-   private String createOracleTableDefinition()
+   private void createOracleTableDefinition() throws SQLException
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer();
       String tableType;
       String columnName, columnClass, columnType;
       int columnSize, columnDecimalDigits;
@@ -1091,6 +1102,8 @@ class TableDefinitionGenerator
       ResultSet resultSet;
 
       // Begin creating the table structure scheme.
+      
+      sqlStatement = null;
 
       try
       {
@@ -1135,8 +1148,6 @@ class TableDefinitionGenerator
                                       + " AS " + resultSet.getString(1) + ";\n");
             }
             resultSet.close();
-            sqlStatement.close();
-            return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
          }
          // TABLE
          else
@@ -1430,13 +1441,15 @@ class TableDefinitionGenerator
          }
 
          resultSet.close();
-         sqlStatement.close();
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createOracleTableDefinition()");
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
    
@@ -1444,10 +1457,9 @@ class TableDefinitionGenerator
    // Class method for creating a given SQLite TABLE definition.
    //==============================================================
 
-   private String createSQLiteTableDefinition()
+   private void createSQLiteTableDefinition() throws SQLException
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer("");
       String tableType;
 
       String sqlStatementString;
@@ -1456,6 +1468,9 @@ class TableDefinitionGenerator
 
       // Beginning the creation of the string description
       // of the table Structure.
+      
+      sqlStatement = null;
+      
       try
       {
          // Setup a connection statement.
@@ -1490,13 +1505,15 @@ class TableDefinitionGenerator
             tableDefinition.append("\n");
 
          resultSet.close();
-         sqlStatement.close();
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createSQLiteTableDefinition()");
-         return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
    
@@ -1504,16 +1521,13 @@ class TableDefinitionGenerator
    // Class method for creating a given MSAccess TABLE definition.
    //==============================================================
 
-   private String createMSAccessTableDefinition()
+   private void createMSAccessTableDefinition()
    {
       // Class Method Instances.
-      StringBuffer tableDefinition = new StringBuffer("");
-      
       // Beginning the creation of the string description
       // of the table Structure.
       
       tableDefinition.append("-- MSAccess Table Definition, DDL, Not Supported At This Time.\n");
-      return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
    }
 
    //==============================================================
@@ -1530,45 +1544,55 @@ class TableDefinitionGenerator
       // the table definition.
       
       dataSourceType = ConnectionManager.getDataSourceType();
-
-      // MySQL
-      if (dataSourceType.equals(ConnectionManager.MYSQL))
+      tableDefinition.delete(0, tableDefinition.length());
+      
+      try
       {
-         return createMySQLTableDefinition();
+         // MySQL
+         if (dataSourceType.equals(ConnectionManager.MYSQL))
+         {
+            createMySQLTableDefinition();
+         }
+
+         // PostgreSQL
+         else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+         {
+            createPostgreSQLTableDefinition();
+         }
+
+         // HSQL
+         else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
+         {
+            createHSQLTableDefinition();
+         }
+
+         // Oracle
+         else if (dataSourceType.equals(ConnectionManager.ORACLE))
+         {
+            createOracleTableDefinition();
+         }
+         
+         // SQLite
+         else if (dataSourceType.equals(ConnectionManager.SQLITE))
+         {
+            createSQLiteTableDefinition();
+         }
+         
+         // MSAccess
+         else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+         {
+            createMSAccessTableDefinition();
+         }
+
+         // Default
+         else
+            tableDefinition.append(";\n");
       }
-
-      // PostgreSQL
-      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+      catch (SQLException e)
       {
-         return createPostgreSQLTableDefinition();
-      }
-
-      // HSQL
-      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
-      {
-         return createHSQLTableDefinition();
-      }
-
-      // Oracle
-      else if (dataSourceType.equals(ConnectionManager.ORACLE))
-      {
-         return createOracleTableDefinition();
+         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator getTableDefinition()");
       }
       
-      // SQLite
-      else if (dataSourceType.equals(ConnectionManager.SQLITE))
-      {
-         return createSQLiteTableDefinition();
-      }
-      
-      // MSAccess
-      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-      {
-         return createMSAccessTableDefinition();
-      }
-
-      // Default
-      else
-         return ";\n";
+      return (tableDefinition.toString().replaceAll(dbIdentifierQuoteString, identifierQuoteString));
    }
 }
