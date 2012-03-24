@@ -1094,7 +1094,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
    // Class method to view the current selected item in the table.
    //==============================================================
 
-   public void viewSelectedItem(Connection dbConnection, int rowToView)
+   public void viewSelectedItem(Connection dbConnection, int rowToView) throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1109,6 +1109,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entry.
+      
+      sqlStatement = null;
+      
       try
       {
          // Begin the SQL statement creation.
@@ -1315,11 +1318,15 @@ public class TableTabPanel_MySQL extends TableTabPanel
             i++;
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL viewSelectedItem()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1451,6 +1458,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
    //==============================================================
 
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
+                                throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1486,6 +1494,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
       // Connecting to the data base, to obtain
       // the selected entries field data.
+      
+      sqlStatement = null;
 
       try
       {
@@ -1797,11 +1807,15 @@ public class TableTabPanel_MySQL extends TableTabPanel
             }
          }
          db_resultSet.close();
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_MySQL editSelectedEntry()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 }
