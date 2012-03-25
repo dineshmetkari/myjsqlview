@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Vivek Singh, Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 03/25/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,10 @@
 //                        to Component. Check of component Moved to Just Constructor
 //                        and Check for Width & Height.
 //         1.9 01/01/2012 Copyright Update.
+//         2.0 03/25/2012 Change to Insure a Passed Component in saveImage() is Not
+//                        NUll Before Proceeding. Also Addition of Commented Code
+//                        That May Reduce the Possibility of Throwning a Heap Memory
+//                        Error.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,11 +62,18 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
+
 import javax.imageio.ImageIO;
-import javax.swing.*;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 
 /**
@@ -70,7 +81,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.9 01/01/2012
+ * @version 2.0 03/25/2012
  */
 
 public class ImageUtil
@@ -117,6 +128,10 @@ public class ImageUtil
       GraphicsDevice graphicsDevice;
       GraphicsConfiguration graphicsConfiguration;
       BufferedImage bufferedImage;
+      
+      // Check to see if any graphics to save.
+      if (component == null)
+         return;
 
       // Create a dialog for the user to save the image
       // file to a directory.
@@ -188,6 +203,14 @@ public class ImageUtil
 
          componentWidth = component.getWidth();
          componentHeight = component.getHeight();
+         
+         // This maybe an alternative to the creation of a Graphics
+         // Environment that may throw a heap memory error on createGraphics().
+         /*
+         bufferedImage = new BufferedImage(componentWidth, componentHeight, BufferedImage.TYPE_INT_RGB);
+         g2 = bufferedImage.createGraphics();
+         component.paint(g2);
+         */
 
          graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
          graphicsDevice = graphicsEnvironment.getDefaultScreenDevice();
@@ -211,6 +234,7 @@ public class ImageUtil
             JOptionPane.showMessageDialog(null, exp.getMessage(), resourceMessage,
                                           JOptionPane.ERROR_MESSAGE);
          }
+         g2.dispose();
       }
       else
          return;
