@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 03/19/2012
+// Version 1.7 03/27/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,9 @@
 //                        batchEnabledCheckBox, DEFAULT_BATCH_SIZE_ENABLED, & DEFAULT_BATCH
 //                        _SIZE. Created Components in Constructor. Added set/getter to get/
 //                        setGeneralProperties() Methods.
+//         1.7 03/27/2012 Increased Class Instance DEFAULT_LIMIT_INCREMENT to 50,0000.
+//                        Constructor Instances maxLimitIncrementSize & spinnerLimitIncrement
+//                        Increased to 500,000 & 10,000 Respectably.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +80,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.6 03/19/2012
+ * @version 1.7 03/27/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -91,7 +94,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    private JCheckBox batchEnabledCheckBox;
    private JButton restoreDefaultsButton, applyButton;
    
-   protected static final int DEFAULT_LIMIT_INCREMENT = 10000;
+   protected static final int DEFAULT_LIMIT_INCREMENT = 50000;
    protected static final boolean DEFAULT_BATCH_SIZE_ENABLED = false;
    protected static final int DEFAULT_BATCH_SIZE = 50000;
 
@@ -111,8 +114,8 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       
       SpinnerNumberModel limitIncrementSpinnerModel;
       final int minimumLimitIncrementSize = 2;
-      final int maxLimitIncrementSize = 100000;
-      final int spinnerLimitIncrementStep = 1000;
+      final int maxLimitIncrementSize = 500000;
+      final int spinnerLimitIncrementStep = 10000;
       
       SpinnerNumberModel batchSizeSpinnerModel;
       final int minimumBatchSize = 2;
