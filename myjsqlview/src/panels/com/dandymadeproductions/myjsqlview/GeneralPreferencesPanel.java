@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 03/27/2012
+// Version 1.8 03/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         1.7 03/27/2012 Increased Class Instance DEFAULT_LIMIT_INCREMENT to 50,0000.
 //                        Constructor Instances maxLimitIncrementSize & spinnerLimitIncrement
 //                        Increased to 500,000 & 10,000 Respectably.
+//         1.8 03/29/2012 Added Class Instance generalOptionsPanelFiller & Used This New
+//                        Canvas to be Fill the Center.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +82,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.7 03/27/2012
+ * @version 1.8 03/29/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -88,6 +90,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
    // Class Instances.
    private static final long serialVersionUID = 4715186260795158107L;
    
+   protected GeneralOptionsPreferencesFiller generalOptionsPanelFiller;
    private JComboBox dateFormatComboBox;
    private JSpinner limitIncrementSpinner;
    private JSpinner batchSizeSpinner;
@@ -107,7 +110,7 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       // Class Instances
       JPanel mainPanel;
       JPanel dateFormatPanel, limitIncrementPanel, batchPanel;
-      JPanel centerPanel;
+      JPanel fillerPanel;
       JPanel buttonPanel;
       JLabel dateFormatLabel, limitIncrementLabel;
       JLabel batchSizeLabel;
@@ -246,10 +249,18 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       
       add(mainPanel, BorderLayout.NORTH);
       
-      // Dummy Center Panel
-      centerPanel = new JPanel();
-      centerPanel.setBorder(BorderFactory.createLoweredBevelBorder());
-      add(centerPanel, BorderLayout.CENTER);
+      // Filler Center Panel.
+      
+      fillerPanel = new JPanel(new GridLayout(1, 1, 0, 0));
+      fillerPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(0, 0, 0, 0),
+         BorderFactory.createLoweredBevelBorder()));
+      
+      generalOptionsPanelFiller = new GeneralOptionsPreferencesFiller();
+      generalOptionsPanelFiller.setThreadAction(true);
+     
+      fillerPanel.add(generalOptionsPanelFiller);
+      add(fillerPanel, BorderLayout.CENTER);
 
       // Button Action Options Panel
       buttonPanel = new JPanel();
