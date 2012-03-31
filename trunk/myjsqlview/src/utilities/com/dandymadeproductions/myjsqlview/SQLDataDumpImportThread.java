@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 5.2 03/19/2012
+// Version 5.3 03/31/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,24 +35,24 @@
 // Version 1.0 Original SQLDataDumpImportThread Class.
 //         1.1 Minor Format/My Comments Changes. Added to CVS.
 //         1.2 Added progress bar and transaction.
-//         1.3 Several Checks at Reading File and Data Dump
-//             Cancel. Class Instance validDump.
+//         1.3 Several Checks at Reading File and Data Dump Cancel. Class
+//             Instance validDump.
 //         1.4 Class Method run() JOptionPane, msg Change.
-//         1.5 Cleaned & Reviewed for Bug in 2.64 on FileSize Errors.
-//             The SQL Statements Are Separated Properly. Must Use
-//             Explicit SQL Statements for Large File Data Imports.
+//         1.5 Cleaned & Reviewed for Bug in 2.64 on FileSize Errors. The
+//             SQL Statements Are Separated Properly. Must Use Explicit
+//             SQL Statements for Large File Data Imports.
 //         1.6 Class Instances validDump Changed to validImport. Check
 //             Class Method refreshTablePanel() for Null Table Tab.
 //         1.7 Class Method importSQLFile Check to Include Statement
 //             Execution BEGIN if the Database is MySQL.
 //         1.8 Cleaned Up Javadoc Comments.
-//         1.9 Set "BEGIN" SQL Statement to be a executeUpdate() in
-//             Class Method importSQLFile().
-//         2.0 Class Method Instance sqlDumpProgressBar Properly Set
-//             to Visible & Packed in Class Method importSQLFile().
+//         1.9 Set "BEGIN" SQL Statement to be a executeUpdate() in Class
+//             Method importSQLFile().
+//         2.0 Class Method Instance sqlDumpProgressBar Properly Set to
+//             Visible & Packed in Class Method importSQLFile().
 //         2.1 Header Update.
-//         2.2 Removed BEGIN Statement Execution for HSQL Database
-//             in Class Method importSQLFile().
+//         2.2 Removed BEGIN Statement Execution for HSQL Database in Class
+//             Method importSQLFile().
 //         2.3 Minor Format Change.
 //         2.4 Class Method refreshTableTabPanel() get/setTableFields()
 //             Changed to get/setTableHeadings().
@@ -117,6 +117,8 @@
 //         5.2 Added Batching to the Process of Inserting Data Into the Database.
 //             Introduced Instances currentBatchRows, batchSize, & batchSizeEnabled
 //             in importCSVFile() to Accomplish.
+//         5.3 Class Method importSQLFile Finally for sqlStatement, & fileReader
+//             bufferedReader. Try catch in run() to Handle These SQL & IO Exceptions.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -142,7 +144,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.2 03/19/2012
+ * @version 5.3 03/31/2012
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -187,7 +189,15 @@ class SQLDataDumpImportThread implements Runnable
       if (file.exists())
       {
          // Importing data dump from SQL file
-         importSQLFile();
+         
+         try
+         {
+            importSQLFile();
+         }
+         catch (Exception e)
+         {
+            // Failed to Close Resource.
+         }
 
          // Refreshing database tables or selected table
          // panel to see new inserted data
@@ -210,7 +220,7 @@ class SQLDataDumpImportThread implements Runnable
    // Class method for importing a sql dump file
    //==============================================================
 
-   private void importSQLFile()
+   private void importSQLFile() throws Exception
    {
       // Class Method Instances.
       Connection dbConnection;
@@ -248,6 +258,10 @@ class SQLDataDumpImportThread implements Runnable
       // Begin the processing of the input SQL file by reading
       // each line and checking before insert if it is valid
       // not a comment.
+      
+      fileReader = null;
+      bufferedReader = null;
+      sqlStatement = null;
       
       try
       {
@@ -355,9 +369,6 @@ class SQLDataDumpImportThread implements Runnable
             else
                dbConnection.rollback();
 
-            fileReader.close();
-            bufferedReader.close();
-            sqlStatement.close();
             dbConnection.setAutoCommit(true);
             ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile()");
          }
@@ -368,7 +379,6 @@ class SQLDataDumpImportThread implements Runnable
                JOptionPane.ERROR_MESSAGE);
             try
             {
-               sqlStatement.close();
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
                ConnectionManager
@@ -379,6 +389,14 @@ class SQLDataDumpImportThread implements Runnable
                ConnectionManager.displaySQLErrors(error,
                   "SQLDataDumpImportThread importSQLFile() rollback failed");
             }
+         }
+         finally
+         {
+            if (fileReader != null)
+               fileReader.close();
+            
+            if (bufferedReader != null)
+               bufferedReader.close();
          }
       }
       catch (SQLException e)
@@ -397,7 +415,11 @@ class SQLDataDumpImportThread implements Runnable
             ConnectionManager.displaySQLErrors(e, "SQLDataDumpImportThread importSQLFile() rollback failed");
          }
       }
-      
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
+      }
    }
    
    //==============================================================
