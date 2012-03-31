@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.3 01/01/2012
+// Version 8.4 03/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -168,6 +168,9 @@
 //             DBTablesPanel.Start/StopStatusTimer() and Reloaded Selected Table in actionPerformed()
 //             on OK.
 //         8.3 Copyright Update.
+//         8.4 Implemented the Control of the generalOptionsPanelFiller Thread in Constructor,
+//             actionPerformed(), valueChanged(), & Window Events by Suspending or Set Thread
+//             State.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -197,7 +200,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.3 01/01/2012
+ * @version 8.4 03/28/2012
  */
 
 //=================================================================
@@ -500,6 +503,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       {
          MyJSQLView_JMenuBarActions.setPreferencesNotVisisble();
          preferencesTopPanel.suspendPanel(true);
+         generalPreferencesPanel.generalOptionsPanelFiller.suspendPanel(true);
          csvImportPanel.csvImportPanelFiller.suspendPanel(true);
          dispose();
       }
@@ -520,6 +524,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
            
             if (optionName.equals(resourcePreferences))
                preferencesTopPanel.setThreadAction(false);
+            
+            if (optionName.equals(resourceGeneralOptions))
+               generalPreferencesPanel.generalOptionsPanelFiller.setThreadAction(false);
             
             if (optionName.equals("CSV"))
                if (node.getParent().toString().equals(resourceDataImport))
@@ -543,6 +550,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             
             if (optionName.equals(resourcePreferences))
                preferencesTopPanel.setThreadAction(true);
+            
+            if (optionName.equals(resourceGeneralOptions))
+               generalPreferencesPanel.generalOptionsPanelFiller.setThreadAction(true);
             
             if (optionName.equals("CSV"))
                if (node.getParent().toString().equals(resourceDataImport))
@@ -598,6 +608,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
             MyJSQLView_JMenuBarActions.setPreferencesNotVisisble();
             preferencesTopPanel.suspendPanel(true);
+            generalPreferencesPanel.generalOptionsPanelFiller.suspendPanel(true);
             csvImportPanel.csvImportPanelFiller.suspendPanel(true);
             this.dispose();
          }
@@ -754,6 +765,13 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             preferencesTopPanel.setThreadAction(false);
          else
             preferencesTopPanel.setThreadAction(true);
+         
+         // If the selected optionPanel is the General Options Panel
+         // then start or stop its thread.
+         if (optionName.equals(resourceGeneralOptions))
+            generalPreferencesPanel.generalOptionsPanelFiller.setThreadAction(false);
+         else
+            generalPreferencesPanel.generalOptionsPanelFiller.setThreadAction(true);
          
          // If the selected optionPanel is the CSV Import Panel
          // then start or stop its thread.
