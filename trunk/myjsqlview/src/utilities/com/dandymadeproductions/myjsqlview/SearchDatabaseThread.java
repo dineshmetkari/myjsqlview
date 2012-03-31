@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.1 01/12/2012
+// Version 3.2 03/31/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,9 @@
 //         3.0 Copyright Update.
 //         3.1 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
+//         3.2 Class Method run() Added a try catch for createColumnsSQLQuery() Which
+//             Now Throws SQLExeception for finally to Close sqlStatement. Additional
+//             Try to Close Also sqlStatement in Inner Class tableSearchThreads. 
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -98,7 +101,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.1 01/12/2012
+ * @version 3.2 03/31/2012
  */
 
 class SearchDatabaseThread implements Runnable
@@ -197,8 +200,17 @@ class SearchDatabaseThread implements Runnable
          schemaTableName = MyJSQLView_Utils.getSchemaTableName(sqlTable);
 
          // Create the search query.
-         columnsSQLQuery = createColumnsSQLQuery(dbConnection, schemaTableName,
-                                                 searchQueryString);
+         columnsSQLQuery = "";
+         
+         try
+         {
+            columnsSQLQuery = createColumnsSQLQuery(dbConnection, schemaTableName,
+                                                    searchQueryString);
+         }
+         catch (SQLException e)
+         {
+            ConnectionManager.displaySQLErrors(e, "SearchDatabaseThread run()");
+         }
 
          // Problems creating the search, columns, query will be 
          // return as a empty string or table to be not searched
@@ -224,9 +236,11 @@ class SearchDatabaseThread implements Runnable
          {
             public void run()
             {
+               Statement sqlStatement = null;
+               
                try
                {
-                  Statement sqlStatement = dbConnection.createStatement();
+                  sqlStatement = dbConnection.createStatement();
                   ResultSet rs = sqlStatement.executeQuery(searchQuery);
                   while (rs.next())
                   {
@@ -240,8 +254,19 @@ class SearchDatabaseThread implements Runnable
                }
                catch (SQLException e)
                {
-                  resultsCount++;
                   // System.out.println(e);
+                  
+                  resultsCount++;
+                  
+                  try
+                  {
+                     if (sqlStatement != null)
+                        sqlStatement.close();
+                  }
+                  catch (SQLException sqle)
+                  {
+                     // Well Tried.
+                  }
                }
             }
          });
@@ -296,7 +321,7 @@ class SearchDatabaseThread implements Runnable
    //==============================================================
 
    private String createColumnsSQLQuery(Connection dbConnection, String tableName,
-                                        String searchQueryString)
+                                        String searchQueryString) throws SQLException
    {
       // Method Instances
       Statement sqlStatement;
@@ -313,6 +338,9 @@ class SearchDatabaseThread implements Runnable
 
       // Beginning creating the table columns
       // search string query.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -387,18 +415,23 @@ class SearchDatabaseThread implements Runnable
                      + " LIKE \'%" + searchQueryString + "%\' OR ");   
             }
          }
-         sqlStatement.close();
+         resultSet.close();
+         
          if (columnsSQLQuery.length() > 4)
             return (columnsSQLQuery.delete((columnsSQLQuery.length() - 4),
                                           columnsSQLQuery.length())).toString();
          else
             return "";
-
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "SearchDatabaseThread createColumnSQLQuery()");
          return "";
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
    
