@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.4 03/16/2012
+// Version 8.5 03/31/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,20 +32,17 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original SQLDatabaseDumpThread Class.
-//         1.1 Added Class Instance databaseDumpProgressBar for
-//             Tracking Dump and Cancel Ability. Cleaned Out &
-//             Finalized.
-//         1.2 Corrected AutoIncrement to NULL as Determined by
-//             SQL Preferences Panel. Class Instance Check 
-//             databaseDumpProgressBar.isCanceled() in Class Methods
-//             insertReplaceStatmentData() & explicitStatementData().
+//         1.1 Added Class Instance databaseDumpProgressBar for Tracking Dump
+//             and Cancel Ability. Cleaned Out & Finalized.
+//         1.2 Corrected AutoIncrement to NULL as Determined by SQL Preferences
+//             Panel. Class Instance Check  databaseDumpProgressBar.isCanceled()
+//             in Class Methods insertReplaceStatmentData() & explicitStatementData().
 //             Deleted Exported File if Dump Canceled.
 //         1.3 Code Cleanup.
-//         1.4 Fix for Year Fields That Were Reading A Complete Date,
-//             YYYY-MM-DD, From the Database. Used subString(0,4)
-//             in Class Methods insertReplaceStatementData() &
-//             explicitStatementData(). Had to Detect the Index of
-//             YEAR Fields in the Latter Method.
+//         1.4 Fix for Year Fields That Were Reading A Complete Date, YYYY-MM-DD,
+//             From the Database. Used subString(0,4) in Class Methods
+//             insertReplaceStatementData() & explicitStatementData(). Had to
+//             Detect the Index of YEAR Fields in the Latter Method.
 //         1.5 Class Methods insertReplaceStatementData() &
 //             explicitStatementData() TableTabPanel.getAutoIncrementHashMap().
 //             Exchanged Class Instance autoIncrement With autoIncrementFieldIndexes
@@ -215,6 +212,10 @@
 //             Methods.
 //         8.4 Obtained limitIncrement From GeneralProperties Instead of sqlExportOptions
 //             in Constructor.
+//         8.5 Added Class Method dumpDatabaseData() to be Called From run() So That IO & SQL
+//             Exceptions Can be Caught With Closing filebuff and sqlStatement in Finally
+//             Clauses. Same finally for sqlStatement in insertReplace/explicitStatementData()
+//             Methods & getRowsCount().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -246,7 +247,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.4 03/16/2012
+ * @version 8.5 03/31/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -292,6 +293,22 @@ class SQLDatabaseDumpThread implements Runnable
    //==============================================================
 
    public void run()
+   {
+      try
+      {
+         dumpDatabaseData();
+      }
+      catch (Exception e)
+      {
+         // Failed to close resource.
+      }
+   }
+   
+   //==============================================================
+   // Class method to handle the data dump.
+   //==============================================================
+   
+   private void dumpDatabaseData() throws Exception
    {
       // Class Method Instances.
       Iterator<String> tablesIterator;
@@ -342,6 +359,7 @@ class SQLDatabaseDumpThread implements Runnable
 
          // Collect Database Table Count and Proceed with Dump.
          tableCount = DBTablesPanel.getTableCount();
+         sqlStatement = null;
 
          try
          {
@@ -511,8 +529,6 @@ class SQLDatabaseDumpThread implements Runnable
                catch (SecurityException se){}
             }
             databaseDumpProgressBar.dispose();
-            sqlStatement.close();
-            filebuff.close();
          }
          catch (SQLException e)
          {
@@ -527,12 +543,22 @@ class SQLDatabaseDumpThread implements Runnable
             databaseDumpProgressBar.dispose();
             ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread run()");
          }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
       catch (IOException e)
       {
          String msg = "Unable to Create filestream for: '" + fileName + "'.";
          JOptionPane.showMessageDialog(null, msg, fileName, JOptionPane.ERROR_MESSAGE);
          return;
+      }
+      finally
+      {
+         if (filebuff != null)
+            filebuff.close();
       }
       ConnectionManager.closeConnection(dbConnection, "SQLDatabaseDumpThread run()");
    }
@@ -541,7 +567,7 @@ class SQLDatabaseDumpThread implements Runnable
    // Class method to create the insert/replace statement and data.
    //==============================================================
 
-   private void insertReplaceStatementData(Connection dbConnection)
+   private void insertReplaceStatementData(Connection dbConnection) throws SQLException
    {
       // Class Method Instances
       StringBuffer columnNamesString;
@@ -716,7 +742,16 @@ class SQLDatabaseDumpThread implements Runnable
       // Collect the row count of the table and setting
       // up a progress bar for tracking/canceling.
       
-      rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      rowsCount = 0;
+      
+      try
+      {
+         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      }
+      catch (SQLException sqle)
+      {
+         ConnectionManager.displaySQLErrors(sqle, "SQLDatabaseDumpThread insertReplaceStatementData()");
+      }
       
       currentTableIncrement = 0;
       currentRow = 0;
@@ -726,6 +761,9 @@ class SQLDatabaseDumpThread implements Runnable
       
       // Ok now ready so beginning by connecting to database for
       // data and proceeding with building the dump data.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -999,13 +1037,17 @@ class SQLDatabaseDumpThread implements Runnable
 
          // Closing out
          rs.close();
-         sqlStatement.close();
          databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), 0);
       }
       catch (SQLException e)
       {
          databaseDumpProgressBar.setCanceled(true);
          ConnectionManager.displaySQLErrors(e, "SQLDatabaseDumpThread insertReplaceStatementData()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
@@ -1014,7 +1056,7 @@ class SQLDatabaseDumpThread implements Runnable
    // data.
    //==============================================================
 
-   private void explicitStatementData(Connection dbConnection)
+   private void explicitStatementData(Connection dbConnection) throws SQLException
    {
       // Class Method Instances
       StringBuffer columnNamesString;
@@ -1095,7 +1137,17 @@ class SQLDatabaseDumpThread implements Runnable
       // Collect the row count of the table and setting
       // up a progress bar for tracking/canceling.
       
-      rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      rowsCount = 0;
+      
+      try
+      {
+         
+         rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
+      }
+      catch (SQLException sqle)
+      {
+         ConnectionManager.displaySQLErrors(sqle, "SQLDataDumpThread explicitStatementData()");
+      }
       
       currentTableIncrement = 0;
       currentRow = 0;
@@ -1105,6 +1157,9 @@ class SQLDatabaseDumpThread implements Runnable
       
       // Ok now ready so beginning by connecting to database for
       // data and proceeding with building the dump data.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -1431,7 +1486,6 @@ class SQLDatabaseDumpThread implements Runnable
          
          // Closing out
          rs.close();
-         sqlStatement.close();
          databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""), 0);
       }
       catch (SQLException e)
@@ -1439,18 +1493,27 @@ class SQLDatabaseDumpThread implements Runnable
          databaseDumpProgressBar.setCanceled(true);
          ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread explicitStatementData()");
       }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
+      }
    }
 
    //==============================================================
    // Class method to get the table data row count
    //==============================================================
 
-   private int getRowsCount(Connection dbConnection, String tableName)
+   private int getRowsCount(Connection dbConnection, String tableName) throws SQLException
    {
+      // Method Instances
       String sqlStatementString;
       Statement sqlStatement;
       ResultSet rs;
+      
+      // Setup
       int rowCount = 0;
+      sqlStatement = null;
 
       try
       {
@@ -1463,13 +1526,17 @@ class SQLDatabaseDumpThread implements Runnable
          rowCount = rs.getInt(1);
 
          rs.close();
-         sqlStatement.close();
          return rowCount;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread getRowsCount()");
          return rowCount;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 
