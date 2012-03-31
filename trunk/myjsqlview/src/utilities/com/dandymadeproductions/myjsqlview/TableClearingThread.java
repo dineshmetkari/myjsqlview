@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.0 01/12/2012
+// Version 2.1 03/31/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.9 Copyright Update.
 //         2.0 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
+//         2.1 Class Method run() Added a try catch for clearOracleDBTemporaryTables()
+//             Which Throws a SQLException Through finally Clause for Closing sqlStatment. 
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -64,7 +66,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 2.0 01/12/2012
+ * @version 2.1 03/31/2012
  */
 
 class TableClearingThread implements Runnable
@@ -98,7 +100,7 @@ class TableClearingThread implements Runnable
       String dataSourceType;
       
       // Get Connection to Database & Export Options.
-      Connection dbConnection = ConnectionManager.getConnection("ClearingTableThread run()");
+      Connection dbConnection = ConnectionManager.getConnection("TableClearingThread run()");
 
       // Remove the appropriate Memory/Temporary Table(s) for HSQL
       // or Oracle databases.
@@ -109,10 +111,19 @@ class TableClearingThread implements Runnable
          clearHSQLDBMemoryTables(dbConnection);
 
       if (dataSourceType.equals(ConnectionManager.ORACLE))
-         clearOracleDBTemporaryTables(dbConnection);
+      {
+         try
+         {
+            clearOracleDBTemporaryTables(dbConnection);
+         }
+         catch (SQLException e)
+         {
+            ConnectionManager.displaySQLErrors(e, "TableClearingThread run()");
+         }
+      }
 
       // Closing down.
-      ConnectionManager.closeConnection(dbConnection, "ClearingTableThread run()");
+      ConnectionManager.closeConnection(dbConnection, "TableClearingThread run()");
    }
 
    //==============================================================
@@ -139,7 +150,7 @@ class TableClearingThread implements Runnable
          }
          catch (SQLException err)
          {
-            ConnectionManager.displaySQLErrors(err, "QueryFrame clearHSQLDBMemoryTables()");
+            ConnectionManager.displaySQLErrors(err, "TableClearingThread clearHSQLDBMemoryTables()");
          }
       }
    }
@@ -149,7 +160,7 @@ class TableClearingThread implements Runnable
    // with Oracle database.
    //==============================================================
 
-   private void clearOracleDBTemporaryTables(Connection dbConnection)
+   private void clearOracleDBTemporaryTables(Connection dbConnection) throws SQLException
    {
       // Method Instances
       String sqlStatementString;
@@ -160,6 +171,7 @@ class TableClearingThread implements Runnable
       // Get the tab count and removing tables
       // as needed.
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
+      sqlStatement = null;
 
       try
       {
@@ -195,11 +207,15 @@ class TableClearingThread implements Runnable
             tabNumber--;
             rs.close();
          }
-         sqlStatement.close();
       }
       catch (SQLException err)
       {
-         ConnectionManager.displaySQLErrors(err, "QueryFrame clearOracleDBTemporaryTables()");
+         ConnectionManager.displaySQLErrors(err, "TableClearingThread clearOracleDBTemporaryTables()");
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
       }
    }
 }
