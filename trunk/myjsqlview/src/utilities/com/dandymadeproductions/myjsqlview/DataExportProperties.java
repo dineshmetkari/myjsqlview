@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana Proctor
-// Version 4.2 03/16/2012
+// Version 4.3 04/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,6 +91,8 @@
 //         4.1 Added Class Instance limitIncrement and Corresponding get/setter
 //             Methods.
 //         4.2 Backed Out 4.1 Moved to GeneralProperties Class.
+//         4.3 Added Class Instances insert/replacePluralSize and Corresponding
+//             get/setter Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +120,7 @@ import com.itextpdf.text.pdf.BaseFont;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 4.2 03/16/2012
+ * @version 4.3 04/01/2012
  */
 
 class DataExportProperties
@@ -128,6 +130,8 @@ class DataExportProperties
    // SQL
    private boolean tableStructure;
    private boolean tableData;
+   private int insertPluralSize;
+   private int replacePluralSize;
    private boolean insertLock;
    private boolean replaceLock;
    private boolean updateLock;
@@ -173,6 +177,8 @@ class DataExportProperties
    // SQL
    private static final String TABLESTRUCTURE = "TableStructure";
    private static final String TABLEDATA = "TableData";
+   private static final String INSERTPLURALSIZE = "InsertPluralSize";
+   private static final String REPLACEPLURALSIZE = "ReplacePluralSize";
    private static final String INSERTLOCK = "InsertLock";
    private static final String REPLACELOCK = "replaceLock";
    private static final String UPDATELOCK = "UpdateLock";
@@ -219,6 +225,8 @@ class DataExportProperties
       // SQL
       tableStructure = SQLExportPreferencesPanel.DEFAULT_TABLE_STRUCTURE;
       tableData = SQLExportPreferencesPanel.DEFAULT_TABLE_DATA;
+      insertPluralSize = SQLExportPreferencesPanel.DEFAULT_PLURAL_SIZE;
+      replacePluralSize = SQLExportPreferencesPanel.DEFAULT_PLURAL_SIZE;
       insertLock = SQLExportPreferencesPanel.DEFAULT_INSERT_LOCK;
       replaceLock = SQLExportPreferencesPanel.DEFAULT_REPLACE_LOCK;
       updateLock = SQLExportPreferencesPanel.DEFAULT_UPDATE_LOCK;
@@ -267,6 +275,8 @@ class DataExportProperties
          // SQL
          tableStructure = dataExportPreferences.getBoolean(TABLESTRUCTURE, tableStructure);
          tableData = dataExportPreferences.getBoolean(TABLEDATA, tableData);
+         insertPluralSize = dataExportPreferences.getInt(INSERTPLURALSIZE, insertPluralSize);
+         replacePluralSize = dataExportPreferences.getInt(REPLACEPLURALSIZE, replacePluralSize);
          insertLock = dataExportPreferences.getBoolean(INSERTLOCK, insertLock);
          replaceLock = dataExportPreferences.getBoolean(REPLACELOCK, replaceLock);
          updateLock = dataExportPreferences.getBoolean(UPDATELOCK, updateLock);
@@ -445,6 +455,16 @@ class DataExportProperties
    protected boolean getTableData()
    {
       return tableData;
+   }
+   
+   protected int getInsertPluralSize()
+   {
+      return insertPluralSize;
+   }
+   
+   protected int getReplacePluralSize()
+   {
+      return replacePluralSize;
    }
 
    protected boolean getInsertLock()
@@ -693,6 +713,18 @@ class DataExportProperties
       tableData = value;
       savePreference(TABLEDATA, value);
    }
+   
+   protected void setInsertPluralSize(int value)
+   {
+      insertPluralSize = value;
+      savePreference(INSERTPLURALSIZE, value);
+   }
+   
+   protected void setReplacePluralSize(int value)
+   {
+      replacePluralSize = value;
+      savePreference(REPLACEPLURALSIZE, value);
+   }
 
    protected void setInsertLock(boolean value)
    {
@@ -935,6 +967,8 @@ class DataExportProperties
       
       parameters.append("[tableStructure = " + tableStructure + "]");
       parameters.append("[tableData = " + tableData + "]");
+      parameters.append("[insertPluralSize " + insertPluralSize + "]");
+      parameters.append("[replacePluralSize " + replacePluralSize + "]");
       parameters.append("[insertLock = " + insertLock + "]");
       parameters.append("[replaceLock = " + replaceLock + "]");
       parameters.append("[updateLock = " + updateLock + "]");
