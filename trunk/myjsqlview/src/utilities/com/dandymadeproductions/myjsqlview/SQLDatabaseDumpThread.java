@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.5 03/31/2012
+// Version 8.6 04/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,6 +216,9 @@
 //             Exceptions Can be Caught With Closing filebuff and sqlStatement in Finally
 //             Clauses. Same finally for sqlStatement in insertReplace/explicitStatementData()
 //             Methods & getRowsCount().
+//         8.6 Introduced Class Instance pluralValueLimit & Used to Constrol the Number
+//             of Values to Export During Insert & Replace Plural Dumps in Class Method
+//             insertReplaceStatementData().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -247,7 +250,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.5 03/31/2012
+ * @version 8.6 04/01/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -267,7 +270,7 @@ class SQLDatabaseDumpThread implements Runnable
    private TableTabPanel currentTableTabPanel;
 
    private boolean insertReplaceDump, updateDump;
-   private int limitIncrement;
+   private int limitIncrement, pluralValueLimit;
    private DataExportProperties sqlDataExportOptions;
    private BufferedOutputStream filebuff;
    private SQLDatabaseDump_ProgressBar databaseDumpProgressBar;
@@ -330,6 +333,10 @@ class SQLDatabaseDumpThread implements Runnable
       sqlDataExportOptions = DBTablesPanel.getDataExportProperties();
       identifierQuoteString = sqlDataExportOptions.getIdentifierQuoteString();
       limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
+      if (sqlDataExportOptions.getInsertReplaceUpdate().equals("Insert"))
+         pluralValueLimit = sqlDataExportOptions.getInsertPluralSize();
+      else
+         pluralValueLimit = sqlDataExportOptions.getReplacePluralSize();
 
       // Setting up OutputStream
       try
@@ -587,6 +594,7 @@ class SQLDatabaseDumpThread implements Runnable
       String firstField, sqlFieldValuesString;
       String expressionType;
       int rowsCount, currentTableIncrement, currentRow;
+      int currentPluralValueCount;
       int columnsCount;
 
       String sqlStatementString;
@@ -753,6 +761,7 @@ class SQLDatabaseDumpThread implements Runnable
          ConnectionManager.displaySQLErrors(sqle, "SQLDatabaseDumpThread insertReplaceStatementData()");
       }
       
+      currentPluralValueCount = 0;
       currentTableIncrement = 0;
       currentRow = 0;
 
@@ -797,6 +806,7 @@ class SQLDatabaseDumpThread implements Runnable
             {
                databaseDumpProgressBar.setTableDumpCurrentValue(schemaTableName.replaceAll("\"", ""),
                                                                 currentRow++);
+               currentPluralValueCount++;
 
                // SQL Singular Statement
                if (expressionType.equals("Singular"))
@@ -1006,7 +1016,12 @@ class SQLDatabaseDumpThread implements Runnable
                   dumpData = dumpData + ");\n";
                // SQL Plural Statement
                else
-                  dumpData = dumpData + "),";
+               {
+                  if (currentPluralValueCount >= pluralValueLimit)
+                     dumpData = dumpData + ");\n";
+                  else
+                     dumpData = dumpData + "),";
+               }
 
                if (currentRow >= rowsCount)
                {
@@ -1015,7 +1030,12 @@ class SQLDatabaseDumpThread implements Runnable
                      dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
                   // SQL Plural Statement
                   else
-                     dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1);
+                  {
+                     if (currentPluralValueCount >= pluralValueLimit)
+                        dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 2);
+                     else
+                        dumpData = ((String) dumpData).substring(0, ((String) dumpData).length() - 1);
+                  }
                   dumpChunkOfData(dumpData);
                   dumpData = "";
                   currentRow = 0;
@@ -1028,7 +1048,15 @@ class SQLDatabaseDumpThread implements Runnable
                      dumpData = sqlFieldValuesString;
                   // SQL Plural Statement
                   else
-                     dumpData = "";
+                  {
+                     if (currentPluralValueCount >= pluralValueLimit)
+                     {
+                        dumpData = sqlFieldValuesString;
+                        currentPluralValueCount = 0;
+                     }
+                     else
+                        dumpData = "";
+                  }
                }
             }
             currentTableIncrement += limitIncrement;
