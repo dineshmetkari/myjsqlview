@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.5 03/16/2012
+// Version 4.6 04/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -106,6 +106,12 @@
 //                        Updated.
 //         4.5 03/16/2012 Backed Out Version 4.4. Limit Increment Move to GeneralPreferences
 //                        Panel.
+//         4.6 04/01/2012 Implemented Insert/Replace Plural Value Size Control. Added Class
+//                        Instances insert/replacePluralSpinner, minimumPlural, maxPlural,
+//                        spinnerPluralStep, & DEFAULT_PLURAL_SIZE. Create Spinners in Class
+//                        Method createInsertOptionsPanel() & Collected Changes in action
+//                        Performed(). Added Class Method stateChanged(). Routines to get/
+//                        set Spinners in get/setSQLExportOptions().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -128,7 +134,11 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 /**
  *    The SQLExportPreferencesPanel class provides a generic panel
@@ -136,10 +146,10 @@ import javax.swing.JTextField;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.5 03/16/2012
+ * @version 4.6 04/01/2012
  */
 
-class SQLExportPreferencesPanel extends JPanel implements ActionListener
+class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -2687714755497016988L;
@@ -149,6 +159,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
    private JCheckBox tableStructureCheckBox, tableDataCheckBox;
    private JComboBox insertExpressionComboBox, replaceExpressionComboBox;
+   private JSpinner insertPluralSpinner, replacePluralSpinner;
    private JCheckBox insertLockTableCheckBox, insertTypeCheckBox;
    private JCheckBox replaceLockTableCheckBox, replaceTypeCheckBox;
    private JCheckBox updateLockTableCheckBox, updateTypeCheckBox;
@@ -159,6 +170,10 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
    private JButton restoreDefaultsButton, applyButton;
    private String dataSourceType;
+   
+   private static final int minimumPlural = 2;
+   private static final int maxPlural = 50000;
+   private static int spinnerPluralStep = 100;
    
    protected static final boolean DEFAULT_TABLE_STRUCTURE = false;
    protected static final boolean DEFAULT_TABLE_DATA = true;
@@ -182,6 +197,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    protected static final String PRIORITY_LOW = "Low_Priority";
    protected static final String PRIORITY_DELAYED = "Delayed";
    protected static final String PRIORITY_IGNORE = "Ignore";
+   
+   protected static final int DEFAULT_PLURAL_SIZE = 250;
 
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -434,12 +451,18 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
             {
                insertExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
                replaceExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
+               insertPluralSpinner.setEnabled(true);
+               replacePluralSpinner.setEnabled(true);
             }
             else
             {
                insertExpressionComboBox.setSelectedItem(EXPRESSION_SINGULAR);
                replaceExpressionComboBox.setSelectedItem(EXPRESSION_SINGULAR);
+               insertPluralSpinner.setEnabled(false);
+               replacePluralSpinner.setEnabled(false);
             }
+            insertPluralSpinner.setValue(Integer.valueOf(DEFAULT_PLURAL_SIZE));
+            replacePluralSpinner.setValue(Integer.valueOf(DEFAULT_PLURAL_SIZE));
             insertTypeCheckBox.setSelected(DEFAULT_INSERT_TYPE);
             replaceTypeCheckBox.setSelected(DEFAULT_REPLACE_TYPE);
             updateTypeCheckBox.setSelected(DEFAULT_UPDATE_TYPE);
@@ -550,10 +573,41 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
             if (replaceTypeComboBox.getSelectedItem().equals(PRIORITY_DELAYED))
                replaceLockTableCheckBox.setSelected(false);
          }
-
+         
+         // Enable, Disable Plural Spinner
+         if (formSource == insertExpressionComboBox)
+         {
+            if (insertExpressionComboBox.getSelectedItem().equals(EXPRESSION_PLURAL))
+               insertPluralSpinner.setEnabled(true);
+            else
+               insertPluralSpinner.setEnabled(false);
+         }
+         
+         if (formSource == replaceExpressionComboBox)
+         {
+            if (replaceExpressionComboBox.getSelectedItem().equals(EXPRESSION_PLURAL))
+               replacePluralSpinner.setEnabled(true);
+            else
+               replacePluralSpinner.setEnabled(false);
+         }
+         
          // Something changed so let it be applied.
          applyButton.setEnabled(true);
       }
+   }
+   
+   //==============================================================
+   // ChangeEvent Listener method for determined when the plural
+   // increment spinner has changed so that the apply button can be
+   // enabled.
+   //==============================================================
+
+   public void stateChanged(ChangeEvent evt)
+   {
+      Object panelSource = evt.getSource();
+
+      if (panelSource instanceof JSpinner && applyButton != null)
+         applyButton.setEnabled(true);
    }
    
    //==============================================================
@@ -566,13 +620,14 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    {
       // Class Method Instances.
       JPanel expressionTypePanel, insertTypePanel;
+      SpinnerNumberModel pluralSpinnerModel;
       String resource;
       
       // Setup.
       expressionTypePanel = new JPanel();
       expressionTypePanel.setBorder(BorderFactory.createEmptyBorder());
 
-      // Insert Explicit ComboBox
+      // Insert Singular, Plural, Explicit ComboBox
       insertExpressionComboBox = new JComboBox();
       insertExpressionComboBox.addItem(EXPRESSION_SINGULAR);
       insertExpressionComboBox.addItem(EXPRESSION_PLURAL);
@@ -580,6 +635,13 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       insertExpressionComboBox.addActionListener(this);
       expressionTypePanel.add(insertExpressionComboBox);
 
+      // Plural Size
+      pluralSpinnerModel = new SpinnerNumberModel(DEFAULT_PLURAL_SIZE,
+         minimumPlural, maxPlural, spinnerPluralStep);
+      insertPluralSpinner = new JSpinner(pluralSpinnerModel);
+      insertPluralSpinner.addChangeListener(this);
+      expressionTypePanel.add(insertPluralSpinner);
+      
       buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
@@ -678,6 +740,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    {
       // Class Method Instances.
       JPanel expressionTypePanel, replaceTypePanel;
+      SpinnerNumberModel pluralSpinnerModel;
       String resource;
       
       // Setup
@@ -691,6 +754,13 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       replaceExpressionComboBox.addItem(EXPRESSION_EXPLICIT);
       replaceExpressionComboBox.addActionListener(this);
       expressionTypePanel.add(replaceExpressionComboBox);
+      
+      // Plural Size
+      pluralSpinnerModel = new SpinnerNumberModel(DEFAULT_PLURAL_SIZE,
+         minimumPlural, maxPlural, spinnerPluralStep);
+      replacePluralSpinner = new JSpinner(pluralSpinnerModel);
+      replacePluralSpinner.addChangeListener(this);
+      expressionTypePanel.add(replacePluralSpinner);
 
       buildConstraints(constraints, 1, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -835,6 +905,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       newDataProperties.setTableStructure(tableStructureCheckBox.isSelected());
       newDataProperties.setTableData(tableDataCheckBox.isSelected());
       newDataProperties.setIdentifierQuoteString(identifierQuoteTextField.getText());
+      
+      newDataProperties.setInsertPluralSize(Integer.parseInt(insertPluralSpinner.getValue().toString()));
+      newDataProperties.setReplacePluralSize(Integer.parseInt(replacePluralSpinner.getValue().toString()));
 
       newDataProperties.setInsertLock(insertLockTableCheckBox.isSelected());
       newDataProperties.setReplaceLock(replaceLockTableCheckBox.isSelected());
@@ -866,18 +939,27 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
    protected void setSQLExportOptions(DataExportProperties dataProperties)
    {
       tableStructureCheckBox.setSelected(dataProperties.getTableStructure());
-      insertReplaceUpdateComboBox.setEnabled(!tableStructureCheckBox.isSelected());
-
       tableDataCheckBox.setSelected(dataProperties.getTableData());
       identifierQuoteTextField.setText(dataProperties.getIdentifierQuoteString());
+      
+      insertPluralSpinner.setValue(Integer.valueOf(dataProperties.getInsertPluralSize()));
+      replacePluralSpinner.setValue(Integer.valueOf(dataProperties.getReplacePluralSize()));
 
       insertLockTableCheckBox.setSelected(dataProperties.getInsertLock());
       replaceLockTableCheckBox.setSelected(dataProperties.getReplaceLock());
       updateLockTableCheckBox.setSelected(dataProperties.getUpdateLock());
 
       insertExpressionComboBox.setSelectedItem(dataProperties.getInsertExpression());
+      if (insertExpressionComboBox.getSelectedItem().equals(EXPRESSION_PLURAL))
+         insertPluralSpinner.setEnabled(true);
+      else
+         insertPluralSpinner.setEnabled(false);
       replaceExpressionComboBox.setSelectedItem(dataProperties.getReplaceExpression());
-
+      if (replaceExpressionComboBox.getSelectedItem().equals(EXPRESSION_PLURAL))
+         replacePluralSpinner.setEnabled(true);
+      else
+         replacePluralSpinner.setEnabled(false);
+      
       autoIncrementCheckBox.setSelected(dataProperties.getAutoIncrement());
       timeStampCheckBox.setSelected(dataProperties.getTimeStamp());
 
@@ -886,6 +968,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
       updateTypeCheckBox.setSelected(dataProperties.getUpdateType());
 
       insertReplaceUpdateComboBox.setSelectedItem(dataProperties.getInsertReplaceUpdate());
+      insertReplaceUpdateComboBox.setEnabled(!tableStructureCheckBox.isSelected());
       dataOptionsCardLayout.show(dataContentOptionsPanel,
                                  (String) insertReplaceUpdateComboBox.getSelectedItem());
 
@@ -897,5 +980,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener
 
       updateTypeComboBox.setSelectedItem(dataProperties.getUpdateTypeSetting());
       updateTypeComboBox.setEnabled(updateTypeCheckBox.isSelected());
+      
+      
+      
    }
 }
