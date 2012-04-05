@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2012 Dana M. Proctor
-// Version 1.0 03/31/2012
+// Version 1.1 04/05/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial Outlined Blossom Class.
+//         1.1 Finalized Blossom Class for Version Release.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -42,44 +43,50 @@ import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
 import java.awt.Graphics2D;
 import java.awt.Paint;
-import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
 import java.awt.geom.Dimension2D;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
+import java.util.Random;
 
 /**
  *    The Blossom class provides a means to generate a blooming flower
  * object along with drawing to a graphics space.     
  * 
  * @author Dana M. Proctor
- * @version 1.0 03/31/2012
+ * @version 1.1 04/05/2012
  */
 
-class Blossom
+class Blossom 
 {
    // Class Instances.
-   private Point2D position;
+   private Point2D.Double position;
    private Dimension2D petalSize;
-   private double rotationAngle;
+   private int petalNumber;
+   private double rotation;
+   private double petalSizeIncrement;
+   
    private Stroke stroke;
    private Paint outlinePaint;
    private Paint fillPaint;
+   private Random random;
    
    private boolean petalFilled;
-   private double symbol_XPosition, symbol_YPosition;
    
    private static float STROKE_WIDTH = 1.0f;
-   private static double DEFAULT_WIDTH = 20.0;
-   private static double DEFAULT_HEIGHT = 50.0;
-   private static double DEFAULT_ANGLE = Math.PI/4.0;
+   private static double DEFAULT_WIDTH = 5.0;
+   private static double DEFAULT_MAX_WIDTH = 5 * DEFAULT_WIDTH;
+   private static double DEFAULT_HEIGHT = 15.0;
+   // private static double DEFAULT_MAX_HEIGHT = 3 * DEFAULT_HEIGHT;
+   private static int DEFAULT_PETAL_NUMBER = 12;
    private static Paint DEFAULT_COLOR = Color.ORANGE;
-   private static Paint DEFAULT_FILL = Color.BLACK;
-   
+   private static Paint DEFAULT_FILL = new GradientPaint(0.0F, 0.0f, Color.BLUE,
+                                                         100.0F, 100.0F, Color.GREEN, true);
+   private static double DEFAULT_OFFSET_ANGLE = Math.PI / 8.0;
    
    //==============================================================
    // Blossom Constructors
@@ -90,27 +97,27 @@ class Blossom
       this(null, null);
    }
    
-   protected Blossom(Point2D position, Dimension2D petalSize)
+   protected Blossom(Point2D.Double position, Dimension2D petalSize)
    {
-      this(position, petalSize, DEFAULT_ANGLE,
+      this(position, petalSize, DEFAULT_PETAL_NUMBER,
            new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_SQUARE,
            BasicStroke.JOIN_BEVEL), DEFAULT_COLOR, DEFAULT_FILL);
    }
    
-   protected Blossom(Point2D position, Dimension2D petalSize, Paint outlinePaint)
+   protected Blossom(Point2D.Double position, Dimension2D petalSize, Paint outlinePaint)
    {
-      this(position, petalSize, DEFAULT_ANGLE,
+      this(position, petalSize, DEFAULT_PETAL_NUMBER,
            new BasicStroke(STROKE_WIDTH, BasicStroke.CAP_SQUARE,
            BasicStroke.JOIN_BEVEL), outlinePaint, DEFAULT_FILL);
    }
 
-   protected Blossom(Point2D position, Dimension2D petalSize, double rotationAngle, Stroke stroke,
-                     Paint outlinePaint, Paint fillPaint)
+   protected Blossom(Point2D.Double position, Dimension2D petalSize, int petalNumber, Stroke stroke,
+                      Paint outlinePaint, Paint fillPaint)
    {
       // Asign Position
       if (position == null)
       {
-         position = new Point();
+         position = new Point2D.Double();
          position.setLocation(0.0, 0.0);
       }
       this.position = position;
@@ -125,7 +132,7 @@ class Blossom
       this.petalSize = petalSize;
       
       // Asign Rotation
-      this.rotationAngle = rotationAngle;
+      this.petalNumber = petalNumber;
       
       // Asign Stroke
       if (stroke == null)
@@ -143,11 +150,13 @@ class Blossom
          fillPaint = DEFAULT_FILL;
       this.fillPaint = fillPaint;
       
-      // Default to Fill
+      // Default Fill, Rotation, Petal Size
+      // Increment & Random Generator.
+      random = new Random();
       petalFilled = true;
+      rotation = 0;
+      petalSizeIncrement = 7.0 * random.nextDouble();
       
-      symbol_XPosition = 50;
-      symbol_YPosition = 0;
    }
 
    //==============================================================
@@ -163,8 +172,7 @@ class Blossom
       AlphaComposite alphaComposite;
       Ellipse2D.Double petal;
       double petalWidth, petalLength;
-      
-      Area area;
+      double rotationAngle;
       
       // Setup to draw the blossom.
       
@@ -173,45 +181,62 @@ class Blossom
       petalWidth = petalSize.getWidth();
       petalLength = petalSize.getHeight();
       
+      petal = new Ellipse2D.Double(position.getX(), position.getY(), petalWidth, petalLength);
+      rotationAngle = (2 * Math.PI) / petalNumber;
+      
       // Draw decorative blossom.
       
       g2.setComposite(alphaComposite);
-      
-      petal = new Ellipse2D.Double(position.getX(), position.getY(), petalWidth, petalLength);
-      petal.setFrame(symbol_XPosition, symbol_YPosition, petalWidth, petalLength);
-      area = new Area(petal);
-      
       g2.setStroke(stroke);
       
-      if (petalFilled)
-      {
-         g2.setPaint(fillPaint);
-         g2.fill(petal);
-      }
+      // Create the rotation effect.
+      rotation += DEFAULT_OFFSET_ANGLE;
+      affineTransform = AffineTransform.getRotateInstance(rotation,
+         position.getX() + petalWidth / 2.0, position.getY() + petalLength);
+      g2.transform(affineTransform);
       
-      g2.setPaint(outlinePaint);
-      g2.draw(petal);
-      
-      affineTransform = AffineTransform.getRotateInstance(rotationAngle,
-                                                       symbol_XPosition + petalWidth / 2.0,
-                                                       symbol_YPosition + petalLength);
-      // Drawing the symbol.
-      for (int i = 0; i < 7; i++)
+      // Create blossom from petals
+      for (int i = 0; i < petalNumber; i++)
       {
-         g2.draw(area);
+         // Filled
+         if (petalFilled)
+         {
+            g2.setPaint(fillPaint);
+            g2.fill(petal);
+         }
+         // Outline
+         g2.setPaint(outlinePaint);
+         g2.draw(petal);
+         
+         // Rotate
+         affineTransform = AffineTransform.getRotateInstance(rotationAngle,
+            position.getX() + petalWidth / 2.0, position.getY() + petalLength);
+         
          g2.transform(affineTransform);
-         area.exclusiveOr(new Area(affineTransform.createTransformedShape(petal)));
-         affineTransform.rotate(rotationAngle,
-                             symbol_XPosition + petalWidth / 2.0,
-                             symbol_YPosition + petalLength);
       }
-      rotationAngle += Math.PI / 8.0;
-      symbol_XPosition += 1.0;
-      symbol_YPosition += 1.0;
       
       // Restore the original transformation.
       affineTransform.setToIdentity();
       g2.setTransform(affineTransform);
+      
+      // Oscillate Petal Size & Randomize Draw/Fill
+      if (petalSize.getWidth() > DEFAULT_MAX_WIDTH)
+      {
+         petalSizeIncrement = -(5.2 * random.nextDouble());
+         outlinePaint = new Color(random.nextInt(256), random.nextInt(256), random.nextInt(256));
+      }
+      
+      if (petalSize.getWidth() < 0)
+      {
+         petalSizeIncrement = 2.4 * random.nextDouble();
+         fillPaint = new GradientPaint(0.0F, 0.0f, new Color(random.nextInt(256), random.nextInt(256),
+                                                             random.nextInt(256)),
+                                       100.0F, 100.0F, new Color(random.nextInt(256), random.nextInt(256),
+                                                                 random.nextInt(256)), true);
+      }
+      
+      petalSize.setSize(petalSize.getWidth() + petalSizeIncrement,
+                        petalSize.getHeight() + petalSizeIncrement);
    }
    
    //==============================================================
@@ -219,7 +244,7 @@ class Blossom
    // blossom.
    //==============================================================
    
-   protected Point2D getPosition()
+   protected Point2D.Double getPosition()
    {
       return position;
    }
@@ -227,11 +252,6 @@ class Blossom
    protected Dimension2D getPetalSize()
    {
       return petalSize;
-   }
-   
-   protected double getRotationAngle()
-   {
-      return rotationAngle;
    }
    
    protected Stroke getStroke()
@@ -254,7 +274,7 @@ class Blossom
    // blossom.
    //==============================================================
    
-   protected void setPosition(Point2D newPosition)
+   protected void setPosition(Point2D.Double newPosition)
    {
       position = newPosition;
    }
@@ -264,17 +284,12 @@ class Blossom
       petalSize = newPetalSize;
    }
    
-   protected void setRotationAngle(double newRotationAngle)
-   {
-      rotationAngle = newRotationAngle;
-   }
-   
    protected void setStroke(Stroke newStroke)
    {
       stroke = newStroke;
    }
    
-   protected void setOutlinePaint(Paint newOutlinePaint)
+   protected void setOutlinePaint(GradientPaint newOutlinePaint)
    {
       outlinePaint = newOutlinePaint;
    }
