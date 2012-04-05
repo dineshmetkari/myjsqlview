@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.0 03/31/2012
+// Version 1.1 04/05/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 03/31/2012 Initial Outlined GeneralOptionsPreferencesFiller Class.
+//         1.1 04/05/2012 Finalized for Version Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,8 +45,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Point;
 import java.awt.RenderingHints;
+import java.awt.geom.Dimension2D;
 import java.awt.geom.Point2D;
 
 /**
@@ -53,7 +54,7 @@ import java.awt.geom.Point2D;
  * the Preferences Menu General Options to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.0 03/31/2012
+ * @version 1.1 04/05/2012
  */
 
 class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
@@ -65,9 +66,15 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
    private Blossom blossom;
    private boolean restartBlossoms;
    
+   private double positionIncrementX;
+   private double positionIncrementY;
+   
    private boolean runThread;
    private boolean suspendThread;
-   private static final int frameDelay = 30;
+   
+   private static final double DEFAULT_POSITION_INCREMENT_X = 5.0;
+   private static final double DEFAULT_POSITION_INCREMENT_Y = Math.pow(DEFAULT_POSITION_INCREMENT_X, 0.8);
+   private static final int FRAMEDELAY = 100;
 
    //==============================================================
    // GeneralOptionsPreferencesFiller Constructor
@@ -78,10 +85,18 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
       // Class Instances
       Thread t;
       
-      // Setup some blossoms to be animated.
-      
+      // Setup blossom to be animated.
       blossom = new Blossom();
+      blossom.isPetalFilled(true);
+      blossom.setPosition(new Point2D.Double(0.0, 0.0));
+      
+      Dimension2D petalSize = new Dimension();
+      petalSize.setSize(10.0, 30.0);
+      blossom.setPetalSize(petalSize);
+      
       restartBlossoms = true;
+      positionIncrementX = DEFAULT_POSITION_INCREMENT_X;
+      positionIncrementY = DEFAULT_POSITION_INCREMENT_Y;
 
       // ======================================================
       // Run the panel's thread.
@@ -116,8 +131,33 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
    private void updateAnimatedObjects()
    {
       // Class Method Instances
+      double positionX, positionY;
+      double width, height;
+      
+      // Collect Current Blossom Parameters.
+      positionX = blossom.getPosition().getX();
+      positionY = blossom.getPosition().getY();
+      // System.out.println(positionX + " : " + positionY);
+      
+      width = blossom.getPetalSize().getWidth() + blossom.getPetalSize().getHeight();
+      height = 2.0 * blossom.getPetalSize().getHeight();
+      
+      // Set Blossom Position.
+      if (positionX + width > getWidth())
+         positionIncrementX = -DEFAULT_POSITION_INCREMENT_X;
+      
+      if (positionX - blossom.getPetalSize().getHeight() < 0)
+         positionIncrementX = DEFAULT_POSITION_INCREMENT_X;
       
       
+      if (positionY + height > getHeight())
+         positionIncrementY = -DEFAULT_POSITION_INCREMENT_Y;
+
+      if (positionY < 0)
+         positionIncrementY = DEFAULT_POSITION_INCREMENT_Y;
+         
+      blossom.setPosition(new Point2D.Double(blossom.getPosition().getX() + positionIncrementX,
+                                             blossom.getPosition().getY() + positionIncrementY));   
    }
 
    //==============================================================
@@ -173,7 +213,7 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
    {
       try
       {
-         Thread.sleep(frameDelay);
+         Thread.sleep(FRAMEDELAY);
          synchronized (this)
          {
             while (suspendThread)
@@ -224,13 +264,7 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
          g.fillRect(0, 0, panelWidth, panelHeight);
          restartBlossoms = false;
       }
-      
-      Point2D currentPoint = new Point();
-      currentPoint.setLocation(panelWidth / 2.0, panelHeight / 2.0);
-      
-      blossom.setPosition(currentPoint);
-      blossom.isPetalFilled(true);
-      blossom.draw(g2); 
+      blossom.draw(g2);
    }
    
    //==============================================================
