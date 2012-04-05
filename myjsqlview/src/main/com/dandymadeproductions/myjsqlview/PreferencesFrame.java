@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.4 03/28/2012
+// Version 8.5 04/05/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -171,6 +171,8 @@
 //         8.4 Implemented the Control of the generalOptionsPanelFiller Thread in Constructor,
 //             actionPerformed(), valueChanged(), & Window Events by Suspending or Set Thread
 //             State.
+//         8.5 Suspended generalPreferencesPanel.generalOptionsPanelFiller on Cancel Action in
+//             actionPerformed().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -200,7 +202,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.4 03/28/2012
+ * @version 8.5 04/05/2012
  */
 
 //=================================================================
@@ -618,6 +620,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
          {
             MyJSQLView_JMenuBarActions.setPreferencesNotVisisble();
             preferencesTopPanel.suspendPanel(true);
+            generalPreferencesPanel.generalOptionsPanelFiller.suspendPanel(true);
             csvImportPanel.csvImportPanelFiller.suspendPanel(true);
             this.dispose();
          }
