@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.6 04/01/2012
+// Version 4.7 04/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,8 @@
 //                        Method createInsertOptionsPanel() & Collected Changes in action
 //                        Performed(). Added Class Method stateChanged(). Routines to get/
 //                        set Spinners in get/setSQLExportOptions().
+//         4.7 04/07/2012 Minor Changes in Layout for identifierQuotePanel & its Components
+//                        in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -146,7 +148,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.6 04/01/2012
+ * @version 4.7 04/07/2012
  */
 
 class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -290,7 +292,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       tableDataCheckBox.setFocusPainted(false);
       tableDataCheckBox.addActionListener(this);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 18);
+      buildConstraints(constraints, 0, 0, 1, 1, 35, 18);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(tableDataCheckBox, constraints);
@@ -300,10 +302,10 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       identifierQuotePanel = new JPanel(gridbag);
       identifierQuotePanel.setBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0));
 
-      identifierQuoteTextField = new JTextField(3);
+      identifierQuoteTextField = new JTextField(2);
       identifierQuoteTextField.addActionListener(this);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 30, 100);
+      buildConstraints(constraints, 0, 0, 1, 1, 80, 100);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(identifierQuoteTextField, constraints);
@@ -315,13 +317,13 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       else
          identifierQuoteLabel = new JLabel(" " + resource);
 
-      buildConstraints(constraints, 1, 0, 1, 1, 70, 100);
+      buildConstraints(constraints, 1, 0, 1, 1, 20, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
+      constraints.anchor = GridBagConstraints.EAST;
       gridbag.setConstraints(identifierQuoteLabel, constraints);
       identifierQuotePanel.add(identifierQuoteLabel);
 
-      buildConstraints(constraints, 1, 0, 1, 1, 100, 0);
+      buildConstraints(constraints, 1, 0, 1, 1, 65, 0);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(identifierQuotePanel, constraints);
@@ -384,7 +386,7 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       dataContentPanel.add(dataContentOptionsPanel);
 
-      buildConstraints(constraints, 0, 1, 2, 1, 100, 82);
+      buildConstraints(constraints, 0, 1, 2, 1, 0, 82);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(dataContentPanel, constraints);
