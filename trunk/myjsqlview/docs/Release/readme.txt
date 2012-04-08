@@ -1,4 +1,4 @@
-MyJSQLView Version 3.33
+MyJSQLView Version 3.34
 
 Copyright 2005-2012
 by Dana Proctor
@@ -70,11 +70,11 @@ Requirements:
 
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
    * Java Runtime Environment, JRE 1.5 or Newer.
-   * HSQL 2.2.5 - 2.2.7. *NOTE, 1.8.x No Longer Supported
+   * HSQL 2.2.5 - 2.2.8. *NOTE, 1.8.x No Longer Supported
    * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
-   * MySQL 5.0.7 - 5.084, JDBC 5.0.7, 5.1.5, 5.1.8.
+   * MySQL 5.0.7 - 5.1.61, JDBC 5.0.7, 5.1.5, 5.1.8.
    * Oracle 10g JDBC 14.
-   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801.
+   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801-9.1-901.
    * Xerial SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
 
 Installation Notes:
@@ -180,7 +180,10 @@ Path as the directory where installation took place.
 window by typing in the command "java -jar MyJSQLView.jar" while in the
 installation directory. A Linux/Unix environment will require the file location
 to be specified by "./MyJSQLView.jar", remember this must be done with a console
-that is running within a X Window environment like KDE or Gnome. 
+that is running within a X Window environment like KDE or Gnome. As an alternative
+some uses who are using large database table with tuples, larger than 300k rows,
+may need to allocate additional memory by using the command "java -Xmx128m -jar
+MyJSQLView.jar". 
 
 Copyright Notice:
 
@@ -204,8 +207,11 @@ L.S. Proctor who provided support and mental clarity.
 Version History:
 
 Production (2008-12-31):
-
-   * Versoin 3.33 Integration of HSQLDB2, HyperSQL, database for In-Memory data
+   * Version 3.34 Maintenance update to address issues with data imports and
+                  exports on database tables with rows larger than 100k+ tuples.
+                  Creation Preferences General Options for controlling table
+                  read and write batching.
+   * Version 3.33 Integration of HSQLDB2, HyperSQL, database for In-Memory data
                   Analysis. HyperSQL database File and Jar resource connection
 		  support. Advanced Sort/Search interface Aggregation and GROUP
 		  BY feature. SQL Query Bucket Fixes and interface changes to
