@@ -97,7 +97,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.33 does not, will have an example configuration
+additional database, release v3.34 does not, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
