@@ -1,0 +1,20 @@
+MyJSQLView Version 3.34 Released
+
+The MyJSQLView project is pleased to release v3.34 to the public. The
+release is a maintenance update to address issues with data imports and
+exports associated with database tables with 100k+ rows. Modifications
+have been made to allow the control of table reads and writes by way of
+a General Options Preferences. In addition the release as the prior one
+makes improvements to the HeatMapper plugin. The TableFieldProfiler 
+plugin has also been expanded to include a cluster analysis tool as
+was incorporated to the original Profiler project.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend
+for viewing, adding, editing, or deleting entries in the HSQL, MSAccess,
+MySQL, Oracle, PostgreSQL, and SQLite databases. A query frame allows
+the building of complex SQL statements. The application allows easy
+sorting, searching, and import/export of table data.
