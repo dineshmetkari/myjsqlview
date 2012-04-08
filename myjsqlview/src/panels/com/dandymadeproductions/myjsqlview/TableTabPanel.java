@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.00 03/23/2012
+// Version 5.01 04/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -215,7 +215,8 @@
 //             setSpecialFieldData(), deleteSelectedItems(), & deleteAllItems()
 //             to Throw SQLException With finally for Closing SQLStatement. Try
 //             catch Statement in executeActions() for These Methods in Addition
-//             to editSelectedItem() Call. 
+//             to editSelectedItem() Call.
+//        5.1 Method getTableSQLStatement() Return to.String().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -253,7 +254,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.00 03/23/2012
+ * @version 5.01 04/07/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2507,7 +2508,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
    public String getTableSQLStatement()
    {
-      return sqlTableStatement;
+      return sqlTableStatement.toString();
    }
 
    //==============================================================
