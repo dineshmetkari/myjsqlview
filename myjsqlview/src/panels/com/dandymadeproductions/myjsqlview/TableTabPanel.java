@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.01 04/07/2012
+// Version 5.02 04/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,7 +216,8 @@
 //             to Throw SQLException With finally for Closing SQLStatement. Try
 //             catch Statement in executeActions() for These Methods in Addition
 //             to editSelectedItem() Call.
-//        5.1 Method getTableSQLStatement() Return to.String().
+//        5.01 Method getTableSQLStatement() Return to.String().
+//        5.02 Changed sqlTableStatement Class Instance to a StringBuffer.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -254,7 +255,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.01 04/07/2012
+ * @version 5.02 04/07/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -283,7 +284,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    private String lastSaveDirectory;
    protected String lob_sqlTableFieldsString;
    protected String sqlTableFieldsString;
-   protected String sqlTableStatement;
+   protected StringBuffer sqlTableStatement;
    protected String identifierQuoteString;
    protected Vector<String> fields, formFields, viewFormFields, comboBoxFields;
    protected Vector<String> currentTableHeadings, allTableHeadings;
@@ -380,6 +381,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       saveFileName = "";
       lastSaveDirectory = "";
+      sqlTableStatement = new StringBuffer();
       fields = new Vector <String>();
       formFields = new Vector <String>();
       viewFormFields = new Vector <String>();
@@ -2923,7 +2925,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                }
 
                else if (i == 4)
-                  sqlTableStatement = tableStates[i];
+               {
+                  sqlTableStatement.delete(0, sqlTableStatement.length());
+                  sqlTableStatement.append(tableStates[i]);
+               }
 
                else if (i == 5)
                {
