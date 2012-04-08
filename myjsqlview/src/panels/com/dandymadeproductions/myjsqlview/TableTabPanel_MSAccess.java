@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 03/23/2012
+// Version 1.8 04/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,8 @@
 //         1.7 Class Method addItem() Added a try catch for setSpecialFields(). Methods
 //             viewSelectedItem(), editSelectedItem() & getColumnNames() Throws for
 //             SQLException Through finally Clause for Closing sqlStatment.
+//         1.8 Changes in loadTable to Add Back Instance sqlStatementString and Then
+//             Have sqlTableStatement New StringBuffer Designation Loaded From it.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -75,7 +77,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.7 03/23/2012
+ * @version 1.8 04/07/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -325,6 +327,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
+      String sqlStatementString;
       String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
@@ -458,12 +461,12 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
          
-         sqlTableStatement = "";
+         sqlTableStatement.delete(0, sqlTableStatement.length());
 
          if (advancedSortSearch)
          {
             // Complete With All Fields.
-            sqlTableStatement = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
+            sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit);
             // Summary Table Without LOBs
             lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
@@ -472,7 +475,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
          else
          {
             // Complete With All Fields.
-            sqlTableStatement = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
+            sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
                                  + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
@@ -484,6 +487,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString;  
          }
+         sqlTableStatement.append(sqlStatementString.toString());
          // System.out.println(sqlTableStatement);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
