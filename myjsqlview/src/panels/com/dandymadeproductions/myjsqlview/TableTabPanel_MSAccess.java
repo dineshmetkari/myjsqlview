@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 04/07/2012
+// Version 1.9 04/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,9 @@
 //             SQLException Through finally Clause for Closing sqlStatment.
 //         1.8 Changes in loadTable to Add Back Instance sqlStatementString and Then
 //             Have sqlTableStatement New StringBuffer Designation Loaded From it.
+//         1.9 Method loadTable() Conversion of Date From searchString Failed, Due
+//             to Possible Generic Search of All Fields for Given Characters. So
+//             Just Use Original Characters.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -77,7 +80,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.8 04/07/2012
+ * @version 1.9 04/15/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -371,7 +374,13 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                if (columnType.equals("DATE") || columnType.equals("DATETIME"))
                {
                   if (columnType.equals("DATE"))
+                  {
                      searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
+                     
+                     // Something not right in conversion.
+                     if (searchString.equals("0"))
+                        searchString = searchTextString;
+                  }
                   else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
                   {
                      if (searchString.indexOf(" ") != -1)
