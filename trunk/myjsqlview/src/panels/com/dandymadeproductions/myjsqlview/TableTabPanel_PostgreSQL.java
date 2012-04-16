@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 13.3 04/07/2012
+// Version 13.4 04/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -306,6 +306,9 @@
 //             SQLException Through finally Clause for Closing sqlStatment.
 //        13.3 Changes in loadTable to Add Back Instance sqlStatementString and Then
 //             Have sqlTableStatement New StringBuffer Designation Loaded From it.
+//        13.4 Method loadTable() Conversion of Date From searchString Failed, Due
+//             to Possible Generic Search of All Fields for Given Characters. So
+//             Just Use Original Characters.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -331,7 +334,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 13.3 04/07/2012
+ * @version 13.4 04/15/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -604,7 +607,13 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                String searchString = searchTextString;
                
                if (columnType.equals("DATE"))
+               {
                   searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
+                  
+                  // Something not right in conversion.
+                  if (searchString.equals("0"))
+                     searchString = searchTextString;
+               }
                else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ"))
                {
                   if (searchString.indexOf(" ") != -1)

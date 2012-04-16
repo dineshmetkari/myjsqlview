@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.3 04/07/2012
+// Version 11.4 04/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -270,6 +270,9 @@
 //             for SQLException Through finally Clause for Closing sqlStatment.
 //        11.3 Changes in loadTable to Add Back Instance sqlStatementString and Then
 //             Have sqlTableStatement New StringBuffer Designation Loaded From it.
+//        11.4 Method loadTable() Conversion of Date From searchString Failed, Due
+//             to Possible Generic Search of All Fields for Given Characters. So
+//             Just Use Original Characters.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -302,7 +305,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.3 04/07/2012
+ * @version 11.4 04/15/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -639,8 +642,13 @@ public class TableTabPanel_Oracle extends TableTabPanel
                if (columnType.equals("DATE"))
                {
                   searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
-                  searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchString
-                                           + "', 'YYYY-MM-dd')");
+                  
+                  // Something not right in conversion.
+                  if (searchString.equals("0") || searchString.equals(searchTextString))
+                     searchQueryString.append(tableColumns[i] + " LIKE '%" + searchTextString + "%'");
+                  else
+                     searchQueryString.append(tableColumns[i] + " LIKE TO_DATE('" + searchString
+                                              + "', 'YYYY-MM-dd')");
                   
                   if (i < tableColumns.length - 1)
                      searchQueryString.append(" OR");
