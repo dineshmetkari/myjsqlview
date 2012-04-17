@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 10.5 04/15/2012
+// Version 10.6 04/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,6 +237,7 @@
 //        10.5 Method loadTable() Conversion of Date From searchString Failed, Due
 //             to Possible Generic Search of All Fields for Given Characters. So
 //             Just Use Original Characters.
+//        10.6 Removed sqlStatementString in loadTable(), Replaced With sqlTableStatement.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -262,7 +263,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 10.5 04/15/2012
+ * @version 10.6 04/16/2012
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -503,7 +504,6 @@ public class TableTabPanel_Generic extends TableTabPanel
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
-      String sqlStatementString;
       String lobLessSQLStatementString;
       Statement sqlStatement;
       ResultSet rs;
@@ -624,8 +624,8 @@ public class TableTabPanel_Generic extends TableTabPanel
          if (advancedSortSearch)
          {
             // Complete With All Fields.
-            sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-                                             tableRowStart, tableRowLimit);
+            sqlTableStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
+                                             tableRowStart, tableRowLimit));
             // Summary Table Without LOBs
             lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
                                                     tableRowStart, tableRowLimit);
@@ -633,12 +633,12 @@ public class TableTabPanel_Generic extends TableTabPanel
          else
          {
             // Complete With All Fields.
-            sqlStatementString = "SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
+            sqlTableStatement.append("SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
                                  + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                  + identifierQuoteString
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
-                                 + tableRowLimit + " " + "OFFSET " + tableRowStart;
+                                 + tableRowLimit + " " + "OFFSET " + tableRowStart);
             // Summary Table Without LOBs.
             lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
                                         + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
@@ -647,7 +647,6 @@ public class TableTabPanel_Generic extends TableTabPanel
                                         + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
                                         + tableRowLimit + " " + "OFFSET " + tableRowStart;  
          }
-         sqlTableStatement.append(sqlStatementString.toString());
          // System.out.println(sqlTableStatement);
          // System.out.println(lobLessSQLStatementString);
          rs = sqlStatement.executeQuery(lobLessSQLStatementString);
