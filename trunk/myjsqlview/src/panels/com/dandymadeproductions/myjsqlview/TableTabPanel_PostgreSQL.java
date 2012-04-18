@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 13.5 04/16/2012
+// Version 13.6 04/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -310,6 +310,9 @@
 //             to Possible Generic Search of All Fields for Given Characters. So
 //             Just Use Original Characters.
 //        13.5 Removed sqlStatementString in loadTable(), Replaced With sqlTableStatement.
+//        13.6 Class Method loadTable() Insured That sqlTableStatement is Given a
+//             New Instance Before Reasignment. Replaced delete() Which Was Not
+//             Propagating Changes to Object Outside the Method.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -335,7 +338,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 13.5 04/16/2012
+ * @version 13.6 04/18/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -681,7 +684,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
          
-         sqlTableStatement.delete(0, sqlTableStatement.length());
+         sqlTableStatement = new StringBuffer();
 
          if (advancedSortSearch)
          {

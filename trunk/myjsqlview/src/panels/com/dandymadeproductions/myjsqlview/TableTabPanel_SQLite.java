@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 04/16/2012
+// Version 2.7 04/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,9 @@
 //             to Possible Generic Search of All Fields for Given Characters. So
 //             Just Use Original Characters.
 //         2.6 Removed sqlStatementString in loadTable(), Replaced With sqlTableStatement.
+//         2.7 Class Method loadTable() Insured That sqlTableStatement is Given a
+//             New Instance Before Reasignment. Replaced delete() Which Was Not
+//             Propagating Changes to Object Outside the Method.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -95,7 +98,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.6 04/16/2012
+ * @version 2.7 04/18/2012
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -443,7 +446,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
          
-         sqlTableStatement.delete(0, sqlTableStatement.length());
+         sqlTableStatement = new StringBuffer();
 
          if (advancedSortSearch)
          {
