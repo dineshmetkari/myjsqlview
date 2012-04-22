@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.04 04/18/2012
+// Version 5.05 05/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -220,6 +220,9 @@
 //        5.02 Changed sqlTableStatement Class Instance to a StringBuffer.
 //        5.03 Returned a new String() for getTableSQLStatement().
 //        5.04 Backed Out Revision 5.03.
+//        5.05 Moved the Creation of the viewButton Out of the Block of Creating
+//             Only if !primaryKeys.isEmpty(). Allows View Tables Content Data
+//             Blob/Binary/Text Content to be Accessed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -257,7 +260,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.04 04/18/2012
+ * @version 5.05 05/22/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -681,20 +684,20 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       actionButtonPanel = new JPanel();
       
+      // View Button
+      resource = resourceBundle.getResource("TableTabPanel.button.View");
+      if (resource.equals(""))
+         viewButton = new JButton("View");
+      else
+         viewButton = new JButton(resource);
+      viewButton.setMnemonic(KeyEvent.VK_V);
+      viewButton.addActionListener(this);
+      actionButtonPanel.add(viewButton);
+      
       // No key then kind of hard to manipulate.
       
       if (!primaryKeys.isEmpty())
       {
-         // View Button
-         resource = resourceBundle.getResource("TableTabPanel.button.View");
-         if (resource.equals(""))
-            viewButton = new JButton("View");
-         else
-            viewButton = new JButton(resource);
-         viewButton.setMnemonic(KeyEvent.VK_V);
-         viewButton.addActionListener(this);
-         actionButtonPanel.add(viewButton);
-
          if (!viewOnly)
          {
             // Add Button
