@@ -220,9 +220,9 @@
 //        5.02 Changed sqlTableStatement Class Instance to a StringBuffer.
 //        5.03 Returned a new String() for getTableSQLStatement().
 //        5.04 Backed Out Revision 5.03.
-//        5.05 Moved the Creation of the viewButton Out of the Block of Creating
-//             Only if !primaryKeys.isEmpty(). Allows View Tables Content Data
-//             Blob/Binary/Text Content to be Accessed.
+//        5.05 Moved the Creation of the viewButton Out of the Block of Only if
+//             !primaryKeys.isEmpty(). Allows View Tables Content Data Blob/Binary/Text
+//             Content to be Accessed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
