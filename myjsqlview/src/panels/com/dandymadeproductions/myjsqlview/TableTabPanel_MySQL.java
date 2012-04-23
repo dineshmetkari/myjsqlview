@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.48 04/18/2012
+// Version 11.49 04/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -486,6 +486,8 @@
 //       11.48 Class Method loadTable() Insured That sqlTableStatement is Given a
 //             New Instance Before Reasignment. Replaced delete() Which Was Not
 //             Propagating Changes to Object Outside the Method.
+//       11.49 Change in viewSelectedItem() to Use Brute Force WHERE Creation for
+//             Selected listTable Entry if primaryKeys().isEmpty().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -510,7 +512,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.48 04/18/2012
+ * @version 11.49 04/22/2012
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -1135,62 +1137,153 @@ public class TableTabPanel_MySQL extends TableTabPanel
          sqlStatementString = new StringBuffer();
          sqlStatementString.append("SELECT * FROM " + schemaTableName + " WHERE ");
 
-         // Find the key column, in case it has been moved
-         // in the summary table, then obtain entry content.
-
-         keyIterator = primaryKeys.iterator();
-
-         while (keyIterator.hasNext())
+         if (!primaryKeys.isEmpty())
          {
-            currentDB_ColumnName = keyIterator.next();
+            // Find the key column, in case it has been moved
+            // in the summary table, then obtain entry content.
 
-            for (int i = 0; i < listTable.getColumnCount(); i++)
-               if (listTable.getColumnName(i).equals(parseColumnNameField(currentDB_ColumnName)))
-                  keyColumn = i;
+            keyIterator = primaryKeys.iterator();
 
-            // Found now get key info.
-            currentContentData = listTable.getValueAt(rowToView, keyColumn);
-
-            // Special case of blob/text key.
-            if (currentContentData instanceof BlobTextKey)
+            while (keyIterator.hasNext())
             {
-               String keyString = ((BlobTextKey) currentContentData).getContent();
-               keyString = keyString.replaceAll("'", "''");
+               currentDB_ColumnName = keyIterator.next();
 
-               // select * from t1 where a like "hello%";
-               sqlStatementString.append(identifierQuoteString + currentDB_ColumnName + identifierQuoteString
-                                         + " LIKE '" + keyString + "%' AND ");
+               for (int i = 0; i < listTable.getColumnCount(); i++)
+                  if (listTable.getColumnName(i).equals(parseColumnNameField(currentDB_ColumnName)))
+                     keyColumn = i;
+
+               // Found now get key info.
+               currentContentData = listTable.getValueAt(rowToView, keyColumn);
+
+               // Special case of blob/text key.
+               if (currentContentData instanceof BlobTextKey)
+               {
+                  String keyString = ((BlobTextKey) currentContentData).getContent();
+                  keyString = keyString.replaceAll("'", "''");
+
+                  // select * from t1 where a like "hello%";
+                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName + identifierQuoteString
+                                            + " LIKE '" + keyString + "%' AND ");
+               }
+               // Normal keys
+               else
+               {
+                  // Escape single quotes.
+                  currentColumnClass = (String) columnClassHashMap
+                        .get(parseColumnNameField(currentDB_ColumnName));
+                  
+                  if (currentColumnClass.indexOf("String") != -1)
+                     currentContentData = ((String) currentContentData).replaceAll("'", "''");
+
+                  // Reformat date keys.
+                  currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  if (currentColumnType.equals("DATE"))
+                  {
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "='"
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                               + "' AND ");
+                  }
+                  else
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "='" + currentContentData
+                                               + "' AND ");
+               }
+
             }
-            // Normal keys
-            else
+            sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
+         }
+         // See if we can brute force an all fields
+         // SELECT WHERE query.
+         else
+         {
+            // Cycle through each field and set value.
+            for (int i = 0; i < listTable.getColumnCount(); i++)
             {
-               // Escape single quotes.
-               currentColumnClass = (String) columnClassHashMap
-                     .get(parseColumnNameField(currentDB_ColumnName));
-               if (currentColumnClass.indexOf("String") != -1)
-                  currentContentData = ((String) currentContentData).replaceAll("'", "''");
-
-               // Reformat date keys.
-               currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
-               if (currentColumnType.equals("DATE"))
+               currentContentData = listTable.getValueAt(rowToView, i);
+               currentDB_ColumnName = (String) columnNamesHashMap.get(listTable.getColumnName(i));
+               currentColumnClass = columnClassHashMap.get(listTable.getColumnName(i));
+               currentColumnType = columnTypeHashMap.get(listTable.getColumnName(i));
+               columnSize = columnSizeHashMap.get(listTable.getColumnName(i)).intValue();
+               
+               // System.out.println("field:" + currentDB_ColumnName + " class:" + currentColumnClass
+               //                    + " type:" + currentColumnType + " value:" + currentContentData);
+               
+               // Skip Blob, Text, & Float Unless NULL.
+               if ((currentColumnClass.indexOf("String") == -1 && currentColumnType.indexOf("BLOB") != -1)
+                     || (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+                         && columnSize > 255)
+                     || (currentColumnType.indexOf("FLOAT") != -1))
+               {
+                  if (currentContentData.toString().toUpperCase().equals("NULL"))
+                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                        + identifierQuoteString + " IS NULL AND ");
+                  continue;     
+               }
+               
+               // NULL
+               if (currentContentData.toString().toUpperCase().equals("NULL"))
                {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                            + identifierQuoteString + "='"
-                                            + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                               currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
-                                            + "' AND ");
+                     + identifierQuoteString + " IS NULL ");
                }
+               // Try the Rest
                else
+               {
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                            + identifierQuoteString + "='" + currentContentData
-                                            + "' AND ");
+                     + identifierQuoteString);
+                  
+                  // Process Date
+                  if (currentColumnType.equals("DATE"))
+                  {
+                     String dateString = MyJSQLView_Utils.processDateFormatSearch(
+                        (String) currentContentData);
+                     
+                     sqlStatementString.append("='" + dateString + "' ");
+                  }
+                  // Process DateTime
+                  else if (currentColumnType.equals("DATETIME") || currentColumnType.equals("TIMESTAMP"))
+                  {
+                     String content, dateTimeString;
+                     content = (String) currentContentData;
+                     
+                     dateTimeString = MyJSQLView_Utils.processDateFormatSearch(content.substring(0,
+                        content.indexOf(" ")))
+                           + content.substring(content.indexOf(" "));
+                     
+                     sqlStatementString.append("='" + dateTimeString + "' ");
+                  }
+                  // Process BIT
+                  else if (currentColumnType.indexOf("BIT") != -1)
+                  {
+                     sqlStatementString.append("=B'" + currentContentData + "' ");
+                  }
+                  // All Others
+                  else
+                  {
+                     if (currentColumnClass.indexOf("Integer") != -1
+                           || currentColumnClass.indexOf("Long") != -1
+                           || currentColumnClass.indexOf("Float") != -1
+                           || currentColumnClass.indexOf("Double") != -1
+                           || currentColumnClass.indexOf("Byte") != -1
+                           || currentColumnClass.indexOf("BigDecimal") != -1
+                           || currentColumnClass.indexOf("Short") != -1)
+                        sqlStatementString.append("=" + currentContentData + " ");
+                     else
+                        sqlStatementString.append("='" + currentContentData + "' ");
+                  }
+               }
+               sqlStatementString.append("AND ");
             }
-
+            sqlStatementString.delete(sqlStatementString.length() - 4, sqlStatementString.length());
          }
-         sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
+         
          // System.out.println(sqlStatementString);
          db_resultSet = sqlStatement.executeQuery(sqlStatementString.toString());
-         db_resultSet.next();
+         
+         if (!db_resultSet.next())
+            return;
 
          // Cycling through the item fields and setting
          // in the tableViewForm.
