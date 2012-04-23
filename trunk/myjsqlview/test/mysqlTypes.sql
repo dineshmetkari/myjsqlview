@@ -12,6 +12,7 @@
 --         11/09/2007 Added Boolean & BIT(5) Types.
 --                    Fails on MySQL 4.xx.
 --         07/21/2010 Updated Contact, Email, Address.
+--         04/22/2012 Added View Tables myView.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -67,3 +68,10 @@ CREATE TABLE mysqltypes (
     year_4 YEAR(4) DEFAULT NULL
 )
 TYPE = InnoDB;
+
+--
+-- View for mysqltypes
+--
+
+DROP VIEW IF EXISTS `myView`;
+CREATE VIEW `myView` AS SELECT * FROM `mysqltypes`;

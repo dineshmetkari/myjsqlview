@@ -9,6 +9,7 @@
 --         07/21/2010 Updated Contact, Email, Address.
 --         07/15/2011 Modifed to Accomodate HSQL2, Binary Sizing,
 --                    Bit Varying, Timestamps, & Interval.
+--         04/22/2012 Added View Table myView.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -62,3 +63,10 @@
     timeStampTMZ_type TIMESTAMP(6) WITH TIME ZONE,
     interval_type INTERVAL YEAR(3)
 );
+
+--
+-- View for hsqltypes
+--
+
+DROP VIEW IF EXISTS "myView";
+CREATE VIEW "myView" AS SELECT * FROM hsqltypes;

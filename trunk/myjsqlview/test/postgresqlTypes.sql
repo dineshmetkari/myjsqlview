@@ -12,6 +12,7 @@
 --                    & Interval Type.
 --         02/25/2008 bitVary2_type Changed to bitVary5_type.
 --         07/21/2010 Updated Contact, Email, Address.
+--         04/22/2012 Added View Tables myView.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -80,3 +81,10 @@ CREATE TABLE postgresqltypes (
 	
   	PRIMARY KEY  (data_type_id)
 );
+
+--
+-- View for postgresqltypes
+--
+
+DROP VIEW IF EXISTS "myView";
+CREATE VIEW "myView" AS SELECT * FROM postgresqltypes;
