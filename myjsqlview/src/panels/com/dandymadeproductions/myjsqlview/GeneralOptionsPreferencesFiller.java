@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.2 04/07/2012
+// Version 1.3 04/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 // Version 1.0 03/31/2012 Initial Outlined GeneralOptionsPreferencesFiller Class.
 //         1.1 04/05/2012 Finalized for Version Release.
 //         1.2 04/07/2012 Set Background to Black in Constructor.
+//         1.3 04/23/2012 Made Class Instance blossom transient.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +56,7 @@ import java.awt.geom.Point2D;
  * the Preferences Menu General Options to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.2 04/07/2012
+ * @version 1.3 04/22/2012
  */
 
 class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
@@ -64,7 +65,7 @@ class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
    private static final long serialVersionUID = 4300192939824055345L;
    
    private transient Image offScreenGraphicsImage;
-   private Blossom blossom;
+   private transient Blossom blossom;
    private boolean restartBlossoms;
    
    private double positionIncrementX;
