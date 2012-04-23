@@ -20,6 +20,7 @@
 --         08/31/2008 Updated Comment on DROP SEQUENCE/TABLE to try
 --                    and clarify.
 --         07/21/2010 Updated Contact, Email, Address.
+--         04/23/2012 Added View Tables myView.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -78,3 +79,9 @@ CREATE TABLE oracletypes (
 	interval_day INTERVAL DAY(6) TO SECOND(5)
 );
 ALTER TABLE oracletypes ADD CONSTRAINT oracletypes_data_type_id_seq PRIMARY KEY (data_type_id);
+
+--
+-- View for oracletypes
+--
+
+CREATE OR REPLACE VIEW "myView" AS SELECT * FROM oracletypes;

@@ -5,6 +5,7 @@
 -- Dana Proctor 
 -- Version 07/21/2010 Original Test sqlitetypes Table.
 --         07/23/2010 Narrowed to Just Four Types.
+--         04/23/2012 Added View Tables myView.
 --
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -23,3 +24,10 @@
    text_type TEXT,
    blob_type BLOB
 );
+
+--
+-- View for sqlitetypes
+--
+
+DROP VIEW IF EXISTS myView;
+CREATE VIEW myView AS SELECT * FROM sqlitetypes;

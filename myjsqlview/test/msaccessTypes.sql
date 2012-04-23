@@ -9,6 +9,7 @@
 --                    Data Type.
 --         09/23/2011 Properly Implemented Identifier String Character
 --                    for Table Names & Fields.
+--         04/22/2012 Added View Table myView.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -44,3 +45,10 @@ CREATE TABLE `msaccesstypes` (
    
     `dateTime_type` DATETIME
 );
+
+--
+-- View for msaccesstypes
+--
+
+-- DROP TABLE `myView`;
+CREATE VIEW `myView` AS SELECT * FROM `msaccesstypes`;
