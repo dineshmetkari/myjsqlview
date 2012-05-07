@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.8 02/16/2012
+// Version 7.9 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -196,6 +196,8 @@
 //                        ConnectionManager.getConnection() in Constructor.
 //         7.8 02/16/2012 Added sqlQueryBucketButton & Implemented With it SQL Query Bucket Drops.
 //                        Setup in Constructor and Action Event in actionPerformed().
+//         7.9 05/07/2012 Changed columnNameFields in exportData() From Vector to ArrayList
+//                        Data Type.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -217,7 +219,7 @@ import java.sql.Connection;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -233,7 +235,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.8 02/16/2012
+ * @version 7.9 05/07/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1153,7 +1155,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
          if (!fileName.equals(""))
          {
-            Vector<String> columnNameFields = new Vector <String>();
+            ArrayList<String> columnNameFields = new ArrayList <String>();
             
             if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
             {
