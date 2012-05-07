@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.6 01/01/2012
+// Version 1.7 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@
 //         1.4 Copyright Update.
 //         1.5 Made Class Instance fileName private.
 //         1.6 Copyright Update.
+//         1.7 Class Method refreshTablePanel() Instance tableFields Changed from
+//             Vector to Data Type to ArrayList.
 //          
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -48,7 +50,7 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.io.File;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -57,7 +59,7 @@ import javax.swing.JOptionPane;
  * a summary table configuration state.
  * 
  * @author Dana M. Proctor
- * @version 1.6 01/01/2012
+ * @version 1.7 05/07/2012
  */
 
 class LoadTableStateThread implements Runnable
@@ -173,7 +175,7 @@ class LoadTableStateThread implements Runnable
       
       if (currentTableTabPanel != null)
       {
-         Vector<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
+         ArrayList<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableFields);
       }
    }
