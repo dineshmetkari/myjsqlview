@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 03/17/2012
+// Version 2.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,9 @@
 //         2.1 Changed in Method Name setMemoryConnectoin() to setMemoryConnection().
 //         2.2 Change in Method getConnection() to Handle HSQL File & Resource
 //             Connnections Using Separate Arguments for User & Password.
+//         2.3 Changed Class Instances schemas & tables from Vector to ArrayList.
+//             Also the Same for schemas & tables in Class Methods getSchemas()
+//             & getTableNames().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +77,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
 
@@ -84,7 +87,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.2 03/17/2012
+ * @version 2.3 05/07/2012
  */
 
 public class ConnectionManager
@@ -97,8 +100,8 @@ public class ConnectionManager
    private static String dbProductNameVersion;
    private static String catalog, schemaPattern, tableNamePattern;
    private static String[] tableTypes;
-   private static Vector<String> schemas = new Vector <String>();
-   private static Vector<String> tables = new Vector <String>();
+   private static ArrayList<String> schemas = new ArrayList <String>();
+   private static ArrayList<String> tables = new ArrayList <String>();
    
    private static String catalogSeparator;
    private static String identifierQuoteString;
@@ -520,8 +523,8 @@ public class ConnectionManager
          
          // Clear the tables vector and load it with the databases
          // tables.
-         schemas.removeAllElements();
-         tables.removeAllElements();
+         schemas.clear();
+         tables.clear();
          
          // ResultSetMetaData rsmd = db_resultSet.getMetaData();
          // for (int i = 1; i <= rsmd.getColumnCount(); i++)
@@ -711,13 +714,13 @@ public class ConnectionManager
    // schemas names.
    //==============================================================
 
-   public static Vector<String> getSchemas()
+   public static ArrayList<String> getSchemas()
    {
-      Vector<String> schemasVector = new Vector <String>();
+      ArrayList<String> schemasVector = new ArrayList <String>();
       Iterator<String> schemasIterator = schemas.iterator();
       
       while (schemasIterator.hasNext())
-         schemasVector.addElement(schemasIterator.next());
+         schemasVector.add(schemasIterator.next());
       
       return schemasVector;
    }
@@ -727,15 +730,15 @@ public class ConnectionManager
    // names.
    //==============================================================
 
-   public static Vector<String> getTableNames()
+   public static ArrayList<String> getTableNames()
    {
-      Vector<String> tablesVector = new Vector <String>();
+      ArrayList<String> tables = new ArrayList <String>();
       Iterator<String> tablesIterator = tables.iterator();
       
       while (tablesIterator.hasNext())
-         tablesVector.addElement(tablesIterator.next());
+         tables.add(tablesIterator.next());
       
-      return tablesVector;
+      return tables;
    }
    
    //==============================================================
