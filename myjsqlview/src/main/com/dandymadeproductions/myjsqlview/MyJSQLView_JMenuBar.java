@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 7.5 01/01/2012
+// Version 7.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,7 @@
 //         7.4 Change in Constructor for ConnectionManager.getDataSourceType()
 //             From getConnectionProperties().
 //         7.5 Copyright Update.
+//         7.6 Changed Constructor Instance schemas from Vector to ArrayList.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -133,7 +134,7 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -150,7 +151,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.5 01/01/2012
+ * @version 7.6 05/07/2012
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -171,7 +172,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
 
       // Constructor Instances.
       String iconsDirectory, resource;
-      Vector<String> schemas;
+      ArrayList<String> schemas;
 
       // Setting up a icons directory instance.
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
@@ -521,7 +522,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
    // Helper Method to create the Schemas Menu.
    //==============================================================
 
-   private void createSchemasMenu(Vector<String> schemas)
+   private void createSchemasMenu(ArrayList<String> schemas)
    {
       // Method Instances.
       JMenu schemasMenu;
