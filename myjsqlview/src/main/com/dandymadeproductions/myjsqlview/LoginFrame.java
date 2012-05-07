@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.84 03/16/2012
+// Version 6.85 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -263,6 +263,9 @@
 //             Database Connections via db Name.
 //        6.84 HSQL mem,file,res Connection Parameters Changed to Use Three Argument
 //             Constructor for DriverManager.getConnection() in accessCheck().
+//        6.85 Changed Class Instances sitesNameList, driverList, protocolList, hostList,
+//             subProtocolList, portList, databaseList, & userList from Vector Data Type
+//             to ArrayList.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -286,7 +289,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -297,7 +300,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.84 03/16/2012
+ * @version 6.85 05/07/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -323,8 +326,8 @@ public class LoginFrame extends JFrame implements ActionListener
 
    private JButton validLoginButton, loginButton, cancelButton;
 
-   private Vector<String> sitesNameList, driverList, protocolList, subProtocolList,
-                  hostList, portList, databaseList, userList;
+   private ArrayList<String> sitesNameList, driverList, protocolList, subProtocolList,
+                    hostList, portList, databaseList, userList;
    
    private Hashtable<String, SiteParameters> sites;
    private transient SiteParameters lastSite;
@@ -367,14 +370,14 @@ public class LoginFrame extends JFrame implements ActionListener
       
       xmlTranslator = new XMLTranslator();
       sites = new Hashtable <String, SiteParameters>();
-      sitesNameList = new Vector <String>();
-      driverList = new Vector <String>();
-      protocolList = new Vector <String>();
-      subProtocolList = new Vector <String>();
-      hostList = new Vector <String>();
-      portList = new Vector <String>();
-      databaseList = new Vector <String>();
-      userList = new Vector <String>();
+      sitesNameList = new ArrayList <String>();
+      driverList = new ArrayList <String>();
+      protocolList = new ArrayList <String>();
+      subProtocolList = new ArrayList <String>();
+      hostList = new ArrayList <String>();
+      portList = new ArrayList <String>();
+      databaseList = new ArrayList <String>();
+      userList = new ArrayList <String>();
 
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
@@ -812,13 +815,13 @@ public class LoginFrame extends JFrame implements ActionListener
       // in the process add databases to the site
       // JMenus.
 
-      driverList.removeAllElements();
-      protocolList.removeAllElements();
-      subProtocolList.removeAllElements();
-      hostList.removeAllElements();
-      portList.removeAllElements();
-      databaseList.removeAllElements();
-      userList.removeAllElements();
+      driverList.clear();
+      protocolList.clear();
+      subProtocolList.clear();
+      hostList.clear();
+      portList.clear();
+      databaseList.clear();
+      userList.clear();
 
       siteNames = sites.keys();
       while (siteNames.hasMoreElements())
@@ -883,13 +886,13 @@ public class LoginFrame extends JFrame implements ActionListener
       String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite.db", "ms_access"};
       
       // Clear contents to start anewed.
-      driverList.removeAllElements();
-      protocolList.removeAllElements();
-      subProtocolList.removeAllElements();
-      hostList.removeAllElements();
-      portList.removeAllElements();
-      databaseList.removeAllElements();
-      userList.removeAllElements();
+      driverList.clear();
+      protocolList.clear();
+      subProtocolList.clear();
+      hostList.clear();
+      portList.clear();
+      databaseList.clear();
+      userList.clear();
                                    
       // Create the SiteParmeters with the defaults for
       // each site name entry. Then fill the login frame
