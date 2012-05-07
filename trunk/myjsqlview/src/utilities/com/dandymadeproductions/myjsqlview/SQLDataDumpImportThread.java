@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 5.3 03/31/2012
+// Version 5.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -119,6 +119,8 @@
 //             in importCSVFile() to Accomplish.
 //         5.3 Class Method importSQLFile Finally for sqlStatement, & fileReader
 //             bufferedReader. Try catch in run() to Handle These SQL & IO Exceptions.
+//         5.4 Class Method refreshTablePanel() Instance tableFields Changed from
+//             Vector to Data Type to ArrayList.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -134,7 +136,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -144,7 +146,7 @@ import javax.swing.JOptionPane;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.3 03/31/2012
+ * @version 5.4 05/07/2012
  */
 
 class SQLDataDumpImportThread implements Runnable
@@ -431,7 +433,7 @@ class SQLDataDumpImportThread implements Runnable
       TableTabPanel currentTableTabPanel = DBTablesPanel.getSelectedTableTabPanel();
       if (currentTableTabPanel != null)
       {
-         Vector<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
+         ArrayList<String> tableFields = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableFields);
       }
    }
