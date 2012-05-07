@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.5 01/01/2012
+// Version 4.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,9 @@
 //             Method.
 //         4.4 Comment Changes in Method itemStateChanged().
 //         4.5 Copyright Update.
+//         4.6 Class Instances checkBoxFields & primaryKeys Changed from Vector Data
+//             Types to ArrayList. Same for tableFields & newFields in Class Methods
+//             loadPreferences() & updatePreferences().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -113,7 +116,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -127,7 +130,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.5 01/01/2012
+ * @version 4.6 05/07/2012
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -140,11 +143,11 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    private static final long serialVersionUID = 188742030301366822L;
 
    private TableTabPanel tableTabPanel;
-   private Vector<String> checkBoxFields;
+   private ArrayList<String> checkBoxFields;
    private JCheckBox[] columnNamesCheckBoxes;
    private HashMap<String, JCheckBox> checkBoxesHashMap;
    private HashMap<String, String> columnNamesHashMap;
-   private Vector<String> primaryKeys;
+   private ArrayList<String> primaryKeys;
    private JButton selectAllButton, clearAllButton, applyButton;
 
    //==============================================================
@@ -304,7 +307,7 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
    private void loadPreferences()
    {
       // Method Instances
-      Vector<String> tableHeadings;
+      ArrayList<String> tableHeadings;
       Iterator<String> currentFieldIterator;
       String currentElementName;
       JCheckBox currentCheckBox;
@@ -341,13 +344,13 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
             {
                // Instances
                int checkBoxCount;
-               Vector<String> newFields;
+               ArrayList<String> newFields;
                Boolean viewOnlyState;
 
                // Determine which of the table fields have been
                // selected.
                checkBoxCount = columnNamesCheckBoxes.length;
-               newFields = new Vector <String>();
+               newFields = new ArrayList <String>();
                viewOnlyState = false;
 
                for (int i = 0; i < checkBoxCount; i++)
