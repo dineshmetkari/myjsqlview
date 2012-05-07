@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 01/11/2012
+// Version 1.9 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,9 @@
 //         1.7 Copyright Update.
 //         1.8 Removed the Casting of (Connection) for the Returned Instance for
 //             the ConnectionManager.getConnection() executeSQL().
+//         1.9 Changed Class Instance tableHeadings from Vector to ArrayList.
+//             Also Same for Return Type for getTableHeadings() & rows Instance
+//             in SQLTableModel Class.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +75,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
@@ -82,7 +85,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.8 01/11/2012
+ * @version 1.9 05/07/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -96,7 +99,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    private int tableRowLimit;
    private String dataSourceType;
    
-   private Vector<String> tableHeadings;
+   private ArrayList<String> tableHeadings;
    private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypeHashMap;
@@ -131,7 +134,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       validQuery = false;
       
       tableModel = new SQLTableModel();
-      tableHeadings = new Vector <String>();
+      tableHeadings = new ArrayList <String>();
       columnNamesHashMap = new HashMap <String, String>();
       columnClassHashMap = new HashMap <String, String>();
       columnTypeHashMap = new HashMap <String, String>();
@@ -284,7 +287,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                columnType = "VARCHAR";
                columnSize = 30;
                
-               tableHeadings.addElement(colNameString);
+               tableHeadings.add(colNameString);
                columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
@@ -348,7 +351,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                      columnClass = columnType;
                }
 
-               tableHeadings.addElement(colNameString);
+               tableHeadings.add(colNameString);
                columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
@@ -674,7 +677,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
             columnType = "VARCHAR";
             columnSize = 30;
             
-            tableHeadings.addElement(colNameString);
+            tableHeadings.add(colNameString);
             columnNamesHashMap.put(colNameString, colNameString);
             columnClassHashMap.put(colNameString, columnClass);
             columnTypeHashMap.put(colNameString, columnType.toUpperCase());
@@ -780,7 +783,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    // column names that is presently in the summary table.
    //==============================================================
 
-   protected Vector<String> getTableHeadings()
+   protected ArrayList<String> getTableHeadings()
    {
       return tableHeadings;
    }
@@ -839,13 +842,13 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    {
       private static final long serialVersionUID = 1229214973355124583L;
       private Object[] headers;
-      private Vector<Object[]> rows;
+      private ArrayList<Object[]> rows;
       
       protected SQLTableModel()
       {
          // Just Intialize Class Instances.
          headers = new Object[0];
-         rows = new Vector <Object[]>();
+         rows = new ArrayList <Object[]>();
       }
       
       public void addRow(Object[] rowData)
@@ -856,21 +859,21 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
             currentRow[i] = rowData[i];
          }
          //System.arraycopy(rowData, 0, row, 0, rowData.length);
-         rows.addElement(currentRow);
+         rows.add(currentRow);
       }
       
-      public void clear(){rows.removeAllElements();}
+      public void clear(){rows.clear();}
       
       public String getColumnName(int i){return headers[i].toString();}
       public int getColumnCount(){return headers.length;}
-      public Vector<Object[]> getData(){return rows;}
+      public ArrayList<Object[]> getData(){return rows;}
       public int getRowCount(){return rows.size();}
       public Object getValueAt(int row, int col)
       {
          if (row >= rows.size())
             return null;
 
-         Object[] colArray = rows.elementAt(row);
+         Object[] colArray = rows.get(row);
 
          if (col >= colArray.length)
             return null;
