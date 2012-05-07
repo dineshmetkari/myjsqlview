@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.2 01/01/2012
+// Version 2.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //             in Constructor.
 //         2.1 Copyright Update.
 //         2.2 Copyright Update.
+//         2.3 Class Instance listElements & Same in Constructor Argument
+//             Changed from Vector Data Type To ArrayList.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -55,7 +57,7 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -69,7 +71,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.2 01/01/2012
+ * @version 2.3 05/07/2012
  */
 
 class SetListDialog extends JFrame implements ActionListener
@@ -84,7 +86,7 @@ class SetListDialog extends JFrame implements ActionListener
    private TableEntryForm callingForm;
    private Object columnName;
    private JList setList;
-   private Vector<String> listElements;
+   private ArrayList<String> listElements;
 
    private JButton okButton, cancelButton;
 
@@ -92,7 +94,7 @@ class SetListDialog extends JFrame implements ActionListener
    // SetListDialog Constructor
    //==============================================================
 
-   SetListDialog(TableEntryForm callingForm, Object columnName, Vector<String> listElements)
+   SetListDialog(TableEntryForm callingForm, Object columnName, ArrayList<String> listElements)
    {
       this.callingForm = callingForm;
       this.columnName = columnName;
@@ -124,7 +126,7 @@ class SetListDialog extends JFrame implements ActionListener
       // by the list compoenent.
       centerPanel = new JPanel(new GridLayout(1, 1, 2, 2));
 
-      setList = new JList(listElements);
+      setList = new JList(listElements.toArray());
       JScrollPane scrollPane = new JScrollPane();
       scrollPane.getViewport().setView(setList);
 
