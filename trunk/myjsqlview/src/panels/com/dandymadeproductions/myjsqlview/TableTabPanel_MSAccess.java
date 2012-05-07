@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 04/22/2012
+// Version 2.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,8 @@
 //             Propagating Changes to Object Outside the Method.
 //         2.2 Change in viewSelectedItem() to Use Brute Force WHERE Creation for
 //             Selected listTable Entry if primaryKeys().isEmpty().
+//         2.3 Change in Class Method getColumnNames() of Adding Items to New ArrayList
+//             Instances by Way of add() Instead of addElement().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -86,7 +88,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.2 04/22/2012
+ * @version 2.3 05/07/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -236,12 +238,12 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             preferredColumnSizeHashMap.put(comboBoxNameString,
                                            Integer.valueOf(comboBoxNameString.length() * 9));
 
-            fields.addElement(colNameString);
-            viewFormFields.addElement(comboBoxNameString);
-            formFields.addElement(comboBoxNameString);
-            comboBoxFields.addElement(comboBoxNameString);
-            currentTableHeadings.addElement(comboBoxNameString);
-            allTableHeadings.addElement(comboBoxNameString);
+            fields.add(colNameString);
+            viewFormFields.add(comboBoxNameString);
+            formFields.add(comboBoxNameString);
+            comboBoxFields.add(comboBoxNameString);
+            currentTableHeadings.add(comboBoxNameString);
+            allTableHeadings.add(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";   
 
             // Collect LOBs.
