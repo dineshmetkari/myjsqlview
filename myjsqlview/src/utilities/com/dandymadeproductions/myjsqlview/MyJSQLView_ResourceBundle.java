@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,8 @@
 //         1.7 01/27/2011 Copyright Update.
 //         1.8 01/01/2012 Copyright Update.
 //         1.9 01/01/2012 Implemented Class is Serializable.
+//         2.0 05/07/2012 Changed Class Instance localeListData from Hashtable Data Type
+//                        to HashMap.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +63,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import javax.swing.JOptionPane;
 
@@ -71,7 +73,7 @@ import javax.swing.JOptionPane;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 1.9 01/01/2012
+ * @version 2.0 05/07/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -79,7 +81,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
    // Class Instances.
    private static final long serialVersionUID = -6752902010674915905L;
    
-   private Hashtable<String, String> localeListData;
+   private HashMap<String, String> localeListData;
 
    //==============================================================
    // MyJSQLView_ResourceBundle Constructor
@@ -109,7 +111,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
       // Begin processing the given locale file to obtain a hashtable
       // of the key, resource pairs.
 
-      localeListData = new Hashtable <String, String>();
+      localeListData = new HashMap <String, String>();
       
       try
       {
