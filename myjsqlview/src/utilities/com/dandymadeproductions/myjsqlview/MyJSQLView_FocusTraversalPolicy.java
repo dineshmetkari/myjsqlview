@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //         1.7 Parameterized componentsIterator in Constructor.
 //         1.8 Copyright Update.
 //         1.9 Copyright Update.
+//         2.0 Changed Class Instance componentSequence from Vector Data
+//             Type to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +57,6 @@ import java.awt.Container;
 import java.awt.FocusTraversalPolicy;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 /**
  *    The MyJSQLView_FocusTraversalPolicy class provides a means for
@@ -63,7 +64,7 @@ import java.util.Vector;
  * focus sequence for themselves.
  * 
  * @author Dana M. Proctor
- * @version 1.9 01/01/2012
+ * @version 2.0 05/07/2012
  */
 
 class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy
@@ -76,7 +77,7 @@ class MyJSQLView_FocusTraversalPolicy extends FocusTraversalPolicy
    // MyJSQLView_FocusTraversalPolicy Constructor
    //==============================================================
 
-   protected MyJSQLView_FocusTraversalPolicy(Vector<Component> components)
+   protected MyJSQLView_FocusTraversalPolicy(ArrayList<Component> components)
    {
       Iterator<Component> componentsIterator = components.iterator();
 
