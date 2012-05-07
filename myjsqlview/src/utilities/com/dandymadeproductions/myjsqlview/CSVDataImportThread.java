@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.5 03/19/2012
+// Version 6.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -149,6 +149,9 @@
 //         6.5 Added Batching to the Process of Inserting Data Into the Database.
 //             Introduced Instances currentBatchRows, batchSize, & batchSizeEnabled
 //             in importCSVFile() to Accomplish.
+//         6.6 Class Method importCSVFile() Changed Instances primaryKeys, tableFields,
+//             & fields from Vector Data Type to ArrayList. Also the Same Data Type
+//             Changed for refreshTableTabPanel() Instance tableHeadings.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -163,7 +166,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
 import javax.swing.*;
@@ -175,7 +178,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.5 03/19/2012
+ * @version 6.6 05/07/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -267,7 +270,7 @@ class CSVDataImportThread implements Runnable
       BufferedReader bufferedReader;
 
       String importTable, schemaTableName;
-      Vector<String> primaryKeys, tableFields, fields;
+      ArrayList<String> primaryKeys, tableFields, fields;
       HashMap<String, String> columnTypeHashMap;
       HashMap<String, String> columnClassHashMap;
       String identifierQuoteString;
@@ -299,8 +302,8 @@ class CSVDataImportThread implements Runnable
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
 
       primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
-      tableFields = new Vector<String>();
-      fields = new Vector<String>();
+      tableFields = new ArrayList<String>();
+      fields = new ArrayList<String>();
       columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
 
@@ -781,7 +784,7 @@ class CSVDataImportThread implements Runnable
       TableTabPanel currentTableTabPanel = DBTablesPanel.getSelectedTableTabPanel();
       if (currentTableTabPanel != null)
       {
-         Vector<String> tableHeadings = currentTableTabPanel.getCurrentTableHeadings();
+         ArrayList<String> tableHeadings = currentTableTabPanel.getCurrentTableHeadings();
          currentTableTabPanel.setTableHeadings(tableHeadings);
       }
    }
