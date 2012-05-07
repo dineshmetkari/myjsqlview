@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 01/01/2012
+// Version 2.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,10 +33,9 @@
 //=================================================================
 // Version 1.0 Original AdvancedParametersPanel Class.
 //         1.1 Removed JFrame Argument From Constructor.
-//         1.2 Removed Class Instances Vector driverList,
-//             protocolList, subProtocolList, portList Since
-//             They Were Passed As Arguments to Constructor
-//             And Only Used Locally.
+//         1.2 Removed Class Instances Vector driverList, protocolList,
+//             subProtocolList, portList Since They Were Passed As
+//             Arguments to Constructor And Only Used Locally.
 //         1.3 Header Update.
 //         1.4 Added Class Instance serialVersionUID.
 //         1.5 MyJSQLView Project Common Source Code Formatting.
@@ -53,6 +52,9 @@
 //             setDriver(), setProtocol(), setSubProtocol(), & setPort().
 //         2.1 Copyright Update.
 //         2.2 Copyright Update.
+//         2.3 Change Constructor Arguments driverList, protocolList,
+//             subProtocolList, & portList from Vector Data Type to
+//             ArrayList.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +64,7 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.GridLayout;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -73,7 +75,7 @@ import javax.swing.JPanel;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.2 01/01/2012
+ * @version 2.3 05/07/2012
  */
 
 class AdvancedParametersPanel extends JPanel
@@ -90,9 +92,9 @@ class AdvancedParametersPanel extends JPanel
    // AdvancedParametersPanel Constructor
    //===========================================================
 
-   protected AdvancedParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector<String> driverList,
-                                     Vector<String> protocolList, Vector<String> subProtocolList,
-                                     Vector<String> portList)
+   protected AdvancedParametersPanel(MyJSQLView_ResourceBundle resourceBundle, ArrayList<String> driverList,
+                                     ArrayList<String> protocolList, ArrayList<String> subProtocolList,
+                                     ArrayList<String> portList)
    {
       // Constructor Instances.
       JLabel driverLabel, protocolLabel, subProtocolLabel, portLabel;
@@ -109,7 +111,7 @@ class AdvancedParametersPanel extends JPanel
          driverLabel = new JLabel(resource);
       add(driverLabel);
 
-      driverJComboBox = new JComboBox(driverList);
+      driverJComboBox = new JComboBox(driverList.toArray());
       driverJComboBox.setEditable(true);
       driverJComboBox.setBounds(0, 0, 40, 12);
       driverJComboBox.addItem("");
@@ -123,7 +125,7 @@ class AdvancedParametersPanel extends JPanel
          protocolLabel = new JLabel(resource);
       add(protocolLabel);
 
-      protocolJComboBox = new JComboBox(protocolList);
+      protocolJComboBox = new JComboBox(protocolList.toArray());
       protocolJComboBox.setEditable(true);
       protocolJComboBox.setBounds(0, 0, 40, 12);
       protocolJComboBox.addItem("");
@@ -137,7 +139,7 @@ class AdvancedParametersPanel extends JPanel
          subProtocolLabel = new JLabel(resource);
       add(subProtocolLabel);
 
-      subProtocolJComboBox = new JComboBox(subProtocolList);
+      subProtocolJComboBox = new JComboBox(subProtocolList.toArray());
       subProtocolJComboBox.setEditable(true);
       subProtocolJComboBox.setBounds(0, 0, 40, 12);
       subProtocolJComboBox.addItem("");
@@ -151,7 +153,7 @@ class AdvancedParametersPanel extends JPanel
          portLabel = new JLabel(resource);
       add(portLabel);
 
-      portJComboBox = new JComboBox(portList);
+      portJComboBox = new JComboBox(portList.toArray());
       portJComboBox.setEditable(true);
       portJComboBox.setBounds(0, 0, 40, 12);
       portJComboBox.addItem("");
@@ -191,7 +193,7 @@ class AdvancedParametersPanel extends JPanel
       driverJComboBox.setSelectedItem(content);
    }
 
-   protected void setDriver(Vector<String> content)
+   protected void setDriver(ArrayList<String> content)
    {
       driverJComboBox.removeAllItems();
 
@@ -215,7 +217,7 @@ class AdvancedParametersPanel extends JPanel
       protocolJComboBox.setSelectedItem(content);
    }
 
-   protected void setProtocol(Vector<String> content)
+   protected void setProtocol(ArrayList<String> content)
    {
       protocolJComboBox.removeAllItems();
 
@@ -239,7 +241,7 @@ class AdvancedParametersPanel extends JPanel
       subProtocolJComboBox.setSelectedItem(content);
    }
 
-   protected void setSubProtocol(Vector<String> content)
+   protected void setSubProtocol(ArrayList<String> content)
    {
       subProtocolJComboBox.removeAllItems();
 
@@ -263,7 +265,7 @@ class AdvancedParametersPanel extends JPanel
       portJComboBox.setSelectedItem(content);
    }
 
-   protected void setPort(Vector<String> content)
+   protected void setPort(ArrayList<String> content)
    {
       portJComboBox.removeAllItems();
 
