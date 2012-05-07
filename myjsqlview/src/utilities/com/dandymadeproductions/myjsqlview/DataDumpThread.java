@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.10 03/19/2012
+// Version 6.11 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -131,6 +131,8 @@
 //             New Way of Handling Data.
 //         6.9 Obtained limitIncrement From GeneralProperties in Constructor.
 //        6.10 Moved Class Instance limitIncrement to Method run().
+//        6.11 Class Instance columnNameFields & Same in Constructor Argument Data
+//             Type Change from Vector to ArrayList.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -149,7 +151,7 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
@@ -159,14 +161,14 @@ import javax.swing.JOptionPane;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.10 03/19/2012
+ * @version 6.11 05/07/2012
  */
 
 class DataDumpThread implements Runnable
 {
    // Class Instances
    Thread t;
-   private Vector<String> columnNameFields;
+   private ArrayList<String> columnNameFields;
    private HashMap<String, String> tableColumnNamesHashMap;
    private HashMap<String, String> tableColumnClassHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
@@ -178,7 +180,7 @@ class DataDumpThread implements Runnable
    // DataDumpThread Constructor.
    //==============================================================
 
-   DataDumpThread(Vector<String> columnNameFields,
+   DataDumpThread(ArrayList<String> columnNameFields,
                   HashMap<String, String> tableColumnNamesHashMap,
                   HashMap<String, String> tableColumnClassHashMap,
                   HashMap<String, String> tableColumnTypeHashMap,
