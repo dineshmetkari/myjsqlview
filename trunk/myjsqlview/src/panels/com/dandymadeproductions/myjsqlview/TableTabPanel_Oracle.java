@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.6 04/22/2012
+// Version 11.7 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -278,6 +278,9 @@
 //             Propagating Changes to Object Outside the Method.
 //        11.6 Change in viewSelectedItem() to Use Brute Force WHERE Creation for
 //             Selected listTable Entry if primaryKeys().isEmpty().
+//        11.7 Change in Class Method getColumnNames() of Adding Items to New ArrayList
+//             Instances by Way of add() Instead of addElement(). Change in Method
+//             setTableHeading() Argument to ArrayList.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -294,7 +297,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.Action;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -310,7 +313,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.6 04/22/2012
+ * @version 11.7 05/07/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -467,12 +470,12 @@ public class TableTabPanel_Oracle extends TableTabPanel
             preferredColumnSizeHashMap.put(comboBoxNameString,
                                            Integer.valueOf(comboBoxNameString.length() * 9));
 
-            fields.addElement(colNameString);
-            viewFormFields.addElement(comboBoxNameString);
-            formFields.addElement(comboBoxNameString);
-            comboBoxFields.addElement(comboBoxNameString);
-            currentTableHeadings.addElement(comboBoxNameString);
-            allTableHeadings.addElement(comboBoxNameString);
+            fields.add(colNameString);
+            viewFormFields.add(comboBoxNameString);
+            formFields.add(comboBoxNameString);
+            comboBoxFields.add(comboBoxNameString);
+            currentTableHeadings.add(comboBoxNameString);
+            allTableHeadings.add(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
             
             // Collect LOBs.
@@ -1767,7 +1770,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
    // Class method to allow classes to set the table heading fields.
    //===============================================================
 
-   public void setTableHeadings(Vector<String> newHeadingFields)
+   public void setTableHeadings(ArrayList<String> newHeadingFields)
    {
       // Create connection, remove old summary table and
       // reload the center panel.
