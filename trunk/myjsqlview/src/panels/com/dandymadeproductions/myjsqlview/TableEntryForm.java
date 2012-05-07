@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.90 01/20/2012
+// Version 8.91 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -352,6 +352,8 @@
 //                        ConnectionManager.getConnection() in addUpdateTableEntry().
 //        8.90 01/20/2012 Explicit Declaration of dateTimeValue on New Instance Creations to java.
 //                        sql.Timestamp in Method addUpdateTableEntry() for Timestamp Types.
+//        8.91 05/07/2012 Changed Class Instance componentFocusSequence from Vector Data Type
+//                        to ArrayList. Same Throughout Class for All Vector Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -376,7 +378,7 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.sql.rowset.serial.SerialBlob;
 import javax.swing.*;
 
@@ -385,7 +387,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.90 01/20/2012
+ * @version 8.91 05/07/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -406,7 +408,7 @@ class TableEntryForm extends JFrame implements ActionListener
    private HashMap<JButton, String> calendarButtonHashMap;
    private HashMap<JButton, String> setButtonHashMap;
    private HashMap<JButton, String> functionButtonHashMap;
-   private HashMap<Object, Vector<String>> setFieldsHashMap;
+   private HashMap<Object, ArrayList<String>> setFieldsHashMap;
    private HashMap<Object, String> functionsHashMap;
    private MyJSQLView_ResourceBundle resourceBundle;
 
@@ -415,11 +417,11 @@ class TableEntryForm extends JFrame implements ActionListener
    private String iconsDirectory;
    private String identifierQuoteString;
    private String resourceInvalidInput, resourceType, resourceAlert;
-   private Vector<String> primaryKeys;
+   private ArrayList<String> primaryKeys;
    private HashMap<String, String> autoIncrementHashMap;
-   private Vector<String> formFields;
+   private ArrayList<String> formFields;
    private TableViewForm tableViewForm;
-   private Vector<Component> componentFocusSequence;;
+   private ArrayList<Component> componentFocusSequence;
    private JCheckBox limitCheckBox;
    private JTextField limitTextField;
    private boolean addItem;
@@ -435,9 +437,9 @@ class TableEntryForm extends JFrame implements ActionListener
    //==============================================================
 
    protected TableEntryForm(String title, boolean addItem, String sqlTable, int selectedRow,
-                            TableTabPanel selectedTableTabPanel, Vector<String> primaryKeys,
+                            TableTabPanel selectedTableTabPanel, ArrayList<String> primaryKeys,
                             HashMap<String, String> autoIncrementHashMap, Object id,
-                            Vector<String> formFields, TableViewForm tableViewForm,
+                            ArrayList<String> formFields, TableViewForm tableViewForm,
                             HashMap<String, String> columnNamesHashMap,
                             HashMap<String, String> columnClassHashMap,
                             HashMap<String, String> columnTypeHashMap,
@@ -477,9 +479,9 @@ class TableEntryForm extends JFrame implements ActionListener
       calendarButtonHashMap = new HashMap <JButton, String>();
       setButtonHashMap = new HashMap <JButton, String>();
       functionButtonHashMap = new HashMap <JButton, String>();
-      setFieldsHashMap = new HashMap <Object, Vector<String>>();
+      setFieldsHashMap = new HashMap <Object, ArrayList<String>>();
       functionsHashMap = new HashMap <Object, String>();
-      componentFocusSequence = new Vector <Component>();
+      componentFocusSequence = new ArrayList <Component>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
 
       // Setting up a icons directory identifier quote character,
@@ -2326,7 +2328,7 @@ class TableEntryForm extends JFrame implements ActionListener
       File functionsFile;
       FileReader fileReader;
       BufferedReader bufferedReader;
-      Vector<String> functions;
+      ArrayList<String> functions;
 
       InputDialog functionSelectDialog;
       JComboBox functionsComboBox;
@@ -2386,10 +2388,10 @@ class TableEntryForm extends JFrame implements ActionListener
          fileReader = new FileReader(myjsqlviewFunctionsFileString);
          bufferedReader = new BufferedReader(fileReader);
 
-         functions = new Vector <String>();
+         functions = new ArrayList <String>();
 
          while ((currentFunction = bufferedReader.readLine()) != null)
-            functions.addElement(currentFunction);
+            functions.add(currentFunction);
 
          bufferedReader.close();
          fileReader.close();
@@ -2410,7 +2412,7 @@ class TableEntryForm extends JFrame implements ActionListener
       // Create a dialog with a combobox for allowing
       // the user to select the function operator.
 
-      functionsComboBox = new JComboBox(functions);
+      functionsComboBox = new JComboBox(functions.toArray());
       functionsComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       Object[] content = {functionsComboBox};
       functionsPaletteIcon = new ImageIcon(iconsDirectory + "functionsPaletteIcon.gif");
@@ -2680,7 +2682,7 @@ class TableEntryForm extends JFrame implements ActionListener
    // JComboBox.
    //==============================================================
 
-   protected void setComboBoxField(Object columnName, Vector<String> content, Object data)
+   protected void setComboBoxField(Object columnName, ArrayList<String> content, Object data)
    {
       Iterator<String> contentsIterator = content.iterator();
       
@@ -2698,10 +2700,10 @@ class TableEntryForm extends JFrame implements ActionListener
    // type fields and fill a vector with the complete set contents.
    //==============================================================
 
-   protected void setSetFields(Object columnName, Vector<String> content, Object data)
+   protected void setSetFields(Object columnName, ArrayList<String> content, Object data)
    {
       // Method Instances.
-      Vector<String> setFields = new Vector <String>();
+      ArrayList<String> setFields = new ArrayList <String>();
       
       Iterator<String> contentsIterator = content.iterator();
 
