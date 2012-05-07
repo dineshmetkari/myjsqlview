@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 01/01/2012
+// Version 2.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,8 @@
 //                        Constructor Argument.
 //         2.2 01/27/2011 Copyright Update.
 //         2.3 01/01/2012 Copyright Update.
+//         2.4 05/07/2012 Changed Class Instance and All Associated References
+//                        from Vector Data Type to ArrayList.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +63,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 
 /**
@@ -72,7 +74,7 @@ import javax.swing.table.AbstractTableModel;
  * actions are generated.
  * 
  * @author Dana M. Proctor
- * @version 2.3 01/01/2012
+ * @version 2.4 05/07/2012
  */
 
 class MyJSQLView_TableModel extends AbstractTableModel
@@ -81,7 +83,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
 
    private static final long serialVersionUID = 3515206651333774517L;
 
-   private Vector<String> headings;
+   private ArrayList<String> headings;
    private Object[][] data;
    private boolean[] editableColumns;
 
@@ -89,7 +91,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
    // MyJSQLView_TableModel Constructor.
    //==============================================================
 
-   MyJSQLView_TableModel(Vector<String> headings, Object[][] tableData)
+   MyJSQLView_TableModel(ArrayList<String> headings, Object[][] tableData)
    {
       this.headings = headings;
       data = tableData;
@@ -108,7 +110,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
          return data.length;
    }
    
-   public Vector<String> getColumns()
+   public ArrayList<String> getColumns()
    {
       return headings;
    }
@@ -132,7 +134,7 @@ class MyJSQLView_TableModel extends AbstractTableModel
 
    public String getColumnName(int column)
    {
-      return headings.elementAt(column);
+      return headings.get(column);
    }
 
    //==============================================================
