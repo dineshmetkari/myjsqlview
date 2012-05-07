@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.3 04/16/2012
+// Version 3.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -82,6 +82,8 @@
 //             Try to Close Also sqlStatement in Inner Class tableSearchThreads.
 //         3.3 Changes in Method createColumnsSQLQuery() to Address Possible Incorrect
 //             Results for Search of Date Fields. Additional Conditional Checks.
+//         3.4 Changed Class Instance databaseTables & Corresponding Argument in Constructor
+//             from Vector to ArrayList.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -94,7 +96,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
@@ -103,14 +105,14 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.3 04/16/2012
+ * @version 3.4 05/07/2012
  */
 
 class SearchDatabaseThread implements Runnable
 {
    // Class Instances
    Thread searchThread;
-   private Vector<String> databaseTables;
+   private ArrayList<String> databaseTables;
    private boolean[] selectedTables;
    private String searchQueryString;
    private JProgressBar searchProgressBar;
@@ -125,7 +127,7 @@ class SearchDatabaseThread implements Runnable
    // SearchDatabaseThread Constructor
    //==============================================================
 
-   SearchDatabaseThread(Vector<String> databaseTables, boolean[] selectedTables, String searchString,
+   SearchDatabaseThread(ArrayList<String> databaseTables, boolean[] selectedTables, String searchString,
                         JProgressBar progressBar, JButton searchCompleteButton)
    {
       this.databaseTables = databaseTables;
