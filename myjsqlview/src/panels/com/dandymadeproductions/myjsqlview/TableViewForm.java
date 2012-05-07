@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.3 01/01/2012
+// Version 6.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -147,6 +147,8 @@
 //         6.2 07/25/2011 Clob Types Treated as Text, Character, Data. Class Methods
 //                        Effected actionPerformed() & saveBlobTextField().
 //         6.3 01/01/2012 Copyright Update.
+//         6.4 05/07/2012 Constructor Argument tableColumnNames Changed from Vector Data
+//                        Type to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,7 +166,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -173,7 +175,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.3 01/01/2012
+ * @version 6.4 05/07/2012
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -193,7 +195,7 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
    // TableViewForm Constructor
    //==============================================================
 
-   protected TableViewForm(Vector<String> tableColumnNames,
+   protected TableViewForm(ArrayList<String> tableColumnNames,
                            HashMap<String, String> tableColumnClass,
                            HashMap<String, String> tableColumnType,
                            HashMap<String, Integer> tableColumnSize,
