@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 12.0 04/22/2012
+// Version 12.1 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -270,6 +270,8 @@
 //             Propagating Changes to Object Outside the Method.
 //        12.0 Change in viewSelectedItem() to Use Brute Force WHERE Creation for
 //             Selected listTable Entry if primaryKeys().isEmpty().
+//        12.1 Change in Class Method getColumnName() of Adding Items to New ArrayList
+//             Instances by Way of add() Instead of addElements().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -295,7 +297,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.0 04/22/2012
+ * @version 12.1 05/07/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -432,12 +434,12 @@ public class TableTabPanel_HSQL extends TableTabPanel
             preferredColumnSizeHashMap.put(comboBoxNameString,
                                            Integer.valueOf(comboBoxNameString.length() * 9));
 
-            fields.addElement(colNameString);
-            viewFormFields.addElement(comboBoxNameString);
-            formFields.addElement(comboBoxNameString);
-            comboBoxFields.addElement(comboBoxNameString);
-            currentTableHeadings.addElement(comboBoxNameString);
-            allTableHeadings.addElement(comboBoxNameString);
+            fields.add(colNameString);
+            viewFormFields.add(comboBoxNameString);
+            formFields.add(comboBoxNameString);
+            comboBoxFields.add(comboBoxNameString);
+            currentTableHeadings.add(comboBoxNameString);
+            allTableHeadings.add(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Collect LOBs.

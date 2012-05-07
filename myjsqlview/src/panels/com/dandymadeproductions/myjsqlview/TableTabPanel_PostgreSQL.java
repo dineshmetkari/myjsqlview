@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 13.7 05/22/2012
+// Version 13.8 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -315,6 +315,8 @@
 //             Propagating Changes to Object Outside the Method.
 //        13.7 Change in viewSelectedItem() to Use Brute Force WHERE Creation for
 //             Selected listTable Entry if primaryKeys().isEmpty().
+//        13.8 Change in Class Method getColumnNames() of Adding Items to New ArrayList
+//             Instances by Way of add() Instead of addElement().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -340,7 +342,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 13.7 04/22/2012
+ * @version 13.8 05/07/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -472,12 +474,12 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
             preferredColumnSizeHashMap.put(comboBoxNameString,
                                            Integer.valueOf(comboBoxNameString.length() * 9));
 
-            fields.addElement(colNameString);
-            viewFormFields.addElement(comboBoxNameString);
-            formFields.addElement(comboBoxNameString);
-            comboBoxFields.addElement(comboBoxNameString);
-            currentTableHeadings.addElement(comboBoxNameString);
-            allTableHeadings.addElement(comboBoxNameString);
+            fields.add(colNameString);
+            viewFormFields.add(comboBoxNameString);
+            formFields.add(comboBoxNameString);
+            comboBoxFields.add(comboBoxNameString);
+            currentTableHeadings.add(comboBoxNameString);
+            allTableHeadings.add(comboBoxNameString);
             sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
 
             // Collect LOBs.
