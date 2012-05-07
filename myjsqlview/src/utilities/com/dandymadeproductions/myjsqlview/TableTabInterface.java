@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.6 03/22/2012
+// Version 3.7 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,10 @@
 //         3.5 Copyright Update.
 //         3.6 Added throws SQLException to getColumnNames(), viewSelectedItem(),
 //             editSelectedItem(), deleteSelectedItems(), & deleteAllItems().
+//         3.7 Changed Interface Return Types from Vector to ArrayList for
+//             getTableFields(), getCurrentTableHeadings() & getAllTableHeadings().
+//             Changed Interface setTableHeadings() Argument newHeadingFields from
+//             Vector to ArrayList.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -77,7 +81,7 @@ import java.awt.print.PageFormat;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JTable;
 
 /**
@@ -86,7 +90,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.6 03/22/2012
+ * @version 3.7 05/07/2012
  */
 
 interface TableTabInterface
@@ -171,21 +175,21 @@ interface TableTabInterface
    // column names that can be viewed in the panel.
    //==============================================================
 
-   Vector<String> getTableFields();
+   ArrayList<String> getTableFields();
 
    //==============================================================
    // Class method to allow classes to obtain the list of allowed
    // column names that are presently in the summary table.
    //==============================================================
 
-   Vector<String> getCurrentTableHeadings();
+   ArrayList<String> getCurrentTableHeadings();
 
    //==============================================================
    // Class method to allow classes to obtain the list of all
    // column names that are possible in the summary table.
    //==============================================================
 
-   Vector<String> getAllTableHeadings();
+   ArrayList<String> getAllTableHeadings();
 
    //==============================================================
    // Class method to allow classes to obtain name of the table.
@@ -245,7 +249,7 @@ interface TableTabInterface
    // index(s) used by this list table.
    //==============================================================
 
-   Vector<String> getPrimaryKeys();
+   ArrayList<String> getPrimaryKeys();
 
    //==============================================================
    // Class method to allow classes to obtain the auto-increment
@@ -288,7 +292,7 @@ interface TableTabInterface
    // Class method to allow classes to set the table heading fields.
    //==============================================================
 
-   void setTableHeadings(Vector<String> newHeadingFields);
+   void setTableHeadings(ArrayList<String> newHeadingFields);
 
    //==============================================================
    // Class method to allow classes to set the summary table row
