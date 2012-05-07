@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.2 01/21/2012
+// Version 7.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -134,6 +134,8 @@
 //         7.1 Copyright Update.
 //         7.2 Recoded getConditionString() Method to Handle GROUP BY in Query. Commented
 //             Method getDateFormat().
+//         7.3 Class Method processLocaleLanguage() Instance localesData from Vector
+//             Data Type to ArrayList.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -145,7 +147,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -165,7 +167,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.2 01/22/2012
+ * @version 7.3 05/07/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1190,7 +1192,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       FileReader fileReader;
       BufferedReader bufferedReader;
 
-      Vector<String> localesData;
+      ArrayList<String> localesData;
       JComboBox localeComboBox;
       ImageIcon localeIcon;
       InputDialog localeSelectDialog;
@@ -1243,7 +1245,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             if (localeFileNames == null)
                return "";
 
-            localesData = new Vector <String>();
+            localesData = new ArrayList <String>();
 
             for (int i = 0; i < localeFileNames.length; i++)
             {
@@ -1252,7 +1254,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
                if (lastIndexOfDot > 0
                    && (localeFileNames[i].substring(lastIndexOfDot + 1).equals("properties")))
-                  localesData.addElement(localeFileNames[i].substring((lastIndexOfDot - 5), lastIndexOfDot));
+                  localesData.add(localeFileNames[i].substring((lastIndexOfDot - 5), lastIndexOfDot));
             }
 
             if (localesData.size() == 0)
@@ -1261,7 +1263,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             // Ok looks like we have the supported language files so
             // present them to the user for selection.
 
-            localeComboBox = new JComboBox(localesData);
+            localeComboBox = new JComboBox(localesData.toArray());
             localeComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
 
             Object[] content = {localeComboBox};
