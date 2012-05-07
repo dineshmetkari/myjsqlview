@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.2 03/21/2012
+// Version 9.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,6 +216,8 @@
 //         9.2 Change in getColumnNames() & viewSelectedItem() to Throw SQLException
 //             Through Finally to Close sqlStatement. Try & catch in Constructor
 //             & actionPerformed() for Calls to These Methods.
+//         9.3 Changed Class Instances fields, comboBoxFields, & tableHeadings from
+//             Vector to ArrayList.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -237,7 +239,7 @@ import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
@@ -247,7 +249,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.2 03/21/2012
+ * @version 9.3 05/07/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -270,8 +272,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    private String identifierQuoteString;
    private String primaryKey;
    private String sqlTableFieldsString;
-   private Vector<String> fields, comboBoxFields;
-   private Vector<String> tableHeadings;
+   private ArrayList<String> fields, comboBoxFields;
+   private ArrayList<String> tableHeadings;
    private MyJSQLView_ResourceBundle resourceBundle;
    
    private ImageIcon ascUpIcon, ascDownIcon, descUpIcon, descDownIcon;
@@ -341,9 +343,9 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Setting up.
       sqlTable = "temptable" + queryNumber;
-      fields = new Vector <String>();
-      comboBoxFields = new Vector <String>();
-      tableHeadings = new Vector <String>();
+      fields = new ArrayList <String>();
+      comboBoxFields = new ArrayList <String>();
+      tableHeadings = new ArrayList <String>();
       primaryKey = "id_" + queryNumber;
       columnNamesHashMap = new HashMap <String, String>();
       columnClassHashMap = new HashMap <String, String>();
@@ -402,7 +404,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
       }
 
-      sortComboBox = new JComboBox(comboBoxFields);
+      sortComboBox = new JComboBox(comboBoxFields.toArray());
       sortComboBox.addActionListener(this);
       sortPanel.add(sortComboBox);
 
@@ -448,7 +450,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
          searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
-      searchComboBox = new JComboBox(comboBoxFields);
+      searchComboBox = new JComboBox(comboBoxFields.toArray());
       searchComboBox.insertItemAt("", 0);
       searchComboBox.setSelectedIndex(0);
       searchComboBox.addActionListener(this);
@@ -1090,10 +1092,10 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                   columnClass = columnType;
             }
 
-            fields.addElement(comboBoxNameString);
+            fields.add(comboBoxNameString);
             columnNamesHashMap.put(comboBoxNameString, colNameString);
-            comboBoxFields.addElement(comboBoxNameString);
-            tableHeadings.addElement(comboBoxNameString);
+            comboBoxFields.add(comboBoxNameString);
+            tableHeadings.add(comboBoxNameString);
             columnClassHashMap.put(comboBoxNameString, columnClass);
             columnTypeHashMap.put(comboBoxNameString, columnType.toUpperCase());
             columnSizeHashMap.put(comboBoxNameString, columnSize);
@@ -2220,7 +2222,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // column names that can be viewed in the panel.
    //==============================================================
 
-   protected Vector<String> getTableFields()
+   protected ArrayList<String> getTableFields()
    {
       return fields;
    }
@@ -2230,7 +2232,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    // column names that is presently in the summary table.
    //==============================================================
 
-   protected Vector<String> getTableHeadings()
+   protected ArrayList<String> getTableHeadings()
    {
       return tableHeadings;
    }
