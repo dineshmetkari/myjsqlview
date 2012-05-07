@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 7.01 04/01/2012
+// Version 7.02 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -301,6 +301,9 @@
 //        7.01 Introduced Class Instance pluralValueLimit & Used to Constrol the Number
 //             of Values to Export During Insert & Replace Plural Dumps in Class Method
 //             insertReplaceStatementData().
+//        7.02 Class Instance columnNameFields Changed from Vector Data Type to ArrayList.
+//             Same for columnNameFields in Method dumpDatabaseData() & indexes/keys in 
+//             insertReplace/explicitStatementData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -323,7 +326,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -333,7 +336,7 @@ import javax.swing.JOptionPane;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.01 04/01/2012
+ * @version 7.02 05/07/2012
  */
 
 class SQLDataDumpThread implements Runnable
@@ -342,7 +345,7 @@ class SQLDataDumpThread implements Runnable
    Thread dumpThread;
    private Object dumpData;
    private String exportedTable;
-   private Vector<String> columnNameFields;
+   private ArrayList<String> columnNameFields;
    private HashMap<String, String> tableColumnNames;
    private HashMap<String, String> tableColumnClassHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
@@ -381,7 +384,7 @@ class SQLDataDumpThread implements Runnable
    // SQLDataDumpThread Constructor.
    //==============================================================
 
-   SQLDataDumpThread(Vector<String> columnNameFields, HashMap<String, String> tableColumnNames,
+   SQLDataDumpThread(ArrayList<String> columnNameFields, HashMap<String, String> tableColumnNames,
                      boolean limits, HashMap<String, String> tableColumnClassHashMap,
                      HashMap<String, String> tableColumnTypeHashMap, String exportedTable,
                      String fileName, String[] myJSQLView_Version)
@@ -641,15 +644,15 @@ class SQLDataDumpThread implements Runnable
       StringBuffer oracleColumnNamesString;
       Iterator<String> columnNamesIterator;
       HashMap<Integer, String> autoIncrementFieldIndexes;
-      Vector<Integer> blobFieldIndexes;
-      Vector<Integer> bitFieldIndexes;
-      Vector<Integer> timeStampIndexes;
-      Vector<Integer> oracleTimeStamp_TZIndexes;
-      Vector<Integer> oracleTimeStamp_LTZIndexes;
-      Vector<Integer> dateIndexes;
-      Vector<Integer> yearIndexes;
-      Vector<Integer> arrayIndexes;
-      Vector<Integer> numericIndexes;
+      ArrayList<Integer> blobFieldIndexes;
+      ArrayList<Integer> bitFieldIndexes;
+      ArrayList<Integer> timeStampIndexes;
+      ArrayList<Integer> oracleTimeStamp_TZIndexes;
+      ArrayList<Integer> oracleTimeStamp_LTZIndexes;
+      ArrayList<Integer> dateIndexes;
+      ArrayList<Integer> yearIndexes;
+      ArrayList<Integer> arrayIndexes;
+      ArrayList<Integer> numericIndexes;
       String field, columnClass, columnType;
       String firstField, sqlFieldValuesString;
       String expressionType;
@@ -682,15 +685,15 @@ class SQLDataDumpThread implements Runnable
       oracleColumnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
       autoIncrementFieldIndexes = new HashMap <Integer, String>();
-      blobFieldIndexes = new Vector <Integer>();
-      bitFieldIndexes = new Vector <Integer>();
-      timeStampIndexes = new Vector <Integer>();
-      oracleTimeStamp_TZIndexes = new Vector <Integer>();
-      oracleTimeStamp_LTZIndexes = new Vector <Integer>();
-      dateIndexes = new Vector <Integer>();
-      yearIndexes = new Vector <Integer>();
-      arrayIndexes = new Vector <Integer>();
-      numericIndexes = new Vector <Integer>();
+      blobFieldIndexes = new ArrayList <Integer>();
+      bitFieldIndexes = new ArrayList <Integer>();
+      timeStampIndexes = new ArrayList <Integer>();
+      oracleTimeStamp_TZIndexes = new ArrayList <Integer>();
+      oracleTimeStamp_LTZIndexes = new ArrayList <Integer>();
+      dateIndexes = new ArrayList <Integer>();
+      yearIndexes = new ArrayList <Integer>();
+      arrayIndexes = new ArrayList <Integer>();
+      numericIndexes = new ArrayList <Integer>();
 
       while (columnNamesIterator.hasNext())
       {
@@ -1165,7 +1168,7 @@ class SQLDataDumpThread implements Runnable
       String field, columnClass, columnType;
       String firstField;
       
-      Vector<String> keys;
+      ArrayList<String> keys;
       StringBuffer keyStringStatement;
       int rowsCount, currentTableIncrement, currentRow;
 
@@ -1175,7 +1178,7 @@ class SQLDataDumpThread implements Runnable
 
       // Setting up for possible update dump.
 
-      keys = new Vector <String>();
+      keys = new ArrayList <String>();
       updateDump = false;
       keyStringStatement = new StringBuffer();
       keyStringStatement.append(" WHERE ");
