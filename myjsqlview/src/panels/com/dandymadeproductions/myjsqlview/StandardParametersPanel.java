@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 2.7 01/01/2012
+// Version 2.8 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,9 +35,8 @@
 //         1.1 Removed JFrame Argument From Constructor.
 //         1.2 Changed get/setPassword to char[].
 //         1.3 Removed Implements Cloneable.
-//         1.4 Removed Class Instances hostList, databaseList,
-//             & userList That Were Used Only Locally in the
-//             Constructor.
+//         1.4 Removed Class Instances hostList, databaseList, & userList
+//             That Were Used Only Locally in the Constructor.
 //         1.5 Header Update.
 //         1.6 Added Class Instance serialVersionUID.
 //         1.7 MyJSQLView Project Common Source Code Formatting.
@@ -58,6 +57,8 @@
 //             setHost(), setDatabaseItem(), & setUser().
 //         2.6 Copyright Update.
 //         2.7 Copyright Update.
+//         2.8 Change Constructor Arguments hostList, databaseList, &
+//             userList from Vector Data Type to ArrayList.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +68,7 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.GridLayout;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -79,7 +80,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.7 01/01/2012
+ * @version 2.8 05/07/2012
  */
 
 class StandardParametersPanel extends JPanel
@@ -96,8 +97,8 @@ class StandardParametersPanel extends JPanel
    // StandardParametersPanel Constructor
    //==============================================================
 
-   protected StandardParametersPanel(MyJSQLView_ResourceBundle resourceBundle, Vector<String> hostList,
-                                     Vector<String> databaseList, Vector<String> userList)
+   protected StandardParametersPanel(MyJSQLView_ResourceBundle resourceBundle, ArrayList<String> hostList,
+                                     ArrayList<String> databaseList, ArrayList<String> userList)
    {
       // Constructor Instances.
       JLabel hostLabel, dbLabel, userLabel, passwordLabel;
@@ -114,7 +115,7 @@ class StandardParametersPanel extends JPanel
          hostLabel = new JLabel(resource, JLabel.LEFT); 
       add(hostLabel);
 
-      hostJComboBox = new JComboBox(hostList);
+      hostJComboBox = new JComboBox(hostList.toArray());
       hostJComboBox.setEditable(true);
       hostJComboBox.setBounds(0, 0, 40, 12);
       hostJComboBox.addItem("");
@@ -128,7 +129,7 @@ class StandardParametersPanel extends JPanel
          dbLabel = new JLabel(resource);
       add(dbLabel);
 
-      dbJComboBox = new JComboBox(databaseList);
+      dbJComboBox = new JComboBox(databaseList.toArray());
       dbJComboBox.setEditable(true);
       dbJComboBox.setBounds(0, 0, 40, 12);
       dbJComboBox.addItem("");
@@ -142,7 +143,7 @@ class StandardParametersPanel extends JPanel
          userLabel = new JLabel(resource, JLabel.LEFT);
       add(userLabel);
 
-      userJComboBox = new JComboBox(userList);
+      userJComboBox = new JComboBox(userList.toArray());
       userJComboBox.setEditable(true);
       userJComboBox.setBounds(0, 0, 40, 12);
       userJComboBox.addItem("");
@@ -193,7 +194,7 @@ class StandardParametersPanel extends JPanel
       hostJComboBox.setSelectedItem(content);
    }
 
-   protected void setHost(Vector<String> content)
+   protected void setHost(ArrayList<String> content)
    {
       hostJComboBox.removeAllItems();
 
@@ -217,7 +218,7 @@ class StandardParametersPanel extends JPanel
       dbJComboBox.setSelectedItem(content);
    }
 
-   protected void setDataBase(Vector<String> content)
+   protected void setDataBase(ArrayList<String> content)
    {
       dbJComboBox.removeAllItems();
 
@@ -241,7 +242,7 @@ class StandardParametersPanel extends JPanel
       userJComboBox.setSelectedItem(content);
    }
 
-   protected void setUser(Vector<String> content)
+   protected void setUser(ArrayList<String> content)
    {
       userJComboBox.removeAllItems();
 
