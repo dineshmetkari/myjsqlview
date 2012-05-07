@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.5 04/05/2012
+// Version 8.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -171,8 +171,12 @@
 //         8.4 Implemented the Control of the generalOptionsPanelFiller Thread in Constructor,
 //             actionPerformed(), valueChanged(), & Window Events by Suspending or Set Thread
 //             State.
-//         8.5 Suspended generalPreferencesPanel.generalOptionsPanelFiller on Cancel Action in
-//             actionPerformed().
+//         8.5 Suspended generalPreferencesPanel.generalOptionsPanelFiller on Cancel
+//             Action in actionPerformed().
+//         8.6 Changed Class Instances tableFieldCards & tableRowCards From Vector Data
+//             Type to ArrayList. Changed Class Instances tableFieldPanelsHashtable &
+//             tableRowPanelsHashtable from HashTable to HashMap & Name Accordingly to
+//             End With Map.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -187,9 +191,9 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Calendar;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -202,7 +206,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.5 04/05/2012
+ * @version 8.6 05/07/2012
  */
 
 //=================================================================
@@ -240,9 +244,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
    private JLabel currentPreferencesSelectionLabel;
    private JComboBox tableSelectionFieldsComboBox, tableSelectionRowsComboBox;
-   private Vector<String> tableFieldCards, tableRowCards;
-   private Hashtable<String, TableFieldSelectionPreferencesPanel> tableFieldPanelsHashtable;
-   private Hashtable<String, TableRowSelectionPreferencesPanel> tableRowPanelsHashtable;
+   private ArrayList<String> tableFieldCards, tableRowCards;
+   private HashMap<String, TableFieldSelectionPreferencesPanel> tableFieldPanelsHashMap;
+   private HashMap<String, TableRowSelectionPreferencesPanel> tableRowPanelsHashMap;
    private JButton okButton, cancelButton, helpButton, helpCloseButton;
 
    //==============================================================
@@ -285,11 +289,11 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       
       mainPanel = new JPanel(new BorderLayout());
 
-      tableFieldCards = new Vector <String>();
-      tableRowCards = new Vector <String>();
+      tableFieldCards = new ArrayList <String>();
+      tableRowCards = new ArrayList <String>();
 
-      tableFieldPanelsHashtable = new Hashtable <String, TableFieldSelectionPreferencesPanel>();
-      tableRowPanelsHashtable = new Hashtable <String, TableRowSelectionPreferencesPanel>();
+      tableFieldPanelsHashMap = new HashMap <String, TableFieldSelectionPreferencesPanel>();
+      tableRowPanelsHashMap = new HashMap <String, TableRowSelectionPreferencesPanel>();
 
       // =====================================
       // Creating the tree preferences panel.
@@ -592,12 +596,12 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             cardsIterator = tableFieldCards.iterator();
             
             while (cardsIterator.hasNext())
-               (tableFieldPanelsHashtable.get(cardsIterator.next())).updatePreferences();
+               (tableFieldPanelsHashMap.get(cardsIterator.next())).updatePreferences();
                  
             cardsIterator = tableRowCards.iterator();
 
             while (cardsIterator.hasNext())
-               (tableRowPanelsHashtable.get(cardsIterator.next())).updatePreferences();
+               (tableRowPanelsHashMap.get(cardsIterator.next())).updatePreferences();
 
             DBTablesPanel.setGeneralProperties(generalPreferencesPanel.getGeneralOptions());
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
@@ -674,7 +678,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
                   tableFieldPreferences = new TableFieldSelectionPreferencesPanel(currentTableTabPanel, resourceBundle);
                   tableFieldsPanel.add(tableName, tableFieldPreferences);
-                  tableFieldPanelsHashtable.put(tableName, tableFieldPreferences);
+                  tableFieldPanelsHashMap.put(tableName, tableFieldPreferences);
                   tableFieldCardLayout.show(tableFieldsPanel, tableName);
                }
             }
@@ -701,7 +705,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
                   tableRowPreferences = new TableRowSelectionPreferencesPanel(tableName, resourceBundle);
                   tableRowsPanel.add(tableName, tableRowPreferences);
-                  tableRowPanelsHashtable.put(tableName, tableRowPreferences);
+                  tableRowPanelsHashMap.put(tableName, tableRowPreferences);
                   tableRowCardLayout.show(tableRowsPanel, tableName);
                }
             }
@@ -962,7 +966,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       tableFieldPreferences = new TableFieldSelectionPreferencesPanel(currentTableTab, resourceBundle);
       tableFieldsPanel.add(tableName, tableFieldPreferences);
-      tableFieldPanelsHashtable.put(tableName, tableFieldPreferences);
+      tableFieldPanelsHashMap.put(tableName, tableFieldPreferences);
       
       tableFieldPanel.add(tableFieldsPanel, BorderLayout.CENTER);
    }
@@ -1048,7 +1052,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       tableRowPreferences = new TableRowSelectionPreferencesPanel(tableName, resourceBundle);
       tableRowsPanel.add(tableName, tableRowPreferences);
-      tableRowPanelsHashtable.put(tableName, tableRowPreferences);
+      tableRowPanelsHashMap.put(tableName, tableRowPreferences);
 
       buildConstraints(constraints, 0, 1, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.BOTH;
