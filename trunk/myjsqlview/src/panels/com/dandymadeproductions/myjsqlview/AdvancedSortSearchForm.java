@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.88 01/21/2012
+// Version 4.89 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -183,6 +183,8 @@
 //                        to Properly Exclude When ascDescString is Empty String.
 //        4.88 01/21/2012 Correction After Revision 4.87 Changed ascDescString Determination Outside
 //                        Conditional Check for GROUP BY Aspect.
+//        4.89 05/07/2012 Changed Class Instances comboBoxColumnNames & stateComponents from Vector
+//                        Data Types to ArrayList. Same for Constructor Argument columnNames.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -194,7 +196,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -212,7 +214,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.88 01/21/2012
+ * @version 4.89 05/07/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -225,7 +227,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private HashMap<String, String> columnNamesHashMap;
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypesHashMap;
-   private Vector<String> comboBoxColumnNames;
+   private ArrayList<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private GridBagLayout gridbag;
@@ -245,7 +247,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    private static final int searchFormExpressionNumber = 5;
    private JComboBox[] searchComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] searchTextField;
-   private Vector<JComponent> stateComponents;
+   private ArrayList<JComponent> stateComponents;
 
    private JButton closeButton, clearButton;
    protected JButton applyButton;
@@ -258,7 +260,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
                                     HashMap<String, String> columnNamesHashMap,
                                     HashMap<String, String> columnClassHashMap,
                                     HashMap<String, String> columnTypesHashMap,
-                                    Vector<String> columnNames)
+                                    ArrayList<String> columnNames)
    {
       sqlTable = table;
       this.resourceBundle = resourceBundle;
@@ -277,7 +279,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Setting up icons directory and other instances.
       
-      comboBoxColumnNames = new Vector<String> ();
+      comboBoxColumnNames = new ArrayList<String> ();
       
       for (int i = 0; i < columnNames.size(); i++)
          comboBoxColumnNames.add(columnNames.get(i));
@@ -293,7 +295,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
-      stateComponents = new Vector <JComponent>();
+      stateComponents = new ArrayList <JComponent>();
 
       // Setting up the frame's main panel.
       mainPanel = new JPanel(new BorderLayout());
@@ -326,7 +328,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       selectTypeComboBox = new JComboBox();
       selectTypeComboBox.addItem("All");
       selectTypeComboBox.addItem("Distinct");
-      stateComponents.addElement(selectTypeComboBox);
+      stateComponents.add(selectTypeComboBox);
       selectTypePanel.add(selectTypeComboBox);
       
       buildConstraints(constraints, 0, 0, 1, 1, 35, 100);
@@ -347,11 +349,11 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       aggregatePanel.add(aggregateLabel);
 
       aggregateFunctionComboBox = new JComboBox(aggregateFunctions);
-      stateComponents.addElement(aggregateFunctionComboBox);
+      stateComponents.add(aggregateFunctionComboBox);
       aggregatePanel.add(aggregateFunctionComboBox);
       
-      aggregateComboBox = new JComboBox(comboBoxColumnNames);
-      stateComponents.addElement(aggregateComboBox);
+      aggregateComboBox = new JComboBox(comboBoxColumnNames.toArray());
+      stateComponents.add(aggregateComboBox);
       aggregatePanel.add(aggregateComboBox);
       
       buildConstraints(constraints, 1, 0, 1, 1, 60, 100);
@@ -661,8 +663,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(sortByLabel[i], constraints);
          sortPanel.add(sortByLabel[i]);
 
-         sortComboBox[i] = new JComboBox(comboBoxColumnNames);
-         stateComponents.addElement(sortComboBox[i]);
+         sortComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         stateComponents.add(sortComboBox[i]);
 
          buildConstraints(constraints, 1, i, 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -673,7 +675,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          sort_AscendingDescendingComboBox[i] = new JComboBox();
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderDESC);
-         stateComponents.addElement(sort_AscendingDescendingComboBox[i]);
+         stateComponents.add(sort_AscendingDescendingComboBox[i]);
 
          buildConstraints(constraints, 2, i, 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -730,8 +732,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(groupByLabel[i], constraints);
          groupPanel.add(groupByLabel[i]);
 
-         groupComboBox[i] = new JComboBox(comboBoxColumnNames);
-         stateComponents.addElement(groupComboBox[i]);
+         groupComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         stateComponents.add(groupComboBox[i]);
 
          buildConstraints(constraints, 1, i, 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -743,7 +745,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          group_AscendingDescendingComboBox[i].addItem("");
          group_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
          group_AscendingDescendingComboBox[i].addItem(resourceOrderDESC);
-         stateComponents.addElement(group_AscendingDescendingComboBox[i]);
+         stateComponents.add(group_AscendingDescendingComboBox[i]);
 
          buildConstraints(constraints, 2, i, 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -799,8 +801,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(searchLabel[i], constraints);
          searchPanel.add(searchLabel[i]);
 
-         searchComboBox[i] = new JComboBox(comboBoxColumnNames);
-         stateComponents.addElement(searchComboBox[i]);
+         searchComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         stateComponents.add(searchComboBox[i]);
 
          buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -809,7 +811,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          searchPanel.add(searchComboBox[i]);
 
          operatorComboBox[i] = new JComboBox(whereOperators);
-         stateComponents.addElement(operatorComboBox[i]);
+         stateComponents.add(operatorComboBox[i]);
 
          buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -818,7 +820,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
          searchPanel.add(operatorComboBox[i]);
 
          searchTextField[i] = new JTextField(15);
-         stateComponents.addElement(searchTextField[i]);
+         stateComponents.add(searchTextField[i]);
 
          buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -831,7 +833,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
             andOrComboBox[i] = new JComboBox();
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
-            stateComponents.addElement(andOrComboBox[i]);
+            stateComponents.add(andOrComboBox[i]);
 
             buildConstraints(constraints, 4, (i + 3), 1, 1, 100, 100);
             constraints.fill = GridBagConstraints.NONE;
@@ -849,8 +851,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // last field. They are only two andOrComboBoxes.
       
       swapEndComponent = stateComponents.get(stateComponents.size() - 1);
-      stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
-      stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
+      stateComponents.set(stateComponents.size() - 1, stateComponents.get(stateComponents.size() - 2));
+      stateComponents.set(stateComponents.size() - 2, swapEndComponent);
       
       buildConstraints(constraints, 0, 2, 1, 1, 100, 50);
       constraints.fill = GridBagConstraints.BOTH;
