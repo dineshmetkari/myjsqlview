@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.3 01/16/2012
+// Version 4.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,6 +116,8 @@
 //         4.3 01/16/2012 Added Class Instance updateComboBoxColumnNames & Initialized Along With
 //                        comboBoxColumnNames to Copy of Input columnNames. Insures That the Find
 //                        Action on Updating AdvancedSortSearchForm Are Appropriate.
+//         4.4 05/07/2012 Changed Class Instances updateComboBoxColumnNames, comboBoxColumnNames,
+//                        & stateComponents from Vector Data Type to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -140,7 +142,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 
 /**
@@ -148,7 +150,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.3 01/16/2012
+ * @version 4.4 05/07/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -163,8 +165,8 @@ class UpdateForm extends JFrame implements ActionListener
    private HashMap<String, String> columnClassHashMap;
    private HashMap<String, String> columnTypeHashMap;
    private HashMap<String, Integer> columnSizeHashMap;
-   private Vector<String> updateComboBoxColumnNames;
-   private Vector<String> comboBoxColumnNames;
+   private ArrayList<String> updateComboBoxColumnNames;
+   private ArrayList<String> comboBoxColumnNames;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private GridBagLayout gridbag;
@@ -184,7 +186,7 @@ class UpdateForm extends JFrame implements ActionListener
    private static final int updateFormExpressionNumber = 5;
    private JComboBox[] whereComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] whereTextField;
-   private Vector<JComponent> stateComponents;
+   private ArrayList<JComponent> stateComponents;
 
    private JButton updateButton, closeButton, clearButton;
    protected JButton findButton, disposeButton;
@@ -200,7 +202,7 @@ class UpdateForm extends JFrame implements ActionListener
                         HashMap<String, String> columnClassHashMap,
                         HashMap<String, String> columnTypeHashMap,
                         HashMap<String, Integer> columnSizeHashMap,
-                        Vector<String> columnNames)
+                        ArrayList<String> columnNames)
    {
       sqlTable = table;
       this.columnNamesHashMap = columnNamesHashMap;
@@ -220,8 +222,8 @@ class UpdateForm extends JFrame implements ActionListener
 
       // Setting up vectors, icons directory and other instances.
       
-      updateComboBoxColumnNames = new Vector<String> ();
-      comboBoxColumnNames = new Vector<String> ();
+      updateComboBoxColumnNames = new ArrayList<String> ();
+      comboBoxColumnNames = new ArrayList<String> ();
       
       // Isolate these.
       for (int i = 0; i < columnNames.size(); i++)
@@ -249,7 +251,7 @@ class UpdateForm extends JFrame implements ActionListener
       andOrComboBox = new JComboBox[whereComboBox.length - 1];
       whereTextField = new JTextField[updateFormExpressionNumber];
       
-      stateComponents = new Vector <JComponent>();
+      stateComponents = new ArrayList <JComponent>();
 
       // Setting up the frame's main panel.
       mainPanel = new JPanel(new BorderLayout());
@@ -617,7 +619,7 @@ class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(setLabel, constraints);
       updatePanel.add(setLabel);
 
-      updateColumnComboBox = new JComboBox(updateComboBoxColumnNames);
+      updateColumnComboBox = new JComboBox(updateComboBoxColumnNames.toArray());
       updateColumnComboBox.removeItemAt(0);
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
@@ -689,8 +691,8 @@ class UpdateForm extends JFrame implements ActionListener
          gridbag.setConstraints(whereLabel[i], constraints);
          wherePanel.add(whereLabel[i]);
 
-         whereComboBox[i] = new JComboBox(comboBoxColumnNames);
-         stateComponents.addElement(whereComboBox[i]);
+         whereComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         stateComponents.add(whereComboBox[i]);
 
          buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -699,7 +701,7 @@ class UpdateForm extends JFrame implements ActionListener
          wherePanel.add(whereComboBox[i]);
 
          operatorComboBox[i] = new JComboBox(whereOperators);
-         stateComponents.addElement(operatorComboBox[i]);
+         stateComponents.add(operatorComboBox[i]);
 
          buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -708,7 +710,7 @@ class UpdateForm extends JFrame implements ActionListener
          wherePanel.add(operatorComboBox[i]);
 
          whereTextField[i] = new JTextField(15);
-         stateComponents.addElement(whereTextField[i]);
+         stateComponents.add(whereTextField[i]);
 
          buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -721,7 +723,7 @@ class UpdateForm extends JFrame implements ActionListener
             andOrComboBox[i] = new JComboBox();
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
-            stateComponents.addElement(andOrComboBox[i]);
+            stateComponents.add(andOrComboBox[i]);
 
             buildConstraints(constraints, 4, (i + 3), 1, 1, 100, 100);
             constraints.fill = GridBagConstraints.NONE;
@@ -743,8 +745,9 @@ class UpdateForm extends JFrame implements ActionListener
       // field. So swap the last two entries, to get text:text:combobox.
       
       swapEndComponent = stateComponents.get(stateComponents.size() - 1);
-      stateComponents.setElementAt(stateComponents.get(stateComponents.size() - 2), stateComponents.size() - 1);
-      stateComponents.setElementAt(swapEndComponent, stateComponents.size() - 2);
+      
+      stateComponents.set(stateComponents.size() - 1, stateComponents.get(stateComponents.size() - 2));
+      stateComponents.set(stateComponents.size() - 2, swapEndComponent);
       
       buildConstraints(constraints, 0, 1, 1, 1, 100, 80);
       constraints.fill = GridBagConstraints.BOTH;
