@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.05 05/22/2012
+// Version 5.06 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -223,6 +223,12 @@
 //        5.05 Moved the Creation of the viewButton Out of the Block of Only if
 //             !primaryKeys.isEmpty(). Allows View Tables Content Data Blob/Binary/Text
 //             Content to be Accessed.
+//        5.06 Changed Return Type for Class Methods getCurrentTableHeadings(),
+//             getTableFields(), getAllTableHeadings(), & getPrimaryKeys() from
+//             Vector to ArrayList. Class Instances fields, formFields, viewFormFields,
+//             comboBoxFields, currentTableHeadings, allTableHeadings, & primaryKeys
+//             Changed from Vector to ArrayList. All Corresponding Interactions,
+//             getter/setters for Those Instances Also Changed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -241,11 +247,11 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -260,7 +266,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.05 05/22/2012
+ * @version 5.06 05/07/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -291,9 +297,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected String sqlTableFieldsString;
    protected StringBuffer sqlTableStatement;
    protected String identifierQuoteString;
-   protected Vector<String> fields, formFields, viewFormFields, comboBoxFields;
-   protected Vector<String> currentTableHeadings, allTableHeadings;
-   protected Vector<String> primaryKeys;
+   protected ArrayList<String> fields, formFields, viewFormFields, comboBoxFields;
+   protected ArrayList<String> currentTableHeadings, allTableHeadings;
+   protected ArrayList<String> primaryKeys;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private ImageIcon previousStateIcon, nextStateIcon;
@@ -387,13 +393,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       saveFileName = "";
       lastSaveDirectory = "";
       sqlTableStatement = new StringBuffer();
-      fields = new Vector <String>();
-      formFields = new Vector <String>();
-      viewFormFields = new Vector <String>();
-      comboBoxFields = new Vector <String>();
-      currentTableHeadings = new Vector <String>();
-      allTableHeadings = new Vector <String>();
-      primaryKeys = new Vector <String>();
+      fields = new ArrayList <String>();
+      formFields = new ArrayList <String>();
+      viewFormFields = new ArrayList <String>();
+      comboBoxFields = new ArrayList <String>();
+      currentTableHeadings = new ArrayList <String>();
+      allTableHeadings = new ArrayList <String>();
+      primaryKeys = new ArrayList <String>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
       columnNamesHashMap = new HashMap <String, String>();
@@ -501,7 +507,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          return;
       }
 
-      sortComboBox = new JComboBox(comboBoxFields);
+      sortComboBox = new JComboBox(comboBoxFields.toArray());
       sortComboBox.addActionListener(this);
       sortPanel.add(sortComboBox);
 
@@ -546,7 +552,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
-      searchComboBox = new JComboBox(comboBoxFields);
+      searchComboBox = new JComboBox(comboBoxFields.toArray());
       searchComboBox.insertItemAt("", 0);
       searchComboBox.setSelectedIndex(0);
       searchComboBox.addActionListener(this);
@@ -1188,7 +1194,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                {
                   // System.out.println(i + " " +
                   // listTable.getColumnName(i));
-                  if (columnNamesHashMap.get(listTable.getColumnName(i)).equals(primaryKeys.firstElement()))
+                  if (columnNamesHashMap.get(listTable.getColumnName(i)).equals(primaryKeys.get(0)))
                      primaryKeyColumn = i;
                }
 
@@ -1884,7 +1890,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          {
             db_resultSet = sqlStatement.executeQuery("SELECT YourTableField FROM YourTable");
 
-            Vector<String> comboBoxList = new Vector <String>();
+            ArrayList<String> comboBoxList = new ArrayList <String>();
             
             while (db_resultSet.next())
                comboBoxList.add(db_resultSet.getString(1));
@@ -1897,7 +1903,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          if (columnEnumHashMap.containsKey(currentColumnName)
              || columnSetHashMap.containsKey(currentColumnName))
          {
-            Vector<String> comboBoxList = new Vector <String>();
+            ArrayList<String> comboBoxList = new ArrayList <String>();
             String listStrings;
 
             if (columnEnumHashMap.containsKey(currentColumnName))
@@ -2443,16 +2449,16 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that can be viewed in the panel.
    //==============================================================
 
-   public Vector<String> getTableFields()
+   public ArrayList<String> getTableFields()
    {
       if (fields == null)
          return null;
       
-      Vector<String> fieldsVector = new Vector <String>();
+      ArrayList<String> fieldsVector = new ArrayList <String>();
       Iterator<String> fieldsIterator = fields.iterator();
       
       while (fieldsIterator.hasNext())
-         fieldsVector.addElement(fieldsIterator.next());
+         fieldsVector.add(fieldsIterator.next());
       
       return fieldsVector;
    }
@@ -2462,13 +2468,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that are presently in the summary table.
    //==============================================================
 
-   public Vector<String> getCurrentTableHeadings()
+   public ArrayList<String> getCurrentTableHeadings()
    {
-      Vector<String> tableHeadingsVector = new Vector <String>();
+      ArrayList<String> tableHeadingsVector = new ArrayList <String>();
       Iterator<String> tableHeadingsIterator = currentTableHeadings.iterator();
       
       while (tableHeadingsIterator.hasNext())
-         tableHeadingsVector.addElement(tableHeadingsIterator.next());
+         tableHeadingsVector.add(tableHeadingsIterator.next());
       
       return tableHeadingsVector;
    }
@@ -2478,13 +2484,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // column names that are possible in the summary table.
    //==============================================================
 
-   public Vector<String> getAllTableHeadings()
+   public ArrayList<String> getAllTableHeadings()
    {
-      Vector<String> allTableHeadingsVector = new Vector <String>();
+      ArrayList<String> allTableHeadingsVector = new ArrayList <String>();
       Iterator<String> allTableHeadingsIterator = allTableHeadings.iterator();
       
       while (allTableHeadingsIterator.hasNext())
-         allTableHeadingsVector.addElement(allTableHeadingsIterator.next());
+         allTableHeadingsVector.add(allTableHeadingsIterator.next());
       
       return allTableHeadingsVector;
    }
@@ -2579,13 +2585,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // index(s) used by this list table.
    //==============================================================
 
-   public Vector<String> getPrimaryKeys()
+   public ArrayList<String> getPrimaryKeys()
    {
-      Vector<String> keysVector = new Vector <String>();
+      ArrayList<String> keysVector = new ArrayList <String>();
       Iterator<String> keysIterator = primaryKeys.iterator();
       
       while (keysIterator.hasNext())
-         keysVector.addElement(keysIterator.next());
+         keysVector.add(keysIterator.next());
       
       return keysVector;
    }
@@ -2720,7 +2726,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // Class method to allow classes to set the table heading fields.
    //==============================================================
    
-   public void setTableHeadings(Vector<String> newHeadingFields)
+   public void setTableHeadings(ArrayList<String> newHeadingFields)
    {
       // Create connection, remove old summary table and
       // reload the center panel.
@@ -2897,13 +2903,13 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
                   if (tableHeadings.length != 0)
                   {
-                     Vector<String> newTableHeadings = new Vector <String>();
+                     ArrayList<String> newTableHeadings = new ArrayList <String>();
                      boolean validFields = true;
 
                      for (int j = 0; j < tableHeadings.length; j++)
                      {
                         if (allTableHeadings.contains(tableHeadings[j]))
-                           newTableHeadings.addElement(tableHeadings[j]);
+                           newTableHeadings.add(tableHeadings[j]);
                         else
                         {
                            String optionPaneStringErrors;
