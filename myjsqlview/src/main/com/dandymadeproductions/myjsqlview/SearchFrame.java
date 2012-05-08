@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.9 01/01/2012
+// Version 4.0 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,8 @@
 //         3.8 Class Method actionPerformed() Introduced Instance progressBarMax and
 //             Set searchProgressBar Maximum to It.
 //         3.9 Copyright Update.
+//         4.0 Constructor Instance tableHeadings & databaseTables in actionPerformed()
+//             Data Types Changed from Vector to ArrayList.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,7 +114,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.text.DefaultEditorKit;
@@ -127,7 +129,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.9 01/01/2012
+ * @version 4.0 05/07/2012
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -165,7 +167,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
    {
       // Constructor Instances.
       JMenuBar searchFrameMenuBar;
-      Vector<String> tableHeadings;
+      ArrayList<String> tableHeadings;
       JScrollPane tableScrollPane;
       TableColumn column;
       String resource, resourceInclude;
@@ -274,25 +276,25 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       centerPanel.setBorder(BorderFactory.createEtchedBorder());
 
       // Setup Headings.
-      tableHeadings = new Vector<String>();
+      tableHeadings = new ArrayList<String>();
       
       resourceInclude = resourceBundle.getResource("SearchFrame.label.Include");
       if (resourceInclude.equals(""))
-         tableHeadings.addElement("Include");
+         tableHeadings.add("Include");
       else
-         tableHeadings.addElement(resourceInclude);
+         tableHeadings.add(resourceInclude);
       
       resource = resourceBundle.getResource("SearchFrame.label.Table");
       if (resource.equals(""))
-         tableHeadings.addElement("Table");
+         tableHeadings.add("Table");
       else
-         tableHeadings.addElement(resource);
+         tableHeadings.add(resource);
       
       resource = resourceBundle.getResource("SearchFrame.label.SearchResultCount");
       if (resource.equals(""))
-         tableHeadings.addElement("Search Result Count");
+         tableHeadings.add("Search Result Count");
       else
-         tableHeadings.addElement(resource);
+         tableHeadings.add(resource);
 
       // Fill the result table structure with default data.
       
@@ -435,7 +437,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
                // instead of relying on the names in the search frame, just in case
                // a database reload took place.
                
-               Vector<String> databaseTables = ConnectionManager.getTableNames();
+               ArrayList<String> databaseTables = ConnectionManager.getTableNames();
                boolean[] selectedTables = new boolean[databaseTables.size()];
                int progressBarMax = 0;
                
