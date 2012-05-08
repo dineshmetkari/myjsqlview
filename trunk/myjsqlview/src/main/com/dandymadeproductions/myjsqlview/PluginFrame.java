@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 01/01/2012
+// Version 1.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             & loadingPluginViewTable. New Class Methods createLoadingPluginsViewPanel,
 //             & displayLoadingPluginsData().
 //         1.5 Copyright Update.
+//         1.6 Changed Class Instance loadingPluginsList from Vector to ArrayList.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +62,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -79,7 +79,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/01/2012
+ * @version 1.6 05/07/2012
  */
 
 //=================================================================
@@ -333,11 +333,11 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    // remove icon.
    //==============================================================
 
-   private JPanel createInstalledPluginsViewPanel(Vector<MyJSQLView_PluginModule> loadedPlugins)
+   private JPanel createInstalledPluginsViewPanel(ArrayList<MyJSQLView_PluginModule> loadedPlugins)
    {
       // Class Method Instances
       JPanel pluginViewPanel;
-      Vector<String> tableColumns;
+      ArrayList<String> tableColumns;
       Font systemBoldFont;
       TableColumn tableColumn;
       JScrollPane tableScrollPane;
@@ -346,7 +346,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       // Setup the plugin items to be listed and columns
       // for the plugin table view.
 
-      tableColumns = new Vector<String>();
+      tableColumns = new ArrayList<String>();
       
       resourceTabIcon = resourceBundle.getResource("PluginFrame.label.TabIcon");
       if (resourceTabIcon.equals(""))
@@ -408,7 +408,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    {
       // Class Method Instances
       JPanel loadingViewPanel;
-      Vector<String> tableColumns;
+      ArrayList<String> tableColumns;
       Font systemBoldFont;
       TableColumn tableColumn;
       JScrollPane tableScrollPane;
@@ -417,7 +417,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       // Setup the loading plugin items columns for the
       // loading plugin table view.
 
-      tableColumns = new Vector<String>();
+      tableColumns = new ArrayList<String>();
       
       resourceTabIcon = resourceBundle.getResource("PluginFrame.label.Status");
       if (resourceTabIcon.equals(""))
@@ -544,7 +544,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    // name, etc. in the view table.
    //==============================================================
 
-   private void displayLoadedPluginsData(Vector<MyJSQLView_PluginModule> loadedPlugins)
+   private void displayLoadedPluginsData(ArrayList<MyJSQLView_PluginModule> loadedPlugins)
    {
       // Method Instances.
       String path;
