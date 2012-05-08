@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.2 01/11/2012
+// Version 5.3 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,8 @@
 //         5.2 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in actionPerformed(), getTableTabPanel(),
 //             & setSelectedTableTabPanel().
+//         5.3 Constructor Argument tableNames & Same for reloadPanel() Changed
+//             Data Type from Vector to ArrayList.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -139,7 +141,7 @@ import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -155,7 +157,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.2 01/11/2012
+ * @version 5.3 05/07/2012
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -185,7 +187,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    // DBTablesPanel Constructor
    //==============================================================
 
-   DBTablesPanel(Connection dbConnection, Vector<String> tableNames)
+   DBTablesPanel(Connection dbConnection, ArrayList<String> tableNames)
    {  
       // Constructor Instances
       ImageIcon statusIdleIcon, statusWorkingIcon, sqlQueryBucketIcon;
@@ -442,7 +444,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    // and table cards then reload tables.
    //==============================================================
    
-   protected static void reloadPanel(Connection dbConnection, Vector<String> tableNames)
+   protected static void reloadPanel(Connection dbConnection, ArrayList<String> tableNames)
    {
       // Method Instances
       String tableName;
