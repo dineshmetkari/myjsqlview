@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 01/01/2012
+// Version 1.7 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //         1.4 Added Argument String path to Interface Method initPlugin().
 //         1.5 Copyright Update.
 //         1.6 Copyright Update.
+//         1.7 Interface setDBTables() Changed to Have Argument tables to
+//             be a ArrayList Instead of Vector.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -50,7 +52,7 @@ import javax.swing.JPanel;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
 import javax.swing.ImageIcon;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  *    The MyJSQLView_PluginModule class defines the methods that
@@ -58,7 +60,7 @@ import java.util.Vector;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.6 01/01/2012
+ * @version 1.7 05/07/2012
  */
 
 public interface PluginModuleInterface
@@ -118,5 +120,5 @@ public interface PluginModuleInterface
    // Class method to allow the setting the database tables.
    //==============================================================
 
-   void setDBTables(Vector<String> tables);
+   void setDBTables(ArrayList<String> tables);
 }
