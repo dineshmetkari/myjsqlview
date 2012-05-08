@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 01/01/2012
+// Version 2.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,8 @@
 //         2.3 Added Argument String path to Method initPlugin().
 //         2.4 Copyright Update.
 //         2.5 Copyright Update.
+//         2.6 Changed Argument Requirement tableNames in setDBTables to Data Type
+//             ArrayList from Vector.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,7 +65,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -75,7 +77,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.5 01/01/2012
+ * @version 2.6 05/07/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -203,7 +205,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Interface requirement.
    //==============================================================
 
-   public void setDBTables(Vector<String> tableNames)
+   public void setDBTables(ArrayList<String> tableNames)
    {
       // Do what you will if you need database table names.
    }
