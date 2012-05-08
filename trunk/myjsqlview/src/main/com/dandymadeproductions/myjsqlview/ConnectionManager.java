@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 05/07/2012
+// Version 2.4 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,8 @@
 //         2.3 Changed Class Instances schemas & tables from Vector to ArrayList.
 //             Also the Same for schemas & tables in Class Methods getSchemas()
 //             & getTableNames().
+//         2.4 Correction in Methods getSchemas() & getTableNames() to Returned a
+//             Proper Copy of tables & schemas.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +89,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/07/2012
+ * @version 2.4 05/07/2012
  */
 
 public class ConnectionManager
@@ -716,13 +718,13 @@ public class ConnectionManager
 
    public static ArrayList<String> getSchemas()
    {
-      ArrayList<String> schemasVector = new ArrayList <String>();
+      ArrayList<String> schemasList = new ArrayList <String>();
       Iterator<String> schemasIterator = schemas.iterator();
       
       while (schemasIterator.hasNext())
-         schemasVector.add(schemasIterator.next());
+         schemasList.add(schemasIterator.next());
       
-      return schemasVector;
+      return schemasList;
    }
    
    //==============================================================
@@ -732,13 +734,13 @@ public class ConnectionManager
 
    public static ArrayList<String> getTableNames()
    {
-      ArrayList<String> tables = new ArrayList <String>();
+      ArrayList<String> tablesList = new ArrayList <String>();
       Iterator<String> tablesIterator = tables.iterator();
       
       while (tablesIterator.hasNext())
-         tables.add(tablesIterator.next());
+         tablesList.add(tablesIterator.next());
       
-      return tables;
+      return tablesList;
    }
    
    //==============================================================
