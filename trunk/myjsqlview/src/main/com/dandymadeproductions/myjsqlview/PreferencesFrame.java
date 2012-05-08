@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.6 05/07/2012
+// Version 8.7 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,8 @@
 //             Type to ArrayList. Changed Class Instances tableFieldPanelsHashtable &
 //             tableRowPanelsHashtable from HashTable to HashMap & Name Accordingly to
 //             End With Map.
+//         8.7 Class Methods createTableFields/RowsOptionsPanel() Conversion of Connection
+//             Manager.getTableNames().toArray() for ComboBox Creation.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -206,7 +208,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.6 05/07/2012
+ * @version 8.7 05/07/2012
  */
 
 //=================================================================
@@ -944,7 +946,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       else
          tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
-      tableSelectionFieldsComboBox = new JComboBox(ConnectionManager.getTableNames());
+      tableSelectionFieldsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());
       selectionPanel.add(tableSelectionFieldsComboBox);
 
       tableFieldPanel.add(selectionPanel, BorderLayout.NORTH);
@@ -1016,7 +1018,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
          tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
 
-      tableSelectionRowsComboBox = new JComboBox(ConnectionManager.getTableNames());
+      tableSelectionRowsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());
       selectionPanel.add(tableSelectionRowsComboBox);
 
       tableRowPanel.add(selectionPanel, BorderLayout.NORTH);
