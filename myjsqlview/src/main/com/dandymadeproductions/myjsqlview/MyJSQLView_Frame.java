@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.9 01/11/2012
+// Version 7.0 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -171,7 +171,8 @@
 //                        Own Method.
 //         6.9 01/11/2012 Removed the Casting of (Connection) for the Returned Instance for the
 //                        ConnectionManager.getConnection() in createGUI() & reloadDBTables().
-//                        
+//         7.0 05/07/2012 Changed Class Instance loadedPluginModules from Vector Data Type to
+//                        ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -188,7 +189,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
@@ -201,7 +202,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 6.9 01/11/2012
+ * @version 7.0 05/07/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -222,8 +223,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private static JTabbedPane mainTabsPane;
    private static DBTablesPanel dbTablesPanel;
    
-   private static Vector<MyJSQLView_PluginModule> loadedPluginModules = 
-                                                  new Vector <MyJSQLView_PluginModule>();
+   private static ArrayList<MyJSQLView_PluginModule> loadedPluginModules = 
+                                                  new ArrayList <MyJSQLView_PluginModule>();
    protected static final JButton pluginFrameListenButton = new JButton();
    
    //==============================================================
@@ -566,7 +567,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    // Class Method to return the current loaded plugins.
    //==============================================================
    
-   protected static Vector<MyJSQLView_PluginModule> getPlugins()
+   protected static ArrayList<MyJSQLView_PluginModule> getPlugins()
    {
       return loadedPluginModules;
    }
