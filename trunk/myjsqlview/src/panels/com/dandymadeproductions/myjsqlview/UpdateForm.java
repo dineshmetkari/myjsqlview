@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.4 05/07/2012
+// Version 4.5 05/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,9 @@
 //                        Action on Updating AdvancedSortSearchForm Are Appropriate.
 //         4.4 05/07/2012 Changed Class Instances updateComboBoxColumnNames, comboBoxColumnNames,
 //                        & stateComponents from Vector Data Type to ArrayList.
+//         4.5 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. Removed the
+//                        Removing of First Element in updateColumnComboBox in Create Method. All
+//                        the Result of Different Behavior of 4.4 ArrayList Change.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -150,7 +153,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.4 05/07/2012
+ * @version 4.5 05/08/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -224,6 +227,7 @@ class UpdateForm extends JFrame implements ActionListener
       
       updateComboBoxColumnNames = new ArrayList<String> ();
       comboBoxColumnNames = new ArrayList<String> ();
+      comboBoxColumnNames.add("");
       
       // Isolate these.
       for (int i = 0; i < columnNames.size(); i++)
@@ -620,7 +624,6 @@ class UpdateForm extends JFrame implements ActionListener
       updatePanel.add(setLabel);
 
       updateColumnComboBox = new JComboBox(updateComboBoxColumnNames.toArray());
-      updateColumnComboBox.removeItemAt(0);
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
