@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.89 05/07/2012
+// Version 4.90 05/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -185,6 +185,8 @@
 //                        Conditional Check for GROUP BY Aspect.
 //        4.89 05/07/2012 Changed Class Instances comboBoxColumnNames & stateComponents from Vector
 //                        Data Types to ArrayList. Same for Constructor Argument columnNames.
+//        4.90 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. All
+//                        the Result of Different Behavior of 4.89 ArrayList Change.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -214,7 +216,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.89 05/07/2012
+ * @version 4.90 05/08/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -280,6 +282,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Setting up icons directory and other instances.
       
       comboBoxColumnNames = new ArrayList<String> ();
+      comboBoxColumnNames.add("");
       
       for (int i = 0; i < columnNames.size(); i++)
          comboBoxColumnNames.add(columnNames.get(i));
