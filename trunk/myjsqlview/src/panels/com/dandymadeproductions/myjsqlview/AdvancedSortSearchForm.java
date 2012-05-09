@@ -185,8 +185,8 @@
 //                        Conditional Check for GROUP BY Aspect.
 //        4.89 05/07/2012 Changed Class Instances comboBoxColumnNames & stateComponents from Vector
 //                        Data Types to ArrayList. Same for Constructor Argument columnNames.
-//        4.90 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. All
-//                        the Result of Different Behavior of 4.89 ArrayList Change.
+//        4.90 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. All the Result
+//                        of Different Behavior of 4.89 ArrayList Change.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
