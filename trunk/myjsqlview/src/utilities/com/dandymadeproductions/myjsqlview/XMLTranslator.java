@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Nil_lin, Dana Proctor
-// Version 4.8 01/01/2012
+// Version 4.9 05/10/2012
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,25 +86,31 @@
 //                        Enought Feedback to Do Anything. Normalized xmlDocument
 //                        in setSites() and setLastSite(). Tested Again With Linux
 //                        and XP Works.
-//         3.9 02/06/2010 Constructor Check for SecurityException in Creation of the
-//                        .myjsqlview Directory. Assumed fileError = true. Set 
+//         3.9 02/06/2010 Constructor Check for SecurityException in Creation of
+//                        the .myjsqlview Directory. Assumed fileError = true. Set 
 //                        errorInTranslation and returned.
 //         4.0 02/08/2010 Class Method SaveXML() newFileContent Changed to StringBuffer.
 //                        Class Method textConversion() returnString Changed to
 //                        StringBuffer. Class Method setSites() Added Instance 
 //                        passwordBuffer.
-//         4.1 02/15/2010 Class Method textConversion() Returned Empty String on Conditional
-//                        Test. Class Method setSites() passwordBufferString Proper Conversion
-//                        to passwordString and Check for Empty String.
+//         4.1 02/15/2010 Class Method textConversion() Returned Empty String on
+//                        Conditional Test. Class Method setSites() passwordBufferString
+//                        Proper Conversion to passwordString and Check for Empty
+//                        String.
 //         4.2 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         4.3 04/07/2010 Corrections in Class Method textConversion().
-//         4.4 05/16/2010 Parameterized Instance sites in Class Method getSites() and Argument
-//                        to setSites() to Bring Code Into Compliance With Java 5.0 API.
+//         4.4 05/16/2010 Parameterized Instance sites in Class Method getSites()
+//                        and Argument to setSites() to Bring Code Into Compliance
+//                        With Java 5.0 API.
 //         4.5 05/18/2010 Minor Format Changes.
 //         4.6 05/20/2010 Parameterized siteKeys in Class Method setSites().
-//         4.7 01/12/2011 Class Method getSites() Changed currentSiteName Instance to a
-//                        StringBuffer.
+//         4.7 01/12/2011 Class Method getSites() Changed currentSiteName Instance
+//                        to a StringBuffer.
 //         4.8 01/01/2012 Copyright Update.
+//         4.9 05/10/2012 Class Methods get/setSites() Changed sites from Hashtable
+//                        to HashMap Data Type. Class Method Changed from Enumeration
+//                        to Iterator to Cycle Through Keys. Organized Imports. Some
+//                        Comment Changes.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -113,15 +119,29 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.io.*;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.swing.JOptionPane;
-import javax.xml.parsers.*;
-import javax.xml.transform.*;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import org.w3c.dom.*;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -130,7 +150,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.8 01/01/2012
+ * @version 4.9 05/10/2012
  */
 
 class XMLTranslator
@@ -353,10 +373,10 @@ class XMLTranslator
    // the XML file.
    //==============================================================
    
-   protected Hashtable<String, SiteParameters> getSites()
+   protected HashMap<String, SiteParameters> getSites()
    {
       // Class Method Instance.
-      Hashtable<String, SiteParameters> sites;
+      HashMap<String, SiteParameters> sites;
       SiteParameters currentSiteParameter;
       NodeList siteElements;
       Node currentSite;
@@ -364,7 +384,7 @@ class XMLTranslator
       StringBuffer currentSiteName;
 
       // Setting up some of the class instances.
-      sites = new Hashtable <String, SiteParameters>();
+      sites = new HashMap <String, SiteParameters>();
 
       // Finding the site nodes and then
       // setting each sites' attributes.
@@ -495,7 +515,7 @@ class XMLTranslator
    // into the XML file.
    //==============================================================
    
-   protected void setSites(Hashtable<String, SiteParameters> sites)
+   protected void setSites(HashMap<String, SiteParameters> sites)
    {
       // Class Method Instances
       Node root;
@@ -524,11 +544,11 @@ class XMLTranslator
 
             // Cycle through the new sites list and adding
             // to the Sites node.
-            Enumeration<String> sitesKeys = sites.keys();
+            Iterator<String> sitesKeys = sites.keySet().iterator();
 
-            while (sitesKeys.hasMoreElements())
+            while (sitesKeys.hasNext())
             {
-               String currentKey = sitesKeys.nextElement();
+               String currentKey = sitesKeys.next();
                SiteParameters currentParameter = sites.get(currentKey);
 
                Element currentSiteElement = xmlDocument.createElement("Site");
