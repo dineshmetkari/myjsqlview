@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.06 05/07/2012
+// Version 5.07 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -229,6 +229,8 @@
 //             comboBoxFields, currentTableHeadings, allTableHeadings, & primaryKeys
 //             Changed from Vector to ArrayList. All Corresponding Interactions,
 //             getter/setters for Those Instances Also Changed.
+//        5.07 Added Class Methods getForeignKeys() & getExportedKeys() to Conform
+//             to Interface Requirement.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -266,7 +268,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.06 05/07/2012
+ * @version 5.07 05/10/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -299,7 +301,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    protected String identifierQuoteString;
    protected ArrayList<String> fields, formFields, viewFormFields, comboBoxFields;
    protected ArrayList<String> currentTableHeadings, allTableHeadings;
-   protected ArrayList<String> primaryKeys;
+   protected ArrayList<String> primaryKeys, foreignKeys, exportedKeys;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    private ImageIcon previousStateIcon, nextStateIcon;
@@ -400,6 +402,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       currentTableHeadings = new ArrayList <String>();
       allTableHeadings = new ArrayList <String>();
       primaryKeys = new ArrayList <String>();
+      foreignKeys = new ArrayList <String>();
+      exportedKeys = new ArrayList <String>();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
       columnNamesHashMap = new HashMap <String, String>();
@@ -2589,6 +2593,38 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    {
       ArrayList<String> keysVector = new ArrayList <String>();
       Iterator<String> keysIterator = primaryKeys.iterator();
+      
+      while (keysIterator.hasNext())
+         keysVector.add(keysIterator.next());
+      
+      return keysVector;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the foreign key(s)/
+   // index(s) used by this list table.
+   //==============================================================
+
+   public ArrayList<String> getForeignKeys()
+   {
+      ArrayList<String> keysVector = new ArrayList <String>();
+      Iterator<String> keysIterator = foreignKeys.iterator();
+      
+      while (keysIterator.hasNext())
+         keysVector.add(keysIterator.next());
+      
+      return keysVector;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the exported key(s)/
+   // index(s) used by this list table.
+   //==============================================================
+
+   public ArrayList<String> getExportedKeys()
+   {
+      ArrayList<String> keysVector = new ArrayList <String>();
+      Iterator<String> keysIterator = exportedKeys.iterator();
       
       while (keysIterator.hasNext())
          keysVector.add(keysIterator.next());
