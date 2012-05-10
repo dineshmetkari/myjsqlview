@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 4.3 01/01/2012
+// Version 4.4 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,7 +86,12 @@
 //         4.1 Increased the PreferredSize of the treeScrollPane Instance.
 //         4.2 Class Instance connectionManagerFrame Changed to loginManagerFrame.
 //         4.3 Copyright Update.
-//        
+//         4.4 Class Instance sites and Same Argument in Constructor Changed
+//             from Hashtable to HashMap. Class Method createSitesTree() Same
+//             Change for siteNodes, Also Change of siteNames from Enumeration
+//             to Iterator. Class Instance siteNameCollection Change from Vector
+//             to ArrayList.
+//             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -95,11 +100,10 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -118,7 +122,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.3 01/01/2012
+ * @version 4.4 05/10/2012
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -130,8 +134,8 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    private DefaultMutableTreeNode sitesNode;
    private DefaultTreeModel treeModel;
    private JTree sitesTree;
-   private Vector<String> siteNameCollection;
-   private Hashtable<String, SiteParameters> sites;
+   private ArrayList<String> siteNameCollection;
+   private HashMap<String, SiteParameters> sites;
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
@@ -142,7 +146,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
    //==============================================================
 
    protected SitesTreePanel(LoginManagerFrame parent,
-                            Hashtable <String, SiteParameters> sites,
+                            HashMap <String, SiteParameters> sites,
                             StandardParametersPanel standardParametersPanel,
                             AdvancedParametersPanel advancedParametersPanel)
    {
@@ -199,20 +203,20 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       // Class Method Instances.
       DefaultMutableTreeNode currentSiteNode;
       String siteKey, siteName, databaseName;
-      Hashtable<String, DefaultMutableTreeNode> siteNodes;
+      HashMap<String, DefaultMutableTreeNode> siteNodes;
       TreeSet<String> sitesTreeSet;
 
-      Enumeration<String> siteNames;
+      Iterator<String> siteNames;
       Iterator<String> sitesTreeIterator;
 
       // Create a collection of site names.
 
-      siteNameCollection = new Vector <String>();
-      siteNames = sites.keys();
+      siteNameCollection = new ArrayList <String>();
+      siteNames = sites.keySet().iterator();
 
-      while (siteNames.hasMoreElements())
+      while (siteNames.hasNext())
       {
-         siteKey = siteNames.nextElement();
+         siteKey = siteNames.next();
 
          if (!siteKey.equals("Last Site") && siteKey.indexOf('#') != -1)
          {
@@ -228,7 +232,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
  
       sitesTreeSet = new TreeSet <String>(siteNameCollection);
       
-      siteNodes = new Hashtable <String, DefaultMutableTreeNode>();
+      siteNodes = new HashMap <String, DefaultMutableTreeNode>();
       sitesTreeIterator = sitesTreeSet.iterator();
 
       while (sitesTreeIterator.hasNext())
@@ -241,11 +245,11 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       // Populating the JTree with the databases associated
       // with each site.
 
-      siteNames = sites.keys();
+      siteNames = sites.keySet().iterator();
 
-      while (siteNames.hasMoreElements())
+      while (siteNames.hasNext())
       {
-         siteKey = (String) siteNames.nextElement();
+         siteKey = (String) siteNames.next();
 
          if (!siteKey.equals("Last Site") && siteKey.indexOf('#') != -1)
          {
