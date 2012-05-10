@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.85 05/07/2012
+// Version 6.86 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -266,6 +266,8 @@
 //        6.85 Changed Class Instances sitesNameList, driverList, protocolList, hostList,
 //             subProtocolList, portList, databaseList, & userList from Vector Data Type
 //             to ArrayList.
+//        6.86 Class Instance sites Changed from Hashtable to HashMap. Method Instance
+//             siteNames in fillSiteDataStructure() Changed from Enumeration to Iterator.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -285,8 +287,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 import java.util.ArrayList;
@@ -300,7 +301,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.85 05/07/2012
+ * @version 6.86 05/10/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -329,7 +330,7 @@ public class LoginFrame extends JFrame implements ActionListener
    private ArrayList<String> sitesNameList, driverList, protocolList, subProtocolList,
                     hostList, portList, databaseList, userList;
    
-   private Hashtable<String, SiteParameters> sites;
+   private HashMap<String, SiteParameters> sites;
    private transient SiteParameters lastSite;
    private transient XMLTranslator xmlTranslator;
    
@@ -369,7 +370,7 @@ public class LoginFrame extends JFrame implements ActionListener
       // Setting up Various Instances.
       
       xmlTranslator = new XMLTranslator();
-      sites = new Hashtable <String, SiteParameters>();
+      sites = new HashMap <String, SiteParameters>();
       sitesNameList = new ArrayList <String>();
       driverList = new ArrayList <String>();
       protocolList = new ArrayList <String>();
@@ -754,7 +755,7 @@ public class LoginFrame extends JFrame implements ActionListener
          if (!actionCommandName.equals("Cut") && !actionCommandName.equals("Copy")
              && !actionCommandName.equals("Paste"))
          {
-            SiteParameters selectedSite = (SiteParameters) sites.get(actionCommandName);
+            SiteParameters selectedSite = sites.get(actionCommandName);
             setSelectedSite(selectedSite);
          }
       }
@@ -769,11 +770,11 @@ public class LoginFrame extends JFrame implements ActionListener
    private void fillSiteDataStructures(JMenu siteSelectMenu)
    {
       // Class Method Instances
-      Enumeration<String> siteNames;
+      Iterator<String> siteNames;
       Iterator<String> sitesTreeIterator;
 
       TreeSet<String> sitesTreeSet;
-      Hashtable<String, JMenu> sitesJMenus;
+      HashMap<String, JMenu> sitesJMenus;
       String siteName;
 
       // Remove all previous sites.
@@ -781,13 +782,12 @@ public class LoginFrame extends JFrame implements ActionListener
 
       // Create a natural order of JMenus
       // of the given sites' names.
-
-      siteNames = sites.keys();
+      siteNames = sites.keySet().iterator();
       sitesTreeSet = new TreeSet <String>();
 
-      while (siteNames.hasMoreElements())
+      while (siteNames.hasNext())
       {
-         siteName = siteNames.nextElement();
+         siteName = siteNames.next();
 
          if (!siteName.equals("Last Site") && siteName.indexOf('#') != -1)
             siteName = siteName.substring(0, siteName.indexOf('#'));
@@ -799,11 +799,11 @@ public class LoginFrame extends JFrame implements ActionListener
       }
 
       sitesTreeIterator = sitesTreeSet.iterator();
-      sitesJMenus = new Hashtable <String, JMenu>();
+      sitesJMenus = new HashMap <String, JMenu>();
 
       while (sitesTreeIterator.hasNext())
       {
-         String currentSiteName = (String) sitesTreeIterator.next();
+         String currentSiteName = sitesTreeIterator.next();
          JMenu currentSiteJMenu = new JMenu(currentSiteName);
          sitesJMenus.put(currentSiteName, currentSiteJMenu);
          siteSelectMenu.add(currentSiteJMenu);
@@ -823,8 +823,8 @@ public class LoginFrame extends JFrame implements ActionListener
       databaseList.clear();
       userList.clear();
 
-      siteNames = sites.keys();
-      while (siteNames.hasMoreElements())
+      siteNames = sites.keySet().iterator();
+      while (siteNames.hasNext())
       {
          String jmenuSiteName;
          String jmenuDBName;
@@ -832,7 +832,7 @@ public class LoginFrame extends JFrame implements ActionListener
          // Fill the JMenu first then create comboboxes
          // elements.
 
-         siteName = (String) siteNames.nextElement();
+         siteName = (String) siteNames.next();
          sitesNameList.add(siteName);
 
          if (!siteName.equals("Last Site") && siteName.indexOf('#') != -1)
