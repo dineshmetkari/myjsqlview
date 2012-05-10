@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.2 01/11/2012
+// Version 1.3 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 //         1.2 Modified to Handle Connection Type Memory, File, Resource, and Server
 //             Types. Major Changes Throughout, Made Class Methods loadDBParameters()
 //             & loadDBTables() Private. Removed Most static Instances and Methods.
+//         1.3 Changed Class Instances schemas & tables from Vector to ArrayList
+//             Data Types. Same Change for Return Argument in Methods getSchemas()
+//             & getTableNames() Along With Their Instances schemas & tables. 
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,7 +50,7 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 /**
@@ -55,7 +58,7 @@ import javax.swing.JOptionPane;
  * manage connections to a HSQL database.
  * 
  * @author Dana M. Proctor
- * @version 1.2 01/11/2012
+ * @version 1.3 05/10/2012
  */
 
 public class ConnectionManagerHSQL
@@ -67,8 +70,8 @@ public class ConnectionManagerHSQL
    private String dbProductNameVersion;
    private String schemaPattern, tableNamePattern;
    private String[] tableTypes;
-   private Vector<String> schemas;
-   private Vector<String> tables;
+   private ArrayList<String> schemas;
+   private ArrayList<String> tables;
 
    private String catalogSeparator;
    private String identifierQuoteString;
@@ -121,8 +124,8 @@ public class ConnectionManagerHSQL
       DatabaseMetaData dbMetaData;
       
       // Setup
-      schemas = new Vector<String>();
-      tables = new Vector<String>();
+      schemas = new ArrayList<String>();
+      tables = new ArrayList<String>();
 
       // Load Driver.
       try
@@ -428,8 +431,8 @@ public class ConnectionManagerHSQL
 
          // Clear the tables vector and load it with the databases
          // tables.
-         schemas.removeAllElements();
-         tables.removeAllElements();
+         schemas.clear();
+         tables.clear();
 
          while (db_resultSet.next())
          {
@@ -551,13 +554,13 @@ public class ConnectionManagerHSQL
    // schemas names.
    //==============================================================
 
-   public Vector<String> getSchemas()
+   public ArrayList<String> getSchemas()
    {
-      Vector<String> schemasVector = new Vector<String>();
+      ArrayList<String> schemasVector = new ArrayList<String>();
       Iterator<String> schemasIterator = schemas.iterator();
 
       while (schemasIterator.hasNext())
-         schemasVector.addElement(schemasIterator.next());
+         schemasVector.add(schemasIterator.next());
 
       return schemasVector;
    }
@@ -567,13 +570,13 @@ public class ConnectionManagerHSQL
    // names.
    //==============================================================
 
-   public Vector<String> getTableNames()
+   public ArrayList<String> getTableNames()
    {
-      Vector<String> tablesVector = new Vector<String>();
+      ArrayList<String> tablesVector = new ArrayList<String>();
       Iterator<String> tablesIterator = tables.iterator();
 
       while (tablesIterator.hasNext())
-         tablesVector.addElement(tablesIterator.next());
+         tablesVector.add(tablesIterator.next());
 
       return tablesVector;
    }
