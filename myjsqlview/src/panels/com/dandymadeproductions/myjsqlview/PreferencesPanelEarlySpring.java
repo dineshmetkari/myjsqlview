@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.6 01/01/2012
+// Version 2.7 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,6 +62,8 @@
 //         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         2.5 01/27/2011 Copyright Update.
 //         2.6 01/01/2012 Copyright Update.
+//         2.7 05/10/2112 Changed Class Instance rainDrops from Vector Data Type to
+//                        ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +77,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 /**
@@ -84,7 +86,7 @@ import javax.swing.ImageIcon;
  * during the northern hemisphere's early spring months, March-Arpil.
  * 
  * @author Dana M. Proctor
- * @version 2.6 01/01/2012
+ * @version 2.7 05/10/2012
  */
 
 class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
@@ -98,7 +100,7 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
 
    private transient Image rainDropImage;
    private int rainDropImageWidth, rainDropImageHeight;
-   private Vector<RainDrop> rainDrops;
+   private ArrayList<RainDrop> rainDrops;
    
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -132,7 +134,7 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
                                     + "raindrop.gif").getImage();
       rainDropImageWidth = rainDropImage.getWidth(null);
       rainDropImageHeight = rainDropImage.getHeight(null);
-      rainDrops = new Vector <RainDrop>();
+      rainDrops = new ArrayList <RainDrop>();
 
       // Run the panel's thread.
       runThread = true;
@@ -207,7 +209,7 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < rainDrops.size(); i++)
          {
-            Rectangle testSpaceOccupied = (rainDrops.elementAt(i)).getSpaceOccupied();
+            Rectangle testSpaceOccupied = (rainDrops.get(i)).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -232,7 +234,7 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < rainDrops.size(); i++)
       {
-         currentRainDrop = rainDrops.elementAt(i);
+         currentRainDrop = rainDrops.get(i);
          currentRainDrop.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -242,8 +244,8 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
          {
             tempSwapPoint = currentRainDrop.getNextPosition();
             currentRainDrop.setNextPosition(
-               (rainDrops.elementAt(rainDropOccupiedIndex)).getNextPosition());
-            (rainDrops.elementAt(rainDropOccupiedIndex)).setNextPosition(tempSwapPoint);
+               (rainDrops.get(rainDropOccupiedIndex)).getNextPosition());
+            (rainDrops.get(rainDropOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -263,7 +265,7 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
       // rain drop.
       for (int i = 0; i < rainDrops.size(); i++)
       {
-         currentRainDrop = rainDrops.elementAt(i);
+         currentRainDrop = rainDrops.get(i);
 
          // Don't need to check itself.
          if (currentRainDrop == testRainDrop)
@@ -382,9 +384,9 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
       // Draw RainDrops
       for (int i = 0; i < rainDrops.size(); i++)
       {
-         g.drawImage((rainDrops.elementAt(i)).getImage(),
-                     (rainDrops.elementAt(i)).getSpaceOccupied().x,
-                     (rainDrops.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((rainDrops.get(i)).getImage(),
+                     (rainDrops.get(i)).getSpaceOccupied().x,
+                     (rainDrops.get(i)).getSpaceOccupied().y, this);
       }
    }
 
