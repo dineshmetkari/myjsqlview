@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.7 05/07/2012
+// Version 3.8 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,7 @@
 //             getTableFields(), getCurrentTableHeadings() & getAllTableHeadings().
 //             Changed Interface setTableHeadings() Argument newHeadingFields from
 //             Vector to ArrayList.
+//         3.8 Added Interfaces getForeignKeys() & getExportedKeys().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -82,6 +83,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.ArrayList;
+
 import javax.swing.JTable;
 
 /**
@@ -90,7 +92,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.7 05/07/2012
+ * @version 3.8 05/10/2012
  */
 
 interface TableTabInterface
@@ -246,10 +248,24 @@ interface TableTabInterface
 
    //==============================================================
    // Class method to allow classes to obtain the primary key(s)/
-   // index(s) used by this list table.
+   // index(s) used by this table.
    //==============================================================
 
    ArrayList<String> getPrimaryKeys();
+   
+   //==============================================================
+   // Class method to allow classes to obtain the foreign key(s)/
+   // index(s) used by this table.
+   //==============================================================
+
+   ArrayList<String> getForeignKeys();
+   
+   //==============================================================
+   // Class method to allow classes to obtain the exported key(s)/
+   // index(s) used by this table.
+   //==============================================================
+
+   ArrayList<String> getExportedKeys();
 
    //==============================================================
    // Class method to allow classes to obtain the auto-increment
