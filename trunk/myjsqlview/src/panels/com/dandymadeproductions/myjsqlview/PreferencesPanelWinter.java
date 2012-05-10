@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.6 01/01/2012
+// Version 2.7 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,8 @@
 //         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         2.5 01/27/2011 Copyright Update.
 //         2.6 01/01/2012 Copyright Update.
+//         2.7 05/10/2112 Changed Class Instance snowFlakes from Vector Data Type to
+//                        ArrayList.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,7 +76,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 /**
@@ -83,7 +85,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.6 01/01/2012
+ * @version 2.7 05/10/2012
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable
@@ -97,7 +99,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
 
    private transient Image snowFlakeImage;
    private int snowFlakeImageWidth, snowFlakeImageHeight;
-   private Vector<SnowFlake> snowFlakes;
+   private ArrayList<SnowFlake> snowFlakes;
    
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -132,7 +134,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       snowFlakeImageWidth = snowFlakeImage.getWidth(null);
       snowFlakeImageHeight = snowFlakeImage.getHeight(null);
       
-      snowFlakes = new Vector <SnowFlake>();
+      snowFlakes = new ArrayList <SnowFlake>();
 
       // Run the panel's thread.
       runThread = true;
@@ -208,7 +210,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < snowFlakes.size(); i++)
          {
-            Rectangle testSpaceOccupied = ((snowFlakes.elementAt(i))).getSpaceOccupied();
+            Rectangle testSpaceOccupied = ((snowFlakes.get(i))).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -233,7 +235,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         currentSnowFlake = snowFlakes.elementAt(i);
+         currentSnowFlake = snowFlakes.get(i);
          currentSnowFlake.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -243,8 +245,8 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
          {
             tempSwapPoint = currentSnowFlake.getNextPosition();
             currentSnowFlake.setNextPosition(
-               (snowFlakes.elementAt(snowFlakeOccupiedIndex)).getNextPosition());
-            (snowFlakes.elementAt(snowFlakeOccupiedIndex)).setNextPosition(tempSwapPoint);
+               (snowFlakes.get(snowFlakeOccupiedIndex)).getNextPosition());
+            (snowFlakes.get(snowFlakeOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -264,7 +266,7 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // snowflake.
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         currentSnowFlake = snowFlakes.elementAt(i);
+         currentSnowFlake = snowFlakes.get(i);
 
          // Don't need to check itself.
          if (currentSnowFlake == testSnowFlake)
@@ -384,9 +386,9 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       // Draw SnowFlakes
       for (int i = 0; i < snowFlakes.size(); i++)
       {
-         g.drawImage((snowFlakes.elementAt(i)).getImage(),
-                     (snowFlakes.elementAt(i)).getSpaceOccupied().x,
-                     (snowFlakes.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((snowFlakes.get(i)).getImage(),
+                     (snowFlakes.get(i)).getSpaceOccupied().x,
+                     (snowFlakes.get(i)).getSpaceOccupied().y, this);
       }
    }
 
