@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.0 01/01/2012
+// Version 5.1 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,9 @@
 //         4.9 Renamed to LoginManagerFrame. All Instances That Reference The
 //             Old ConnectionManager Changed to LoginManager.
 //         5.0 Copyright Update.
+//         5.1 Class Instance sitesClone & Same Argument in Constructor Change
+//             from Hashtable to HashMap. Instance sitesKeys in Constructor
+//             Changed from Enumeration to Iterator.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -109,8 +112,9 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -127,7 +131,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.0 01/01/2012
+ * @version 5.1 05/10/2012
  */
 
 class LoginManagerFrame extends JFrame implements ActionListener
@@ -139,7 +143,7 @@ class LoginManagerFrame extends JFrame implements ActionListener
    private String resource;
 
    private SitesTreePanel treePanel;
-   private Hashtable<String, SiteParameters> sitesClone;
+   private HashMap<String, SiteParameters> sitesClone;
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
@@ -160,7 +164,7 @@ class LoginManagerFrame extends JFrame implements ActionListener
    //==============================================================
 
    protected LoginManagerFrame(MyJSQLView_ResourceBundle resourceBundle,
-                               Hashtable<String, SiteParameters> sites,
+                               HashMap<String, SiteParameters> sites,
                                StandardParametersPanel standardParametersPanel,
                                AdvancedParametersPanel advancedParametersPanel,
                                JButton saveExitButton, JButton cancelButton)
@@ -172,16 +176,16 @@ class LoginManagerFrame extends JFrame implements ActionListener
       
       // Constructor Instances
       String iconsDirectory;
-      Enumeration<String> sitesKeys;
+      Iterator<String> sitesKeys;
       JPanel mainPanel, centerPanel, actionPanel;
       
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
-      sitesKeys = sites.keys();
-      sitesClone = new Hashtable <String, SiteParameters>();
-      while (sitesKeys.hasMoreElements())
+      sitesKeys = sites.keySet().iterator();
+      sitesClone = new HashMap <String, SiteParameters>();
+      while (sitesKeys.hasNext())
       {
-         String currentKey = sitesKeys.nextElement();
+         String currentKey = sitesKeys.next();
          sitesClone.put(currentKey, sites.get(currentKey));
          // System.out.println(currentKey);
       }
@@ -380,7 +384,7 @@ class LoginManagerFrame extends JFrame implements ActionListener
    // by this class or the SitesTreePanel.
    //==============================================================
 
-   protected Hashtable<String, SiteParameters> getSites()
+   protected HashMap<String, SiteParameters> getSites()
    {
       return sitesClone;
    }
