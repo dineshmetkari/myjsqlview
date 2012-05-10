@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.5 01/01/2012
+// Version 2.6 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,13 +51,15 @@
 //         2.0 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         2.1 05/18/2010 Parameterized Class Instance leafs to Bring Code Into
 //                        Compliance With Java 5.0 API. Organized Imports.
-//         2.2 10/18/2010 Updated to Have Rendering Done With the paintComponent() Method
-//                        for Panels Instead of paint(). Added paintComponent() and
-//                        Changed paint() to drawPanel(). Removed Use of Graphics2D in
-//                        render() and removed Setting of Border in Constructor.
+//         2.2 10/18/2010 Updated to Have Rendering Done With the paintComponent()
+//                        Method for Panels Instead of paint(). Added paintComponent()
+//                        and Changed paint() to drawPanel(). Removed Use of Graphics2D
+//                        in render() and removed Setting of Border in Constructor.
 //         2.3 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         2.4 01/27/2011 Copyright Update.
 //         2.5 01/01/2012 Copyright Update.
+//         2.6 05/10/2112 Changed Class Instance leafs from Vector Data Type to
+//                        ArrayList.
 //
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -71,7 +73,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 /**
@@ -80,7 +82,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's fall months, October-November.
  * 
  * @author Dana M. Proctor
- * @version 2.5 01/01/2012
+ * @version 2.6 05/10/2012
  */
 
 class PreferencesPanelFall extends PreferencesPanel implements Runnable
@@ -95,7 +97,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
    private static final int leafColors = 5;
    private transient Image[] leafImages = new Image[leafColors];
    private int leafImageWidth, leafImageHeight;
-   private Vector<Leaf> leafs;
+   private ArrayList<Leaf> leafs;
    
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -130,7 +132,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          leafImages[i] = new ImageIcon("images" + fileSeparator + leafImageName[i]).getImage();
       leafImageWidth = leafImages[0].getWidth(null);
       leafImageHeight = leafImages[0].getHeight(null);
-      leafs = new Vector <Leaf>();
+      leafs = new ArrayList <Leaf>();
       
       // Run the panel's thread.
       runThread = true;
@@ -205,7 +207,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < leafs.size(); i++)
          {
-            Rectangle testSpaceOccupied = (leafs.elementAt(i)).getSpaceOccupied();
+            Rectangle testSpaceOccupied = (leafs.get(i)).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -230,7 +232,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < leafs.size(); i++)
       {
-         currentLeaf = leafs.elementAt(i);
+         currentLeaf = leafs.get(i);
          currentLeaf.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -239,8 +241,8 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
          if (leafOccupiedIndex >= 0)
          {
             tempSwapPoint = currentLeaf.getNextPosition();
-            currentLeaf.setNextPosition((leafs.elementAt(leafOccupiedIndex)).getNextPosition());
-            (leafs.elementAt(leafOccupiedIndex)).setNextPosition(tempSwapPoint);
+            currentLeaf.setNextPosition((leafs.get(leafOccupiedIndex)).getNextPosition());
+            (leafs.get(leafOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -260,7 +262,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // leaf.
       for (int i = 0; i < leafs.size(); i++)
       {
-         currentLeaf = leafs.elementAt(i);
+         currentLeaf = leafs.get(i);
 
          // Don't need to check itself.
          if (currentLeaf == testLeaf)
@@ -378,9 +380,9 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // Draw Leafs
       for (int i = 0; i < leafs.size(); i++)
       {
-         g.drawImage((leafs.elementAt(i)).getImage(),
-                     (leafs.elementAt(i)).getSpaceOccupied().x,
-                     (leafs.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((leafs.get(i)).getImage(),
+                     (leafs.get(i)).getSpaceOccupied().x,
+                     (leafs.get(i)).getSpaceOccupied().y, this);
       }
    }
 
