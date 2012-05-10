@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.2 01/01/2012
+// Version 3.3 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,8 @@
 //         3.0 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         3.1 01/27/2011 Copyright Update.
 //         3.2 01/01/2012 Copyright Update.
+//         3.3 05/10/2112 Changed Class Instance fireFlies from Vector Data Type to
+//                        ArrayList.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -82,7 +84,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 
 /**
@@ -91,7 +93,7 @@ import javax.swing.ImageIcon;
  * hemisphere's summer months, July-September.
  * @author Dana M. Proctor
  * 
- * @version 3.2 01/01/2012
+ * @version 3.3 05/10/2012
  */
 
 class PreferencesPanelSummer extends PreferencesPanel implements Runnable
@@ -105,7 +107,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
    private static final int fireFlyColors = 6;
    private transient Image[] fireFlyImages = new Image[fireFlyColors];
    private int fireFlyImageWidth, fireFlyImageHeight;
-   private Vector<FireFly> fireFlies;
+   private ArrayList<FireFly> fireFlies;
 
    private volatile boolean runThread;
    private volatile boolean suspendThread;
@@ -140,7 +142,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          fireFlyImages[i] = new ImageIcon("images" + fileSeparator + fireFlyImageName[i]).getImage();
       fireFlyImageWidth = fireFlyImages[0].getWidth(null);
       fireFlyImageHeight = fireFlyImages[0].getHeight(null);
-      fireFlies = new Vector <FireFly>();
+      fireFlies = new ArrayList <FireFly>();
 
       // Run the panel's thread.
       runThread = true;
@@ -215,7 +217,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          collision = false;
          for (int i = 0; i < fireFlies.size(); i++)
          {
-            Rectangle testSpaceOccupied = (fireFlies.elementAt(i)).getSpaceOccupied();
+            Rectangle testSpaceOccupied = (fireFlies.get(i)).getSpaceOccupied();
             if (trialSpaceOccupied.intersects(testSpaceOccupied))
                collision = true;
          }
@@ -240,7 +242,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // testing for collision.
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         currentFireFly = fireFlies.elementAt(i);
+         currentFireFly = fireFlies.get(i);
          currentFireFly.updatePosition();
 
          // Collision check and recoil action as needed.
@@ -249,8 +251,8 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
          if (fireFlyOccupiedIndex >= 0)
          {
             tempSwapPoint = currentFireFly.getNextPosition();
-            currentFireFly.setNextPosition((fireFlies.elementAt(fireFlyOccupiedIndex)).getNextPosition());
-            (fireFlies.elementAt(fireFlyOccupiedIndex)).setNextPosition(tempSwapPoint);
+            currentFireFly.setNextPosition((fireFlies.get(fireFlyOccupiedIndex)).getNextPosition());
+            (fireFlies.get(fireFlyOccupiedIndex)).setNextPosition(tempSwapPoint);
          }
       }
    }
@@ -270,7 +272,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // firefly.
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         currentFireFly = fireFlies.elementAt(i);
+         currentFireFly = fireFlies.get(i);
 
          // Don't need to check itself.
          if (currentFireFly == testFireFly)
@@ -387,9 +389,9 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // Draw Fireflies
       for (int i = 0; i < fireFlies.size(); i++)
       {
-         g.drawImage((fireFlies.elementAt(i)).getImage(),
-                     (fireFlies.elementAt(i)).getSpaceOccupied().x,
-                     (fireFlies.elementAt(i)).getSpaceOccupied().y, this);
+         g.drawImage((fireFlies.get(i)).getImage(),
+                     (fireFlies.get(i)).getSpaceOccupied().x,
+                     (fireFlies.get(i)).getSpaceOccupied().y, this);
       }
    }
 
