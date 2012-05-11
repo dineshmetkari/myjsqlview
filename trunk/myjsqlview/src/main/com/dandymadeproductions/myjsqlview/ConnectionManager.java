@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 05/10/2012
+// Version 2.6 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,7 @@
 //         2.5 Changed loadDBTables() tables Addition by Concating tableSchema &
 //             tableName Together With catalogSeperator() Instead of String With
 //             Period.
+//         2.6 Changed Method getCatalogSeparator() to public.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +93,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.5 05/10/2012
+ * @version 2.6 05/10/2012
  */
 
 public class ConnectionManager
@@ -648,7 +649,7 @@ public class ConnectionManager
    // Class method to get the current database catalog separator.
    //==============================================================
 
-   protected static String getCatalogSeparator()
+   public static String getCatalogSeparator()
    {
       return catalogSeparator;
    }
