@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 05/07/2012
+// Version 2.5 05/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,9 @@
 //             & getTableNames().
 //         2.4 Correction in Methods getSchemas() & getTableNames() to Returned a
 //             Proper Copy of tables & schemas.
+//         2.5 Changed loadDBTables() tables Addition by Concating tableSchema &
+//             tableName Together With catalogSeperator() Instead of String With
+//             Period.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +92,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.4 05/07/2012
+ * @version 2.5 05/10/2012
  */
 
 public class ConnectionManager
@@ -576,7 +579,7 @@ public class ConnectionManager
 
                if (tableSchem != null && !tableSchem.equals(""))
                {
-                  tables.add(tableSchem + "." + tableName);
+                  tables.add(tableSchem + getCatalogSeparator() + tableName);
                }
                else
                   tables.add(tableName);
