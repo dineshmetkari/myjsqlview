@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 05/10/2012
+// Version 2.7 05/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,8 @@
 //             tableName Together With catalogSeperator() Instead of String With
 //             Period.
 //         2.6 Changed Method getCatalogSeparator() to public.
+//         2.7 Added Class Instance maxColumnNameLength & Corresponding getter/
+//             setter Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -93,7 +95,7 @@ import javax.swing.JOptionPane;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.6 05/10/2012
+ * @version 2.7 05/12/2012
  */
 
 public class ConnectionManager
@@ -111,6 +113,7 @@ public class ConnectionManager
    
    private static String catalogSeparator;
    private static String identifierQuoteString;
+   private static int maxColumnNameLength;
    private static Clip errorSoundClip;
    private static boolean filter = true;
    
@@ -714,6 +717,16 @@ public class ConnectionManager
    {
       return identifierQuoteString;
    }
+   
+   //==============================================================
+   // Class method to return the max column name length that is
+   // used by the database.
+   //==============================================================
+
+   public static int getMaxColumnNameLength()
+   {
+      return maxColumnNameLength;
+   }
 
    //==============================================================
    // Class method to return a copy of the available database
@@ -777,13 +790,23 @@ public class ConnectionManager
    }
 
    //==============================================================
-   // Class method to set the current user that is presently
-   // logged.
+   // Class method to set the identifier quote string that the
+   // application will use.
    //==============================================================
 
    protected static void setIdentifierQuoteString(String identifier)
    {
       identifierQuoteString = identifier;
+   }
+   
+   //==============================================================
+   // Class method to set the max column name length that the
+   // application will use.
+   //==============================================================
+
+   protected static void setMaxColumnNameLength(int maxLength)
+   {
+      maxColumnNameLength = maxLength;
    }
    
    //==============================================================
