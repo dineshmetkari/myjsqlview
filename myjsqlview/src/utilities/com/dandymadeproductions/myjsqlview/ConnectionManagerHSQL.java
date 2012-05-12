@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.3 05/10/2012
+// Version 1.4 05/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,7 +36,9 @@
 //             & loadDBTables() Private. Removed Most static Instances and Methods.
 //         1.3 Changed Class Instances schemas & tables from Vector to ArrayList
 //             Data Types. Same Change for Return Argument in Methods getSchemas()
-//             & getTableNames() Along With Their Instances schemas & tables. 
+//             & getTableNames() Along With Their Instances schemas & tables.
+//         1.4 Added Class Instance maxColumnNameLength & Corresponding getter/
+//             setter Methods.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import javax.swing.JOptionPane;
  * manage connections to a HSQL database.
  * 
  * @author Dana M. Proctor
- * @version 1.3 05/10/2012
+ * @version 1.4 05/12/2012
  */
 
 public class ConnectionManagerHSQL
@@ -75,6 +77,7 @@ public class ConnectionManagerHSQL
 
    private String catalogSeparator;
    private String identifierQuoteString;
+   private int maxColumnNameLength;
    private static boolean debug = false;
 
    public static final String HSQL = "hsql";
@@ -548,6 +551,16 @@ public class ConnectionManagerHSQL
    {
       return identifierQuoteString;
    }
+   
+   //==============================================================
+   // Class method to return the max column name length that is
+   // used by the database.
+   //==============================================================
+
+   public int getMaxColumnNameLength()
+   {
+      return maxColumnNameLength;
+   }
 
    //==============================================================
    // Class method to return a copy of the available database
@@ -617,6 +630,16 @@ public class ConnectionManagerHSQL
    public void setIdentifierQuoteString(String identifier)
    {
       identifierQuoteString = identifier;
+   }
+   
+   //==============================================================
+   // Class method to set the max column name length that the
+   // application will use.
+   //==============================================================
+
+   protected void setMaxColumnNameLength(int maxLength)
+   {
+      maxColumnNameLength = maxLength;
    }
 
    //==============================================================
