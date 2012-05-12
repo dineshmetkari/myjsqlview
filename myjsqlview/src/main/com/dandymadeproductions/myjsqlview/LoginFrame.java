@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.86 05/10/2012
+// Version 6.87 05/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -268,6 +268,8 @@
 //             to ArrayList.
 //        6.86 Class Instance sites Changed from Hashtable to HashMap. Method Instance
 //             siteNames in fillSiteDataStructure() Changed from Enumeration to Iterator.
+//        6.87 Class Method accessCheck() Added Instance maxColumNameLength. Collected &
+//             Set in ConnectionManager in Same.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -301,7 +303,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.86 05/10/2012
+ * @version 6.87 05/12/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -991,6 +993,7 @@ public class LoginFrame extends JFrame implements ActionListener
       String dbProductNameVersion;
       String catalogSeparator;
       String identifierQuoteString;
+      int maxColumnNameLength;
       
       DatabaseMetaData dbMetaData;
       // ResultSet db_resultSet;
@@ -1242,6 +1245,13 @@ public class LoginFrame extends JFrame implements ActionListener
                identifierQuoteString = "";
             ConnectionManager.setIdentifierQuoteString(identifierQuoteString);
             // System.out.println("Identifier Quote String: " + identifierQuoteString);
+            
+            // =======================
+            // Max Column Name Length
+            
+            maxColumnNameLength = dbMetaData.getMaxColumnNameLength();
+            ConnectionManager.setMaxColumnNameLength(maxColumnNameLength);
+            // System.out.println("Max Column Name Length: " + maxColumnNameLength);
 
             // Load parameters and the databases tables.
             ConnectionManager.loadDBParameters(dbConnection);
