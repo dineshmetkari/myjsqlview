@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.3 05/07/2012
+// Version 9.4 05/24/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -218,7 +218,10 @@
 //             & actionPerformed() for Calls to These Methods.
 //         9.3 Changed Class Instances fields, comboBoxFields, & tableHeadings from
 //             Vector to ArrayList.
-//        
+//         9.4 Class Method getColumnNames() Change in Collection of Column Names by
+//             Using tableMetaData.getColumnLabel() Instead of getColumnName() So That
+//             Aliases Can Properly be Collected.
+//
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -1051,7 +1054,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
-            colNameString = tableMetaData.getColumnName(i);
+            colNameString = tableMetaData.getColumnLabel(i);
             comboBoxNameString = parseColumnNameField(colNameString);
 
             // Additional Information about each column.
