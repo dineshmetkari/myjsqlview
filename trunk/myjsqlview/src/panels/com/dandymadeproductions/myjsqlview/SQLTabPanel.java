@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 05/07/2012
+// Version 2.0 05/24/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,10 @@
 //         1.9 Changed Class Instance tableHeadings from Vector to ArrayList.
 //             Also Same for Return Type for getTableHeadings() & rows Instance
 //             in SQLTableModel Class.
+//         2.0 Class Method executeSQL Change in Collection of Column Names by
+//             Using tableMetaData.getColumnLabel(). Change in Same to Throw a
+//             SQL Exception With Finally So That Statements and Connection can
+//             be Properly Closed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,7 +89,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 1.9 05/07/2012
+ * @version 2.0 05/24/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -149,7 +153,16 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       // Connecting to the database to execute the input
       // sql to see if a valid table can be loaded.
       
-      executeSQL();
+      try
+      {
+         executeSQL();
+      }
+      catch (SQLException e)
+      {
+         String errorString = "SQLException: " + e.getMessage() + " " + "SQLState: " 
+                              + e.getSQLState() + " " + "VendorError: " + e.getErrorCode();
+         QueryFrame.setQueryResultTextArea(errorString);
+      }
       
       // ==================================================
       // Setting up the Summary Table View.
@@ -224,7 +237,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
    // Class method to execute the given user's input SQL statement.
    //==============================================================
 
-   private void executeSQL()
+   private void executeSQL() throws SQLException
    {
       // Method Instances
       Connection dbConnection;
@@ -261,6 +274,9 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       
       // Connecting to the data base, to obtain
       // meta data, and column names.
+      
+      sqlStatement = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -314,14 +330,14 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
 
             for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
             {
-               colNameString = tableMetaData.getColumnName(i);
+               colNameString = tableMetaData.getColumnLabel(i);
                columnClass = tableMetaData.getColumnClassName(i);
                columnType = tableMetaData.getColumnTypeName(i);
                columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
                // System.out.println(i + " " + colNameString + " " +
-               //                    columnClass + " " + columnType + " " +
-               //                    columnSize);
+               //                     columnClass + " " + columnType + " " +
+               //                     columnSize);
 
                // This going to be a problem so skip these columns.
                // NOT TESTED. This is still problably not going to
@@ -666,7 +682,6 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
             }
             db_resultSet.close();
             sqlStatement.close();
-            ConnectionManager.closeConnection(dbConnection, "SQLTabPanel executeSQL()");
          }
          // No results, data, but was update.
          else
@@ -703,6 +718,14 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
          QueryFrame.setQueryResultTextArea(errorString);
          validQuery = false;
          return;
+      }
+      finally
+      {
+         if (sqlStatement != null)
+            sqlStatement.close();
+         
+         if (dbConnection != null)
+            ConnectionManager.closeConnection(dbConnection, "SQLTabPanel executeSQL()");    
       }
    }
    
