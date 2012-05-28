@@ -8,8 +8,8 @@
 //                << Profiler_MenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2010 Dana M. Proctor.
-// Version 1.5 09/12/2010
+// Copyright (C) 2010-2012 Dana M. Proctor.
+// Version 2.1 02/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,16 @@
 //         1.4 Implemented/Reviewed Locale Instances.
 //         1.5 Changed the Derivation of the Action Command for the File
 //             Menu Exit to MyJSQLView_MenuActionCommands.ACTION_EXIT.
+//         1.6 Added Tools SQL Query Bucket Menu Item, Also Class Instances
+//             ACTION_FIELD_INFORMATION  & ACTION_FIELD_ANALYSIS. Removed
+//             File | Open, Save, & Save AS.
+//         1.7 Added Back File | Open, Class Instance ACTION_FILE_OPEN.
+//         1.8 Changed Static Class Instance ACTION_FIELD_ANALYSIS to ACTION_
+//             FIELD_NUMBER_ANALYSIS and Added ACTION_FIELD_CLUSTER_ANALYSIS.
+//             Addition of Latter in createToolsMenu().
+//         1.9 Commented Out the Tools Cluster Analysis for Version Release 4.0.
+//         2.0 Uncommented the Tools Cluster Analysis Menu Items.
+//         2.1 Added Field Menu to Tools Menu.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +75,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * Table Field Profiler plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.5 09/12/2010
+ * @version 2.1 02/02/2012
  */
 
 class Profiler_MenuBar extends JMenuBar
@@ -75,8 +85,13 @@ class Profiler_MenuBar extends JMenuBar
 
    private MyJSQLView_Frame mainFrame;
    private MyJSQLView_ResourceBundle resourceBundle;
-   private MenuActionListener menuListener;
-
+   private transient MenuActionListener menuListener;
+   
+   public static final String ACTION_FILE_OPEN = "FO";
+   public static final String ACTION_FIELD_INFORMATION = "TFI";
+   public static final String ACTION_FIELD_NUMBER_ANALYSIS = "TFNA";
+   public static final String ACTION_FIELD_CLUSTER_ANALYSIS = "TFCA";
+   
    //==============================================================
    // Profiler_MenuBar JMenuBar Constructor.
    //==============================================================
@@ -124,7 +139,7 @@ class Profiler_MenuBar extends JMenuBar
       // ===========
       // File Menu
 
-      resource = resourceBundle.getResource("Profier_MenuBar.menu.File");
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.File");
       if (resource.equals(""))
          fileMenu = new JMenu("File");
       else
@@ -134,26 +149,11 @@ class Profiler_MenuBar extends JMenuBar
       // Open
       resource = resourceBundle.getResource("Profiler_MenuBar.menu.Open");
       if (resource.equals(""))
-         fileMenu.add(menuItem("Open", "FO"));
+         fileMenu.add(menuItem("Open", ACTION_FILE_OPEN));
       else
-         fileMenu.add(menuItem(resource, "FO"));
+         fileMenu.add(menuItem(resource, ACTION_FILE_OPEN));
       fileMenu.addSeparator();
-      
-      // Save
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Save");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Save", "FS"));
-      else
-         fileMenu.add(menuItem(resource, "FS"));
-      
-      // Save As
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.SaveAs");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Save As...", "FSA"));
-      else
-         fileMenu.add(menuItem(resource, "FSA"));
-      fileMenu.addSeparator();
-      
+       
       // Exit
       resource = resourceBundle.getResource("Profiler_MenuBar.menu.Exit");
       if (resource.equals(""))
@@ -175,7 +175,8 @@ class Profiler_MenuBar extends JMenuBar
    {
       // Method Instances.
       String resource;
-      JMenu toolsMenu;
+      JMenu toolsMenu, fieldMenu;
+      JMenuItem item;
 
       // ===========
       // Tools Menu
@@ -187,19 +188,50 @@ class Profiler_MenuBar extends JMenuBar
          toolsMenu = new JMenu(resource);
       toolsMenu.setFont(toolsMenu.getFont().deriveFont(Font.BOLD));
       
-      // Field Information
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.FieldInformation");
+      // MyJSQLView SQL Query Bucket
+      
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.SQLQueryBucket");
       if (resource.equals(""))
-         toolsMenu.add(menuItem("Field Information", "TFI"));
+         item = new JMenuItem("SQL Query Bucket");
       else
-         toolsMenu.add(menuItem(resource, "TFI"));
+         item = new JMenuItem(resource);
+      item.addActionListener(mainFrame);
+      item.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_SQL_QUERY_BUCKET);
+      toolsMenu.add(item);
+      
+      toolsMenu.addSeparator();
       
       // Field Information
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.FieldAnalysis");
+      
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Field");
       if (resource.equals(""))
-         toolsMenu.add(menuItem("Field Analysis", "TFA"));
+         fieldMenu = new JMenu("Tools");
       else
-         toolsMenu.add(menuItem(resource, "TFA"));
+         fieldMenu = new JMenu(resource);
+      
+      toolsMenu.add(fieldMenu);
+      
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Information");
+      if (resource.equals(""))
+         fieldMenu.add(menuItem("Information", ACTION_FIELD_INFORMATION));
+      else
+         fieldMenu.add(menuItem(resource, ACTION_FIELD_INFORMATION));
+      
+      // Field Analysis
+      
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.NumberAnalysis");
+      if (resource.equals(""))
+         fieldMenu.add(menuItem("Number Analysis", ACTION_FIELD_NUMBER_ANALYSIS));
+      else
+         fieldMenu.add(menuItem(resource, ACTION_FIELD_NUMBER_ANALYSIS));
+      
+      // Field Cluster Analysis
+      
+      resource = resourceBundle.getResource("Profiler_MenuBar.menu.ClusterAnalysis");
+      if (resource.equals(""))
+         fieldMenu.add(menuItem("Cluster Analysis", ACTION_FIELD_CLUSTER_ANALYSIS));
+      else
+         fieldMenu.add(menuItem(resource, ACTION_FIELD_CLUSTER_ANALYSIS));
       
       add(toolsMenu);
    }

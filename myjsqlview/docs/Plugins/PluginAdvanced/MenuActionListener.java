@@ -10,8 +10,8 @@
 //                 << MenuActionListener.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2010 Dana M. Proctor.
-// Version 1.2 06/29/2010
+// Copyright (C) 2010-2012 Dana M. Proctor.
+// Version 1.6 01/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,20 @@
 //         1.1 Changed to Table Field Profiler Code.
 //         1.2 Added File Menu Actions and Appropriate Methods to Handle the
 //             Events via openAction() & saveAction().
+//         1.3 References actionCommand in actionPerformed() to Profiler_MenuBar
+//             Action Instances. Removed Action Events File | Open, Save, &
+//             Save As. Removed Class Methods openAction() & saveAction().
+//         1.4 Added Back Processing for actionCommand File | Open in
+//             actionPerformed(). Class Method openAction() Recreated and
+//             Modified to Load SQL Statements to Panels.
+//         1.5 Added Class Instances chartsPanel & anslysisPanel. Added Arguments
+//             TableFieldChartsPanel & TableFieldAnalysisPanel to Constructor.
+//             Processing for disposeQueryForm() for Both New Class Instances
+//             in actionPerformed().
+//         1.6 Added Class Instance clusterPanel and Assigned to Passed Argument
+//             in Constructor. Added Detection of Selection of TABLE_FIELD_CLUSTER_
+//             ANALYSIS in actionPerformed(). Derived Card String in actionPerformed()
+//             From TableFieldProfiler.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,9 +69,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 import com.dandymadeproductions.myjsqlview.MyJFileFilter;
-import com.dandymadeproductions.myjsqlview.TableTabPanel;
+import com.dandymadeproductions.myjsqlview.MyJSQLView_MenuActionCommands;
+import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
 
 /**
  *    The MenuActionListener class provides the means for controlling the
@@ -66,25 +81,39 @@ import com.dandymadeproductions.myjsqlview.TableTabPanel;
  * Profiler_ToolBar classes. 
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.2 06/28/2010
+ * @version 1.6 01/22/2012
  */
 
 class MenuActionListener implements ActionListener
 {
-   private JPanel mainPanel;
    private JFrame parent;
+   private MyJSQLView_ResourceBundle resourceBundle;
+   private TableFieldChartsPanel chartsPanel;
+   private TableFieldAnalysisPanel analysisPanel;
+   private TableFieldClusterAnalysisPanel clusterPanel;
+   private JPanel mainPanel;
    private CardLayout panelCardLayout;
-   private static String lastSaveDirectory = "";
+   private String lastOpenDirectory, currentSelectedPanel;
 
    //==============================================================
    // MenuActionListener Constructor.
    //==============================================================
 
-   public MenuActionListener(JFrame mainFrame, JPanel dataProfilerMainPanel, CardLayout profilerCardLayout)
+   public MenuActionListener(JFrame mainFrame, MyJSQLView_ResourceBundle resourceBundle,
+                             TableFieldChartsPanel chartsPanel, TableFieldAnalysisPanel analysisPanel,
+                             TableFieldClusterAnalysisPanel clusterPanel, JPanel dataProfilerMainPanel,
+                             CardLayout profilerCardLayout)
    {
       parent = mainFrame;
+      this.resourceBundle = resourceBundle;
+      this.chartsPanel = chartsPanel;
+      this.analysisPanel = analysisPanel;
+      this.clusterPanel = clusterPanel;
       mainPanel = dataProfilerMainPanel;
       panelCardLayout = profilerCardLayout;
+      
+      lastOpenDirectory = "";
+      currentSelectedPanel = Profiler_MenuBar.ACTION_FIELD_INFORMATION;
    }
 
    //==============================================================
@@ -102,55 +131,57 @@ class MenuActionListener implements ActionListener
       item = evt.getSource();
 
       if (item instanceof JMenuItem)
-      {
          actionCommand = ((JMenuItem) item).getActionCommand();
-      }
-
       else if (item instanceof JButton)
          actionCommand = ((JButton) item).getActionCommand();
-
       else
          actionCommand = "";
-
       // System.out.println(actionCommand);
 
       // Directing Appropriate Actions.
+      
+      // =============================
+      // File Actions
+      
+      // Open
+      if (actionCommand.equals(Profiler_MenuBar.ACTION_FILE_OPEN))
+      {
+         openAction(parent, currentSelectedPanel);
+         return;
+      }
 
-      // ==============
-      // Profiler Selection
+      // Exit (This one caught by MyJSQLView.)
+      if (actionCommand.equals(MyJSQLView_MenuActionCommands.ACTION_EXIT))
+      {
+         // System.out.println("File Exit");
+         return;
+      }
+
+      // =============================
+      // Profiler Analysis Selection
 
       // Information/Analysis
-      if (actionCommand.equals("TFI") || actionCommand.equals("TFA"))
+      if (actionCommand.equals(Profiler_MenuBar.ACTION_FIELD_INFORMATION)
+          || actionCommand.equals(Profiler_MenuBar.ACTION_FIELD_NUMBER_ANALYSIS)
+          || actionCommand.equals(Profiler_MenuBar.ACTION_FIELD_CLUSTER_ANALYSIS))
       {
-         if (actionCommand.equals("TFI"))
-            panelCardLayout.show(mainPanel, "Information");
+         if (actionCommand.equals(Profiler_MenuBar.ACTION_FIELD_INFORMATION))
+         {
+            analysisPanel.disposeQueryConditionForm();
+            panelCardLayout.show(mainPanel, TableFieldProfiler.INFORMATION_CARD);
+         }
+         else if (actionCommand.equals(Profiler_MenuBar.ACTION_FIELD_NUMBER_ANALYSIS))
+         {
+            chartsPanel.disposeQueryConditionForm();
+            panelCardLayout.show(mainPanel, TableFieldProfiler.NUMBER_ANALYSIS_CARD);
+         }
          else
-            panelCardLayout.show(mainPanel, "Analysis");
-         return;
-      }
-
-      // ==============
-      // File Actions
-
-      // Open
-      if (actionCommand.equals("FO") && TableFieldAnalysisPanel.getTableCount() != 0)
-      {
-         openAction(parent);
-         return;
-      }
-      
-      // Save & Save As..
-      if ((actionCommand.equals("FS") || actionCommand.equals("FSA"))
-           && TableFieldAnalysisPanel.getTableCount() != 0)
-      {
-         saveAction(parent, actionCommand);
-         return;
-      }
-      
-      // Exit
-      if (actionCommand.equals("FE"))
-      {
-         System.out.println("File Exit");
+         {
+            clusterPanel.disposeQueryConditionForm();
+            panelCardLayout.show(mainPanel, TableFieldProfiler.CLUSTER_ANALYSIS_CARD);
+         }
+         
+         currentSelectedPanel = actionCommand;
          return;
       }
    }
@@ -160,17 +191,17 @@ class MenuActionListener implements ActionListener
    // a database table.
    //==============================================================
 
-   private static void openAction(JFrame parent)
+   private void openAction(JFrame parent, String selectedPanel)
    {
       // Method Instances.
       JFileChooser dataFileChooser;
-      String fileName;
+      String fileName, resourceTitleAlert, resourceError;
 
       // Choosing the directory to import data from.
-      if (lastSaveDirectory.equals(""))
+      if (lastOpenDirectory.equals(""))
          dataFileChooser = new JFileChooser();
       else
-         dataFileChooser = new JFileChooser(new File(lastSaveDirectory));
+         dataFileChooser = new JFileChooser(new File(lastOpenDirectory));
 
       // Add a FileFilter for *.myj and open dialog.
       dataFileChooser.setFileFilter(new MyJFileFilter());
@@ -181,7 +212,7 @@ class MenuActionListener implements ActionListener
       if (result == JFileChooser.APPROVE_OPTION)
       {
          // Save the selected directory so can be used again.
-         lastSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
+         lastOpenDirectory = dataFileChooser.getCurrentDirectory().toString();
 
          // Collect file name.
          fileName = dataFileChooser.getSelectedFile().getName();
@@ -189,97 +220,21 @@ class MenuActionListener implements ActionListener
 
          // Try Loading the State.
          if (!fileName.equals(""))
-         {  
-            new LoadTableStateThread(fileName);
+         {
+            new LoadTableSQLStatementThread(fileName, resourceBundle, selectedPanel);
          }
          else
          {
-            String optionPaneStringErrors = "File NOT Found";
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
-                                          "Alert", JOptionPane.ERROR_MESSAGE);
-         }
-      }
-   }
-   
-   //==============================================================
-   // Class Method to save the currented selected database table's
-   // state, Ie. query, table columns, table row number, and sort/
-   // search fields.
-   //==============================================================
-
-   private static void saveAction(JFrame parent, String actionCommand)
-   {
-      // Method Instances.
-      JFileChooser dataFileChooser;
-      TableTabPanel selectedTableTabPanel;
-      String exportedTable, fileName;
-      int resultsOfFileChooser;
-      Object dumpData;
-      
-      // Setting up a file name based on whether there has
-      // already been a save of the table or save as action.
-
-      // Directory
-      if (lastSaveDirectory.equals(""))
-         dataFileChooser = new JFileChooser();
-      else
-         dataFileChooser = new JFileChooser(new File(lastSaveDirectory));
-
-      // Create the File Name from the selected database table
-      // panel's state to be exported.
-      
-      selectedTableTabPanel = TableFieldAnalysisPanel.getSelectedTableTabPanel();
-      if (selectedTableTabPanel == null)
-         return;
-      exportedTable = selectedTableTabPanel.getTableName();
-
-      if (actionCommand.equals("FS") && !selectedTableTabPanel.getSaveFileName().equals(""))
-         fileName = selectedTableTabPanel.getSaveFileName();
-      else
-      {
-         if (!selectedTableTabPanel.getSaveFileName().equals(""))
-            fileName = selectedTableTabPanel.getSaveFileName();
-         else
-         { 
-            if (exportedTable.indexOf(".") != -1)
-               fileName = exportedTable.replace('.', '_');
-            else
-               fileName = exportedTable;
-            fileName += ".myj";
-         }
-      }
-      dataFileChooser.setSelectedFile(new File(fileName));
-
-      // Open the file chooser Dialog as needed.
-      
-      if (actionCommand.equals("FS") && !selectedTableTabPanel.getSaveFileName().equals(""))
-         resultsOfFileChooser = JFileChooser.APPROVE_OPTION;
-      else
-         resultsOfFileChooser = MyJSQLView_Utils.processFileChooserSelection(parent, dataFileChooser);
-
-      // Looks like might be good so lets check and then write data.
-      if (resultsOfFileChooser == JFileChooser.APPROVE_OPTION)
-      {
-         // Save the selected directory and file name so can be used again.
-         lastSaveDirectory = dataFileChooser.getCurrentDirectory().toString();
-         selectedTableTabPanel.setSaveFileName(dataFileChooser.getSelectedFile().getName());
-
-         // Get the file name.
-         fileName = dataFileChooser.getSelectedFile().getName();
-         fileName = dataFileChooser.getCurrentDirectory() + MyJSQLView_Utils.getFileSeparator()
-                    + fileName;
-
-         // Save the state as needed.
-         if (!fileName.equals(""))
-         {
-            dumpData = TableFieldAnalysisPanel.getTableTabPanel(exportedTable).getState();
-            new SaveTableStateThread(fileName, dumpData);
-         }
-         else
-         {
-            String optionPaneStringErrors = "File NOT Found";
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors,
-                                          "Alert", JOptionPane.ERROR_MESSAGE);
+            resourceTitleAlert = resourceBundle.getResource("MenuActionListener.dialogtitle.Alert");
+            if (resourceTitleAlert.equals(""))
+               resourceTitleAlert = "Alert";
+            
+            resourceError = resourceBundle.getResource("MenuActionListener.dialogmessage.FileNOTFound");
+            if (resourceError.equals(""))
+               resourceError = "File NOT Found";
+           
+            JOptionPane.showMessageDialog(null, resourceError, resourceTitleAlert,
+                                          JOptionPane.ERROR_MESSAGE);
          }
       }
    }
