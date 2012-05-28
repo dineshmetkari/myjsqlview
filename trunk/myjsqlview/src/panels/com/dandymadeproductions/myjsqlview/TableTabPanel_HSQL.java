@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 12.1 05/07/2012
+// Version 12.2 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -272,6 +272,7 @@
 //             Selected listTable Entry if primaryKeys().isEmpty().
 //        12.1 Change in Class Method getColumnName() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElements().
+//        12.2 Change in getColumnNames() to Always Check for Foreign Keys.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -297,7 +298,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.1 05/07/2012
+ * @version 12.2 05/28/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -358,6 +359,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
 
          // Primary Key(s)
+         
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
          
@@ -477,25 +479,24 @@ public class TableTabPanel_HSQL extends TableTabPanel
          if (sqlTableFieldsString.length() > 2)
             sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
 
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
+         // Make a final check for possible foreign keys.
 
-         if (primaryKeys.isEmpty())
+         rs = dbMetaData.getImportedKeys(catalogName, tableMetaData.getSchemaName(1),
+                                         tableMetaData.getTableName(1));
+         while (rs.next())
          {
-            rs = dbMetaData.getImportedKeys(catalogName, tableMetaData.getSchemaName(1),
-                                            tableMetaData.getTableName(1));
-
-            while (rs.next())
+            if (rs.getString("FKCOLUMN_NAME") != null
+                  && columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                  && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
             {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
                   primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  
                   columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  
                   if (columnSize == null || columnSize.intValue() > 255)
                      columnSize = new Integer("255");
+                  
                   keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
-               }
             }
          }
 

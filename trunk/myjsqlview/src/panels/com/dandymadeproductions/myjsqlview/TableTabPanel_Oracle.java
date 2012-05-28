@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.7 05/07/2012
+// Version 11.8 05/30/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -281,6 +281,7 @@
 //        11.7 Change in Class Method getColumnNames() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElement(). Change in Method
 //             setTableHeading() Argument to ArrayList.
+//        11.8 Change in getColumnNames() to Always Check for Foreign Keys.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -383,6 +384,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
 
          // Primary Key(s)
+         
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
 
@@ -398,13 +400,16 @@ public class TableTabPanel_Oracle extends TableTabPanel
          }
 
          // Additional Indexes, Exclude VIEWS.
+         
          rs = dbMetaData.getTables(databaseName, schemaName, tableName, null);
+         
          if (rs.next() && !rs.getString("TABLE_TYPE").equals("VIEW"))
          {
             // Clueless why needs quotes?
             rs = dbMetaData.getIndexInfo(databaseName,
                (identifierQuoteString + schemaName + identifierQuoteString),
                (identifierQuoteString + tableName + identifierQuoteString), false, false);
+            
             while (rs.next())
             {
                if (rs.getString("COLUMN_NAME") != null && rs.getString("TABLE_NAME").equals(tableName))
@@ -523,24 +528,25 @@ public class TableTabPanel_Oracle extends TableTabPanel
          if (sqlTableFieldsStringLTZ.length() > 2)
             sqlTableFieldsStringLTZ = sqlTableFieldsStringLTZ.substring(0, sqlTableFieldsStringLTZ.length() - 2);
 
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
+         // Make a final check for possible foreign keys.
 
-         if (primaryKeys.isEmpty())
+         rs = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
+         
+         while (rs.next())
          {
-            rs = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
-            while (rs.next())
-            {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
+            if (rs.getString("FKCOLUMN_NAME") != null
+                  && columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                  && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
                {
                   primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+                  
                   columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+                  
                   if (columnSize == null || columnSize.intValue() > 255)
                      columnSize = new Integer("255");
+                  
                   keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
                }
-            }
          }
          
          // Debug for key resolution varification.
