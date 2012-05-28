@@ -1,4 +1,4 @@
-MyJSQLView Version 3.34
+MyJSQLView Version 3.35
 
 Copyright 2005-2012
 by Dana Proctor
@@ -207,6 +207,10 @@ L.S. Proctor who provided support and mental clarity.
 Version History:
 
 Production (2008-12-31):
+   * Version 3.35 Maintenance update to address issues with immutable strings
+                  associated with the SQL Query Bucket, alias name resolution
+                  in the Query Frame, and a complete update to data types to
+                  remove legacy frameworks.
    * Version 3.34 Maintenance update to address issues with data imports and
                   exports on database tables with rows larger than 100k+ tuples.
                   Creation Preferences General Options for controlling table
