@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.50 05/07/2012
+// Version 11.51 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -490,6 +490,7 @@
 //             Selected listTable Entry if primaryKeys().isEmpty().
 //       11.50 Change in Class Method getColumnNames() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElement().
+//       11.51 Change in getColumnNames() to Always Make a Check for Indexes.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -514,7 +515,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.50 05/07/2012
+ * @version 11.51 05/28/2012
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -598,19 +599,15 @@ public class TableTabPanel_MySQL extends TableTabPanel
                columnSetHashMap.put(parseColumnNameField(colNameString), columnType);
          }
 
-         // Make a final check to see if there were any primary keys
-         // in the table. If not then assign indexes to primvaryKeys.
+         // Additional Indexes
 
-         if (primaryKeys.isEmpty())
+         sqlStatementString = "SHOW INDEX FROM " + schemaTableName;
+         db_resultSet = sqlStatement.executeQuery(sqlStatementString);
+
+         while (db_resultSet.next())
          {
-            sqlStatementString = "SHOW INDEX FROM " + schemaTableName;
-            db_resultSet = sqlStatement.executeQuery(sqlStatementString);
-
-            while (db_resultSet.next())
-            {
-               colNameString = db_resultSet.getString("Column_name");
-               primaryKeys.add(colNameString);
-            }
+            colNameString = db_resultSet.getString("Column_name");
+            primaryKeys.add(colNameString);
          }
 
          // Column Names, Form Fields, ComboBox Text and HashMaps.
