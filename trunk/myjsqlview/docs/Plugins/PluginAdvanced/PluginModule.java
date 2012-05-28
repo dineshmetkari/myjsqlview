@@ -8,8 +8,8 @@
 //                   << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.7 01/28/2011
+// Copyright (C) 2010-2011 Dana M. Proctor
+// Version 1.9 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,10 @@
 //             Class Constructor.
 //         1.7 Update to Reflect Change In MyJSQLView Connection Now All Derived
 //             From ConnectionManager Instead of MyJSQLView_Access.
+//         1.8 Parameterized All Vector, & HashMap Types to Bring Code Into
+//             Compliance With Java 5.0 API.
+//         1.9 Change of tableNames Argument in setDBTables() from Vector Data
+//             Type to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +59,7 @@ import javax.swing.JPanel;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JToolBar;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.ConnectionManager;
@@ -67,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.7 01/28/2011
+ * @version 1.9 05/07/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -172,7 +176,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector tableNames)
+   public void setDBTables(ArrayList<String> tableNames)
    {
       dataProfiler.setDBTables(tableNames);
    }
