@@ -7,7 +7,7 @@
 	<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
 	<meta name="Description" content="MyJSQLView Plugin Basics">
 	<meta name="keywords" content="MyJSQLView, Plugin Basics, Documentation, Dana Proctor, Java, Tutorial, Database, HSQL, MySQL, Oracle, PostgreSQL, SQLite, Plugin">
-	<meta name="Copyright" content="2005-2011">
+	<meta name="Copyright" content="2005-2012">
 		
   	<title>MyJSQLView Plugin Tutorial Basics</title>
 	<link rel="stylesheet" type="text/css" href="default_developer.css" />	
@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>February 19, 2011</b></center></div>
+	<div style="font-size:16px"><center><b>May 28, 2012</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -87,11 +87,11 @@
 // to extends in order to properly function within the MyJSQLView
 // application.
 //
-//              MyJSQLView_PluginModule.java 
+//             &#060; MyJSQLView_PluginModule.java &#062;
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 2.4 01/27/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.6 05/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,29 +113,13 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial MyJSQLView_PluginModule Class.
-//         1.1 Added Interface Methods run() &#038; setDBTables().
-//         1.2 Added Interface Methods getModuleName() &#038; getMenuBar().
-//         1.3 Added Interface Method getModuleTabIcon().
-//         1.4 Added Interface Method getToolBar(). Changed Methods getModuleName()
-//             to getName(), getModuleTabIcon() to getTabIcon(), and getModulePanel()
-//             to getPanel().
-//         1.5 Added Interface Method setParentFrame().
-//         1.6 Added Interface Method initPlugin().
-//         1.7 Changed to an Abstract Class That Implements PluginModuleInterface.
-//             Removed Class Method setParentFrame() and Commented initPlugin()
-//             With New Argument MyJSQLView_Frame So That Plugins Must Implement.
-//         1.8 Parameterized Argument tableNames in Class Method setDBTables()
-//             in Order For Code to Be in Compliance With Java 5.0 API.
-//         1.9 Added Class Instances pluginName, pluginIcon, pluginMenuBar, pluginToolBar,
-//             &#038; pluginPanel. Set All to Null in Constructor. Created Setter Methods
-//             to Accompany Getter Methods. Returned Newly Created Instances in
-//             Getter Methods.
-//         2.0 Removed the Setter Methods. Made Class Instances From 1.9 Protected and
-//             Reverted Back to the Default Instances Returned by the Getters to Null.
-//         2.1 Added Interface Method getVersion() and Class Instance version.
-//         2.2 Added Instance pathFileName and Protected Methods get/setPath_FileName().
-//         2.3 Added Argument String path to Method initPlugin().
+~
+~
+~
 //         2.4 Copyright Update.
+//         2.5 Copyright Update.
+//         2.6 Changed Argument Requirement tableNames in setDBTables to Data Type
+//             ArrayList from Vector.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -143,7 +127,7 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.util.Vector;
+import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
@@ -155,7 +139,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.4 01/27/2011
+ * @version 2.6 05/07/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -283,7 +267,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Interface requirement.
    //==============================================================
 
-   public void setDBTables(Vector&#060;String&#062; tableNames)
+   public void setDBTables(ArrayList&#060;String&#062; tableNames)
    {
       // Do what you will if you need database table names.
    }
@@ -369,11 +353,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //    This class provides the hook to incorporate a external plugin
 // module into the MyJSQLView application.
 //
-//                   PluginModule.java 
+//                  &#060; PluginModule.java &#062;
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.4 09/06/2010
+// Copyright (C) 2006-2012 Dana M. Proctor
+// Version 1.5 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -387,7 +371,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 // with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // (http://opensource.org)
-//
+//This class provides a generic panel in the appearance of
+// a form for selecting the CSV data export options.
 //=================================================================
 // Revision History
 // Changes to the code should be documented here and reflected
@@ -395,13 +380,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original MyPlugin MyJSQLView_PluginModule.
-//         1.1 Removed Some Comments and the Class Methods getTabIcon(),
-//             getMenuBar(), &#038; getToolBar().
-//         1.2 Parameterized Argument tableNames in Class Method setDBTables()
-//             to Bring Code Into Compliance With Java 5.0 API.
-//         1.3 Removed Delay in Class Method initPlugin().
-//         1.4 Added Required Interface Argument String path For Method
-//             initPlugin().
+//         1.1 Addition of Argument String path to initPlugin() Method.
+//         1.2 Update to Sync With MyJSQLView v3.31 Release.
+//         1.3 Update to Sync With MyJSQLView v3.33 Release.
+//         1.4 Update to Sync With MyJSQLView v3.34 Release.
+//         1.5 Update to Sync With MyJSQLView v3.35 Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -410,7 +393,10 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 package myplugin;
 
 import javax.swing.JPanel;
-import java.util.Vector;
+import javax.swing.JMenuBar;
+import javax.swing.JToolBar;
+import javax.swing.ImageIcon;
+import java.util.ArrayList;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
@@ -420,7 +406,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/06/2010
+ * @version 1.5 05/28/2012
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -457,6 +443,38 @@ public class PluginModule extends MyJSQLView_PluginModule
    }
 
    //==============================================================
+   // Class method to allow the collection of a image icon that
+   // will be used as an identifier in the MyJSQLView tab structure.
+   // NOTE: The tab icon should be no larger than 12 x 12.
+   //==============================================================
+
+   public ImageIcon getTabIcon()
+   {
+      return null;
+   }
+
+   //==============================================================
+   // Class method to meet the interface requirements of returning
+   // a JMenuBar that can be used to control various aspects of
+   // the modules functionality.
+   //==============================================================
+
+   public JMenuBar getMenuBar()
+   {
+      return null;
+   }
+
+   //==============================================================
+   // Class method to allow the collection of a JToolBar to be
+   // used with the plugin module.
+   //==============================================================
+
+   public JToolBar getToolBar()
+   {
+      return null;
+   }
+
+   //==============================================================
    // Class method to meet the interface requirements for returning
    // a JPanel for inclusion in the MyJSQLView application's main
    // tab.
@@ -472,7 +490,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector&#060;String&#062; tableNames)
+   public void setDBTables(ArrayList&#060;String&#062; tableNames)
    {
       myPluginPanel.repaint();
    }
@@ -517,11 +535,11 @@ public class PluginModule extends MyJSQLView_PluginModule
 //    This class provides the hook to incorporate a external plugin
 // module into the MyJSQLView application.
 //
-//                   PluginModule.java 
+//                  &#060; PluginModule.java &#062;
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 1.6 02/03/2011
+// Version 1.7 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -544,17 +562,10 @@ public class PluginModule extends MyJSQLView_PluginModule
 //=================================================================
 // Version 1.0 Original TableRecordCount MyJSQLView_PluginModule.
 //         1.1 Formatted and Added Delay in Class Method initPlugin().
-//         1.2 Removed Class Methods getTabIcon(), getMenuBar(), &#038; getToolBar().
-//             Removed Delay in initPlugin() Class Method. Parameterized Argument
-//             tableNames in Class Method setDBTables() to Bring Code Into
-//             Compliance With Java 5.0 API.
-//         1.3 Added Method getVersion().
-//         1.4 Method getVersion() String Returned Through Static Access to
-//             TableRecordCountPanel.getVersion().
-//         1.5 Added Required Interface Argument String path For Method
-//             initPlugin().
-//         1.6 Change in MyJSQLView Package of MyJSQLView_Access Change to
-//             ConnectionManager.
+~
+~
+~
+//         1.7 Changed Argument tableNames in setDBTables() to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -563,7 +574,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 package com.dandymadeproductions.tablerecordcount;
 
 import javax.swing.JPanel;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.ConnectionManager;
@@ -574,7 +585,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 02/03/2011
+ * @version 1.7 05/07/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -636,7 +647,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector&#060;String&#062; tableNames)
+   public void setDBTables(ArrayList&#060;String&#062; tableNames)
    {
       tableRecordCountPanel.reloadPanel(tableNames);
       tableRecordCountPanel.repaint();
@@ -698,15 +709,16 @@ public class PluginModule extends MyJSQLView_PluginModule
 //    This class provides the panel that holds components
 // associated with MyJSQLView basic tutorial for a plugin module.
 //
-//               TableRecordCountPanel.java
+//               &#060; TableRecordCountPanel.java &#062;
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 02/03/2011
+// Version 1.9 05/07/2011
 //
 ~
 ~
 ~
+//
 //=================================================================
 // Revision History
 // Changes to the code should be documented here and reflected
@@ -714,22 +726,11 @@ public class PluginModule extends MyJSQLView_PluginModule
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial TableFieldChartsPanel Class.
-//         1.1 Cleaned Up Some &#038; Implemented reloadPanel().
-//         1.2 Formatted and Moved the Delay in The Constructor Needed to Fix the
-//             Problem in v3.17 Code to PluginModule initPlugin().
-//         1.3 Added Thread to actionPerformed() Method and Moved All Processing
-//             From That Method to New Method executreRecordCount().
-//         1.4 Comment Changes for executeRecordCount() Method and disableActions
-//             During Processing of a Record Count in Same Method.
-//         1.5 Parameterized Argument tableNames in Constructor and Class Method
-//             reloadPanel() Along With Iterator Instance tableNamesIterator.
-//         1.6 Replaced Code to Properly Format the schemaTableName Instance
-//             by the MyJSQLView_Utils.getSchemaTableName() Instead of Manually
-//             in Method executeRecordCount(). Removed Method Instance 
-//             identifierQuoteString.
-//         1.7 Added Class Instance version and Method getVersion().
-//         1.8 Change in MyJSQLView Package of MyJSQLView_Access Change to
-//             ConnectionManager. Changes to executeRecordCount().
+~
+~
+~
+//         1.9 Changed Constructor &#038; Class Method reloadPanel() Arguments
+//             to be ArrayList Data Type Instead of Vector.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -743,7 +744,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -759,14 +760,14 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/03/2011
+ * @version 1.9 05/07/2011
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
-   private final static String version = "Version 1.8";
+   private final static String version = "Version 1.9";
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
@@ -775,7 +776,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // TableRecordCountPanel Constructor
    //==============================================================
 
-   TableRecordCountPanel(Vector&#060;String&#062; tableNames)
+   TableRecordCountPanel(ArrayList&#060;String&#062; tableNames)
    {
       // Method Instances.
       JLabel tableNameLabel;
@@ -806,7 +807,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       // Record Count Value.
       recordCountLabel = new JLabel("0");
       add(recordCountLabel);
-   }
+}
 ~
 ~
 					</pre>
@@ -818,9 +819,9 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 			<p>
 				Our constructor for the class does nothing more than create these components,
 				assigned them default values, and add them to the panel. Note, the tableNames
-				Vector argument in the constructor that was passed from the PluginModule
+				ArrayList argument in the constructor that was passed from the PluginModule
 				and is used to fill the tableSelectionComboBox elements via a Iterator so that
-				we isolate those elements from that Vector object. Now in the constructor an
+				we isolate those elements from that ArrayList object. Now in the constructor an
 				ActionListener was added to the tableSelectionComboBox instance so events from
 				that object selection changes could be captured and processed in the 
 				actionPerformed() method shown in <b>Listing 5</b> below. As a user selects
@@ -857,7 +858,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    {
       Object panelSource = evt.getSource();
 
-      if (panelSource instanceof JComboBox &#038;&#038; !disableActions)
+      if (panelSource instanceof JComboBox &#038; !disableActions)
       {
          Thread actionThread = new Thread(new Runnable()
          {
@@ -869,7 +870,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          actionThread.start();
       }
    }
-
+   
    //==============================================================
    // Class Method to execute the required processing the selected
    // database table to determine the record count.
@@ -916,7 +917,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
          // Collect the properly formatted schema table name with identifier
          // quotes for execution in a SQL statement. 
-         
+
          schemaTableName = MyJSQLView_Utils.getSchemaTableName(tableName);
          // System.out.println(schemaTableName);
 
@@ -942,9 +943,9 @@ class TableRecordCountPanel extends JPanel implements ActionListener
          tableSelectionComboBox.setEnabled(true);
          disableActions = false;
       }
-      
+
       // Close connection to database.
-      
+
       ConnectionManager.closeConnection(dbConnection, "TableRecordCountPanel executeRecordCount()");
       tableSelectionComboBox.setEnabled(true);
       disableActions = false;
@@ -993,7 +994,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // if MyJSQLView is called to reload the database tables.
    //==============================================================
 
-   protected void reloadPanel(Vector&#060;String&#062; tableNames)
+   protected void reloadPanel(ArrayList&#060;String&#062; tableNames)
    {
       // Insure no actions are taken during reload.
 
