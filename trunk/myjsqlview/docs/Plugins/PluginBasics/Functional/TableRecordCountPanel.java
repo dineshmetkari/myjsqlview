@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.8 02/03/2011
+// Version 1.9 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,8 @@
 //         1.7 Added Class Instance version and Method getVersion().
 //         1.8 Change in MyJSQLView Package of MyJSQLView_Access Change to
 //             ConnectionManager. Changes to executeRecordCount().
+//         1.9 Changed Constructor & Class Method reloadPanel() Arguments
+//             to be ArrayList Data Type Instead of Vector.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Vector;
+import java.util.ArrayList;
 import java.util.Iterator;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -76,14 +78,14 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * associated with the MyJSQLView basic tutorial for a plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/03/2011
+ * @version 1.9 05/07/2011
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
-   private final static String version = "Version 1.8";
+   private final static String version = "Version 1.9";
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
@@ -92,7 +94,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // TableRecordCountPanel Constructor
    //==============================================================
 
-   TableRecordCountPanel(Vector<String> tableNames)
+   TableRecordCountPanel(ArrayList<String> tableNames)
    {
       // Method Instances.
       JLabel tableNameLabel;
@@ -233,7 +235,7 @@ class TableRecordCountPanel extends JPanel implements ActionListener
    // if MyJSQLView is called to reload the database tables.
    //==============================================================
 
-   protected void reloadPanel(Vector<String> tableNames)
+   protected void reloadPanel(ArrayList<String> tableNames)
    {
       // Insure no actions are taken during reload.
 
