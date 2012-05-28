@@ -8,8 +8,8 @@
 //                  << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2010 Dana M. Proctor
-// Version 1.4 09/06/2010
+// Copyright (C) 2006-2012 Dana M. Proctor
+// Version 1.5 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -23,7 +23,8 @@
 // with this program; if not, write to the Free Software Foundation,
 // Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 // (http://opensource.org)
-//
+//This class provides a generic panel in the appearance of
+// a form for selecting the CSV data export options.
 //=================================================================
 // Revision History
 // Changes to the code should be documented here and reflected
@@ -31,13 +32,11 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original MyPlugin MyJSQLView_PluginModule.
-//         1.1 Removed Some Comments and the Class Methods getTabIcon(),
-//             getMenuBar(), & getToolBar().
-//         1.2 Parameterized Argument tableNames in Class Method setDBTables()
-//             to Bring Code Into Compliance With Java 5.0 API.
-//         1.3 Removed Delay in Class Method initPlugin().
-//         1.4 Added Required Interface Argument String path For Method
-//             initPlugin().
+//         1.1 Addition of Argument String path to initPlugin() Method.
+//         1.2 Update to Sync With MyJSQLView v3.31 Release.
+//         1.3 Update to Sync With MyJSQLView v3.33 Release.
+//         1.4 Update to Sync With MyJSQLView v3.34 Release.
+//         1.5 Update to Sync With MyJSQLView v3.35 Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,7 +45,10 @@
 package myplugin;
 
 import javax.swing.JPanel;
-import java.util.Vector;
+import javax.swing.JMenuBar;
+import javax.swing.JToolBar;
+import javax.swing.ImageIcon;
+import java.util.ArrayList;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
@@ -56,7 +58,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/06/2010
+ * @version 1.5 05/28/2012
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -93,6 +95,38 @@ public class PluginModule extends MyJSQLView_PluginModule
    }
 
    //==============================================================
+   // Class method to allow the collection of a image icon that
+   // will be used as an identifier in the MyJSQLView tab structure.
+   // NOTE: The tab icon should be no larger than 12 x 12.
+   //==============================================================
+
+   public ImageIcon getTabIcon()
+   {
+      return null;
+   }
+
+   //==============================================================
+   // Class method to meet the interface requirements of returning
+   // a JMenuBar that can be used to control various aspects of
+   // the modules functionality.
+   //==============================================================
+
+   public JMenuBar getMenuBar()
+   {
+      return null;
+   }
+
+   //==============================================================
+   // Class method to allow the collection of a JToolBar to be
+   // used with the plugin module.
+   //==============================================================
+
+   public JToolBar getToolBar()
+   {
+      return null;
+   }
+
+   //==============================================================
    // Class method to meet the interface requirements for returning
    // a JPanel for inclusion in the MyJSQLView application's main
    // tab.
@@ -108,7 +142,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector<String> tableNames)
+   public void setDBTables(ArrayList<String> tableNames)
    {
       myPluginPanel.repaint();
    }
