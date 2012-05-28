@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2011 Dana M. Proctor
-// Version 1.6 02/03/2011
+// Version 1.7 05/07/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,7 +42,8 @@
 //         1.5 Added Required Interface Argument String path For Method
 //             initPlugin().
 //         1.6 Change in MyJSQLView Package of MyJSQLView_Access Change to
-//             ConnectionManager. 
+//             ConnectionManager.
+//         1.7 Changed Argument tableNames in setDBTables() to ArrayList.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -51,7 +52,7 @@
 package com.dandymadeproductions.tablerecordcount;
 
 import javax.swing.JPanel;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.ConnectionManager;
@@ -62,7 +63,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.5 09/06/2010
+ * @version 1.7 05/07/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -124,7 +125,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    // able to set the database tables.
    //==============================================================
 
-   public void setDBTables(Vector<String> tableNames)
+   public void setDBTables(ArrayList<String> tableNames)
    {
       tableRecordCountPanel.reloadPanel(tableNames);
       tableRecordCountPanel.repaint();
