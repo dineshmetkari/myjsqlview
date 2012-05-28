@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 13.8 05/07/2012
+// Version 13.9 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -317,6 +317,7 @@
 //             Selected listTable Entry if primaryKeys().isEmpty().
 //        13.8 Change in Class Method getColumnNames() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElement().
+//        13.9 Change in getColumnNames() to Always Check for Foreign Keys.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -342,7 +343,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 13.8 05/07/2012
+ * @version 13.9 05/28/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -403,6 +404,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
 
          // Primary Key(s)
+         
          dbMetaData = dbConnection.getMetaData();
          tableMetaData = db_resultSet.getMetaData();
 
@@ -515,26 +517,25 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
          if (sqlTableFieldsString.length() > 2)
             sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
 
-         // Make a final check to see if there are any keys columns
-         // columns in the table. If not then try foreign keys.
+         // Make a final check for possible foreign keys.
 
-         if (primaryKeys.isEmpty())
+         rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
+                                         tableMetaData.getSchemaName(1),
+                                         tableMetaData.getTableName(1));
+         while (rs.next())
          {
-            rs = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
-                                            tableMetaData.getSchemaName(1),
-                                            tableMetaData.getTableName(1));
-
-            while (rs.next())
+            if (rs.getString("FKCOLUMN_NAME") != null
+                  && columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
+                  && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
             {
-               if (columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
-                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
-               {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
-                  if (columnSize == null || columnSize.intValue() > 255)
-                     columnSize = new Integer("255");
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
-               }
+               primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+               
+               columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+               
+               if (columnSize == null || columnSize.intValue() > 255)
+                  columnSize = new Integer("255");
+                  
+               keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
             }
          }
          
