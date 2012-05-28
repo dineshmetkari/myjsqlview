@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Nil_lin, Dana Proctor
-// Version 4.9 05/10/2012
+// Version 5.0 05/28/2012
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,8 @@
 //                        to HashMap Data Type. Class Method Changed from Enumeration
 //                        to Iterator to Cycle Through Keys. Organized Imports. Some
 //                        Comment Changes.
+//         5.0 05/28/2012 Change in setSites() for Accessing the currentParameter by
+//                        Using an EntrySet Iterator.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -125,6 +127,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
@@ -150,7 +153,7 @@ import org.xml.sax.SAXException;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 4.9 05/10/2012
+ * @version 5.0 05/28/2012
  */
 
 class XMLTranslator
@@ -544,11 +547,11 @@ class XMLTranslator
 
             // Cycle through the new sites list and adding
             // to the Sites node.
-            Iterator<String> sitesKeys = sites.keySet().iterator();
+            Iterator<Map.Entry<String, SiteParameters>> sitesIterator = sites.entrySet().iterator();
 
-            while (sitesKeys.hasNext())
+            while (sitesIterator.hasNext())
             {
-               String currentKey = sitesKeys.next();
+               String currentKey = sitesIterator.next().getKey();
                SiteParameters currentParameter = sites.get(currentKey);
 
                Element currentSiteElement = xmlDocument.createElement("Site");
