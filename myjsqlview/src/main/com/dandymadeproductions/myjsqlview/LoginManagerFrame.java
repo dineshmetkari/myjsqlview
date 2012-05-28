@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.1 05/10/2012
+// Version 5.2 05/28/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,8 @@
 //         5.1 Class Instance sitesClone & Same Argument in Constructor Change
 //             from Hashtable to HashMap. Instance sitesKeys in Constructor
 //             Changed from Enumeration to Iterator.
+//         5.2 Change in Constructor for Creation of the sitesClone by Using
+//             an EntrySet Iterator.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -114,6 +116,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -131,7 +134,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.1 05/10/2012
+ * @version 5.2 05/28/2012
  */
 
 class LoginManagerFrame extends JFrame implements ActionListener
@@ -176,18 +179,18 @@ class LoginManagerFrame extends JFrame implements ActionListener
       
       // Constructor Instances
       String iconsDirectory;
-      Iterator<String> sitesKeys;
+      Iterator<Map.Entry<String, SiteParameters>> sitesIterator;
       JPanel mainPanel, centerPanel, actionPanel;
       
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
-      sitesKeys = sites.keySet().iterator();
+      sitesIterator = sites.entrySet().iterator();
       sitesClone = new HashMap <String, SiteParameters>();
-      while (sitesKeys.hasNext())
+      
+      while (sitesIterator.hasNext())
       {
-         String currentKey = sitesKeys.next();
+         String currentKey = sitesIterator.next().getKey();
          sitesClone.put(currentKey, sites.get(currentKey));
-         // System.out.println(currentKey);
       }
 
       // ======================================================
