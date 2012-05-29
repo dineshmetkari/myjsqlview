@@ -1,0 +1,21 @@
+MyJSQLView Version 3.35 Released
+
+The MyJSQLView project is pleased to release v3.35 to the public. The
+release is a maintenance update to address several issues that manifest
+themselves when using the SQL Query Bucket and Query Frame. Drops to the
+Query Bucket from the main summary table fail to properly create the
+syntax as derived from the search and sort parameters in the Summary
+Table. Fixes to the Query Frame now allow the use of aliases. The
+application has also been updated to remove legacy data structures
+that had decrease the efficiency of the application.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in the several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to profile and plot data for analysis.
