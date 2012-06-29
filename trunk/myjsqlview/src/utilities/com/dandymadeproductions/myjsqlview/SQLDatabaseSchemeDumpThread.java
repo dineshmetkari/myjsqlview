@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.0 01/12/2012
+// Version 2.1 06/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //         1.9 Copyright Update.
 //         2.0 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
+//         2.1 Correction in generateHeaders() for Website.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -69,7 +70,7 @@ import java.util.Iterator;
  * to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 2.0 01/12/2012
+ * @version 2.1 06/29/2012
  */
 
 class SQLDatabaseSchemeDumpThread implements Runnable
@@ -198,7 +199,7 @@ class SQLDatabaseSchemeDumpThread implements Runnable
       dateTime = dateTimeFormat.format(new Date());
 
       headers = "--\n" + "-- MyJSQLView SQL Dump\n" + "-- Version: " + myJSQLView_Version[1] + "\n"
-                + "-- WebSite: http://myjsqlview.sourceforge.net\n" + "--\n" + "-- Host: "
+                + "-- WebSite: http://myjsqlview.org\n" + "--\n" + "-- Host: "
                 + hostName + "\n" + "-- Generated On: " + dateTime + "\n"
                 + "-- SQL version: " + ConnectionManager.getDBProductName_And_Version() + "\n"
                 + "-- Database: " + databaseName + "\n" + "--\n\n"
