@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 13.9 05/28/2012
+// Version 14.0 07/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -318,6 +318,8 @@
 //        13.8 Change in Class Method getColumnNames() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElement().
 //        13.9 Change in getColumnNames() to Always Check for Foreign Keys.
+//        14.0 Class Method loadTable() Changed lobLessSQLStatementString to StringBuffer
+//             & Chopped String Off Name.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -343,7 +345,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 13.9 05/28/2012
+ * @version 14.0 07/02/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -575,7 +577,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
-      String lobLessSQLStatementString;
+      StringBuffer lobLessSQLStatement;
       Statement sqlStatement;
       ResultSet rs;
 
@@ -690,6 +692,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
          }
          
          sqlTableStatement = new StringBuffer();
+         lobLessSQLStatement = new StringBuffer();
 
          if (advancedSortSearch)
          {
@@ -697,8 +700,8 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
             sqlTableStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit));
             // Summary Table Without LOBs
-            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
-                                             tableRowStart, tableRowLimit);
+            lobLessSQLStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                             tableRowStart, tableRowLimit));
          }
          else
          {
@@ -711,16 +714,16 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                                  + tableRowLimit + " " + "OFFSET " + tableRowStart);
             
             // Summary Table Without LOBs
-            lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
+            lobLessSQLStatement.append("SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
                                         + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                         + identifierQuoteString
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                         + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
-                                        + tableRowLimit + " " + "OFFSET " + tableRowStart;
+                                        + tableRowLimit + " " + "OFFSET " + tableRowStart);
          }
          // System.out.println(sqlTableStatement);
-         // System.out.println(lobLessSQLStatementString);
-         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
+         // System.out.println(lobLessSQLStatement.toString());
+         rs = sqlStatement.executeQuery(lobLessSQLStatement.toString());
 
          // Placing the results columns desired into the table that
          // will be display to the user.

@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 05/07/2012
+// Version 2.4 07/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,8 @@
 //             Selected listTable Entry if primaryKeys().isEmpty().
 //         2.3 Change in Class Method getColumnNames() of Adding Items to New ArrayList
 //             Instances by Way of add() Instead of addElement().
+//         2.4 Class Method loadTable() Changed lobLessSQLStatementString to StringBuffer
+//             & Chopped String Off Name.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -88,7 +90,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/07/2012
+ * @version 2.4 07/02/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -338,7 +340,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
    public boolean loadTable(Connection dbConnection)
    {
       // Method Instances
-      String lobLessSQLStatementString;
+      StringBuffer lobLessSQLStatement;
       Statement sqlStatement;
       ResultSet rs;
 
@@ -478,6 +480,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
          }
          
          sqlTableStatement = new StringBuffer();
+         lobLessSQLStatement = new StringBuffer();
 
          if (advancedSortSearch)
          {
@@ -485,8 +488,8 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             sqlTableStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit));
             // Summary Table Without LOBs
-            lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
-                                                    tableRowStart, tableRowLimit);
+            lobLessSQLStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
+                                                    tableRowStart, tableRowLimit));
          }
          else
          {
@@ -497,15 +500,15 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                                  + columnNamesHashMap.get(sortComboBox.getSelectedItem())
                                  + identifierQuoteString + " " + ascDescString);
             // Summary Table Without LOBs.
-            lobLessSQLStatementString = "SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
+            lobLessSQLStatement.append("SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
                                         + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
                                         + identifierQuoteString
                                         + columnNamesHashMap.get(sortComboBox.getSelectedItem())
-                                        + identifierQuoteString + " " + ascDescString;  
+                                        + identifierQuoteString + " " + ascDescString);  
          }
          // System.out.println(sqlTableStatement);
-         // System.out.println(lobLessSQLStatementString);
-         rs = sqlStatement.executeQuery(lobLessSQLStatementString);
+         // System.out.println(lobLessSQLStatement.toString());
+         rs = sqlStatement.executeQuery(lobLessSQLStatement.toString());
 
          // Placing the results columns desired into the table that
          // will be display to the user. Access does not support the
