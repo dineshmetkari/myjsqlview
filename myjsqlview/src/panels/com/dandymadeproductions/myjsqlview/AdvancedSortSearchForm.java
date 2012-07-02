@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.90 05/08/2012
+// Version 4.91 07/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -187,6 +187,7 @@
 //                        Data Types to ArrayList. Same for Constructor Argument columnNames.
 //        4.90 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. All the Result
 //                        of Different Behavior of 4.89 ArrayList Change.
+//        4.91 07/02/2012 Changed Return Type on getAdvancedSortSearchSQL() to StringBuffer.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -216,7 +217,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.90 05/08/2012
+ * @version 4.91 07/02/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -869,7 +870,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
    // of the selected/input parameters of the form.
    //==============================================================
 
-   protected String getAdvancedSortSearchSQL(String sqlTableFieldsString, int tableRowStart,
+   protected StringBuffer getAdvancedSortSearchSQL(String sqlTableFieldsString, int tableRowStart,
                                              int tableRowLimit)
    {
       // Method Instances
@@ -1091,8 +1092,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Return the resultant query.
 
-      // System.out.println(sqlStatementString);
-      return sqlStatementString.toString();
+      // System.out.println(sqlStatementString.toString());
+      return sqlStatementString;
       
       // Sample outline of what a basic SQL SELECT query should be.
       // It was determined in the initial version to not include
