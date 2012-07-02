@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.4 05/24/2012
+// Version 9.5 07/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -221,6 +221,8 @@
 //         9.4 Class Method getColumnNames() Change in Collection of Column Names by
 //             Using tableMetaData.getColumnLabel() Instead of getColumnName() So That
 //             Aliases Can Properly be Collected.
+//         9.5 Class Method loadTable() Change in Return Type for advancedSortSearchFrame.
+//             getAdvancedSortSearchSQL().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -252,7 +254,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.3 05/07/2012
+ * @version 9.5 07/02/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1417,7 +1419,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
                sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                                                                      tableRowStart,
-                                                                                     tableRowLimit);
+                                                                                     tableRowLimit).toString();
 
                // Clean up the standard sql to meet Oracle's lack of support
                // for the key word LIMIT.
@@ -1450,7 +1452,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
             else
                sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL("*", tableRowStart,
-                  tableRowLimit);
+                                    tableRowLimit).toString();
          }
          else
          {
