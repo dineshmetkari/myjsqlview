@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.8 05/30/2012
+// Version 11.9 07/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -282,6 +282,8 @@
 //             Instances by Way of add() Instead of addElement(). Change in Method
 //             setTableHeading() Argument to ArrayList.
 //        11.8 Change in getColumnNames() to Always Check for Foreign Keys.
+//        11.9 Class Method loadTable() Change in Return Type for advancedSortSearchFrame.
+//             getAdvancedSortSearchSQL().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -314,7 +316,7 @@ import javax.swing.table.TableColumn;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.7 05/07/2012
+ * @version 11.9 07/02/2012
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -744,10 +746,10 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
             // Complete With All Fields.
             sqlStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
-                                             tableRowStart, tableRowLimit);
+                                             tableRowStart, tableRowLimit).toString();
             // Summary Table Without LOBs
             lobLessSQLStatementString = advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
-                                                tableRowStart, tableRowLimit);
+                                                tableRowStart, tableRowLimit).toString();
 
             // Clean up the standard sql to meet Oracle's lack of support
             // for the key word LIMIT.
