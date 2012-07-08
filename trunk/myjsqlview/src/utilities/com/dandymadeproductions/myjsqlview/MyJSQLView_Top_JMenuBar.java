@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 1.3 01/01/2012
+// Version 1.4 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 //         1.1 Added Help | About Menu.
 //         1.2 Copyright Update.
 //         1.3 Copyright Update.
+//         1.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//                default).
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,7 +58,7 @@ import javax.swing.JMenuItem;
  * contains the MyJSQLView File|Exit, Plugin Management, & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.3 01/01/2012
+ * @version 1.4 07/08/2012
  */
 
 class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -117,19 +120,13 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       //===========
       // File Menu
       
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.File", "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Exit
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Exit");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", ACTION_EXIT));
-      else
-         fileMenu.add(menuItem(resource, ACTION_EXIT));
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Exit", "Exit");
+      fileMenu.add(menuItem(resource, ACTION_EXIT));
       
       add(fileMenu);
    }
@@ -147,19 +144,14 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       //===========
       // Tools Menu
       
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Tools");
-      if (resource.equals(""))
-         fileMenu = new JMenu("Tools");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Tools", "Tools");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Plugin Management
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.PluginManagment");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Plugin Management", ACTION_PLUGIN_MANAGEMENT));
-      else
-         fileMenu.add(menuItem(resource, ACTION_PLUGIN_MANAGEMENT));
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.PluginManagment",
+                                                  "Plugin Management");
+      fileMenu.add(menuItem(resource, ACTION_PLUGIN_MANAGEMENT));
       
       add(fileMenu);
    }
@@ -177,19 +169,13 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       //===========
       // Help Menu
       
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Help");
-      if (resource.equals(""))
-         helpMenu = new JMenu("Help");
-      else
-         helpMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Help", "Help");
+      helpMenu = new JMenu(resource);
       helpMenu.setFont(helpMenu.getFont().deriveFont(Font.BOLD));
       
       // About
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.About");
-      if (resource.equals(""))
-         helpMenu.add(menuItem("About", ACTION_ABOUT));
-      else
-         helpMenu.add(menuItem(resource, ACTION_ABOUT));
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.About", "About");
+      helpMenu.add(menuItem(resource, ACTION_ABOUT));
       
       add(helpMenu);
    }

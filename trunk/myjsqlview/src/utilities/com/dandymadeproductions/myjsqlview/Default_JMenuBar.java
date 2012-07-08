@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 1.5 01/01/2012
+// Version 1.6 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,9 @@
 //         1.3 Correction to Resource MyJSQLView_JMenuBar Name.
 //         1.4 Copyright Update.
 //         1.5 Copyright Update.
+//         1.6 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +60,7 @@ import javax.swing.JMenuItem;
  * contains essentially only the MyJSQLView File|Exit & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/01/2012
+ * @version 1.6 07/08/2012
  */
 
 class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -116,19 +119,13 @@ class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
       //===========
       // File Menu
       
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.File", "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Exit
-      resource = resourceBundle.getResource("MyJSQLView_JMenuBar.menu.Exit");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", ACTION_EXIT));
-      else
-         fileMenu.add(menuItem(resource, ACTION_EXIT));
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Exit", "Exit");
+      fileMenu.add(menuItem(resource, ACTION_EXIT));
       
       add(fileMenu);
    }

@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.3 05/07/2012
+// Version 7.4 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -136,6 +136,9 @@
 //             Method getDateFormat().
 //         7.3 Class Method processLocaleLanguage() Instance localesData from Vector
 //             Data Type to ArrayList.
+//         7.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -167,7 +170,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.3 05/07/2012
+ * @version 7.4 07/08/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -475,26 +478,16 @@ public class MyJSQLView_Utils extends MyJSQLView
       // Create a frame to show with menubar.
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-      resourceTitle = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.TextData");
-      if (resourceTitle.equals(""))
-         resourceTitle = "Text Data";
-      
-      resourceSave = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Save");
-      if (resourceSave.equals(""))
-         resourceSave = "Save";
+      resourceTitle = resourceBundle.getResourceString("MyJSQLView_Utils.dialogtitle.TextData",
+                                                       "Text Data");
+      resourceSave = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.Save", "Save");
       
       if (typeEdit)
-      {
-         resourceCloseOpen = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Open");
-         if (resourceCloseOpen.equals(""))
-            resourceCloseOpen = "Open";
-      }
+         resourceCloseOpen = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.Open",
+                                                              "Open");
       else
-      {
-         resourceCloseOpen = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Close");
-         if (resourceCloseOpen.equals(""))
-            resourceCloseOpen = "Close";
-      }
+         resourceCloseOpen = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.Close",
+                                                              "Close");
       
       textDialog = new InputDialog(null, resourceTitle, resourceSave, resourceCloseOpen, content, null);
       return textDialog;
@@ -520,42 +513,30 @@ public class MyJSQLView_Utils extends MyJSQLView
       editorMenuBar = new JMenuBar();
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-      resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Edit");
-      if (resource.equals(""))
-         editMenu = new JMenu("Edit");
-      else
-         editMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.Edit", "Edit");
+      editMenu = new JMenu(resource);
       editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
 
       if (typeEdit)
       {
          menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-         resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Cut");
-         if (resource.equals(""))
-            menuItem.setText("Cut" + "          " + "Ctrl-x");
-         else
-            menuItem.setText(resource + "          " + "Ctrl-x");
+         resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.Cut", "Cut");
+         menuItem.setText(resource + "          " + "Ctrl-x");
          menuItem.setMnemonic(KeyEvent.VK_X);
          editMenu.add(menuItem);
       }
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Copy");
-      if (resource.equals(""))
-         menuItem.setText("Copy" + "       " + "Ctrl-c");
-      else
-         menuItem.setText(resource + "       " + "Ctrl-c");
+      resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.Copy", "Copy");
+      menuItem.setText(resource + "       " + "Ctrl-c");
       menuItem.setMnemonic(KeyEvent.VK_C);
       editMenu.add(menuItem);
 
       if (typeEdit)
       {
          menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-         resource = resourceBundle.getResource("MyJSQLView_Utils.menu.Paste");
-         if (resource.equals(""))
-            menuItem.setText("Paste" + "       " + "Ctrl-v");
-         else
-            menuItem.setText(resource + "       " + "Ctrl-v");
+         resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.Paste", "Paste");
+         menuItem.setText(resource + "       " + "Ctrl-v");
          menuItem.setMnemonic(KeyEvent.VK_V);
          editMenu.add(menuItem);
       }
@@ -575,11 +556,8 @@ public class MyJSQLView_Utils extends MyJSQLView
          if (currentAction.getValue(Action.NAME).equals("select-all"))
          {
             menuItem = new JMenuItem(currentAction);
-            resource = resourceBundle.getResource("MyJSQLView_Utils.menu.SelectAll");
-            if (resource.equals(""))
-               menuItem.setText("Select ALL");
-            else
-               menuItem.setText(resource);
+            resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.SelectAll", "Select All");
+            menuItem.setText(resource);
             editMenu.add(menuItem);
          }
       }
@@ -1109,24 +1087,15 @@ public class MyJSQLView_Utils extends MyJSQLView
                   
                   JLabel message;
                   
-                  resource = resourceBundle.getResource("MyJSQLView_Utils.message.FileExistsOverWrite");
-                  if (resource.equals(""))
-                     message = new JLabel("File Exists, Over Write?", JLabel.CENTER);
-                  else
-                     message = new JLabel(resource, JLabel.CENTER);
+                  resource = resourceBundle.getResourceString("MyJSQLView_Utils.message.FileExistsOverWrite",
+                                                              "File Exists, Over Write?");
+                  message = new JLabel(resource, JLabel.CENTER);
                   Object[] content = {message};
 
-                  resource = resourceBundle.getResource("MyJSQLView_Utils.dialogtitle.SaveWarning");
-                  if (resource.equals(""))
-                     resource = "Save Warning";
-                  
-                  resourceYes = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.Yes");
-                  if (resourceYes.equals(""))
-                     resourceYes = "Yes";
-                  
-                  resourceNo = resourceBundle.getResource("MyJSQLView_Utils.dialogbutton.No");
-                  if (resourceNo.equals(""))
-                     resourceNo = "No";
+                  resource = resourceBundle.getResourceString("MyJSQLView_Utils.dialogtitle.SaveWarning",
+                                                              "Save Warning");
+                  resourceYes = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.Yes", "Yes");
+                  resourceNo = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.No", "No");
                   
                   importWarningDialog = new InputDialog(null, resource, resourceYes, resourceNo, content,
                                                         deleteFileIcon);

@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Vivek Singh, Dana M. Proctor
-// Version 2.0 03/25/2012
+// Version 2.1 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,9 @@
 //                        NUll Before Proceeding. Also Addition of Commented Code
 //                        That May Reduce the Possibility of Throwning a Heap Memory
 //                        Error.
+//         2.1 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -81,7 +84,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 2.0 03/25/2012
+ * @version 2.1 07/08/2012
  */
 
 public class ImageUtil
@@ -141,10 +144,8 @@ public class ImageUtil
       else
          fileChooser = new JFileChooser(new File(lastSaveDirectory));
 
-      resourceTitle = resourceBundle.getResource("ImageUtil.dialogtitle.PNGImageSaveFile");
-      if (resourceTitle.equals(""))
-         resourceTitle = "Save PNG Image File";
-      
+      resourceTitle = resourceBundle.getResourceString("ImageUtil.dialogtitle.PNGImageSaveFile",
+                                                       "Save PNG Image File");
       fileChooser.setDialogTitle(resourceTitle);
       fileChooser.setFileFilter(new PNG_FileFilter());
 
@@ -171,10 +172,9 @@ public class ImageUtil
             }
             catch (SecurityException se)
             {
-               resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.ImageSaveError");
-               if (resourceMessage.equals(""))
-                  resourceMessage = "Image Save Error.";   
-               
+               resourceMessage = resourceBundle.getResourceString("ImageUtil.dialogmessage.ImageSaveError",
+                                                                  "Image Save Error");
+                
                JOptionPane.showMessageDialog(null, se.getMessage(), resourceMessage,
                                                 JOptionPane.ERROR_MESSAGE);
                return;
@@ -184,12 +184,10 @@ public class ImageUtil
          // Confirm overwriting to existing file.
          if (savedFile.exists())
          {
-            resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.OverwriteExistingFile");
-            if (resourceMessage.equals(""))
-               resourceMessage = "Overwrite existing file?";
-            resourceTitle = resourceBundle.getResource("ImageUtil.dialogtitle.ConfirmOverwrite");
-            if (resourceTitle.equals(""))
-               resourceTitle = "Confirm Overwrite";
+            resourceMessage = resourceBundle.getResourceString(
+               "ImageUtil.dialogmessage.OverwriteExistingFile", "Overwrite existing file?");
+            resourceTitle = resourceBundle.getResourceString("ImageUtil.dialogtitle.ConfirmOverwrite",
+                                                             "Confirm Overwite");
             
             int response = JOptionPane.showConfirmDialog(null, resourceMessage, resourceTitle,
                                                          JOptionPane.OK_CANCEL_OPTION,
@@ -227,9 +225,8 @@ public class ImageUtil
          }
          catch (Exception exp)
          {
-            resourceMessage = resourceBundle.getResource("ImageUtil.dialogmessage.ImageSaveError");
-            if (resourceMessage.equals(""))
-               resourceMessage = "Image Save Error.";
+            resourceMessage = resourceBundle.getResourceString("ImageUtil.dialogmessage.ImageSaveError",
+                                                               "Image Save Error");
             
             JOptionPane.showMessageDialog(null, exp.getMessage(), resourceMessage,
                                           JOptionPane.ERROR_MESSAGE);

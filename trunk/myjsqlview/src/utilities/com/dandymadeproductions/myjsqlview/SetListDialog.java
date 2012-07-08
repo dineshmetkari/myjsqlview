@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.3 05/07/2012
+// Version 2.4 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,9 @@
 //         2.2 Copyright Update.
 //         2.3 Class Instance listElements & Same in Constructor Argument
 //             Changed from Vector Data Type To ArrayList.
+//         2.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -71,7 +74,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/07/2012
+ * @version 2.4 07/08/2012
  */
 
 class SetListDialog extends JFrame implements ActionListener
@@ -113,11 +116,9 @@ class SetListDialog extends JFrame implements ActionListener
       
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
-      resource = resourceBundle.getResource("SetListDialog.title.ElementSelection");
-      if (resource.equals(""))
-         setTitle(columnName + " Element Selection");
-      else
-         setTitle(columnName + " " + resource);
+      resource = resourceBundle.getResourceString("SetListDialog.title.ElementSelection",
+                                                  "Element Selection");
+      setTitle(columnName + " " + resource);
 
       mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -153,20 +154,14 @@ class SetListDialog extends JFrame implements ActionListener
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      resource = resourceBundle.getResource("SetListDialog.button.OK");
-      if (resource.equals(""))
-         okButton = new JButton("OK");
-      else
-         okButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SetListDialog.button.OK", "OK");
+      okButton = new JButton(resource);
       okButton.setFocusPainted(false);
       okButton.addActionListener(this);
       southButtonPanel.add(okButton);
 
-      resource = resourceBundle.getResource("SetListDialog.button.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SetListDialog.button.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.setFocusPainted(false);
       cancelButton.addActionListener(this);
       southButtonPanel.add(cancelButton);
