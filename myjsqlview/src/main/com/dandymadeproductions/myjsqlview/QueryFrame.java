@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.9 05/07/2012
+// Version 8.0 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -198,6 +198,9 @@
 //                        Setup in Constructor and Action Event in actionPerformed().
 //         7.9 05/07/2012 Changed columnNameFields in exportData() From Vector to ArrayList
 //                        Data Type.
+//         8.0 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -235,7 +238,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.9 05/07/2012
+ * @version 8.0 07/08/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -326,23 +329,15 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       hostName = connectionProperties.getProperty(ConnectionProperties.HOST);
       databaseName = connectionProperties.getProperty(ConnectionProperties.DB);
       
-      resource = resourceBundle.getResource("QueryFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("MyJSQLView Query Frame   " + hostName + ":" + databaseName);
-      else
-         setTitle("MyJSQLView " + resource + "   " + hostName + ":" + databaseName);
+      resource = resourceBundle.getResourceString("QueryFrame.message.Title", "Query Frame");
+      setTitle("MyJSQLView " + resource + "   " + hostName + ":" + databaseName);
       
-      resource = resourceBundle.getResource("QueryFrame.dialogtitle.Alert");
-      if (resource.equals(""))
-         resourceAlert = "Alert";
-      else
-         resourceAlert = resource;
+      resource = resourceBundle.getResourceString("QueryFrame.dialogtitle.Alert", "Alert");
+      resourceAlert = resource;
       
-      resource = resourceBundle.getResource("QueryFrame.dialogmessage.FileNOTFound");
-      if (resource.equals(""))
-         resourceFileNOTFound = "File NOT Found";
-      else
-         resourceFileNOTFound = resource;
+      resource = resourceBundle.getResourceString("QueryFrame.dialogmessage.FileNOTFound",
+                                                  "File NOT Found");
+      resourceFileNOTFound = resource;
       
       currentQueryIndex = 0;
       workingQueryIndex = 0;
@@ -467,20 +462,15 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       statementTypeComboBox.setBorder(BorderFactory.createRaisedBevelBorder());
       
       // SQL_STATEMENT_TYPE:0
-      resource = resourceBundle.getResource("QueryFrame.combobox.SQLStatement");
-      if (resource.equals(""))
-         statementTypeComboBox.addItem("SQL Statement : ");
-      else
-         statementTypeComboBox.addItem(resource + " : ");
+      resource = resourceBundle.getResourceString("QueryFrame.combobox.SQLStatement", "SQL Statement");
+      statementTypeComboBox.addItem(resource + " : ");
       
       // QUERY_STATEMENT_TYPE:1
       if (!dataSourceType.equals(ConnectionManager.MSACCESS))
       {
-         resource = resourceBundle.getResource("QueryFrame.combobox.QueryStatement");
-         if (resource.equals(""))
-            statementTypeComboBox.addItem("Query Statement : ");
-         else
-            statementTypeComboBox.addItem(resource + " : ");
+         resource = resourceBundle.getResourceString("QueryFrame.combobox.QueryStatement",
+                                                     "Query Statement");
+         statementTypeComboBox.addItem(resource + " : ");
       }
       
       buildConstraints(constraints, 1, 0, 1, 1, 99, 100);
@@ -552,20 +542,14 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
                                                                BorderFactory.createEmptyBorder(4, 4, 4, 4)));
 
-      resource = resourceBundle.getResource("QueryFrame.button.Execute");
-      if (resource.equals(""))
-         executeButton = new JButton("Execute");
-      else
-         executeButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.button.Execute", "Execute");
+      executeButton = new JButton(resource);
       executeButton.setMnemonic(KeyEvent.VK_ENTER);
       executeButton.addActionListener(this);
       buttonPanel.add(executeButton);
 
-      resource = resourceBundle.getResource("QueryFrame.checkbox.NewTab");
-      if (resource.equals(""))
-         newTabCheckBox = new JCheckBox("New Tab", true);
-      else
-         newTabCheckBox = new JCheckBox(resource, true);
+      resource = resourceBundle.getResourceString("QueryFrame.checkbox.NewTab", "New Tab");
+      newTabCheckBox = new JCheckBox(resource, true);
       
       newTabCheckBox.setIcon(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
       newTabCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
@@ -899,12 +883,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             }
             catch (IOException e)
             {
-               resource = resourceBundle.getResource("QueryFrame.dialogmessage.InputFile");
-               if (resource.equals(""))
-                  message = "Unable to Read Input File!";
-               else
-                  message = resource;
-                  
+               resource = resourceBundle.getResourceString("QueryFrame.dialogmessage.InputFile",
+                                                           "Unalbe to Read Input File");
+               message = resource; 
                JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
             }
          }
@@ -990,11 +971,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
             }
             catch (PrinterException e)
             {
-               resource = resourceBundle.getResource("QueryFrame.dialogmessage.PrinterException");
-               if (resource.equals(""))
-                  message = "Printer Exception";
-               else
-                  message = resource;
+               resource = resourceBundle.getResourceString("QueryFrame.dialogmessage.PrinterException",
+                                                           "Printer Exception");
+               message = resource;
                
                JOptionPane.showMessageDialog(null, message, e.getMessage(),
                                              JOptionPane.ERROR_MESSAGE);
@@ -1024,38 +1003,24 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       if (currentQueryIndex <= summaryTableRowSize.length)
          rowSizeTextField.setText(Integer.toString(summaryTableRowSize[currentQueryIndex]));
       
-      resource = resourceBundle.getResource("QueryFrame.label.Warning");
-      if (resource.equals(""))
-         warning = new JLabel("Warning!", JLabel.CENTER);
-      else
-         warning = new JLabel(resource, JLabel.CENTER);
+      resource = resourceBundle.getResourceString("QueryFrame.label.Warning", "Warning!");
+      warning = new JLabel(resource, JLabel.CENTER);
       warning.setForeground(Color.RED);
       
-      resource = resourceBundle.getResource("QueryFrame.label.LargeRowSize");
-      if (resource.equals(""))
-         warningMessage1 = new JLabel("A large row size may adversely effect", JLabel.CENTER);
-      else
-         warningMessage1 = new JLabel(resource, JLabel.CENTER);
+      resource = resourceBundle.getResourceString("QueryFrame.label.LargeRowSize",
+                                                  "A large row size may adversely effect");
+      warningMessage1 = new JLabel(resource, JLabel.CENTER);
       
-      resource = resourceBundle.getResource("QueryFrame.label.ApplicationServerPerformance");
-      if (resource.equals(""))
-         warningMessage2 = new JLabel("application/server performance.", JLabel.CENTER);
-      else
-         warningMessage2 = new JLabel(resource, JLabel.CENTER);
+      resource = resourceBundle.getResourceString("QueryFrame.label.ApplicationServerPerformance",
+                                                  "application/server performance");
+      warningMessage2 = new JLabel(resource, JLabel.CENTER);
 
       Object content[] = {warning, warningMessage1, warningMessage2, rowSizeTextField};
 
-      resource = resourceBundle.getResource("QueryFrame.label.SetSummaryTableRowSize");
-      if (resource.equals(""))
-         resource = "Set Summary Table Row Size";
-      
-      resourceOK = resourceBundle.getResource("QueryFrame.button.OK");
-      if (resourceOK.equals(""))
-         resourceOK = "OK";
-      
-      resourceCancel = resourceBundle.getResource("QueryFrame.button.Cancel");
-      if (resourceCancel.equals(""))
-         resourceCancel = "Cancel";
+      resource = resourceBundle.getResourceString("QueryFrame.label.SetSummaryTableRowSize",
+                                                  "Set Summary Table Row Size");
+      resourceOK = resourceBundle.getResourceString("QueryFrame.button.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("QueryFrame.button.Cancel", "Cancel");
       
       InputDialog rowSizeDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                   content, null);
@@ -1093,11 +1058,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
          }
          catch (NumberFormatException e)
          {
-            resource = resourceBundle.getResource("QueryFrame.dialogmessage.RowSize");
-            if (resource.equals(""))
-               message = "The Row Size Input Appears To NOT Be A Valid Integer!";
-            else
-               message = resource;
+            message = resourceBundle.getResourceString("QueryFrame.dialogmessage.RowSize",
+               "The Row Size Input Appears To NOT Be A Valid Integer!");
             
             JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
          }
@@ -1269,102 +1231,63 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // ===============
       // File Menu
       
-      resource = resourceBundle.getResource("QueryFrame.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.File", "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
-      resource = resourceBundle.getResource("QueryFrame.menu.OpenScript");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Open Script", FILE_OPEN_SCRIPT));
-      else
-         fileMenu.add(menuItem(resource, FILE_OPEN_SCRIPT));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.OpenScript", "Open Script");
+      fileMenu.add(menuItem(resource, FILE_OPEN_SCRIPT));
       
-      resource = resourceBundle.getResource("QueryFrame.menu.SaveScript");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Save Script", FILE_SAVE_SCRIPT));
-      else
-         fileMenu.add(menuItem(resource, FILE_SAVE_SCRIPT));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.SaveScript", "Save Script");
+      fileMenu.add(menuItem(resource, FILE_SAVE_SCRIPT));
       fileMenu.addSeparator();
       
-      resource = resourceBundle.getResource("QueryFrame.menu.Print");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Print", FILE_PRINT));
-      else
-         fileMenu.add(menuItem(resource, FILE_PRINT));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Print", "Print");
+      fileMenu.add(menuItem(resource, FILE_PRINT));
       
-      resource = resourceBundle.getResource("QueryFrame.menu.PageFormat");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Page Format", FILE_PAGE_FORMAT));
-      else
-         fileMenu.add(menuItem(resource, FILE_PAGE_FORMAT));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.PageFormat", "Page Format");
+      fileMenu.add(menuItem(resource, FILE_PAGE_FORMAT));
       fileMenu.addSeparator();
       
-      resource = resourceBundle.getResource("QueryFrame.menu.Exit");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", FILE_EXIT));
-      else
-         fileMenu.add(menuItem(resource, FILE_EXIT));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Exit", "Exit");
+      fileMenu.add(menuItem(resource, FILE_EXIT));
       queryFrameMenuBar.add(fileMenu);
 
       // ===============
       // Edit Menu
       
-      resource = resourceBundle.getResource("QueryFrame.menu.Edit");
-      if (resource.equals(""))
-         editMenu = new JMenu("Edit");
-      else
-         editMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Edit", "Edit");
+      editMenu = new JMenu(resource);
       editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
       
       menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-      resource = resourceBundle.getResource("QueryFrame.menu.Cut");
-      if (resource.equals(""))
-         menuItem.setText("Cut" + "          " + "Ctrl+x");
-      else
-         menuItem.setText(resource + "          " + "Ctrl+x");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Cut", "Cut");
+      menuItem.setText(resource + "          " + "Ctrl+x");
       menuItem.setMnemonic(KeyEvent.VK_X);
       editMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("QueryFrame.menu.Copy");
-      if (resource.equals(""))
-         menuItem.setText("Copy" + "       " + "Ctrl+c");
-      else
-         menuItem.setText(resource + "       " + "Ctrl+c");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Copy", "Copy");
+      menuItem.setText(resource + "       " + "Ctrl+c");
       menuItem.setMnemonic(KeyEvent.VK_C);
       editMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-      resource = resourceBundle.getResource("QueryFrame.menu.Paste");
-      if (resource.equals(""))
-         menuItem.setText("Paste" + "       " + "Ctrl+v");
-      else
-         menuItem.setText(resource + "       " + "Ctrl+v");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Paste", "Paste");
+      menuItem.setText(resource + "       " + "Ctrl+v");
       menuItem.setMnemonic(KeyEvent.VK_V);
       editMenu.add(menuItem);
 
       editMenu.addSeparator();
 
-      resource = resourceBundle.getResource("QueryFrame.menu.Preferences");
-      if (resource.equals(""))
-         preferencesMenu = new JMenu("Preferences");
-      else
-         preferencesMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Preferences", "Preferences");
+      preferencesMenu = new JMenu(resource);
 
-      resource = resourceBundle.getResource("QueryFrame.menu.TableRows");
-      if (resource.equals(""))
-         preferencesMenu.add(menuItem("Table Rows", EDITPREFERENCES_TABLE_ROWS));
-      else
-         preferencesMenu.add(menuItem(resource, EDITPREFERENCES_TABLE_ROWS));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.TableRows", "Table Rows");
+      preferencesMenu.add(menuItem(resource, EDITPREFERENCES_TABLE_ROWS));
 
-      resource = resourceBundle.getResource("QueryFrame.menu.ShowQuery");
-      if (resource.equals(""))
-         showQueryCheckBox = new JCheckBoxMenuItem("Show Query", false);
-      else
-         showQueryCheckBox = new JCheckBoxMenuItem(resource, false);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.ShowQuery", "Show Query");
+      showQueryCheckBox = new JCheckBoxMenuItem(resource, false);
       preferencesMenu.add(showQueryCheckBox);
 
       editMenu.add(preferencesMenu);
@@ -1380,51 +1303,30 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // to the dump threads. The temp tables are only
       // available to this class's connection.
 
-      resource = resourceBundle.getResource("QueryFrame.menu.Data");
-      if (resource.equals(""))
-         dataMenu = new JMenu("Data");
-      else
-         dataMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Data", "Data");
+      dataMenu = new JMenu(resource);
       dataMenu.setFont(dataMenu.getFont().deriveFont(Font.BOLD));
 
-      resource = resourceBundle.getResource("QueryFrame.menu.Export");
-      if (resource.equals(""))
-         exportMenu = new JMenu("Export");
-      else
-         exportMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Export", "Export");
+      exportMenu = new JMenu(resource);
 
-      resource = resourceBundle.getResource("QueryFrame.menu.ExportCSV");
-      if (resource.equals(""))
-         exportCVSMenu = new JMenu("CSV");
-      else
-         exportCVSMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportCSV", "CSV");
+      exportCVSMenu = new JMenu(resource);
       
       /*
-      resource = resourceBundle.getResource("QueryFrame.menu.CSVTable");
-      if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Table", DATAEXPORT_CSV_TABLE));
-      else
-         exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_TABLE));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.CSVTable", "Table);
+      exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_TABLE));
       */
       
-      resource = resourceBundle.getResource("QueryFrame.menu.CSVSummaryTable");
-      if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Summary Table", DATAEXPORT_CSV_SUMMARY_TABLE));
-      else
-         exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_SUMMARY_TABLE));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.CSVSummaryTable", "Summary Table");
+      exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
       
-      resource = resourceBundle.getResource("QueryFrame.menu.ExportPDF");
-      if (resource.equals(""))
-         exportCVSMenu = new JMenu("PDF");
-      else
-         exportCVSMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportPDF", "PDF");
+      exportCVSMenu = new JMenu(resource);
       
-      resource = resourceBundle.getResource("QueryFrame.menu.PDFSummaryTable");
-      if (resource.equals(""))
-         exportCVSMenu.add(menuItem("Summary Table", DATAEXPORT_PDF_SUMMARY_TABLE));
-      else
-         exportCVSMenu.add(menuItem(resource, DATAEXPORT_PDF_SUMMARY_TABLE));
+      resource = resourceBundle.getResourceString("QueryFrame.menu.PDFSummaryTable", "Summary Table");
+      exportCVSMenu.add(menuItem(resource, DATAEXPORT_PDF_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
 
       // JMenu exportSQLMenu = new JMenu("SQL");
@@ -1467,47 +1369,32 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Open Script
       openScriptIcon = new ImageIcon(iconsDirectory + "openScriptIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.OpenScript");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Open Script", openScriptIcon, FILE_OPEN_SCRIPT);
-      else
-         buttonItem = buttonItem(resource, openScriptIcon, FILE_OPEN_SCRIPT);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.OpenScript", "Open Script");
+      buttonItem = buttonItem(resource, openScriptIcon, FILE_OPEN_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // Save Script
       saveScriptIcon = new ImageIcon(iconsDirectory + "saveScriptIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.SaveScript");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Save Script", saveScriptIcon, FILE_SAVE_SCRIPT);
-      else
-         buttonItem = buttonItem(resource, saveScriptIcon, FILE_SAVE_SCRIPT);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.SaveScript", "Save Script");
+      buttonItem = buttonItem(resource, saveScriptIcon, FILE_SAVE_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // File Print
       printIcon = new ImageIcon(iconsDirectory + "printIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.Print");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Print", printIcon, FILE_PRINT);
-      else
-         buttonItem = buttonItem(resource, printIcon, FILE_PRINT);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.Print", "Print");
+      buttonItem = buttonItem(resource, printIcon, FILE_PRINT);
       queryFrameToolBar.add(buttonItem);
       
       // Page Format
       pageFormatIcon = new ImageIcon(iconsDirectory + "pageFormatIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.PageFormat");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Page Format", pageFormatIcon, FILE_PAGE_FORMAT);
-      else
-         buttonItem = buttonItem(resource, pageFormatIcon, FILE_PAGE_FORMAT);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.PageFormat", "Page Format");
+      buttonItem = buttonItem(resource, pageFormatIcon, FILE_PAGE_FORMAT);
       queryFrameToolBar.add(buttonItem);
       
       // Exit
       exitIcon = new ImageIcon(iconsDirectory + "exitIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.Exit");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Exit", exitIcon, FILE_EXIT);
-      else
-         buttonItem = buttonItem(resource, exitIcon, FILE_EXIT);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.Exit", "Exit");
+      buttonItem = buttonItem(resource, exitIcon, FILE_EXIT);
       queryFrameToolBar.add(buttonItem);
       
       queryFrameToolBar.addSeparator();
@@ -1517,11 +1404,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Preferences Table Rows
       tableRowsIcon = new ImageIcon(iconsDirectory + "tableRowsIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.TableRows");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Table Rows", tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
-      else
-         buttonItem = buttonItem(resource, tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.TableRows", "Table Rows");
+      buttonItem = buttonItem(resource, tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
       queryFrameToolBar.add(buttonItem);
       
       queryFrameToolBar.addSeparator();
@@ -1531,22 +1415,17 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Export CSV Summary Table
       csvExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "csvExportSummaryTableIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.ExportCSVSummaryTable");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Export CSV Tab Summary Table", csvExportTabSummaryTableIcon,
-                                 DATAEXPORT_CSV_SUMMARY_TABLE);
-      else
-         buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportCSVSummaryTable",
+                                                  "Export CSV Tab Summary Table");
+      buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
       queryFrameToolBar.add(buttonItem);
       
       // Export PDF Summary Table
       pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
-      resource = resourceBundle.getResource("QueryFrame.tooltip.ExportPDFSummaryTable");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Export PDF Tab Summary Table", pdfExportTabSummaryTableIcon,
-                                 DATAEXPORT_PDF_SUMMARY_TABLE);
-      else
-         buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportPDFSummaryTable",
+                                                  "Export PDF Tab Summary Table");
+      buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
+      
       queryFrameToolBar.add(buttonItem);
    }
 

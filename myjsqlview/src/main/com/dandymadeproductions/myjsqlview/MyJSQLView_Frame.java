@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.0 05/07/2012
+// Version 7.1 07/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -173,6 +173,9 @@
 //                        ConnectionManager.getConnection() in createGUI() & reloadDBTables().
 //         7.0 05/07/2012 Changed Class Instance loadedPluginModules from Vector Data Type to
 //                        ArrayList.
+//         7.1 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                         of Resource Strings. Change to resource.getResourceString(key,
+//                         default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -202,7 +205,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.0 05/07/2012
+ * @version 7.1 07/07/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -345,11 +348,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             dbTablesPanel = new DBTablesPanel(dbConnection, ConnectionManager.getTableNames());
             mainTabsPane.setComponentAt(1, dbTablesPanel);
             
-            resource = resourceBundle.getResource("MyJSQLView_Frame.tab.DatabaseTables");
-            if (resource.equals(""))
-               mainTabsPane.setToolTipTextAt(1, "Database Tables");
-            else
-               mainTabsPane.setToolTipTextAt(1, resource);
+            resource = resourceBundle.getResourceString("MyJSQLView_Frame.tab.DatabaseTables",
+                                                        "Database Tables");
+            mainTabsPane.setToolTipTextAt(1, resource);
             
             // Closing the database connection that is used
             // during the inital setup of the application.

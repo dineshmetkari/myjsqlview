@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 05/07/2012
+// Version 1.7 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,9 @@
 //             & displayLoadingPluginsData().
 //         1.5 Copyright Update.
 //         1.6 Changed Class Instance loadingPluginsList from Vector to ArrayList.
+//         1.7 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -79,7 +82,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 05/07/2012
+ * @version 1.7 07/08/2012
  */
 
 //=================================================================
@@ -138,17 +141,12 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       lastPluginDirectory = "";
       
-      resourceAlert = resourceBundle.getResource("PluginFrame.dialogtitle.Alert");
-      if (resourceAlert.equals(""))
-         resourceAlert = "Alert";
+      resourceAlert = resourceBundle.getResourceString("PluginFrame.dialogtitle.Alert", "Alert");
       
       // Setting the frame's title layout and main panel.
       
-      resource = resourceBundle.getResource("PluginFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("Plugin Management");
-      else
-         setTitle(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.message.Title", "Plugin Management");
+      setTitle(resource);
       
       mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -171,11 +169,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       northInstallPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
       northInstallPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
-      resource = resourceBundle.getResource("PluginFrame.button.Install");
-      if (resource.equals(""))
-         installButton = new JButton("Install");
-      else
-         installButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.button.Install", "Install");
+      installButton = new JButton(resource);
       installButton.setFocusPainted(false);
       installButton.addActionListener(this);
       northInstallPanel.add(installButton);
@@ -200,11 +195,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      resource = resourceBundle.getResource("PluginFrame.button.Close");
-      if (resource.equals(""))
-         closeButton = new JButton("Close");
-      else
-         closeButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.button.Close", "Close");
+      closeButton = new JButton(resource);
       closeButton.setFocusPainted(false);
       closeButton.addActionListener(this);
       southButtonPanel.add(closeButton);
@@ -348,29 +340,17 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
 
       tableColumns = new ArrayList<String>();
       
-      resourceTabIcon = resourceBundle.getResource("PluginFrame.label.TabIcon");
-      if (resourceTabIcon.equals(""))
-         tableColumns.add("Tab Icon");
-      else
-         tableColumns.add(resourceTabIcon);
+      resourceTabIcon = resourceBundle.getResourceString("PluginFrame.label.TabIcon", "Tab Icon");
+      tableColumns.add(resourceTabIcon);
       
-      resource = resourceBundle.getResource("PluginFrame.label.Name");
-      if (resource.equals(""))
-         tableColumns.add("Name");
-      else
-         tableColumns.add(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.label.Name", "Name");
+      tableColumns.add(resource);
       
-      resource = resourceBundle.getResource("PluginFrame.label.Version");
-      if (resource.equals(""))
-         tableColumns.add("Version");
-      else
-         tableColumns.add(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.label.Version", "Version");
+      tableColumns.add(resource);
       
-      resourceRemove = resourceBundle.getResource("PluginFrame.label.Remove");
-      if (resource.equals(""))
-         tableColumns.add("Remove");
-      else
-         tableColumns.add(resourceRemove);
+      resourceRemove = resourceBundle.getResourceString("PluginFrame.label.Remove", "Remove");
+      tableColumns.add(resourceRemove);
       
       // Collect the plugin data.
       
@@ -419,17 +399,11 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
 
       tableColumns = new ArrayList<String>();
       
-      resourceTabIcon = resourceBundle.getResource("PluginFrame.label.Status");
-      if (resourceTabIcon.equals(""))
-         tableColumns.add("Status");
-      else
-         tableColumns.add(resourceTabIcon);
+      resourceTabIcon = resourceBundle.getResourceString("PluginFrame.label.Status", "Status");
+      tableColumns.add(resourceTabIcon);
       
-      resource = resourceBundle.getResource("PluginFrame.label.Name");
-      if (resource.equals(""))
-         tableColumns.add("Name");
-      else
-         tableColumns.add(resource);
+      resource = resourceBundle.getResourceString("PluginFrame.label.Name", "Name");
+      tableColumns.add(resource);
       
       // Collect the loading plugin data, should be
       // none when this method called from constructor.
@@ -489,9 +463,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          }
          catch (SecurityException e)
          {
-            resource = resourceBundle.getResource("PluginFrame.dialogmessage.SecurityException");
-            if (resource.equals(""))
-               resource = "Security Exception.";
+            resource = resourceBundle.getResourceString("PluginFrame.dialogmessage.SecurityException",
+                                                        "Security Exception");
             
             String optionPaneStringErrors = resource + " " + e;
             JOptionPane.showMessageDialog(null, optionPaneStringErrors,
@@ -529,9 +502,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       }
       catch (IOException ioe) 
       {
-         resource = resourceBundle.getResource("PluginFrame.dialogmessage.FileI/OProblem");
-         if (resource.equals(""))
-            resource = "File I/O Problem.";
+         resource = resourceBundle.getResourceString("PluginFrame.dialogmessage.FileI/OProblem",
+                                                     "File I/O Problem");
          
          String optionPaneStringErrors = resource + " " + ioe;
          JOptionPane.showMessageDialog(null, optionPaneStringErrors,
@@ -636,9 +608,8 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
          {
             String optionPaneStringErrors;
             
-            optionPaneStringErrors = resourceBundle.getResource("PluginFrame.dialogmessage.FileNOTFile");
-            if (optionPaneStringErrors.equals(""))
-               optionPaneStringErrors = "File NOT Found.";
+            optionPaneStringErrors = resourceBundle.getResourceString(
+               "PluginFrame.dialogmessage.FileNOTFile", "File NOT Found");
             
             JOptionPane.showMessageDialog(null, optionPaneStringErrors,
                                           resourceAlert, JOptionPane.ERROR_MESSAGE);

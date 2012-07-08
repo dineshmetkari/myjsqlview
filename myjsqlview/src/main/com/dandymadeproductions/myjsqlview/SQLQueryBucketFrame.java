@@ -168,15 +168,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
       // Setting title and common alert resource.
       
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("MyJSQLView Query Bucket Frame");
-      else
-         setTitle("MyJSQLView " + resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.message.Title", "Query Bucket Frame");
+      setTitle("MyJSQLView " + resource);
 
-      resourceAlert = resourceBundle.getResource("SQLQueryBucketFrame.dialogtitle.Alert");
-      if (resourceAlert.equals(""))
-         resourceAlert = "Alert";
+      resourceAlert = resourceBundle.getResourceString("SQLQueryBucketFrame.dialogtitle.Alert", "Alert");
 
       // ==================================================
       // Frame Window Closing Addition. Also method for
@@ -366,42 +361,30 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                                                BorderFactory.createEtchedBorder(),
                                                BorderFactory.createEmptyBorder(0, 0, 0, 0)));
       // View Button
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.button.View");
-      if (resource.equals(""))
-         viewButton = new JButton(VIEW);
-      else
-         viewButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.View", VIEW);
+      viewButton = new JButton(resource);
 
       viewButton.setMnemonic(KeyEvent.VK_V);
       viewButton.addActionListener(this);
       actionButtonPanel.add(viewButton);
 
       // Add Button
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.button.Add");
-      if (resource.equals(""))
-         addButton = new JButton(ADD);
-      else
-         addButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Add", ADD);
+      addButton = new JButton(resource);
       addButton.setMnemonic(KeyEvent.VK_A);
       addButton.addActionListener(this);
       actionButtonPanel.add(addButton);
 
       // Edit Button
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.button.Edit");
-      if (resource.equals(""))
-         editButton = new JButton(EDIT);
-      else
-         editButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Edit", EDIT);
+      editButton = new JButton(resource);
       editButton.setMnemonic(KeyEvent.VK_E);
       editButton.addActionListener(this);
       actionButtonPanel.add(editButton);
 
       // Delete Button
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.button.Delete");
-      if (resource.equals(""))
-         deleteButton = new JButton(DELETE);
-      else
-         deleteButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Delete", DELETE);
+      deleteButton = new JButton(resource);
       deleteButton.setMnemonic(KeyEvent.VK_D);
       deleteButton.addActionListener(this);
       actionButtonPanel.add(deleteButton);
@@ -508,7 +491,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          // SQL Object Color Setting
          else if (actionCommand.equals(DIALOG_SQLSTATEMENT_COLOR))
          {
-            String resource = resourceBundle.getResource("SQLQueryBucketFrame.title.ItemListColor");
+            String resource = resourceBundle.getResourceString("SQLQueryBucketFrame.title.ItemListColor",
+                                                               "Item List Color");
             if (resource.equals(""))
                resource = "Item List Color";
             
@@ -588,41 +572,26 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       JButton logoIconItem;
 
       // File Menu
-      resourceFile = resourceBundle.getResource("SQLQueryBucketFrame.menu.File");
-      if (resourceFile.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resourceFile);
+      resourceFile = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.File", "File");
+      fileMenu = new JMenu(resourceFile);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       fileMenu.addSeparator();
 
       // Open
-      resourceOpen = resourceBundle.getResource("SQLQueryBucketFrame.menu.Open");
-      if (resourceOpen.equals(""))
-         fileMenu.add(menuItem("Open", FILE_OPEN));
-      else
-         fileMenu.add(menuItem(resourceOpen, FILE_OPEN));
+      resourceOpen = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Open", "Open");
+      fileMenu.add(menuItem(resourceOpen, FILE_OPEN));
       fileMenu.addSeparator();
 
       // Save
-      resourceSave = resourceBundle.getResource("SQLQueryBucketFrame.menu.Save");
-      if (resourceSave.equals(""))
-         fileMenu.add(menuItem("Save", FILE_SAVE));
-      else
-         fileMenu.add(menuItem(resourceSave, FILE_SAVE));
+      resourceSave = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Save", "Save");
+      fileMenu.add(menuItem(resourceSave, FILE_SAVE));
       
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.SaveAs");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Save As...", FILE_SAVE_AS));
-      else
-         fileMenu.add(menuItem(resource, FILE_SAVE_AS));
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.SaveAs", "Save As...");
+      fileMenu.add(menuItem(resource, FILE_SAVE_AS));
       fileMenu.addSeparator();
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Exit");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", EXIT));
-      else
-         fileMenu.add(menuItem(resource, EXIT));
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Exit", "Exit");
+      fileMenu.add(menuItem(resource, EXIT));
       sqlBucketFrameMenuBar.add(fileMenu);
 
       fileMenu.addSeparator();
@@ -651,32 +620,20 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       sqlListPopupMenu = new JPopupMenu();
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.View");
-      if (resource.equals(""))
-         menuItem = menuItem("View", VIEW);
-      else
-         menuItem = menuItem(resource, VIEW);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.View", "View");
+      menuItem = menuItem(resource, VIEW);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Add");
-      if (resource.equals(""))
-         menuItem = menuItem("Add", ADD);
-      else
-         menuItem = menuItem(resource, ADD);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Add", "Add");
+      menuItem = menuItem(resource, ADD);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Edit");
-      if (resource.equals(""))
-         menuItem = menuItem("Edit", EDIT);
-      else
-         menuItem = menuItem(resource, EDIT);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Edit", "Edit");
+      menuItem = menuItem(resource, EDIT);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.menu.Delete");
-      if (resource.equals(""))
-         menuItem = menuItem("Delete", DELETE);
-      else
-         menuItem = menuItem(resource, DELETE);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Delete", "Delete");
+      menuItem = menuItem(resource, DELETE);
 
       sqlListPopupMenu.add(menuItem);
       
@@ -889,10 +846,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    {
       // Method Instances
       String resourceMessage;
-
-      resourceMessage = resourceBundle.getResource("SQLQueryBucketFrame.dialogmessage.InputFile");
-      if (resourceMessage.equals(""))
-         resourceMessage = "Unable to Read Input File!";
+      
+      resourceMessage = resourceBundle.getResourceString("SQLQueryBucketFrame.dialogmessage.InputFile",
+                                                         "Unable to Read Input File");
 
       JOptionPane.showMessageDialog(null, resourceMessage, resourceAlert, JOptionPane.ERROR_MESSAGE);
    }
@@ -906,9 +862,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // Method Instances
       String resourceMessage;
 
-      resourceMessage = resourceBundle.getResource("SQLQueryBucketFrame.dialogmessage.FileNOTFound");
-      if (resourceMessage.equals(""))
-         resourceMessage = "File NOT Found";
+      resourceMessage = resourceBundle.getResourceString("SQLQueryBucketFrame.dialogmessage.FileNOTFound",
+                                                         "File NOT Found");
 
       JOptionPane.showMessageDialog(null, resourceMessage, resourceAlert, JOptionPane.ERROR_MESSAGE);
    }
@@ -991,11 +946,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       sqlStatementPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
          BorderFactory.createEmptyBorder(4, 1, 4, 1)));
       
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.label.SQLStatementString");
-      if (resource.equals(""))
-         sqlStatementLabel = new JLabel("SQL Statement String");
-      else
-         sqlStatementLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.label.SQLStatementString",
+                                                  "SQL Statement String");
+      sqlStatementLabel = new JLabel(resource);
       sqlStatementLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
       
       buildConstraints(constraints, 0, 0, 2, 1, 100, 100);
@@ -1042,11 +995,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       limitPanel.add(limitCheckBox);
       
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.label.LIMIT");
-      if (resource.equals(""))
-         limitLabel = new JLabel("LIMIT", JLabel.LEADING);
-      else
-         limitLabel = new JLabel(resource, JLabel.LEADING);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.label.LIMIT", "Limit");
+      limitLabel = new JLabel(resource, JLabel.LEADING);
       
       limitPanel.add(limitLabel);
       
@@ -1072,11 +1022,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       colorPanel.add(dialog_colorButton);
       
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.label.Color");
-      if (resource.equals(""))
-         colorLabel = new JLabel("Color", JLabel.LEADING);
-      else
-         colorLabel = new JLabel(resource, JLabel.LEADING);
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.label.Color", "Color");
+      colorLabel = new JLabel(resource, JLabel.LEADING);
       
       colorPanel.add(colorLabel);
       
@@ -1094,17 +1041,10 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
       Object content[] = {componentHoldingPanel};
 
-      resource = resourceBundle.getResource("SQLQueryBucketFrame.title.SQLStatementObject");
-      if (resource.equals(""))
-         resource = "SQL Statement Object";
-      
-      resourceOK = resourceBundle.getResource("SQLQueryBucketFrame.button.OK");
-      if (resourceOK.equals(""))
-         resourceOK = "OK";
-      
-      resourceCancel = resourceBundle.getResource("SQLQueryBucketFrame.button.Cancel");
-      if (resourceCancel.equals(""))
-         resourceCancel = "Cancel";
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.title.SQLStatementObject",
+                                                  "SQL Statement Object");
+      resourceOK = resourceBundle.getResourceString("SQLQueryBucketFrame.button.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Cancel", "Cancel");
       
       formDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                    content, null);
@@ -1194,9 +1134,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             {
                String resourceMessage;
                
-               resourceMessage = resourceBundle.getResource("SQLQueryBucketFrame.dialogmessage.ErrorWritingDataFile");
-               if (resourceMessage.equals(""))
-                  resourceMessage = "Error Writing Data File!";
+               resourceMessage = resourceBundle.getResourceString(
+                  "SQLQueryBucketFrame.dialogmessage.ErrorWritingDataFile", "Error Writing Data File");
                
                JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);
@@ -1261,13 +1200,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             }
             catch (IOException e)
             {
-               String resource, message;
+               String message;
 
-               resource = resourceBundle.getResource("SQLQueryBucketFrame.dialogmessage.ErrorReading");
-               if (resource.equals(""))
-                  message = "Error Reading Data File";
-               else
-                  message = resource;
+               message = resourceBundle.getResourceString("SQLQueryBucketFrame.dialogmessage.ErrorReading",
+                                                           "Error Reading Data File");
+               
                JOptionPane.showMessageDialog(null, message + ": " + fileName, resourceAlert,
                                              JOptionPane.ERROR_MESSAGE);
             }

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 01/01/2012
+// Version 2.4 07/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,9 @@
 //             in Constructor.
 //         2.2 Copyright Update.
 //         2.3 Copyright Update.
+//         2.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +78,7 @@ import javax.swing.JPanel;
  * MyJSQLView application when the Help About selection is made in the menu bar.
  * 
  * @author Dana M. Proctor
- * @version 2.3 01/01/2012
+ * @version 2.4 07/07/2012
  */
 
 class AboutFrame extends JFrame implements ActionListener
@@ -101,11 +104,8 @@ class AboutFrame extends JFrame implements ActionListener
 
       // Setting up the frame.
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-      resource = resourceBundle.getResource("AboutFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("About MyJSQLView");
-      else
-         setTitle(resource + " MyJSQLView");
+      resource = resourceBundle.getResourceString("AboutFrame.message.Title", "About");
+      setTitle(resource + " MyJSQLView");
 
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
@@ -140,11 +140,8 @@ class AboutFrame extends JFrame implements ActionListener
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      resource = resourceBundle.getResource("AboutFrame.button.Close");
-      if (resource.equals(""))
-         closeButton = new JButton("Close");
-      else
-         closeButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("AboutFrame.button.Close", "Close");
+      closeButton = new JButton(resource);
       closeButton.setFocusPainted(false);
       closeButton.addActionListener(this);
       southButtonPanel.add(closeButton);
