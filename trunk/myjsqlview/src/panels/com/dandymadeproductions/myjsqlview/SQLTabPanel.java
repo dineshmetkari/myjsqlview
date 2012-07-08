@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.0 05/24/2012
+// Version 2.1 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,9 @@
 //             Using tableMetaData.getColumnLabel(). Change in Same to Throw a
 //             SQL Exception With Finally So That Statements and Connection can
 //             be Properly Closed.
+//         2.1 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +92,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/24/2012
+ * @version 2.1 07/08/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -742,20 +745,14 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       
       // Summary Table select actions.
       
-      resource = resourceBundle.getResource("QueryTabPanel.menu.SelectAll");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("Select All");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.SelectAll", "Select All");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand("Select All");
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("QueryTabPanel.menu.DeSelectAll");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("DeSelect All");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.DeSelectAll", "DeSelect All");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand("DeSelect All");
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
@@ -764,11 +761,8 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
       
       summaryTablePopupMenu.addSeparator();
       
-      resource = resourceBundle.getResource("QueryTabPanel.menu.Copy");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("Copy");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.Copy", "Copy");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
       menuItem.setMnemonic(KeyEvent.VK_C);
       menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));

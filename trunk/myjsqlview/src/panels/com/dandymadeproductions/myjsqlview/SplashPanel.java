@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.0 01/01/2012
+// Version 2.1 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,9 @@
 //                        versionString.
 //         1.9 01/27/2011 Copyright Update.
 //         2.0 01/01/2012 Copyright Update.
+//         2.1 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +70,7 @@ import java.util.Random;
  * successful login to indicate the progress of the application initialization.
  * 
  * @author Dana M. Proctor
- * @version 2.0 01/01/2012
+ * @version 2.1 07/08/2012
  */
 
 class SplashPanel extends JPanel implements Runnable
@@ -119,11 +122,8 @@ class SplashPanel extends JPanel implements Runnable
       backgroundImageHeight = backgroundImage.getHeight(null);
       
       versionFont = new Font("Serif", Font.ITALIC, 10);
-      resource = resourceBundle.getResource("SplashPanel.label.Version");
-      if (resource.equals(""))
-         versionString = "Version " + (MyJSQLView.getVersion())[1];
-      else
-         versionString = resource + " " + (MyJSQLView.getVersion())[1];
+      resource = resourceBundle.getResourceString("SplashPanel.label.Version", "Version");
+      versionString = resource + " " + (MyJSQLView.getVersion())[1];
       
       // Symbol Parameters
       xCoordinate = -5.0;

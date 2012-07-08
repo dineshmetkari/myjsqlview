@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 2.8 05/07/2012
+// Version 2.9 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,9 @@
 //         2.7 Copyright Update.
 //         2.8 Change Constructor Arguments hostList, databaseList, &
 //             userList from Vector Data Type to ArrayList.
+//         2.9 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +83,7 @@ import javax.swing.JPasswordField;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.8 05/07/2012
+ * @version 2.9 07/08/2012
  */
 
 class StandardParametersPanel extends JPanel
@@ -108,11 +111,8 @@ class StandardParametersPanel extends JPanel
       setLayout(new GridLayout(8, 1, 100, 0));
 
       // Host
-      resource = resourceBundle.getResource("StandardParametersPanel.label.Host");
-      if (resource.equals(""))
-         hostLabel = new JLabel("Host", JLabel.LEFT);
-      else
-         hostLabel = new JLabel(resource, JLabel.LEFT); 
+      resource = resourceBundle.getResourceString("StandardParametersPanel.label.Host", "Host");
+      hostLabel = new JLabel(resource, JLabel.LEFT); 
       add(hostLabel);
 
       hostJComboBox = new JComboBox(hostList.toArray());
@@ -122,11 +122,8 @@ class StandardParametersPanel extends JPanel
       add(hostJComboBox);
 
       // Database
-      resource = resourceBundle.getResource("StandardParametersPanel.label.Database");
-      if (resource.equals(""))
-         dbLabel = new JLabel("Database");
-      else
-         dbLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("StandardParametersPanel.label.Database", "Database");
+      dbLabel = new JLabel(resource);
       add(dbLabel);
 
       dbJComboBox = new JComboBox(databaseList.toArray());
@@ -136,11 +133,8 @@ class StandardParametersPanel extends JPanel
       add(dbJComboBox);
 
       // User
-      resource = resourceBundle.getResource("StandardParametersPanel.label.User");
-      if (resource.equals(""))
-         userLabel = new JLabel("User", JLabel.LEFT);
-      else
-         userLabel = new JLabel(resource, JLabel.LEFT);
+      resource = resourceBundle.getResourceString("StandardParametersPanel.label.User", "User");
+      userLabel = new JLabel(resource, JLabel.LEFT);
       add(userLabel);
 
       userJComboBox = new JComboBox(userList.toArray());
@@ -150,11 +144,8 @@ class StandardParametersPanel extends JPanel
       add(userJComboBox);
 
       // Password
-      resource = resourceBundle.getResource("StandardParametersPanel.label.Password");
-      if (resource.equals(""))
-         passwordLabel = new JLabel("Password", JLabel.LEFT);
-      else
-         passwordLabel = new JLabel(resource, JLabel.LEFT);
+      resource = resourceBundle.getResourceString("StandardParametersPanel.label.Password", "Password");
+      passwordLabel = new JLabel(resource, JLabel.LEFT);
       add(passwordLabel);
 
       passwordTextField = new JPasswordField();

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.6 05/07/2012
+// Version 4.7 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,9 @@
 //         4.6 Class Instances checkBoxFields & primaryKeys Changed from Vector Data
 //             Types to ArrayList. Same for tableFields & newFields in Class Methods
 //             loadPreferences() & updatePreferences().
+//         4.7 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -130,7 +133,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.6 05/07/2012
+ * @version 4.7 07/08/2012
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -219,29 +222,23 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEmptyBorder());
 
-      resource = resourceBundle.getResource("TableFieldSelectionPreferencesPanel.button.SelectAll");
-      if (resource.equals(""))
-         selectAllButton = new JButton("Select All");
-      else
-         selectAllButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableFieldSelectionPreferencesPanel.button.SelectAll",
+                                                  "Select All");
+      selectAllButton = new JButton(resource);
       selectAllButton.setFocusPainted(false);
       selectAllButton.addActionListener(this);
       southButtonPanel.add(selectAllButton);
 
-      resource = resourceBundle.getResource("TableFieldSelectionPreferencesPanel.button.ClearAll");
-      if (resource.equals(""))
-         clearAllButton = new JButton("Clear All");
-      else
-         clearAllButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableFieldSelectionPreferencesPanel.button.ClearAll",
+                                                  "Clear All");
+      clearAllButton = new JButton(resource);
       clearAllButton.setFocusPainted(false);
       clearAllButton.addActionListener(this);
       southButtonPanel.add(clearAllButton);
 
-      resource = resourceBundle.getResource("TableFieldSelectionPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableFieldSelectionPreferencesPanel.button.Apply",
+                                                  "Apply");
+      applyButton = new JButton(resource);
       applyButton.setFocusPainted(false);
       applyButton.setEnabled(false);
       applyButton.addActionListener(this);

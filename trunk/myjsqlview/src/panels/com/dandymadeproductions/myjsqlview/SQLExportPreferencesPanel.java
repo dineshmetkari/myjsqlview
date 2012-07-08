@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.7 04/07/2012
+// Version 4.8 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,9 @@
 //                        set Spinners in get/setSQLExportOptions().
 //         4.7 04/07/2012 Minor Changes in Layout for identifierQuotePanel & its Components
 //                        in Constructor.
+//         4.8 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -148,7 +151,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.7 04/07/2012
+ * @version 4.8 07/08/2012
  */
 
 class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -242,11 +245,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       structurePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1,1,1,1),
                                                                   BorderFactory.createEtchedBorder()));
 
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.TableStructure");
-      if (resource.equals(""))
-         tableStructureCheckBox = new JCheckBox("Table Structure", DEFAULT_TABLE_STRUCTURE);
-      else
-         tableStructureCheckBox = new JCheckBox(resource, DEFAULT_TABLE_STRUCTURE);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.TableStructure",
+                                                  "Table Structure");
+      tableStructureCheckBox = new JCheckBox(resource, DEFAULT_TABLE_STRUCTURE);
       tableStructureCheckBox.setFocusPainted(false);
       tableStructureCheckBox.addActionListener(this);
       structurePanel.add(tableStructureCheckBox);
@@ -254,20 +255,15 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       warningPanel = new JPanel();
       warningPanel.setBorder(BorderFactory.createEmptyBorder());
 
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.label.Warning");
-      if (resource.equals(""))
-         warningLabel = new JLabel(" Warning! ", JLabel.LEADING);
-      else
-         warningLabel = new JLabel(" " + resource + "! ", JLabel.LEADING);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.label.Warning", "Warning");
+      warningLabel = new JLabel(" " + resource + "! ", JLabel.LEADING);
       warningLabel.setBorder(BorderFactory.createEmptyBorder());
       warningLabel.setForeground(Color.RED);
       warningPanel.add(warningLabel);
 
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.label.DropExistingTable");
-      if (resource.equals(""))
-         tableStructureWarningLabel = new JLabel("Inserts SQL statement DROP EXISTING TABLE.");
-      else
-         tableStructureWarningLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.label.DropExistingTable",
+                                                  "Inserts SQL statement DROP EXISTING TABLE.");
+      tableStructureWarningLabel = new JLabel(resource);
       tableStructureWarningLabel.setBorder(BorderFactory.createEmptyBorder());
       warningPanel.add(tableStructureWarningLabel);
 
@@ -284,11 +280,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
                                                              BorderFactory.createEtchedBorder()));
 
       // Data CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.TableData");
-      if (resource.equals(""))
-         tableDataCheckBox = new JCheckBox("Table Data", DEFAULT_TABLE_DATA);
-      else
-         tableDataCheckBox = new JCheckBox(resource, DEFAULT_TABLE_DATA);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.TableData",
+                                                  "Table Data");
+      tableDataCheckBox = new JCheckBox(resource, DEFAULT_TABLE_DATA);
       tableDataCheckBox.setFocusPainted(false);
       tableDataCheckBox.addActionListener(this);
 
@@ -311,11 +305,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(identifierQuoteTextField, constraints);
       identifierQuotePanel.add(identifierQuoteTextField);
 
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.label.IdentifierQuoteString");
-      if (resource.equals(""))
-         identifierQuoteLabel = new JLabel(" Identifier Quote String");
-      else
-         identifierQuoteLabel = new JLabel(" " + resource);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.label.IdentifierQuoteString",
+                                                   "Identifier Quote String");
+      identifierQuoteLabel = new JLabel(" " + resource);
 
       buildConstraints(constraints, 1, 0, 1, 1, 20, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -403,19 +395,14 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       buttonPanel = new JPanel();
       
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.button.RestoreDefaults");
-      if (resource.equals(""))
-         restoreDefaultsButton = new JButton("Restore Defaults");
-      else
-         restoreDefaultsButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.button.RestoreDefaults",
+                                                  "Restore Defaults");
+      restoreDefaultsButton = new JButton(resource);
       restoreDefaultsButton.addActionListener(this);
       buttonPanel.add(restoreDefaultsButton);
 
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.button.Apply", "Apply");
+      applyButton = new JButton(resource);
       applyButton.setEnabled(false);
       applyButton.addActionListener(this);
       buttonPanel.add(applyButton);
@@ -651,11 +638,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       insertOptionsPanel.add(expressionTypePanel);
 
       // Insert Lock Table CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
-      if (resource.equals(""))
-         insertLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_INSERT_LOCK);
-      else
-         insertLockTableCheckBox = new JCheckBox(resource, DEFAULT_INSERT_LOCK);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.LockTable",
+                                                  "Lock Table");
+      insertLockTableCheckBox = new JCheckBox(resource, DEFAULT_INSERT_LOCK);
       insertLockTableCheckBox.setFocusPainted(false);
       insertLockTableCheckBox.addActionListener(this);
 
@@ -666,11 +651,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       insertOptionsPanel.add(insertLockTableCheckBox);
 
       // Auto-Increment CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Auto-Increment");
-      if (resource.equals(""))
-         autoIncrementCheckBox = new JCheckBox("Auto-Increment: SEQ", DEFAULT_AUTO_INCREMENT);
-      else
-         autoIncrementCheckBox = new JCheckBox(resource + ": SEQ", DEFAULT_AUTO_INCREMENT);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.Auto-Increment",
+                                                  "Auto-Increment");
+      autoIncrementCheckBox = new JCheckBox(resource + ": SEQ", DEFAULT_AUTO_INCREMENT);
       autoIncrementCheckBox.setFocusPainted(false);
       autoIncrementCheckBox.addActionListener(this);
 
@@ -681,11 +664,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       insertOptionsPanel.add(autoIncrementCheckBox);
 
       // TimeStamp CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Timestamp");
-      if (resource.equals(""))
-         timeStampCheckBox = new JCheckBox("Timestamp: NOW( )", DEFAULT_TIMESTAMP);
-      else
-         timeStampCheckBox = new JCheckBox(resource + ": NOW( )", DEFAULT_TIMESTAMP);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.Timestamp",
+                                                  "Timestamp");
+      timeStampCheckBox = new JCheckBox(resource + ": NOW( )", DEFAULT_TIMESTAMP);
       timeStampCheckBox.setFocusPainted(false);
       timeStampCheckBox.addActionListener(this);
 
@@ -696,11 +677,8 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       insertOptionsPanel.add(timeStampCheckBox);
 
       // Insert Type CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
-      if (resource.equals(""))
-         insertTypeCheckBox = new JCheckBox("Type", DEFAULT_INSERT_TYPE);
-      else
-         insertTypeCheckBox = new JCheckBox(resource, DEFAULT_INSERT_TYPE);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.Type", "Type");
+      insertTypeCheckBox = new JCheckBox(resource, DEFAULT_INSERT_TYPE);
       insertTypeCheckBox.setFocusPainted(false);
       insertTypeCheckBox.addActionListener(this);
 
@@ -771,11 +749,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       replaceOptionsPanel.add(expressionTypePanel);
 
       // Replace Lock Table CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
-      if (resource.equals(""))
-         replaceLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_REPLACE_LOCK);
-      else
-         replaceLockTableCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_LOCK);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.LockTable",
+                                                  "Lock Table");
+      replaceLockTableCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_LOCK);
       replaceLockTableCheckBox.setFocusPainted(false);
       replaceLockTableCheckBox.addActionListener(this);
 
@@ -786,11 +762,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       replaceOptionsPanel.add(replaceLockTableCheckBox);
 
       // Replace Type CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
-      if (resource.equals(""))
-         replaceTypeCheckBox = new JCheckBox("Type", DEFAULT_REPLACE_TYPE);
-      else
-         replaceTypeCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_TYPE);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.Type",
+                                                  "Type");
+      replaceTypeCheckBox = new JCheckBox(resource, DEFAULT_REPLACE_TYPE);
       replaceTypeCheckBox.setFocusPainted(false);
       replaceTypeCheckBox.addActionListener(this);
 
@@ -831,11 +805,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       String resource;
 
       // UpdateLock Table CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.LockTable");
-      if (resource.equals(""))
-         updateLockTableCheckBox = new JCheckBox("Lock Table", DEFAULT_UPDATE_LOCK);
-      else
-         updateLockTableCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_LOCK);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.LockTable",
+                                                  "Lock Table");
+      updateLockTableCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_LOCK);
       updateLockTableCheckBox.setFocusPainted(false);
       updateLockTableCheckBox.addActionListener(this);
 
@@ -846,11 +818,9 @@ class SQLExportPreferencesPanel extends JPanel implements ActionListener, Change
       updateOptionsPanel.add(updateLockTableCheckBox);
 
       // Type CheckBox
-      resource = resourceBundle.getResource("SQLExportPreferencesPanel.checkbox.Type");
-      if (resource.equals(""))
-         updateTypeCheckBox = new JCheckBox("Type", DEFAULT_UPDATE_TYPE);
-      else
-         updateTypeCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_TYPE);
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.Type",
+                                                  "Type");
+      updateTypeCheckBox = new JCheckBox(resource, DEFAULT_UPDATE_TYPE);
       updateTypeCheckBox.setFocusPainted(false);
       updateTypeCheckBox.addActionListener(this);
 

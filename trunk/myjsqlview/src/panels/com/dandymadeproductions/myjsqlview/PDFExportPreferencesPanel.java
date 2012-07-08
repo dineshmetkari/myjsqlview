@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 01/01/2012
+// Version 2.2 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,9 @@
 //         2.0 10/04/2011 Correction in fillFontPageLayoutPanel() pageLayoutLabel Resource
 //                        Identification Name.
 //         2.1 01/01/2012 Copyright Update.
+//         2.2 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -81,7 +84,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 2.1 01/01/2012
+ * @version 2.2 07/08/2012
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -232,19 +235,14 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       // Button Action Options Panel
       buttonPanel = new JPanel();
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.button.RestoreDefaults");
-      if (resource.equals(""))
-         restoreDefaultsButton = new JButton("Restore Defaults");
-      else
-         restoreDefaultsButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.button.RestoreDefaults",
+                                                  "Restore Defaults");
+      restoreDefaultsButton = new JButton(resource);
       restoreDefaultsButton.addActionListener(this);
       buttonPanel.add(restoreDefaultsButton);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.button.Apply", "Apply");
+      applyButton = new JButton(resource);
       applyButton.addActionListener(this);
       buttonPanel.add(applyButton);
 
@@ -385,11 +383,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Title Label.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.Title");
-      if (resource.equals(""))
-         titleLabel = new JLabel("Title");
-      else
-         titleLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.Title", "Title");
+      titleLabel = new JLabel(resource);
       titleLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 
       buildConstraints(constraints, 0, 0, 4, 1, 100, 33);
@@ -407,11 +402,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       ButtonGroup titleButtonGroup = new ButtonGroup();
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.None");
-      if (resource.equals(""))
-         titleNoneRadioButton = new JRadioButton("None", true);
-      else
-         titleNoneRadioButton = new JRadioButton(resource, true);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.radiobutton.None", "None");
+      titleNoneRadioButton = new JRadioButton(resource, true);
       titleNoneRadioButton.setFocusPainted(false);
       titleNoneRadioButton.addActionListener(this);
       titleButtonGroup.add(titleNoneRadioButton);
@@ -422,11 +414,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(titleNoneRadioButton, constraints);
       titleSelectionPanel.add(titleNoneRadioButton);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.Default");
-      if (resource.equals(""))
-         titleDefaultRadioButton = new JRadioButton("Default", false);
-      else
-         titleDefaultRadioButton = new JRadioButton(resource, false);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.radiobutton.Default",
+                                                  "Default");
+      titleDefaultRadioButton = new JRadioButton(resource, false);
       titleDefaultRadioButton.setFocusPainted(false);
       titleDefaultRadioButton.addActionListener(this);
       titleButtonGroup.add(titleDefaultRadioButton);
@@ -437,11 +427,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(titleDefaultRadioButton, constraints);
       titleSelectionPanel.add(titleDefaultRadioButton);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.radiobutton.Custom");
-      if (resource.equals(""))
-         titleCustomRadioButton = new JRadioButton("Custom", true);
-      else
-         titleCustomRadioButton = new JRadioButton(resource, true);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.radiobutton.Custom",
+                                                  "Custom");
+      titleCustomRadioButton = new JRadioButton(resource, true);
       titleCustomRadioButton.setFocusPainted(false);
       titleCustomRadioButton.addActionListener(this);
       titleButtonGroup.add(titleCustomRadioButton);
@@ -470,11 +458,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Title Font Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.TitleFontSize");
-      if (resource.equals(""))
-         titleFontSizeLabel = new JLabel("Font Size");
-      else
-         titleFontSizeLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.TitleFontSize",
+                                                  "Font Size");
+      titleFontSizeLabel = new JLabel(resource);
       titleFontSizeLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 8, 0));
 
       buildConstraints(constraints, 0, 2, 1, 1, 12, 33);
@@ -496,11 +482,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Title Font Color
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.TitleFontColor");
-      if (resource.equals(""))
-         titleColorLabel = new JLabel("Font Color");
-      else
-         titleColorLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.TitleFontColor",
+                                                  "Font Color");
+      titleColorLabel = new JLabel(resource);
       titleColorLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 8, 0));
 
       buildConstraints(constraints, 2, 2, 1, 1, 12, 100);
@@ -539,11 +523,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Label.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderColumns");
-      if (resource.equals(""))
-         headerLabel = new JLabel("Header Columns");
-      else
-         headerLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.HeaderColumns",
+                                                  "Header Columns");
+      headerLabel = new JLabel(resource);
       headerLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 
       buildConstraints(constraints, 0, 0, 6, 1, 100, 50);
@@ -554,11 +536,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Font Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderFont");
-      if (resource.equals(""))
-         headerFontLabel = new JLabel("Font");
-      else
-         headerFontLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.HeaderFont",
+                                                  "Font");
+      headerFontLabel = new JLabel(resource);
       headerFontLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
 
       buildConstraints(constraints, 0, 1, 1, 1, 18, 50);
@@ -595,11 +575,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Border Size
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.HeaderBorder");
-      if (resource.equals(""))
-         headerBorderLabel = new JLabel("Border");
-      else
-         headerBorderLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.HeaderBorder",
+                                                  "Border");
+      headerBorderLabel = new JLabel(resource);
       headerBorderLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
 
       buildConstraints(constraints, 3, 1, 1, 1, 18, 100);
@@ -647,11 +625,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Number Fields Alignment Label.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.NumberFieldsAlignment");
-      if (resource.equals(""))
-         numberFieldsAlignmentLabel = new JLabel("Number Fields Alignment");
-      else
-         numberFieldsAlignmentLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.NumberFieldsAlignment",
+                                                  "Number Fields Alignment");
+     numberFieldsAlignmentLabel = new JLabel(resource);
       numberFieldsAlignmentLabel.setBorder(BorderFactory.createEmptyBorder(3, 10, 10, 10));
 
       buildConstraints(constraints, 0, 1, 1, 1, 50, 100);
@@ -662,23 +638,14 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       numberAlignmentComboBox = new JComboBox();
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Left");
-      if (resource.equals(""))
-         numberAlignmentComboBox.addItem(ALIGNMENT_LEFT);
-      else
-         numberAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Left", "LEFT");
+      numberAlignmentComboBox.addItem(resource);
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Center");
-      if (resource.equals(""))
-         numberAlignmentComboBox.addItem(ALIGNMENT_CENTER);
-      else
-         numberAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Center", "Center");
+      numberAlignmentComboBox.addItem(resource);
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Right");
-      if (resource.equals(""))
-         numberAlignmentComboBox.addItem(ALIGNMENT_RIGHT);
-      else
-         numberAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Right", "Right");
+      numberAlignmentComboBox.addItem(resource);
          
       numberAlignmentComboBox.setSelectedIndex(ALIGNMENT_RIGHT);
       numberAlignmentComboBox.addActionListener(this);
@@ -702,11 +669,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Date Field Label.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.DateFields");
-      if (resource.equals(""))
-         dateLabel = new JLabel("Date Fields");
-      else
-         dateLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.DateFields",
+                                                  "Date Fields");
+      dateLabel = new JLabel(resource);
       dateLabel.setBorder(BorderFactory.createEmptyBorder(3, 0, 0, 0));
 
       buildConstraints(constraints, 0, 0, 4, 1, 100, 50);
@@ -717,11 +682,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Date Format & Alignment.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.DateFormat");
-      if (resource.equals(""))
-         dateFormatLabel = new JLabel("Format");
-      else
-         dateFormatLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.DateFormat",
+                                                  "Format");
+      dateFormatLabel = new JLabel(resource);
       dateFormatLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
       buildConstraints(constraints, 0, 1, 1, 1, 12, 100);
@@ -739,11 +702,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(dateFormatComboBox, constraints);
       datePanel.add(dateFormatComboBox);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.DateAlignment");
-      if (resource.equals(""))
-         dateAlignmentLabel = new JLabel("Alignment");
-      else
-         dateAlignmentLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.DateAlignment",
+                                                  "Alignment");
+      dateAlignmentLabel = new JLabel(resource);
       dateAlignmentLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
       buildConstraints(constraints, 2, 1, 1, 1, 12, 50);
@@ -754,23 +715,14 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       dateAlignmentComboBox = new JComboBox();
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Left");
-      if (resource.equals(""))
-         dateAlignmentComboBox.addItem(ALIGNMENT_LEFT);
-      else
-         dateAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Left", "Left");
+      dateAlignmentComboBox.addItem(resource);
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Center");
-      if (resource.equals(""))
-         dateAlignmentComboBox.addItem(ALIGNMENT_CENTER);
-      else
-         dateAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Center", "Center");
+      dateAlignmentComboBox.addItem(resource);
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Right");
-      if (resource.equals(""))
-         dateAlignmentComboBox.addItem(ALIGNMENT_RIGHT);
-      else
-         dateAlignmentComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Right", "Right");
+      dateAlignmentComboBox.addItem(resource);
       
       dateAlignmentComboBox.setSelectedIndex(ALIGNMENT_CENTER);
       dateAlignmentComboBox.addActionListener(this);
@@ -795,11 +747,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       
       // Font Selector.
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.Font");
-      if (resource.equals(""))
-         fontLabel = new JLabel("Font");
-      else
-         fontLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.Font", "Font");
+      fontLabel = new JLabel(resource);
       fontLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
       buildConstraints(constraints, 0, 0, 1, 1, 12, 100);
@@ -817,11 +766,9 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(fontComboBox, constraints);
       fontLayoutPanel.add(fontComboBox);
 
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.label.PageLayout");
-      if (resource.equals(""))
-         pageLayoutLabel = new JLabel("Page Layout");
-      else
-         pageLayoutLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.label.PageLayout",
+                                                  "Page Layout");
+      pageLayoutLabel = new JLabel(resource);
       pageLayoutLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
 
       buildConstraints(constraints, 2, 0, 1, 1, 12, 50);
@@ -832,17 +779,13 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       
       pageLayoutComboBox = new JComboBox();
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Portrait");
-      if (resource.equals(""))
-         pageLayoutComboBox.addItem(LAYOUT_PORTRAIT);
-      else
-         pageLayoutComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Portrait",
+                                                  "Portrait");
+      pageLayoutComboBox.addItem(resource);
       
-      resource = resourceBundle.getResource("PDFExportPreferencesPanel.combobox.Landscape");
-      if (resource.equals(""))
-         pageLayoutComboBox.addItem(LAYOUT_LANDSCAPE);
-      else
-         pageLayoutComboBox.addItem(resource);
+      resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Landscape",
+                                                  "Landscape");
+      pageLayoutComboBox.addItem(resource);
          
       pageLayoutComboBox.setSelectedIndex(LAYOUT_PORTRAIT);
       pageLayoutComboBox.addActionListener(this);

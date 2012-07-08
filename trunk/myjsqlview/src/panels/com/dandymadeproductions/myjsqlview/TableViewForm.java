@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.4 05/07/2012
+// Version 6.5 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -149,6 +149,9 @@
 //         6.3 01/01/2012 Copyright Update.
 //         6.4 05/07/2012 Constructor Argument tableColumnNames Changed from Vector Data
 //                        Type to ArrayList.
+//         6.5 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -175,7 +178,7 @@ import javax.swing.*;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.4 05/07/2012
+ * @version 6.5 07/08/2012
  */
 
 class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -515,12 +518,9 @@ class TableViewForm extends JPanel implements ActionListener, KeyListener
             {
                String resourceMessage, resourceAlert;
                
-               resourceAlert = resourceBundle.getResource("TableViewForm.dialogtitle.Alert");
-               if (resourceAlert.equals(""))
-                  resourceAlert = "Alert";
-               resourceMessage = resourceBundle.getResource("TableViewForm.dialogmessage.ErrorWritingDataFile");
-               if (resourceMessage.equals(""))
-                  resourceMessage = "Error Writing Data File";
+               resourceAlert = resourceBundle.getResourceString("TableViewForm.dialogtitle.Alert", "Alert");
+               resourceMessage = resourceBundle.getResourceString(
+                  "TableViewForm.dialogmessage.ErrorWritingDataFile", "Error Writing Data File");
                
                JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);

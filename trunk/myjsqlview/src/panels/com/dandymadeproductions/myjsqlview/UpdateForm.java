@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.5 05/08/2012
+// Version 4.6 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -121,6 +121,9 @@
 //         4.5 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. Removed the
 //                        Removing of First Element in updateColumnComboBox in Create Method. All
 //                        the Result of Different Behavior of 4.4 ArrayList Change.
+//         4.6 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -153,7 +156,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.5 05/08/2012
+ * @version 4.6 07/08/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -236,11 +239,8 @@ class UpdateForm extends JFrame implements ActionListener
          comboBoxColumnNames.add(columnNames.get(i));
       }
       
-      resource = resourceBundle.getResource("UpdateForm.message.Title");
-      if (resource.equals(""))
-         setTitle("Update : " + table);
-      else
-         setTitle(resource + " : " + table);
+      resource = resourceBundle.getResourceString("UpdateForm.message.Title", "Update");
+      setTitle(resource + " : " + table);
 
       dataSourceType = ConnectionManager.getDataSourceType();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
@@ -311,11 +311,9 @@ class UpdateForm extends JFrame implements ActionListener
       // Options
       optionsPanel = new JPanel();
 
-      resource = resourceBundle.getResource("UpdateForm.label.Refresh");
-      if (resource.equals(""))
-         refreshCheckBox = new JCheckBox("Refresh Summary Table on Update", true);
-      else
-         refreshCheckBox = new JCheckBox(resource, true);
+      resource = resourceBundle.getResourceString("UpdateForm.label.Refresh",
+                                                  "Refresh Summary Table on Update");
+      refreshCheckBox = new JCheckBox(resource, true);
       optionsPanel.add(refreshCheckBox);
 
       buildConstraints(constraints, 1, 0, 1, 1, 90, 100);
@@ -366,30 +364,21 @@ class UpdateForm extends JFrame implements ActionListener
       actionButtonPanel = new JPanel();
 
       // Find Button
-      resource = resourceBundle.getResource("UpdateForm.button.Find");
-      if (resource.equals(""))
-         findButton = new JButton("Find");
-      else
-         findButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("UpdateForm.button.Find", "Find");
+      findButton = new JButton(resource);
       findButton.setFocusPainted(false);
       actionButtonPanel.add(findButton);
 
       // Update Button
-      resource = resourceBundle.getResource("UpdateForm.button.Update");
-      if (resource.equals(""))
-         updateButton = new JButton("Update");
-      else
-         updateButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("UpdateForm.button.Update", "Update");
+      updateButton = new JButton(resource);
       updateButton.setFocusPainted(false);
       updateButton.addActionListener(this);
       actionButtonPanel.add(updateButton);
 
       // Close Button
-      resource = resourceBundle.getResource("UpdateForm.button.Close");
-      if (resource.equals(""))
-         closeButton = new JButton("Close");
-      else
-         closeButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("UpdateForm.button.Close", "Close");
+      closeButton = new JButton(resource);
       closeButton.setFocusPainted(false);
       closeButton.addActionListener(this);
       actionButtonPanel.add(closeButton);
@@ -611,11 +600,8 @@ class UpdateForm extends JFrame implements ActionListener
       updatePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
                                            BorderFactory.createEmptyBorder(10, 6, 10, 6)));
 
-      resource = resourceBundle.getResource("UpdateForm.label.Update");
-      if (resource.equals(""))
-         setLabel = new JLabel("Update : ", JLabel.LEADING);
-      else
-         setLabel = new JLabel(resource + " : ", JLabel.LEADING);
+      resource = resourceBundle.getResourceString("UpdateForm.label.Update", "Update");
+      setLabel = new JLabel(resource + " : ", JLabel.LEADING);
 
       buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -631,11 +617,8 @@ class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(updateColumnComboBox, constraints);
       updatePanel.add(updateColumnComboBox);
 
-      resource = resourceBundle.getResource("UpdateForm.label.With");
-      if (resource.equals(""))
-         withLabel = new JLabel(" With ", JLabel.LEADING);
-      else
-         withLabel = new JLabel(" " + resource + " ", JLabel.LEADING);
+      resource = resourceBundle.getResourceString("UpdateForm.label.With", "With");
+      withLabel = new JLabel(" " + resource + " ", JLabel.LEADING);
 
       buildConstraints(constraints, 3, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -651,11 +634,8 @@ class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(updateColumnToTextField, constraints);
       updatePanel.add(updateColumnToTextField);
 
-      resource = resourceBundle.getResource("UpdateForm.checkbox.Quote");
-      if (resource.equals(""))
-         quoteCheckBox = new JCheckBox("Quote", true);
-      else
-         quoteCheckBox = new JCheckBox(resource, true);
+      resource = resourceBundle.getResourceString("UpdateForm.checkbox.Quote", "Quote");
+      quoteCheckBox = new JCheckBox(resource, true);
 
       buildConstraints(constraints, 5, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -678,15 +658,12 @@ class UpdateForm extends JFrame implements ActionListener
                                          BorderFactory.createEmptyBorder(10, 6, 10, 6)));
       
       whereLabel = new JLabel[updateFormExpressionNumber];
-      resourceWhere = resourceBundle.getResource("UpdateForm.label.Where");
+      resourceWhere = resourceBundle.getResourceString("UpdateForm.label.Where", "Where");
       
       int i = 0;
       do
       {
-         if (resourceWhere.equals(""))
-            whereLabel[i] = new JLabel("Where : ", JLabel.LEFT);
-         else
-            whereLabel[i] = new JLabel(resourceWhere + " : ", JLabel.LEFT);
+         whereLabel[i] = new JLabel(resourceWhere + " : ", JLabel.LEFT);
 
          buildConstraints(constraints, 0, (i + 3), 1, 1, 100, 100);
          constraints.fill = GridBagConstraints.NONE;
@@ -815,29 +792,21 @@ class UpdateForm extends JFrame implements ActionListener
             JLabel message;
             String messageUpdate, messageRows; 
             
-            resourceMessage1 = resourceBundle.getResource("UpdateForm.dialogmessage.Update");
-            if (resourceMessage1.equals(""))
-               messageUpdate = "Update";
-            else
-               messageUpdate = resourceMessage1;
-            resourceMessage2 = resourceBundle.getResource("UpdateForm.dialogmessage.Rows");
-            if (resourceMessage2.equals(""))
-               messageRows = "Rows(s)?";
-            else
-               messageRows = resourceMessage2;
-            
+            messageUpdate = resourceBundle.getResourceString("UpdateForm.dialogmessage.Update",
+                                                                "Update");
+            messageRows = resourceBundle.getResourceString("UpdateForm.dialogmessage.Rows",
+                                                                "Rows(s)?");
             message = new JLabel(messageUpdate + " " + updateRowCount + " " + messageRows, JLabel.CENTER);
+            
             Object[] content = {message};
             
-            resourceTitle = resourceBundle.getResource("UpdateForm.dialogtitle.AlertDialog");
-            resourceOK = resourceBundle.getResource("UpdateForm.dialogbutton.OK");
-            resourceCancel = resourceBundle.getResource("UpdateForm.dialogbutton.Cancel");
+            resourceTitle = resourceBundle.getResourceString("UpdateForm.dialogtitle.AlertDialog",
+                                                             "Alert Dialog");
+            resourceOK = resourceBundle.getResourceString("UpdateForm.dialogbutton.OK", "OK");
+            resourceCancel = resourceBundle.getResourceString("UpdateForm.dialogbutton.Cancel", "Cancel");
             
-            if (resourceTitle.equals("") || resourceOK.equals("") || resourceCancel.equals(""))
-               updateDialog = new InputDialog(this, "Alert Dialog", "ok", "cancel", content, deleteDataIcon);
-            else
-               updateDialog = new InputDialog(this, resourceTitle, resourceOK, resourceCancel,
-                                              content, deleteDataIcon);
+            updateDialog = new InputDialog(this, resourceTitle, resourceOK, resourceCancel,
+                                           content, deleteDataIcon);
             updateDialog.pack();
             updateDialog.setLocation(this.getLocation().x + this.getWidth() / 4, this.getLocation().y
                                                                                  + this.getHeight() / 4);
@@ -1034,19 +1003,16 @@ class UpdateForm extends JFrame implements ActionListener
                      }
                      catch (IllegalArgumentException e)
                      {
-                        resourceMessage1 = resourceBundle.getResource("UpdateForm.dialogmessage.InvalidDateTime");
-                        resourceMessage2 = resourceBundle.getResource("UpdateForm.dialogmessage.ColumnType");
-                        resourceTitle = resourceBundle.getResource("UpdateForm.dialogtitle.Alert");
+                        resourceMessage1 = resourceBundle.getResourceString(
+                           "UpdateForm.dialogmessage.InvalidDateTime", "Invalid Date/Time Input for Field");
+                        resourceMessage2 = resourceBundle.getResourceString(
+                           "UpdateForm.dialogmessage.ColumnType", "Type");
+                        resourceTitle = resourceBundle.getResourceString("UpdateForm.dialogtitle.Alert",
+                           "Alert");
                         
-                        if (resourceMessage1.equals("") || resourceMessage2.equals("")
-                            || resourceTitle.equals(""))
-                           JOptionPane.showMessageDialog(null, "Invalid Date/Time Input for Field " + columnName
-                                                         + ", Type: " + columnType, "Alert",
-                                                         JOptionPane.ERROR_MESSAGE);
-                        else
-                           JOptionPane.showMessageDialog(null, resourceMessage1 + " " + columnName
-                                                         + ", " + resourceMessage2 + ": " + columnType,
-                                                         resourceTitle, JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, resourceMessage1 + " " + columnName
+                                                      + ", " + resourceMessage2 + ": " + columnType,
+                                                      resourceTitle, JOptionPane.ERROR_MESSAGE);
                         sqlStatement.close();
                         dbConnection.setAutoCommit(true);
                         ConnectionManager.closeConnection(dbConnection,

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 05/07/2012
+// Version 2.4 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,9 @@
 //         2.3 Change Constructor Arguments driverList, protocolList,
 //             subProtocolList, & portList from Vector Data Type to
 //             ArrayList.
+//         2.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +78,7 @@ import javax.swing.JPanel;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.3 05/07/2012
+ * @version 2.4 07/08/2012
  */
 
 class AdvancedParametersPanel extends JPanel
@@ -104,11 +107,8 @@ class AdvancedParametersPanel extends JPanel
       setLayout(new GridLayout(8, 1));
 
       // Driver
-      resource = resourceBundle.getResource("AdvancedParametersPanel.label.Driver");
-      if (resource.equals(""))
-         driverLabel = new JLabel("Driver");
-      else
-         driverLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("AdvancedParametersPanel.label.Driver", "Driver");
+      driverLabel = new JLabel(resource);
       add(driverLabel);
 
       driverJComboBox = new JComboBox(driverList.toArray());
@@ -118,11 +118,8 @@ class AdvancedParametersPanel extends JPanel
       add(driverJComboBox);
 
       // Protocol
-      resource = resourceBundle.getResource("AdvancedParametersPanel.label.Protocol");
-      if (resource.equals(""))
-         protocolLabel = new JLabel("Protocol");
-      else
-         protocolLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("AdvancedParametersPanel.label.Protocol", "Protocol");
+      protocolLabel = new JLabel(resource);
       add(protocolLabel);
 
       protocolJComboBox = new JComboBox(protocolList.toArray());
@@ -132,11 +129,9 @@ class AdvancedParametersPanel extends JPanel
       add(protocolJComboBox);
 
       // SubProtocol
-      resource = resourceBundle.getResource("AdvancedParametersPanel.label.SubProtocol");
-      if (resource.equals(""))
-         subProtocolLabel = new JLabel("SubProtocol");
-      else
-         subProtocolLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("AdvancedParametersPanel.label.SubProtocol",
+                                                  "SubProtocol");
+      subProtocolLabel = new JLabel(resource);
       add(subProtocolLabel);
 
       subProtocolJComboBox = new JComboBox(subProtocolList.toArray());
@@ -146,11 +141,8 @@ class AdvancedParametersPanel extends JPanel
       add(subProtocolJComboBox);
 
       // Port
-      resource = resourceBundle.getResource("AdvancedParametersPanel.label.Port");
-      if (resource.equals(""))
-         portLabel = new JLabel("Port");
-      else
-         portLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("AdvancedParametersPanel.label.Port", "Port");
+      portLabel = new JLabel(resource);
       add(portLabel);
 
       portJComboBox = new JComboBox(portList.toArray());
