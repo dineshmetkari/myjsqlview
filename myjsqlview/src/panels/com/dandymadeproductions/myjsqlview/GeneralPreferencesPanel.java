@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 03/29/2012
+// Version 1.9 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,9 @@
 //                        Increased to 500,000 & 10,000 Respectably.
 //         1.8 03/29/2012 Added Class Instance generalOptionsPanelFiller & Used This New
 //                        Canvas to be Fill the Center.
+//         1.9 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -82,7 +85,7 @@ import javax.swing.event.ChangeListener;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 1.8 03/29/2012
+ * @version 1.9 07/08/2012
  */
 
 class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -144,11 +147,9 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       dateFormatPanel.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
       
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.DateFormat");
-      if (resource.equals(""))
-         dateFormatLabel = new JLabel("Date Format");
-      else
-         dateFormatLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.DateFormat",
+                                                  "Date Format");
+      dateFormatLabel = new JLabel(resource);
       dateFormatLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
       
       buildConstraints(constraints, 0, 0, 1, 1, 50, 100);
@@ -175,11 +176,9 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       limitIncrementPanel.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
 
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.TableReadLimitIcrement");
-      if (resource.equals(""))
-         limitIncrementLabel = new JLabel(" Table Read Limit Increment");
-      else
-         limitIncrementLabel = new JLabel(" " + resource);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.TableReadLimitIcrement",
+                                                  "Table Read Limit Increment");
+      limitIncrementLabel = new JLabel(" " + resource);
 
       buildConstraints(constraints, 0, 0, 1, 1, 50, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -208,11 +207,9 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       batchPanel.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
       
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.EnableTableWriteBatch");
-      if (resource.equals(""))
-         batchEnabledCheckBox = new JCheckBox("Enable Table Write Batch", false);
-      else
-         batchEnabledCheckBox = new JCheckBox(resource, false);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.EnableTableWriteBatch",
+                                                  "Enable Table Write Batch");
+      batchEnabledCheckBox = new JCheckBox(resource, false);
       batchEnabledCheckBox.setFocusPainted(false);
       batchEnabledCheckBox.addActionListener(this);
 
@@ -222,11 +219,9 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       gridbag.setConstraints(batchEnabledCheckBox, constraints);
       batchPanel.add(batchEnabledCheckBox);
       
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.label.BatchSize");
-      if (resource.equals(""))
-         batchSizeLabel = new JLabel(" Batch Size");
-      else
-         batchSizeLabel = new JLabel(" " + resource);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.BatchSize",
+                                                  "Batch Size");
+      batchSizeLabel = new JLabel(" " + resource);
 
       buildConstraints(constraints, 1, 0, 1, 1, 33, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -265,19 +260,14 @@ class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeLi
       // Button Action Options Panel
       buttonPanel = new JPanel();
       
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.button.RestoreDefaults");
-      if (resource.equals(""))
-         restoreDefaultsButton = new JButton("Restore Defaults");
-      else
-         restoreDefaultsButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.button.RestoreDefaults",
+                                                  "Restore Defaults");
+      restoreDefaultsButton = new JButton(resource);
       restoreDefaultsButton.addActionListener(this);
       buttonPanel.add(restoreDefaultsButton);
 
-      resource = resourceBundle.getResource("GeneralPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.button.Apply", "Apply");
+      applyButton = new JButton(resource);
       applyButton.addActionListener(this);
       buttonPanel.add(applyButton);
 

@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.4 01/01/2012
+// Version 3.5 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,9 @@
 //         3.3 10/01/2011 Set Date Format to DBTablesPanel.getGeneralProperties().getViewDateFormat()
 //                        on Restore Defaults in actionPerformed().
 //         3.4 01/01/2012 Copyright Update.
+//         3.5 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -98,7 +101,7 @@ import javax.swing.*;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.4 01/01/2012
+ * @version 3.5 07/08/2012
  */
 
 class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -173,11 +176,9 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       dateFormatPanel.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
       
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.label.DateFormat");
-      if (resource.equals(""))
-         dateFormatLabel = new JLabel("Date Format");
-      else
-         dateFormatLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.label.DateFormat",
+                                                  "Date Format");
+      dateFormatLabel = new JLabel(resource);
       dateFormatLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
       
       buildConstraints(constraints, 0, 0, 1, 1, 24, 100);
@@ -201,19 +202,14 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       // Button Action Options Panel
       buttonPanel = new JPanel();
       
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.button.RestoreDefaults");
-      if (resource.equals(""))
-         restoreDefaultsButton = new JButton("Restore Defaults");
-      else
-         restoreDefaultsButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.button.RestoreDefaults",
+                                                  "Restore Defaults");
+      restoreDefaultsButton = new JButton(resource);
       restoreDefaultsButton.addActionListener(this);
       buttonPanel.add(restoreDefaultsButton);
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.button.Apply", "Apply");
+      applyButton = new JButton(resource);
       applyButton.addActionListener(this);
       buttonPanel.add(applyButton);
 
@@ -315,11 +311,9 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
 
       // Delimiter Label & Radio Buttons
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.label.Delimiter");
-      if (resource.equals(""))
-         delimiterLabel = new JLabel("Delimiter");
-      else
-         delimiterLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.label.Delimiter",
+                                                  "Delimiter");
+      delimiterLabel = new JLabel(resource);
 
       buildConstraints(constraints, 0, 0, 1, 1, 30, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -334,11 +328,9 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
 
       ButtonGroup delimiterButtonGroup = new ButtonGroup();
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.radiobutton.Tab");
-      if (resource.equals(""))
-         tabRadioButton = new JRadioButton("Tab", false);
-      else
-         tabRadioButton = new JRadioButton(resource, false);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.radiobutton.Tab",
+                                                  "Tab");
+      tabRadioButton = new JRadioButton(resource, false);
       tabRadioButton.setFocusPainted(false);
       tabRadioButton.addActionListener(this);
       delimiterButtonGroup.add(tabRadioButton);
@@ -349,11 +341,9 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(tabRadioButton, constraints);
       checkBoxPanel.add(tabRadioButton);
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.radiobutton.Semicolon");
-      if (resource.equals(""))
-         semicolonRadioButton = new JRadioButton("Semicolon", false);
-      else
-         semicolonRadioButton = new JRadioButton(resource, false);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.radiobutton.Semicolon",
+                                                  "Semicolon");
+      semicolonRadioButton = new JRadioButton(resource, false);
       semicolonRadioButton.setFocusPainted(false);
       semicolonRadioButton.addActionListener(this);
       delimiterButtonGroup.add(semicolonRadioButton);
@@ -364,11 +354,8 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(semicolonRadioButton, constraints);
       checkBoxPanel.add(semicolonRadioButton);
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.radiobutton.Comma");
-      if (resource.equals(""))
-         commaRadioButton = new JRadioButton("Comma", true);
-      else
-         commaRadioButton = new JRadioButton(resource, true);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.radiobutton.Comma", "Comma");
+      commaRadioButton = new JRadioButton(resource, true);
       commaRadioButton.setFocusPainted(false);
       commaRadioButton.addActionListener(this);
       delimiterButtonGroup.add(commaRadioButton);
@@ -379,11 +366,8 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(commaRadioButton, constraints);
       checkBoxPanel.add(commaRadioButton);
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.radiobutton.Space");
-      if (resource.equals(""))
-         spaceRadioButton = new JRadioButton("Space", false);
-      else
-         spaceRadioButton = new JRadioButton(resource, false);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.radiobutton.Space", "Space");
+      spaceRadioButton = new JRadioButton(resource, false);
       spaceRadioButton.setFocusPainted(false);
       spaceRadioButton.addActionListener(this);
       delimiterButtonGroup.add(spaceRadioButton);
@@ -394,11 +378,8 @@ class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyLis
       gridbag.setConstraints(spaceRadioButton, constraints);
       checkBoxPanel.add(spaceRadioButton);
 
-      resource = resourceBundle.getResource("CSVImportPreferencesPanel.radiobutton.Other");
-      if (resource.equals(""))
-         otherRadioButton = new JRadioButton("Other", false);
-      else
-         otherRadioButton = new JRadioButton(resource, false);
+      resource = resourceBundle.getResourceString("CSVImportPreferencesPanel.radiobutton.Other", "Other");
+      otherRadioButton = new JRadioButton(resource, false);
       otherRadioButton.setFocusPainted(false);
       otherRadioButton.addActionListener(this);
       delimiterButtonGroup.add(otherRadioButton);

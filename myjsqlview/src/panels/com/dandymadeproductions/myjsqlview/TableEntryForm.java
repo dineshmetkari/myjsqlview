@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.91 05/07/2012
+// Version 8.92 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -354,6 +354,9 @@
 //                        sql.Timestamp in Method addUpdateTableEntry() for Timestamp Types.
 //        8.91 05/07/2012 Changed Class Instance componentFocusSequence from Vector Data Type
 //                        to ArrayList. Same Throughout Class for All Vector Types.
+//        8.92 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -387,7 +390,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.91 05/07/2012
+ * @version 8.92 07/08/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -491,37 +494,26 @@ class TableEntryForm extends JFrame implements ActionListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
-      resource = resourceBundle.getResource("TableEntryForm.dialogtitle.Alert");
-      if (resource.equals(""))
-         resourceAlert = "Alert";
-      else
-         resourceAlert = resource;
+      resource = resourceBundle.getResourceString("TableEntryForm.dialogtitle.Alert", "Alert");
+      resourceAlert = resource;
       
-      resource = resourceBundle.getResource("TableEntryForm.dialogmessage.InvalidInput");
-      if (resource.equals(""))
-         resourceInvalidInput = "Invalid Input for Field";
-      else
-         resourceInvalidInput = resource;
+      resource = resourceBundle.getResourceString("TableEntryForm.dialogmessage.InvalidInput",
+                                                  "Invalid Input for Field");
+      resourceInvalidInput = resource;
       
-      resource = resourceBundle.getResource("TableEntryForm.dialogmessage.Type");
-      if (resource.equals(""))
-         resourceType = "Type";
-      else
-         resourceType = resource;
+      resource = resourceBundle.getResourceString("TableEntryForm.dialogmessage.Type", "Type");
+      resourceType = resource;
       
       // Setting up the frame's title & main panel.
 
       if (title.indexOf("Add") != -1)
-         resource = resourceBundle.getResource("TableEntryForm.message.TitleAdd");
+         resource = resourceBundle.getResourceString("TableEntryForm.message.TitleAdd", "Add");
       else if (title.indexOf("Edit") != -1)
-         resource = resourceBundle.getResource("TableEntryForm.message.TitleEdit");
+         resource = resourceBundle.getResourceString("TableEntryForm.message.TitleEdit", "Edit");
       else
-         resource = "";
+         resource = title;
 
-      if (resource.equals(""))
-         setTitle(title + sqlTable);
-      else
-         setTitle(resource + ": " + sqlTable);
+      setTitle(resource + ": " + sqlTable);
 
       JPanel mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createEtchedBorder());
@@ -782,11 +774,8 @@ class TableEntryForm extends JFrame implements ActionListener
       formPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
       // Cancel Button
-      resource = resourceBundle.getResource("TableEntryForm.button.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableEntryForm.button.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.addActionListener(this);
       componentFocusSequence.add(cancelButton);
       actionButtonPanel.add(cancelButton);
@@ -794,19 +783,13 @@ class TableEntryForm extends JFrame implements ActionListener
       // Add/Update Button & Limit Components
       if (addItem)
       {
-         resource = resourceBundle.getResource("TableEntryForm.button.Add");
-         if (resource.equals(""))
-            updateButton = new JButton("Add");
-         else
-            updateButton = new JButton(resource);
+         resource = resourceBundle.getResourceString("TableEntryForm.button.Add", "Add");
+         updateButton = new JButton(resource);
       }
       else
       {
-         resource = resourceBundle.getResource("TableEntryForm.button.Update");
-         if (resource.equals(""))
-            updateButton = new JButton("Update");
-         else
-            updateButton = new JButton(resource);
+         resource = resourceBundle.getResourceString("TableEntryForm.button.Update", "Update");
+         updateButton = new JButton(resource);
       }
 
       updateButton.addActionListener(this);
@@ -818,11 +801,8 @@ class TableEntryForm extends JFrame implements ActionListener
          JPanel limitPanel = new JPanel();
          limitPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 
-         resource = resourceBundle.getResource("TableEntryForm.checkbox.Limit");
-         if (resource.equals(""))
-            limitCheckBox = new JCheckBox("Limit", false);
-         else
-            limitCheckBox = new JCheckBox(resource, false);
+         resource = resourceBundle.getResourceString("TableEntryForm.checkbox.Limit", "Limit");
+         limitCheckBox = new JCheckBox(resource, false);
          limitCheckBox.addActionListener(this);
          componentFocusSequence.add(limitCheckBox);
          limitPanel.add(limitCheckBox);
@@ -893,13 +873,10 @@ class TableEntryForm extends JFrame implements ActionListener
                 || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1)
                 || ((columnTypeHashMap.get(columnName)).indexOf("IMAGE") != -1))
             {
-               String resource, message;
+               String message;
 
-               resource = resourceBundle.getResource("TableEntryForm.dialogmessage.WarningFunction");
-               if (resource.equals(""))
-                  message = "Warning Function Operations on Blob Data NOT Tested! Likely Data Corruption!";
-               else
-                  message = resource;
+               message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.WarningFunction",
+                  "Warning Function Operations on Blob Data NOT Tested! Likely Data Corruption!");
 
                JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
             }
@@ -1136,13 +1113,11 @@ class TableEntryForm extends JFrame implements ActionListener
             }
             catch (IOException e)
             {
-               String resource, message;
+               String message;
 
-               resource = resourceBundle.getResource("TableEntryForm.dialogmessage.ErrorReading");
-               if (resource.equals(""))
-                  message = "Error Reading Data File";
-               else
-                  message = resource;
+               message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.ErrorReading",
+                                                           "Error Reading Data File");
+         
                JOptionPane.showMessageDialog(null, message + ": " + fileName, resourceAlert,
                                              JOptionPane.ERROR_MESSAGE);
             }
@@ -1169,7 +1144,7 @@ class TableEntryForm extends JFrame implements ActionListener
       String currentKey_ColumnName, currentDB_ColumnName;
       Object currentContentData;
       String dateString, timeString;
-      String resource, message;
+      String message;
       boolean isTextField, isBlobField, isArrayField;
       int columnSize;
       int keyColumn = 0;
@@ -1756,11 +1731,8 @@ class TableEntryForm extends JFrame implements ActionListener
                   }
                   catch (NumberFormatException e)
                   {
-                     resource = resourceBundle.getResource("TableEntryForm.dialogmessage.InvalidLimit");
-                     if (resource.equals(""))
-                        message = "Invalid Input for LIMIT value! Must be an UNSIGNED INTEGER Larger Than Zero";
-                     else
-                        message = resource;
+                     message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.InvalidLimit",
+                        "Invalid Input for LIMIT value! Must be an UNSIGNED INTEGER Larger Than Zero");
                      
                      JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
                      
@@ -1846,11 +1818,8 @@ class TableEntryForm extends JFrame implements ActionListener
                   }
                   catch (NumberFormatException e)
                   {
-                     resource = resourceBundle.getResource("TableEntryForm.dialogmessage.TypeAuto");
-                     if (resource.equals(""))
-                        message = "Type: INTEGER or NULL(Auto-Increment)";
-                     else
-                        message = resource;
+                     message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.TypeAuto",
+                        "Type: INTEGER or NULL(Auto-Increment)");
                      
                      JOptionPane.showMessageDialog(null, resourceInvalidInput + " " + columnName
                                                    + ", " + message, resourceAlert,
@@ -2089,11 +2058,8 @@ class TableEntryForm extends JFrame implements ActionListener
                }
                catch (IllegalArgumentException e)
                {
-                  resource = resourceBundle.getResource("TableEntryForm.dialogmessage.InvalidDateTime");
-                  if (resource.equals(""))
-                     message = "Invalid Date/Time Input for Field";
-                  else
-                     message = resource;
+                  message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.InvalidDateTime",
+                     "Invalid Date/Time Input for Field");
                   
                   JOptionPane.showMessageDialog(null, message + " " + columnName
                                                       + ", " + resourceType + ": " + columnType,
@@ -2219,11 +2185,8 @@ class TableEntryForm extends JFrame implements ActionListener
                   }
                   catch (NumberFormatException e)
                   {
-                     resource = resourceBundle.getResource("TableEntryForm.dialogmessage.TypeBit");
-                     if (resource.equals(""))
-                        message = "Type: Bit String";
-                     else
-                        message = resource;
+                     message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.TypeBit",
+                                                                "Type: Bit String");
                      
                      JOptionPane.showMessageDialog(null, resourceInvalidInput + " " + columnName
                                                          + ", " + message, resourceAlert,
@@ -2322,7 +2285,7 @@ class TableEntryForm extends JFrame implements ActionListener
       String errorString, currentFunction;
       String functionsFileName = "functions.txt";
       String myjsqlviewFunctionsFileString;
-      String resource, title, buttonOK, buttonCancel;
+      String title, buttonOK, buttonCancel;
       String message;
 
       File functionsFile;
@@ -2369,11 +2332,8 @@ class TableEntryForm extends JFrame implements ActionListener
                WriteDataFile.mainWriteDataString(myjsqlviewFunctionsFileString, fileData, false);
             else
             { 
-               resource = resourceBundle.getResource("TableEntryForm.dialogmessage.FailedFunction");
-               if (resource.equals(""))
-                  message = "Failed to Open Sample functions.txt File";
-               else
-                  message = resource;
+               message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.FailedFunction",
+                  "Failed to Open Sample functions.txt File");
                
                errorString = message + "\n";
                JOptionPane.showMessageDialog(null, errorString, resourceAlert, JOptionPane.ERROR_MESSAGE);
@@ -2398,11 +2358,8 @@ class TableEntryForm extends JFrame implements ActionListener
       }
       catch (IOException ioe)
       {
-         resource = resourceBundle.getResource("TableEntryForm.dialogmessage.ErrorDirectory");
-         if (resource.equals(""))
-            message = "Error in creating home directory .myjsqlview funtions file";
-         else
-            message = resource;
+         message = resourceBundle.getResourceString("TableEntryForm.dialogmessage.ErrorDirectory",
+            "Error in creating home directory .myjsqlview funtions file");
          
          errorString = message + "\n" + ioe;
          JOptionPane.showMessageDialog(null, errorString, resourceAlert, JOptionPane.ERROR_MESSAGE);
@@ -2417,21 +2374,11 @@ class TableEntryForm extends JFrame implements ActionListener
       Object[] content = {functionsComboBox};
       functionsPaletteIcon = new ImageIcon(iconsDirectory + "functionsPaletteIcon.gif");
 
-      resource = resourceBundle.getResource("TableEntryForm.dialogtitle.FunctionSelection");
-      if (resource.equals(""))
-         title = "Function Selection";
-      else
-         title = resource;
-      resource = resourceBundle.getResource("TableEntryForm.dialogbutton.OK");
-      if (resource.equals(""))
-         buttonOK = "ok";
-      else
-         buttonOK = resource;
-      resource = resourceBundle.getResource("TableEntryForm.dialogbutton.Cancel");
-      if (resource.equals(""))
-         buttonCancel = "cancel";
-      else
-         buttonCancel = resource;
+      title = resourceBundle.getResourceString("TableEntryForm.dialogtitle.FunctionSelection",
+                                                  "Function Selection");
+      buttonOK = resourceBundle.getResourceString("TableEntryForm.dialogbutton.OK", "OK");
+      
+      buttonCancel = resourceBundle.getResourceString("TableEntryForm.dialogbutton.Cancel", "Cancel");
       
       functionSelectDialog = new InputDialog(null, title, buttonOK, buttonCancel, content,
                                              functionsPaletteIcon);

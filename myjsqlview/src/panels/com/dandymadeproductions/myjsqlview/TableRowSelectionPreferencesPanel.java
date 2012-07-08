@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.5 01/01/2012
+// Version 3.6 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,9 @@
 //         3.3 Copyright Update.
 //         3.4 Comment Changes in Method stateChanged().
 //         3.5 Copyright Update.
+//         3.6 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +92,7 @@ import javax.swing.event.ChangeListener;
  * in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 3.5 01/01/2012
+ * @version 3.6 07/08/2012
  */
 
 class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -135,11 +138,9 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
       mainPanel = new JPanel(gridbag);
       mainPanel.setBorder(BorderFactory.createLoweredBevelBorder());
 
-      resource = resourceBundle.getResource("TableRowSelectionPreferencesPanel.label.SummaryTableRowSize");
-      if (resource.equals(""))
-         rowSizeLabel = new JLabel("Summary Table Row Size");
-      else
-         rowSizeLabel = new JLabel(resource);
+      resource = resourceBundle.getResourceString(
+         "TableRowSelectionPreferencesPanel.label.SummaryTableRowSize", "Summary Table Row Size");
+      rowSizeLabel = new JLabel(resource);
 
       buildConstraints(constraints, 0, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -170,19 +171,15 @@ class TableRowSelectionPreferencesPanel extends JPanel implements ActionListener
 
       southButtonPanel = new JPanel();
       
-      resource = resourceBundle.getResource("TableRowSelectionPreferencesPanel.button.RestoreDefaults");
-      if (resource.equals(""))
-         restoreDefaultsButton = new JButton("Restore Defaults");
-      else
-         restoreDefaultsButton = new JButton(resource);
+      resource = resourceBundle.getResourceString(
+         "TableRowSelectionPreferencesPanel.button.RestoreDefaults", "Restore Defaults");
+      restoreDefaultsButton = new JButton(resource);
       restoreDefaultsButton.addActionListener(this);
       southButtonPanel.add(restoreDefaultsButton);
 
-      resource = resourceBundle.getResource("TableRowSelectionPreferencesPanel.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableRowSelectionPreferencesPanel.button.Apply",
+                                                  "Apply");
+      applyButton = new JButton(resource);
       applyButton.setEnabled(false);
       applyButton.addActionListener(this);
       southButtonPanel.add(applyButton);

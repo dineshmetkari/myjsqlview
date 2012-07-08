@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.91 07/02/2012
+// Version 4.92 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -188,6 +188,9 @@
 //        4.90 05/08/2012 Added an Emtpy String at Beginning of comboBoxColumnNames. All the Result
 //                        of Different Behavior of 4.89 ArrayList Change.
 //        4.91 07/02/2012 Changed Return Type on getAdvancedSortSearchSQL() to StringBuffer.
+//        4.92 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -217,7 +220,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.91 07/02/2012
+ * @version 4.92 07/08/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -290,11 +293,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       
       dataSourceType = ConnectionManager.getDataSourceType();
       
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.message.Title");
-      if (resource.equals(""))
-         setTitle("Advanced Sort/Search : " + table);
-      else
-         setTitle(resource + " : " + table);
+      resource = resourceBundle.getResourceString("AdvancedSortSearchForm.message.Title",
+                                                  "Advanced Sort/Search");
+      setTitle(resource + " : " + table);
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
@@ -322,11 +323,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       selectTypePanel = new JPanel();
       selectTypePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
 
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.label.Select");
-      if (resource.equals(""))
-         selectTypeLabel = new JLabel("Select : ");
-      else
-         selectTypeLabel = new JLabel(resource + " : ");
+      resource = resourceBundle.getResourceString("AdvancedSortSearchForm.label.Select", "Select");
+      selectTypeLabel = new JLabel(resource + " : ");
       selectTypePanel.add(selectTypeLabel);
 
       selectTypeComboBox = new JComboBox();
@@ -345,11 +343,8 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       aggregatePanel = new JPanel();
       aggregatePanel.setLayout(new FlowLayout(FlowLayout.LEADING));
       
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.label.Aggregate");
-      if (resource.equals(""))
-         aggregateLabel = new JLabel("Aggregate : ");
-      else
-         aggregateLabel = new JLabel(resource + " : ");
+      resource = resourceBundle.getResourceString("AdvancedSortSearchForm.label.Aggregate", "Aggregate");
+      aggregateLabel = new JLabel(resource + " : ");
       aggregatePanel.add(aggregateLabel);
 
       aggregateFunctionComboBox = new JComboBox(aggregateFunctions);
@@ -417,20 +412,14 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       actionButtonPanel = new JPanel();
 
       // Apply Button
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Apply");
-      if (resource.equals(""))
-         applyButton = new JButton("Apply");
-      else
-         applyButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("AdvancedSortSearchForm.button.Apply", "Apply");
+      applyButton = new JButton(resource);
       applyButton.setFocusPainted(false);
       actionButtonPanel.add(applyButton);
       
       // Close Button
-      resource = resourceBundle.getResource("AdvancedSortSearchForm.button.Close");
-      if (resource.equals(""))
-         closeButton = new JButton("Close");
-      else
-         closeButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("AdvancedSortSearchForm.button.Close", "Close");
+      closeButton = new JButton(resource);
       closeButton.setFocusPainted(false);
       closeButton.addActionListener(this);
       actionButtonPanel.add(closeButton);
@@ -636,25 +625,18 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       sortByLabel = new JLabel[sortFormExpressionNumber];
       sortThenLabel = new JLabel[sortFormExpressionNumber -1];
 
-      resourceSortBy = resourceBundle.getResource("AdvancedSortSearchForm.label.SortBy");
-      if (resourceSortBy.equals(""))
-         resourceSortBy = "Sort By : ";
-      else
-         resourceSortBy = resourceSortBy + " : ";
+      resourceSortBy = resourceBundle.getResourceString("AdvancedSortSearchForm.label.SortBy",
+                                                        "Sort By");
+      resourceSortBy = resourceSortBy + " : ";
       
-      resourceThen = resourceBundle.getResource("AdvancedSortSearchForm.label.Then");
-      if (resourceThen.equals(""))
-         resourceThen = " Then, ";
-      else
-         resourceThen = resourceThen + ", ";
+      resourceThen = resourceBundle.getResourceString("AdvancedSortSearchForm.label.Then", "Then");
+      resourceThen = resourceThen + ", ";
       
-      resourceOrderASC = resourceBundle.getResource("AdvancedSortSearchForm.combobox.Ascending");
-      if (resourceOrderASC.equals(""))
-         resourceOrderASC = "Ascending";
+      resourceOrderASC = resourceBundle.getResourceString("AdvancedSortSearchForm.combobox.Ascending",
+                                                          "Ascending");
       
-      resourceOrderDESC = resourceBundle.getResource("AdvancedSortSearchForm.combobox.Descending");
-      if (resourceOrderDESC.equals(""))
-         resourceOrderDESC = "Descending";
+      resourceOrderDESC = resourceBundle.getResourceString("AdvancedSortSearchForm.combobox.Descending",
+                                                           "Descending");
       
       int i = 0;
       do
@@ -719,11 +701,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       groupByLabel = new JLabel[groupFormExpressionNumber];
       groupThenLabel = new JLabel[groupFormExpressionNumber -1];
 
-      resourceGroupBy = resourceBundle.getResource("AdvancedSortSearchForm.label.GroupBy");
-      if (resourceGroupBy.equals(""))
-         resourceGroupBy = "Group By : ";
-      else
-         resourceGroupBy = resourceGroupBy + " : ";
+      resourceGroupBy = resourceBundle.getResourceString("AdvancedSortSearchForm.label.GroupBy",
+                                                         "Group By");
+      resourceGroupBy = resourceGroupBy + " : ";
       
       i = 0;
       do
@@ -788,11 +768,9 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       
       searchLabel = new JLabel[searchFormExpressionNumber];
       
-      resourceSearch = resourceBundle.getResource("AdvancedSortSearchForm.label.Search");
-      if (resourceSearch.equals(""))
-         resourceSearch = "Search : ";
-      else
-         resourceSearch = resourceSearch + " : ";
+      resourceSearch = resourceBundle.getResourceString("AdvancedSortSearchForm.label.Search",
+                                                        "Search");
+      resourceSearch = resourceSearch + " : ";
       
       i = 0;
       do
@@ -1253,22 +1231,13 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       if (failedToLoadForm)
       {
          String resourceMessage, resourceTitle;
-         String title, optionPaneStringErrors;
          
-         resourceMessage = resourceBundle.getResource("AdvancedSortSearchForm.dialogmessage.SetFields");
-         if (resourceMessage.equals(""))
-            optionPaneStringErrors = "Unable to Properly Set Advanced Sort/Search Fields."
-                                     + " Possible Corrupt File!";
-         else
-            optionPaneStringErrors = resourceMessage;
-            
-         resourceTitle = resourceBundle.getResource("AdvancedSortSearchForm.dialogtitle.Alert");
-         if (resourceTitle.equals(""))
-            title = "Alert";
-         else
-            title = resourceTitle;
+         resourceMessage = resourceBundle.getResourceString("AdvancedSortSearchForm.dialogmessage.SetFields",
+            "Unable to Properly Set Advanced Sort/Search Fields.");  
+         resourceTitle = resourceBundle.getResourceString("AdvancedSortSearchForm.dialogtitle.Alert",
+                                                          "Alert");
          
-         JOptionPane.showMessageDialog(null, optionPaneStringErrors, title, JOptionPane.ERROR_MESSAGE);
+         JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle, JOptionPane.ERROR_MESSAGE);
       }
    }
 }

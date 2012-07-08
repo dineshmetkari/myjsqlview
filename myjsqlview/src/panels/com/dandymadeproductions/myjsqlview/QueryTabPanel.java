@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.5 07/02/2012
+// Version 9.6 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -223,6 +223,9 @@
 //             Aliases Can Properly be Collected.
 //         9.5 Class Method loadTable() Change in Return Type for advancedSortSearchFrame.
 //             getAdvancedSortSearchSQL().
+//         9.6 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -254,7 +257,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.5 07/02/2012
+ * @version 9.6 07/08/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -391,11 +394,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       sortPanel = new JPanel();
       sortPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      resource = resourceBundle.getResource("QueryTabPanel.label.SortBy");
-      if (resource.equals(""))
-         sortByLabel = new JLabel("Sort By : ", JLabel.LEFT);
-      else
-         sortByLabel = new JLabel(resource + " : ", JLabel.LEFT);
+      resource = resourceBundle.getResourceString("QueryTabPanel.label.SortBy", "Sort By");
+      sortByLabel = new JLabel(resource + " : ", JLabel.LEFT);
       sortPanel.add(sortByLabel);
 
       // Connecting to the database table for obtaining
@@ -448,11 +448,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       searchPanel = new JPanel();
       searchPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      resource = resourceBundle.getResource("QueryTabPanel.label.Search");
-      if (resource.equals(""))
-         searchLabel = new JLabel("Search : ");
-      else
-         searchLabel = new JLabel(resource + " : ");
+      resource = resourceBundle.getResourceString("QueryTabPanel.label.Search", "Search");
+      searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
       searchComboBox = new JComboBox(comboBoxFields.toArray());
@@ -461,11 +458,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       searchComboBox.addActionListener(this);
       searchPanel.add(searchComboBox);
 
-      resource = resourceBundle.getResource("QueryTabPanel.label.For");
-      if (resource.equals(""))
-         forLabel = new JLabel("For : ", JLabel.LEFT);
-      else
-         forLabel = new JLabel(resource + " : ", JLabel.LEFT);
+      resource = resourceBundle.getResourceString("QueryTabPanel.label.For", "For");
+      forLabel = new JLabel(resource + " : ", JLabel.LEFT);
       searchPanel.add(forLabel);
 
       searchTextField = new JTextField(12);
@@ -540,11 +534,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             previousViewButton.setMargin(new Insets(0, 0, 0, 0));
             previousViewButton.addActionListener(this);
 
-            resource = resourceBundle.getResource("QueryTabPanel.button.Close");
-            if (resource.equals(""))
-               closeViewButton = new JButton("Close");
-            else
-               closeViewButton = new JButton(resource);
+            resource = resourceBundle.getResourceString("QueryTabPanel.button.Close", "Close");
+            closeViewButton = new JButton(resource);
             closeViewButton.addActionListener(this);
 
             nextViewButton = new JButton(nextViewIcon);
@@ -584,11 +575,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       JPanel actionButtonPanel = new JPanel();
 
       // View Button
-      resource = resourceBundle.getResource("QueryTabPanel.button.View");
-      if (resource.equals(""))
-         viewButton = new JButton("View");
-      else
-         viewButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.button.View", "View");
+      viewButton = new JButton(resource);
       viewButton.setMnemonic(KeyEvent.VK_V);
       viewButton.addActionListener(this);
       actionButtonPanel.add(viewButton);
@@ -1769,11 +1757,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       // No keys than cannot perform these operations.
       //if (!primaryKey.isEmpty())
       //{
-         resource = resourceBundle.getResource("QueryTabPanel.menu.View");
-         if (resource.equals(""))
-            menuItem = new JMenuItem("View");
-         else
-            menuItem = new JMenuItem(resource);
+         resource = resourceBundle.getResourceString("QueryTabPanel.menu.View", "View");
+         menuItem = new JMenuItem(resource);
          menuItem.setActionCommand("View");
          menuItem.addActionListener(this);
          summaryTablePopupMenu.add(menuItem);
@@ -1783,20 +1768,14 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
 
       // Summary Table select actions.
       
-      resource = resourceBundle.getResource("QueryTabPanel.menu.SelectAll");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("Select All");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.SelectAll", "Select All");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand("Select All");
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("QueryTabPanel.menu.DeSelectAll");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("DeSelect All");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.DeSelectAll", "DeSelect All");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand("DeSelect All");
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
@@ -1805,11 +1784,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       
       summaryTablePopupMenu.addSeparator();
       
-      resource = resourceBundle.getResource("QueryTabPanel.menu.Copy");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("Copy");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("QueryTabPanel.menu.Copy", "Copy");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
       menuItem.setMnemonic(KeyEvent.VK_C);
       menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
@@ -2306,12 +2282,8 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
    {
       String resourceRows;
       
-      resourceRows = resourceBundle.getResource("QueryTabPanel.label.Rows");
-      
-      if (resourceRows.equals(""))
-         rowsLabel.setText("Rows: " + start + " - " + end);
-      else
-         rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
+      resourceRows = resourceBundle.getResourceString("QueryTabPanel.label.Rows", "Rows");
+      rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
    }
 
    //==============================================================

@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.07 05/10/2012
+// Version 5.08 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -231,6 +231,9 @@
 //             getter/setters for Those Instances Also Changed.
 //        5.07 Added Class Methods getForeignKeys() & getExportedKeys() to Conform
 //             to Interface Requirement.
+//        5.08 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -268,7 +271,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.07 05/10/2012
+ * @version 5.08 07/08/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -483,11 +486,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       sortPanel = new JPanel();
       sortPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
-      resource = resourceBundle.getResource("TableTabPanel.label.SortBy");
-      if (resource.equals(""))
-         sortByLabel = new JLabel("Sort By : ", JLabel.LEFT);
-      else
-         sortByLabel = new JLabel(resource + " : ", JLabel.LEFT);
+      resource = resourceBundle.getResourceString("TableTabPanel.label.SortBy", "Sort By");
+      sortByLabel = new JLabel(resource + " : ", JLabel.LEFT);
       sortPanel.add(sortByLabel);
 
       // Connecting to the database table for obtaining
@@ -549,11 +549,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       searchPanel = new JPanel();
       searchPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      resource = resourceBundle.getResource("TableTabPanel.label.Search");
-      if (resource.equals(""))
-         searchLabel = new JLabel("Search : ");
-      else
-         searchLabel = new JLabel(resource + " : ");
+      resource = resourceBundle.getResourceString("TableTabPanel.label.Search", "Search");
+      searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
       searchComboBox = new JComboBox(comboBoxFields.toArray());
@@ -562,11 +559,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       searchComboBox.addActionListener(this);
       searchPanel.add(searchComboBox);
 
-      resource = resourceBundle.getResource("TableTabPanel.label.SearchFor");
-      if (resource.equals(""))
-         searchForLabel = new JLabel("For : ", JLabel.LEFT);
-      else
-         searchForLabel = new JLabel(resource + " : ", JLabel.LEFT);
+      resource = resourceBundle.getResourceString("TableTabPanel.label.SearchFor", "For");
+      searchForLabel = new JLabel(resource + " : ", JLabel.LEFT);
       searchPanel.add(searchForLabel);
 
       searchTextField = new JTextField(12);
@@ -661,11 +655,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       previousViewButton.setMargin(new Insets(0, 0, 0, 0));
       previousViewButton.addActionListener(this);
 
-      resource = resourceBundle.getResource("TableTabPanel.button.Close");
-      if (resource.equals(""))
-         closeViewButton = new JButton("Close");
-      else
-         closeViewButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableTabPanel.button.Close", "Close");
+      closeViewButton = new JButton(resource);
       closeViewButton.addActionListener(this);
 
       nextViewButton = new JButton(nextViewIcon);
@@ -695,11 +686,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       actionButtonPanel = new JPanel();
       
       // View Button
-      resource = resourceBundle.getResource("TableTabPanel.button.View");
-      if (resource.equals(""))
-         viewButton = new JButton("View");
-      else
-         viewButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("TableTabPanel.button.View", "View");
+      viewButton = new JButton(resource);
       viewButton.setMnemonic(KeyEvent.VK_V);
       viewButton.addActionListener(this);
       actionButtonPanel.add(viewButton);
@@ -711,41 +699,29 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          if (!viewOnly)
          {
             // Add Button
-            resource = resourceBundle.getResource("TableTabPanel.button.Add");
-            if (resource.equals(""))
-               addButton = new JButton("Add");
-            else
-               addButton = new JButton(resource);
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Add", "Add");
+            addButton = new JButton(resource);
             addButton.setMnemonic(KeyEvent.VK_A);
             addButton.addActionListener(this);
             actionButtonPanel.add(addButton);
 
             // Edit Button
-            resource = resourceBundle.getResource("TableTabPanel.button.Edit");
-            if (resource.equals(""))
-               editButton = new JButton("Edit");
-            else
-               editButton = new JButton(resource);
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Edit", "Edit");
+            editButton = new JButton(resource);
             editButton.setMnemonic(KeyEvent.VK_E);
             editButton.addActionListener(this);
             actionButtonPanel.add(editButton);
 
             // Delete Button
-            resource = resourceBundle.getResource("TableTabPanel.button.Delete");
-            if (resource.equals(""))
-               deleteButton = new JButton("Delete");
-            else
-               deleteButton = new JButton(resource);
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Delete", "Delete");
+            deleteButton = new JButton(resource);
             deleteButton.setMnemonic(KeyEvent.VK_D);
             deleteButton.addActionListener(this);
             actionButtonPanel.add(deleteButton);
 
             // Delete All Button
-            resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
-            if (resource.equals(""))
-               deleteAllButton = new JButton("Delete All");
-            else
-               deleteAllButton = new JButton(resource);
+            resource = resourceBundle.getResourceString("TableTabPanel.button.DeleteAll", "Delete All");
+            deleteAllButton = new JButton(resource);
             deleteAllButton.addActionListener(this);
          }
       }
@@ -1013,17 +989,10 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       String resource, resourceOK, resourceCancel;
       InputDialog selectFieldsDialog;
       
-      resource = resourceBundle.getResource("TableTabPanel.dialogtitle.SelectSummaryTableFields");
-      if (resource.equals(""))
-         resource = "Set Summary Table Fields";
-      
-      resourceOK = resourceBundle.getResource("TableTabPanel.dialogbutton.OK");
-      if (resourceOK.equals(""))
-         resourceOK = "OK";
-      
-      resourceCancel = resourceBundle.getResource("TableTabPanel.dialogbutton.Cancel");
-      if (resourceCancel.equals(""))
-         resourceCancel = "Cancel";
+      resource = resourceBundle.getResourceString("TableTabPanel.dialogtitle.SelectSummaryTableFields",
+                                                   "Set Summary Table Fields");
+      resourceOK = resourceBundle.getResourceString("TableTabPanel.dialogbutton.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("TableTabPanel.dialogbutton.Cancel", "Cancel");
        
       tableFieldPreferences = new TableFieldSelectionPreferencesPanel(this, resourceBundle);
       Object[] content = {tableFieldPreferences};
@@ -1551,11 +1520,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       // Basic table actions.
       
-      resource = resourceBundle.getResource("TableTabPanel.popup.SelectFields");
-      if (resource.equals(""))
-         menuItem = menuItem("Select Fields", "Select Fields");
-      else
-         menuItem = menuItem(resource, "Select Fields");
+      resource = resourceBundle.getResourceString("TableTabPanel.popup.SelectFields", "Select Fields");
+      menuItem = menuItem(resource, "Select Fields");
       summaryTablePopupMenu.add(menuItem);
       
       summaryTablePopupMenu.addSeparator();
@@ -1563,43 +1529,28 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // No keys than cannot perform these operations.
       if (!primaryKeys.isEmpty())
       {
-         resource = resourceBundle.getResource("TableTabPanel.button.View");
-         if (resource.equals(""))
-            menuItem = menuItem("View", "View");
-         else
-            menuItem = menuItem(resource, "View");
+         resource = resourceBundle.getResourceString("TableTabPanel.button.View", "View");
+         menuItem = menuItem(resource, "View");
          summaryTablePopupMenu.add(menuItem);
 
          if (!viewOnly)
          {
-            resource = resourceBundle.getResource("TableTabPanel.button.Add");
-            if (resource.equals(""))
-               menuItem = menuItem("Add", "Add");
-            else
-               menuItem = menuItem(resource, "Add");
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Add", "Add");
+            menuItem = menuItem(resource, "Add");
             summaryTablePopupMenu.add(menuItem);
 
-            resource = resourceBundle.getResource("TableTabPanel.button.Edit");
-            if (resource.equals(""))
-               menuItem = menuItem("Edit", "Edit");
-            else
-               menuItem = menuItem(resource, "Edit");
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Edit", "Edit");
+            menuItem = menuItem(resource, "Edit");
             summaryTablePopupMenu.add(menuItem);
 
-            resource = resourceBundle.getResource("TableTabPanel.button.Delete");
-            if (resource.equals(""))
-               menuItem = menuItem("Delete", "Delete");
-            else
-               menuItem = menuItem(resource, "Delete");
+            resource = resourceBundle.getResourceString("TableTabPanel.button.Delete", "Delete");
+            menuItem = menuItem(resource, "Delete");
             summaryTablePopupMenu.add(menuItem);
 
             summaryTablePopupMenu.addSeparator();
 
-            resource = resourceBundle.getResource("TableTabPanel.button.DeleteAll");
-            if (resource.equals(""))
-               menuItem = menuItem("Delete All", "Delete All");
-            else
-               menuItem = menuItem(resource, "Delete All");
+            resource = resourceBundle.getResourceString("TableTabPanel.button.DeleteAll", "Delete All");
+            menuItem = menuItem(resource, "Delete All");
             summaryTablePopupMenu.add(menuItem);
          }
          summaryTablePopupMenu.addSeparator();
@@ -1607,25 +1558,19 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       // Summary Table select actions.
 
-      resource = resourceBundle.getResource("TableTabPanel.popup.SelectAll");
-      if (resource.equals(""))
-         menuItem = menuItem("Select All", "Select All");
-      else
-         menuItem = menuItem(resource, "Select All");
+      resource = resourceBundle.getResourceString("TableTabPanel.popup.SelectAll", "Select All");
+      menuItem = menuItem(resource, "Select All");
       summaryTablePopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("TableTabPanel.popup.DeSelectAll");
-      if (resource.equals(""))
-         menuItem = menuItem("DeSelect All", "DeSelect All");
-      else
-         menuItem = menuItem(resource, "DeSelect All");
+      resource = resourceBundle.getResourceString("TableTabPanel.popup.DeSelectAll", "DeSelect All");
+      menuItem = menuItem(resource, "DeSelect All");
       summaryTablePopupMenu.add(menuItem);
 
       // Summary Table copy/paste actions
 
       summaryTablePopupMenu.addSeparator();
 
-      resource = resourceBundle.getResource("TableTabPanel.popup.Copy");
+      resource = resourceBundle.getResourceString("TableTabPanel.popup.Copy", "Copy");
       if (resource.equals(""))
          menuItem = new JMenuItem("Copy");
       else
@@ -1639,11 +1584,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       // No keys then cannot perform paste.
       if (!primaryKeys.isEmpty() && !viewOnly)
       {
-         resource = resourceBundle.getResource("TableTabPanel.popup.Paste");
-         if (resource.equals(""))
-            menuItem = new JMenuItem("Paste");
-         else
-            menuItem = new JMenuItem(resource);
+         resource = resourceBundle.getResourceString("TableTabPanel.popup.Paste", "Paste");
+         menuItem = new JMenuItem(resource);
          menuItem.setActionCommand((String) TransferHandler.getPasteAction().getValue(Action.NAME));
          menuItem.setMnemonic(KeyEvent.VK_V);
          menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
@@ -1655,11 +1597,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       
       summaryTablePopupMenu.addSeparator();
       
-      resource = resourceBundle.getResource("TableTabPanel.popup.SaveAsImage");
-      if (resource.equals(""))
-         menuItem = menuItem("Save As Image", "Save As Image");
-      else
-         menuItem = menuItem(resource, "Save As Image");
+      resource = resourceBundle.getResourceString("TableTabPanel.popup.SaveAsImage",
+                                                  "Save As Image");
+      menuItem = menuItem(resource, "Save As Image");
       summaryTablePopupMenu.add(menuItem);
       
 
@@ -1980,25 +1920,20 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       if (selectedRows.length != 0)
       {
          // Confirming really want to delete.
-         resourceMessage = resourceBundle.getResource("TableTabPanel.message.DeleteItems");
-         
-         if (resourceMessage.equals(""))
-            message = new JLabel("Delete Selected Item(s)?", JLabel.CENTER);
-         else
-            message = new JLabel(resourceMessage, JLabel.CENTER);
+         resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.DeleteItems",
+                                                            "Delete Selected Items(s)?");
+         message = new JLabel(resourceMessage, JLabel.CENTER);
          message.setFont(new Font("DIALOG", Font.BOLD, 14));
          message.setForeground(Color.RED);
          Object[] content = {message};
          
-         resourceTitle = resourceBundle.getResource("TableTabPanel.dialogtitle.AlertDialog");
-         resourceCancel = resourceBundle.getResource("TableTabPanel.dialogbutton.Cancel");
-         resourceOK = resourceBundle.getResource("TableTabPanel.dialogbutton.OK");
+         resourceTitle = resourceBundle.getResourceString("TableTabPanel.dialogtitle.AlertDialog",
+                                                          "Alert Dialog");
+         resourceCancel = resourceBundle.getResourceString("TableTabPanel.dialogbutton.Cancel", "Cancel");
+         resourceOK = resourceBundle.getResourceString("TableTabPanel.dialogbutton.OK", "OK");
          
-         if (resourceTitle.equals("") || resourceCancel.equals("") || resourceOK.equals(""))
-            deleteDialog = new InputDialog(null, "Alert Dialog", "ok", "cancel", content, deleteDataIcon);
-         else
-            deleteDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
-                                           content, deleteDataIcon);
+         deleteDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
+                                        content, deleteDataIcon);
          deleteDialog.pack();
          deleteDialog.center();
          deleteDialog.setResizable(false);
@@ -2196,32 +2131,25 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       String resourceTitle, resourceCancel, resourceOK;
 
       // Confirming really want to delete all rows.
-      resourceMessage = resourceBundle.getResource("TableTabPanel.message.DeleteAllItems");
-      
-      if (resourceMessage.equals(""))
-         message = new JLabel("Delete All Table Rows!", JLabel.CENTER);
-      else
-         message = new JLabel(resourceMessage, JLabel.CENTER);
+      resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.DeleteAllItems",
+                                                         "Delete All Table Rows!");
+      message = new JLabel(resourceMessage, JLabel.CENTER);
       message.setFont(new Font("DIALOG", Font.BOLD, 14));
       message.setForeground(Color.RED);
       
-      resource = resourceBundle.getResource("TableTabPanel.checkbox.ConfirmDeletion");
+      resource = resourceBundle.getResourceString("TableTabPanel.checkbox.ConfirmDeletion",
+                                                  "Confirm Deletion");
+      confirmCheckbox = new JCheckBox(resource, false);
       
-      if (resourceMessage.equals(""))
-         confirmCheckbox = new JCheckBox("Confirm Deletion", false);
-      else
-         confirmCheckbox = new JCheckBox(resource, false);
       Object[] content = {message, confirmCheckbox};
       
-      resourceTitle = resourceBundle.getResource("TableTabPanel.dialogtitle.AlertDialog");
-      resourceCancel = resourceBundle.getResource("TableTabPanel.dialogbutton.Cancel");
-      resourceOK = resourceBundle.getResource("TableTabPanel.dialogbutton.OK");
-      
-      if (resourceTitle.equals("") || resourceCancel.equals("") || resourceOK.equals(""))
-         deleteAllDialog = new InputDialog(null, "Alert Dialog", "ok", "cancel", content, deleteDataIcon);
-      else
-         deleteAllDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
-                                           content, deleteDataIcon);
+      resourceTitle = resourceBundle.getResourceString("TableTabPanel.dialogtitle.AlertDialog",
+                                                       "Alert Dialog");
+      resourceCancel = resourceBundle.getResourceString("TableTabPanel.dialogbutton.Cancel", "Cancel");
+      resourceOK = resourceBundle.getResourceString("TableTabPanel.dialogbutton.OK", "OK");
+     
+      deleteAllDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
+                                        content, deleteDataIcon);
       deleteAllDialog.pack();
       deleteAllDialog.center();
       deleteAllDialog.setResizable(false);
@@ -2334,38 +2262,28 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          // Insert/Update Content.
          ButtonGroup insertUpdateOptionsGroup = new ButtonGroup();
          
-         resource = resourceBundle.getResource("TableTabPanel.radiobutton.Insert");
-         if (resource.equals(""))
-            insertRadioButton = new JRadioButton("Insert", true);
-         else
-            insertRadioButton = new JRadioButton(resource, true);
+         resource = resourceBundle.getResourceString("TableTabPanel.radiobutton.Insert", "Insert");
+         insertRadioButton = new JRadioButton(resource, true);
          insertUpdateOptionsGroup.add(insertRadioButton);
          
-         resource = resourceBundle.getResource("TableTabPanel.radiobutton.Update");
-         if (resource.equals(""))
-            updateRadioButton = new JRadioButton("Update", false);
-         else
-            updateRadioButton = new JRadioButton(resource, false);
+         resource = resourceBundle.getResourceString("TableTabPanel.radiobutton.Update", "Update");
+         updateRadioButton = new JRadioButton(resource, false);
          insertUpdateOptionsGroup.add(updateRadioButton);
 
-         resourceMessage = resourceBundle.getResource("TableTabPanel.message.WarningLossData");
-         if (resourceMessage.equals(""))
-            message = new JLabel("Warning Import May Cause Loss of Data!", JLabel.CENTER);
-         else
-            message = new JLabel(resourceMessage, JLabel.CENTER);
+         resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.WarningLossData",
+                                                            "Warning Import May Cause Loss of Data!");
+         message = new JLabel(resourceMessage, JLabel.CENTER);
          message.setForeground(Color.RED);
          
          Object content[] = {message, insertRadioButton, updateRadioButton};
          
-         resourceTitle = resourceBundle.getResource("TableTabPanel.dialogtitle.InsertOrUpdate");
-         resourceCancel = resourceBundle.getResource("TableTabPanel.dialogbutton.Cancel");
-         resourceOK = resourceBundle.getResource("TableTabPanel.dialogbutton.OK");
+         resourceTitle = resourceBundle.getResourceString("TableTabPanel.dialogtitle.InsertOrUpdate",
+                                                          "Insert Or Update");
+         resourceCancel = resourceBundle.getResourceString("TableTabPanel.dialogbutton.Cancel", "Cancel");
+         resourceOK = resourceBundle.getResourceString("TableTabPanel.dialogbutton.OK", "OK");
          
-         if (resourceTitle.equals("") || resourceCancel.equals("") || resourceOK.equals(""))
-            insertUpdateDialog = new InputDialog(null, "Insert Or Update", "ok", "cancel", content, null);
-         else
-            insertUpdateDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
-                                           content, deleteDataIcon);
+         insertUpdateDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel,
+                                              content, deleteDataIcon);
          
          insertUpdateDialog.pack();
          insertUpdateDialog.setResizable(false);
@@ -2388,39 +2306,30 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       }
       catch (IllegalStateException ise)
       {
-         resourceMessage = resourceBundle.getResource("TableTabPanel.message.ClipboardUnavailable");
-         if (resourceMessage.equals(""))
-            errorString = "Clipboard Currently Unavailable: " + ise;
-         else
-            errorString = resourceMessage + ": " + ise;
+         resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.ClipboardUnavailable",
+                                                            "Clipboard Currently Unavailable");
+         errorString = resourceMessage + " : " + ise;
       }
       catch (UnsupportedFlavorException ufe)
       {
-         resourceMessage = resourceBundle.getResource("TableTabPanel.message.UnsupportedData");
-         if (resourceMessage.equals(""))
-            errorString = "Unsupported Data Flavor: " + ufe;
-         else
-            errorString = resourceMessage + ": " + ufe;
+         resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.UnsupportedData",
+                                                            "Unsupported Data Flavor");
+         errorString = resourceMessage + " : " + ufe;
       }
       catch (IOException ioe)
       {
-         resourceMessage = resourceBundle.getResource("TableTabPanel.message.I/OException");
-         if (resourceMessage.equals(""))
-            errorString = "I/O Exception: ." + ioe;
-         else
-            errorString = resourceMessage + ": ." + ioe;
+         resourceMessage = resourceBundle.getResourceString("TableTabPanel.message.I/OException",
+                                                            "I/O Exception");
+         errorString = resourceMessage + " : " + ioe;
       }
 
       // Displays Errors as Needed.
       if (!errorString.equals(""))
       {
-         resourceTitle = resourceBundle.getResource("TableTabPanel.dialogtitle.Alert");
-         if (resourceTitle.equals(""))
-            JOptionPane.showMessageDialog(null, "TableTabPanel.pasteClipboardContents(), "
-                                          + errorString, "Alert", JOptionPane.ERROR_MESSAGE);
-         else
-            JOptionPane.showMessageDialog(null, "TableTabPanel.pasteClipboardContents(), "
-                                          + errorString, resourceTitle, JOptionPane.ERROR_MESSAGE);
+         resourceTitle = resourceBundle.getResourceString("TableTabPanel.dialogtitle.Alert", "Alert");
+         
+         JOptionPane.showMessageDialog(null, "TableTabPanel.pasteClipboardContents(), "
+                                       + errorString, resourceTitle, JOptionPane.ERROR_MESSAGE);
             
       }
    }
@@ -2875,12 +2784,8 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    {
       String resourceRows;
       
-      resourceRows = resourceBundle.getResource("TableTabPanel.label.Rows");
-      
-      if (resourceRows.equals(""))
-         rowsLabel.setText("Rows: " + start + " - " + end);
-      else
-         rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
+      resourceRows = resourceBundle.getResourceString("TableTabPanel.label.Rows", "Rows");
+      rowsLabel.setText(resourceRows + ": " + start + " - " + end); 
    }
 
    //==============================================================
@@ -2948,20 +2853,15 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                            newTableHeadings.add(tableHeadings[j]);
                         else
                         {
-                           String optionPaneStringErrors;
-                           resourceMessage = resourceBundle.getResource("TableTabPanel.message.SetTableField");
-                           if (resourceMessage.equals(""))
-                              optionPaneStringErrors = "Unable to Set Table Fields. Possible Corrupt File!";
-                           else
-                              optionPaneStringErrors = resourceMessage;
+                           resourceMessage = resourceBundle.getResourceString(
+                              "TableTabPanel.message.SetTableField",
+                              "Unable to Set Table Fields. Possible Corrupt File!");
                            
-                           resourceTitle = resourceBundle.getResource("TableTabPanel.dialogtitle.Alert");
-                           if (resourceTitle.equals(""))
-                              JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert",
-                                                            JOptionPane.ERROR_MESSAGE);
-                           else
-                              JOptionPane.showMessageDialog(null, optionPaneStringErrors, resourceTitle,
-                                                            JOptionPane.ERROR_MESSAGE);
+                           resourceTitle = resourceBundle.getResourceString(
+                              "TableTabPanel.dialogtitle.Alert", "Alert");
+                           
+                           JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle,
+                                                         JOptionPane.ERROR_MESSAGE);
                            validFields = false;
                            break;
                         }
