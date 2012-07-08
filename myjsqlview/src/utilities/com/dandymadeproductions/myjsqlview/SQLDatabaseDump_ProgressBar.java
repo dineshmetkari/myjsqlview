@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.0 01/01/2012
+// Version 2.1 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@
 //         1.8 Correction to Initialize Class Instance resourceBundle.
 //         1.9 Copyright Update.
 //         2.0 Copyright Update.
+//         2.1 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -61,7 +64,7 @@ import javax.swing.*;
  * during a MyJSQLView SQL database dump.
  * 
  * @author Dana M. Proctor
- * @version 2.0 01/01/2012
+ * @version 2.1 07/08/2012
  */
 
 class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
@@ -113,11 +116,8 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
                              .createCompoundBorder(BorderFactory.createEtchedBorder(),
                                                    BorderFactory.createRaisedBevelBorder()));
       
-      resource = resourceBundle.getResource("MyJSQLView_ProgressBar.button.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("MyJSQLView_ProgressBar.button.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.setFocusable(false);
       cancelButton.setActionCommand("cancel");
       cancelButton.addActionListener(this);

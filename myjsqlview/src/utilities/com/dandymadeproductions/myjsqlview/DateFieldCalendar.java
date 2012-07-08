@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.9 01/01/2012
+// Version 3.0 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,9 @@
 //                        Changes to Reflect the Formatting of Dates According to
 //                        the Selected General Date Preferences.
 //         2.9 01/01/2012 Copyright Update.
+//         3.0 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -83,7 +86,7 @@ import javax.swing.*;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 2.9 01/01/2012
+ * @version 3.0 07/08/2012
  */
 
 class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -148,11 +151,9 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
 
       // Setting the frame's main layout & other required
       // fields.
-      resource = resourceBundle.getResource("DateFieldCalendar.title.DateSelection");
-      if (resource.equals(""))
-         setTitle("Date Selection");
-      else
-         setTitle(resource);
+      resource = resourceBundle.getResourceString("DateFieldCalendar.title.DateSelection",
+                                                  "Date Selection");
+      setTitle(resource);
       mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
@@ -254,11 +255,8 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      resource = resourceBundle.getResource("DateFieldCalendar.button.OK");
-      if (resource.equals(""))
-         okButton = new JButton("OK");
-      else
-         okButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("DateFieldCalendar.button.OK", "OK");
+      okButton = new JButton(resource);
       okButton.setFocusPainted(false);
       okButton.setMargin(new Insets(0, 0, 0, 0));
       okButton.addActionListener(this);
@@ -270,11 +268,8 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
       dateSelectionLabel.setBorder(BorderFactory.createLoweredBevelBorder());
       southButtonPanel.add(dateSelectionLabel);
 
-      resource = resourceBundle.getResource("DateFieldCalendar.button.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("DateFieldCalendar.button.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.setFocusPainted(false);
       cancelButton.setMargin(new Insets(0, 0, 0, 0));
       cancelButton.addActionListener(this);
@@ -799,20 +794,11 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
    private void showAlertDialog()
    {
       // Method Instances.
-      String resource;
       String message, title;
       
-      resource = resourceBundle.getResource("DateFieldCalendar.dialogtitle.Alert");
-      if (resource.equals(""))
-         title = "Alert";
-      else
-         title = resource;
-      
-      resource = resourceBundle.getResource("DateFieldCalendar.dialogmessage.InvalidYear");
-      if (resource.equals(""))
-         message = "Invalid Input for Year";
-      else
-         message = resource;
+      title = resourceBundle.getResourceString("DateFieldCalendar.dialogtitle.Alert", "Alert");
+      message = resourceBundle.getResourceString("DateFieldCalendar.dialogmessage.InvalidYear",
+                                                  "Invalid Input for Year");
       
       JOptionPane.showMessageDialog(null, message + " ", title, JOptionPane.ERROR_MESSAGE);
    }
