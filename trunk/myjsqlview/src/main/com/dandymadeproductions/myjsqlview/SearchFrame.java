@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.0 05/07/2012
+// Version 4.1 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -90,6 +90,9 @@
 //         3.9 Copyright Update.
 //         4.0 Constructor Instance tableHeadings & databaseTables in actionPerformed()
 //             Data Types Changed from Vector to ArrayList.
+//         4.1 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -129,7 +132,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 4.0 05/07/2012
+ * @version 4.1 07/08/2012
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -183,11 +186,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
       
-      resource = resourceBundle.getResource("SearchFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("MyJSQLView Search Frame");
-      else
-         setTitle("MyJSQLView " + resource);
+      resource = resourceBundle.getResourceString("SearchFrame.message.Title", "Search Frame");
+      setTitle("MyJSQLView " + resource);
 
       searchIcon = new ImageIcon(iconsDirectory + "searchIcon.png");
       removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
@@ -242,11 +242,9 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       searchPanel = new JPanel();
       searchPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      resource = resourceBundle.getResource("SearchFrame.label.SearchDatabaseFor");
-      if (resource.equals(""))
-         searchLabel = new JLabel("Search Database For : ");
-      else
-         searchLabel = new JLabel(resource + " : ");
+      resource = resourceBundle.getResourceString("SearchFrame.label.SearchDatabaseFor",
+                                                  "Search Database For");
+      searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
       searchTextField = new JTextField(15);
@@ -278,23 +276,15 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       // Setup Headings.
       tableHeadings = new ArrayList<String>();
       
-      resourceInclude = resourceBundle.getResource("SearchFrame.label.Include");
-      if (resourceInclude.equals(""))
-         tableHeadings.add("Include");
-      else
-         tableHeadings.add(resourceInclude);
+      resourceInclude = resourceBundle.getResourceString("SearchFrame.label.Include", "Include");
+      tableHeadings.add(resourceInclude);
       
-      resource = resourceBundle.getResource("SearchFrame.label.Table");
-      if (resource.equals(""))
-         tableHeadings.add("Table");
-      else
-         tableHeadings.add(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.label.Table", "Table");
+      tableHeadings.add(resource);
       
-      resource = resourceBundle.getResource("SearchFrame.label.SearchResultCount");
-      if (resource.equals(""))
-         tableHeadings.add("Search Result Count");
-      else
-         tableHeadings.add(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.label.SearchResultCount",
+                                                  "Search Result Count");
+      tableHeadings.add(resource);
 
       // Fill the result table structure with default data.
       
@@ -346,11 +336,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       searchProgressBar.setStringPainted(true);
       statusCancelPanel.add(searchProgressBar);
 
-      resource = resourceBundle.getResource("SearchFrame.label.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.label.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.setMargin(new Insets(0, 0, 0, 0));
       cancelButton.setFocusPainted(false);
       cancelButton.addActionListener(this);
@@ -633,53 +620,35 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       JButton logoIconItem;
       
       // File Menu
-      resource = resourceBundle.getResource("SearchFrame.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.menu.File", "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       fileMenu.addSeparator();
       
-      resource = resourceBundle.getResource("SearchFrame.menu.Exit");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Exit", "FE"));
-      else
-         fileMenu.add(menuItem(resource, "FE"));
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Exit", "Exit");
+      fileMenu.add(menuItem(resource, "FE"));
       searchFrameMenuBar.add(fileMenu);
 
       // Edit Menu
-      resource = resourceBundle.getResource("SearchFrame.menu.Edit");
-      if (resource.equals(""))
-         editMenu = new JMenu("Edit");
-      else
-         editMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Edit", "Edit");
+      editMenu = new JMenu(resource);
       editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
       
       menuItem = new JMenuItem(new DefaultEditorKit.CutAction());
-      resource = resourceBundle.getResource("SearchFrame.menu.Cut");
-      if (resource.equals(""))
-         menuItem.setText("Cut" + "          " + "Ctrl+x");
-      else
-         menuItem.setText(resource + "          " + "Ctrl+x");
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Cut", "Cut");
+      menuItem.setText(resource + "          " + "Ctrl+x");
       menuItem.setMnemonic(KeyEvent.VK_X);
       editMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
-      resource = resourceBundle.getResource("SearchFrame.menu.Copy");
-      if (resource.equals(""))
-         menuItem.setText("Copy" + "       " + "Ctrl+c");
-      else
-         menuItem.setText(resource + "       " + "Ctrl+c");
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Copy", "Copy");
+      menuItem.setText(resource + "       " + "Ctrl+c");
       menuItem.setMnemonic(KeyEvent.VK_C);
       editMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
-      resource = resourceBundle.getResource("SearchFrame.menu.Paste");
-      if (resource.equals(""))
-         menuItem.setText("Paste" + "       " + "Ctrl+v");
-      else
-         menuItem.setText(resource + "       " + "Ctrl+v");
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Paste", "Past");
+      menuItem.setText(resource + "       " + "Ctrl+v");
       menuItem.setMnemonic(KeyEvent.VK_V);
       editMenu.add(menuItem);
 
@@ -707,27 +676,18 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       String resource;
       JMenuItem menuItem = null;
       
-      resource = resourceBundle.getResource("SearchFrame.menu.SelectAll");
-      if (resource.equals(""))
-         menuItem = menuItem("Select All", "SelectAll");
-      else
-         menuItem = menuItem(resource, "SelectAll");
+      resource = resourceBundle.getResourceString("SearchFrame.menu.SelectAll", "Select All");
+      menuItem = menuItem(resource, "SelectAll");
       resultTablePopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResource("SearchFrame.menu.DeSelectAll");
-      if (resource.equals(""))
-         menuItem = menuItem("DeSelect All", "DeSelectAll");
-      else
-         menuItem = menuItem(resource, "DeSelectAll");
+      resource = resourceBundle.getResourceString("SearchFrame.menu.DeSelectAll", "DeSelect All");
+      menuItem = menuItem(resource, "DeSelectAll");
       resultTablePopupMenu.add(menuItem);
       
       resultTablePopupMenu.addSeparator();
       
-      resource = resourceBundle.getResource("SearchFrame.menu.Copy");
-      if (resource.equals(""))
-         menuItem = new JMenuItem("Copy");
-      else
-         menuItem = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("SearchFrame.menu.Copy", "Copy");
+      menuItem = new JMenuItem(resource);
       menuItem.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
       menuItem.setMnemonic(KeyEvent.VK_C);
       menuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));

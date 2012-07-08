@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.7 05/07/2012
+// Version 8.8 07/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,9 @@
 //             End With Map.
 //         8.7 Class Methods createTableFields/RowsOptionsPanel() Conversion of Connection
 //             Manager.getTableNames().toArray() for ComboBox Creation.
+//         8.8 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -208,7 +211,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.7 05/07/2012
+ * @version 8.8 07/08/2012
  */
 
 //=================================================================
@@ -283,11 +286,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Setting the frame's main layout & other required
       // fields.
       
-      resource = resourceBundle.getResource("PreferencesFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("Preferences");
-      else
-         setTitle(resource);
+      resource = resourceBundle.getResourceString("PreferencesFrame.message.Title", "Preferences");
+      setTitle(resource);
       
       mainPanel = new JPanel(new BorderLayout());
 
@@ -462,29 +462,20 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       southButtonPanel = new JPanel();
       southButtonPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      resource = resourceBundle.getResource("PreferencesFrame.button.OK");
-      if (resource.equals(""))
-         okButton = new JButton("OK");
-      else
-         okButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PreferencesFrame.button.OK", "OK");
+      okButton = new JButton(resource);
       okButton.setFocusPainted(false);
       okButton.addActionListener(this);
       southButtonPanel.add(okButton);
 
-      resource = resourceBundle.getResource("PreferencesFrame.button.Cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("Cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PreferencesFrame.button.Cancel", "Cancel");
+      cancelButton = new JButton(resource);
       cancelButton.setFocusPainted(false);
       cancelButton.addActionListener(this);
       southButtonPanel.add(cancelButton);
 
-      resource = resourceBundle.getResource("PreferencesFrame.button.Help");
-      if (resource.equals(""))
-         helpButton = new JButton("Help");
-      else
-         helpButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("PreferencesFrame.button.Help", "Help");
+      helpButton = new JButton(resource);
       helpButton.setFocusPainted(false);
       helpButton.addActionListener(this);
       southButtonPanel.add(helpButton);
@@ -803,66 +794,42 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       
       // Preferences Node Name.
       
-      resource = resourceBundle.getResource("PreferencesFrame.node.Preferences");
-      if (resource.equals(""))
-         resourcePreferences = "Preferences";
-      else
-         resourcePreferences = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.Preferences", "Preferences");
+      resourcePreferences = resource;
       
       // General View Nodes.
       
-      resource = resourceBundle.getResource("PreferencesFrame.node.General");
-      if (resource.equals(""))
-         resourceGeneral = "General";
-      else
-         resourceGeneral = resource;
-      resource = resourceBundle.getResource("PreferencesFrame.node.GeneralOptions");
-      if (resource.equals(""))
-         resourceGeneralOptions = "Options";
-      else
-         resourceGeneralOptions = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.General", "General");
+      resourceGeneral = resource;
+      
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.GeneralOptions", "Options");
+      resourceGeneralOptions = resource;
       
       // Table Summary View Nodes.
       
-      resource = resourceBundle.getResource("PreferencesFrame.node.TableSummaryView");
-      if (resource.equals(""))
-         resourceTableSummaryView = "Table Summary View";
-      else
-         resourceTableSummaryView = resource;
-      resource = resourceBundle.getResource("PreferencesFrame.node.TableFields");
-      if (resource.equals(""))
-         resourceTableFields = "Table Fields";
-      else
-         resourceTableFields = resource;
-      resource = resourceBundle.getResource("PreferencesFrame.node.TableRows");
-      if (resource.equals(""))
-         resourceTableRows = "Table Rows";
-      else
-         resourceTableRows = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.TableSummaryView",
+                                                  "Table Summary View");
+      resourceTableSummaryView = resource;
+      
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.TableFields", "Table Fields");
+      resourceTableFields = resource;
+      
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.TableRows", "Table Rows");
+      resourceTableRows = resource;
       
       // Data Import &  Export Nodes.
       
-      resource = resourceBundle.getResource("PreferencesFrame.node.DataImport");
-      if (resource.equals(""))
-         resourceDataImport = "Data Import";
-      else
-         resourceDataImport = resource;
-      resource = resourceBundle.getResource("PreferencesFrame.node.Import");
-      if (resource.equals(""))
-         resourceImport = "Import";
-      else
-         resourceImport = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.DataImport", "Data Import");
+      resourceDataImport = resource;
       
-      resource = resourceBundle.getResource("PreferencesFrame.node.DataExport");
-      if (resource.equals(""))
-         resourceDataExport = "Data Export";
-      else
-         resourceDataExport = resource; 
-      resource = resourceBundle.getResource("PreferencesFrame.node.Export");
-      if (resource.equals(""))
-         resourceExport = "Export";
-      else
-         resourceExport = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.Import", "Import");
+      resourceImport = resource;
+      
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.DataExport", "Data Export");
+      resourceDataExport = resource; 
+      
+      resource = resourceBundle.getResourceString("PreferencesFrame.node.Export", "Export");
+      resourceExport = resource;
    }
 
    //==============================================================
@@ -940,11 +907,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // panel components.
       selectionPanel = new JPanel(new GridLayout(2,1,0,0));
 
-      resource = resourceBundle.getResource("PreferencesFrame.label.TableSelection");
-      if (resource.equals(""))
-         tableSelectionLabel = new JLabel("Table Selection", JLabel.CENTER);
-      else
-         tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
+      resource = resourceBundle.getResourceString("PreferencesFrame.label.TableSelection",
+                                                  "Table Selection");
+      tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
       tableSelectionFieldsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());
       selectionPanel.add(tableSelectionFieldsComboBox);
@@ -984,38 +949,27 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       JLabel tableSelectionLabel;
       String resource, resourceWarning, rowSizeWarningMessage;
       
-      resource = resourceBundle.getResource("PreferencesFrame.message.Warning");
-      if (resource.equals(""))
-         resourceWarning = "WARNING!";
-      else
-         resourceWarning = resource;
+      resource = resourceBundle.getResourceString("PreferencesFrame.message.Warning", "WARNING");
+      resourceWarning = resource;
       
-      resource = resourceBundle.getResource("PreferencesFrame.message.RowSizeWarning");
-      if (resource.equals("") || resourceWarning.equals(""))
-      {
-         rowSizeWarningMessage = "<html><body><p><span style='color: rgb(255, 0, 0);'>WARNING! </span>"
-                                     + "A large row size may adversely effect this application and the database "
-                                     + "server performance. It is recommended that a reasonable row size be "
-                                     + "selected based on special needs such as CSV/SQL exports. A basic paging "
-                                     + "mechanism is in place for each table summary view that already allows "
-                                     + "access to all table data.</p></body></html>";
-      }
-      else
-      {
-         rowSizeWarningMessage = "<html><body><p><span style='color: rgb(255, 0, 0);'>" + resourceWarning
-                                  + " </span>" + resource + "</p></body></html>";
-      }
+      resource = resourceBundle.getResourceString("PreferencesFrame.message.RowSizeWarning",
+         "A large row size may adversely effect this application and the database "
+         + "server performance. It is recommended that a reasonable row size be "
+         + "selected based on special needs such as CSV/SQL exports. A basic paging "
+         + "mechanism is in place for each table summary view that already allows "
+         + "access to all table data.");
+      
+      rowSizeWarningMessage = "<html><body><p><span style='color: rgb(255, 0, 0);'>" + resourceWarning
+                              + " </span>" + resource + "</p></body></html>";
 
       // Create and setup the table rows option
       // panel components.
 
       selectionPanel = new JPanel(new GridLayout(2,1,0,0));
 
-      resource = resourceBundle.getResource("PreferencesFrame.label.TableSelection");
-      if (resource.equals(""))
-         tableSelectionLabel = new JLabel("Table Selection", JLabel.CENTER);
-      else
-         tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
+      resource = resourceBundle.getResourceString("PreferencesFrame.label.TableSelection",
+                                                  "Table Selection");
+      tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
 
       tableSelectionRowsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());

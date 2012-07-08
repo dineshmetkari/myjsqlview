@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.35 05/28/2012
+// Version 3.36 07/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,8 +199,11 @@
 //                         3.33.
 //         3.34 04/07/2012 Class Instance myJSQLView_Version Update for Release
 //                         3.34.
-//         3.34 04/07/2012 Class Instance myJSQLView_Version Update for Release
+//         3.35 04/07/2012 Class Instance myJSQLView_Version Update for Release
 //                         3.35.
+//         3.36 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                         of Resource Strings. Change to resource.getResourceString(key,
+//                         default).
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -234,7 +237,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.35 05/28/2012
+ * @version 3.36 07/07/2012
  */
 
 public class MyJSQLView implements ActionListener
@@ -256,7 +259,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.35", "Build ID: 20120528"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.36", "Build ID: 20120707"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -296,33 +299,24 @@ public class MyJSQLView implements ActionListener
 
       menuItem = new JMenuItem(new DefaultEditorKit.CutAction()); 
       
-      popupMenuResource = resourceBundle.getResource("myJSQLViewPopupMenu.action.Cut");
-      if (popupMenuResource.equals(""))
-         menuItem.setText("Cut");
-      else
-         menuItem.setText(popupMenuResource);
+      popupMenuResource = resourceBundle.getResourceString("myJSQLViewPopupMenu.action.Cut", "Cut");
+      menuItem.setText(popupMenuResource);
       menuItem.setMnemonic(KeyEvent.VK_X);
       menuItem.addActionListener(this);
       myJSQLViewPopupMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.CopyAction());
       
-      popupMenuResource = resourceBundle.getResource("myJSQLViewPopupMenu.action.Copy");
-      if (popupMenuResource.equals(""))
-         menuItem.setText("Copy");
-      else
-         menuItem.setText(popupMenuResource);
+      popupMenuResource = resourceBundle.getResourceString("myJSQLViewPopupMenu.action.Copy", "Copy");
+      menuItem.setText(popupMenuResource);
       menuItem.setMnemonic(KeyEvent.VK_C);
       menuItem.addActionListener(this);
       myJSQLViewPopupMenu.add(menuItem);
 
       menuItem = new JMenuItem(new DefaultEditorKit.PasteAction());
       
-      popupMenuResource = resourceBundle.getResource("myJSQLViewPopupMenu.action.Paste");
-      if (popupMenuResource.equals(""))
-         menuItem.setText("Paste");
-      else
-         menuItem.setText(popupMenuResource);
+      popupMenuResource = resourceBundle.getResourceString("myJSQLViewPopupMenu.action.Paste", "Paste");
+      menuItem.setText(popupMenuResource);
       menuItem.setText("Paste");
       menuItem.setMnemonic(KeyEvent.VK_V);
       menuItem.addActionListener(this);

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.38 05/07/2012
+// Version 7.39 07/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -263,6 +263,9 @@
 //             catch Added Along With flushed Instance.
 //        7.38 Class Method dataExportAction() Calls to Classes to Dump Data Arguments
 //             All Changed from Vector to ArrayList Data Types.
+//        7.39 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -295,7 +298,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.38 05/07/2012
+ * @version 7.39 07/07/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -839,10 +842,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          catch (PrinterException e)
          {
             resourceBundle = MyJSQLView.getLocaleResourceBundle();
-            resourceTitle = resourceBundle.getResource(
-                                         "MyJSQLView_JMenuBarActions.dialogtitle.PrinterException");
-            if (resourceTitle.equals(""))
-               resourceTitle = "Printer Exception";
+            resourceTitle = resourceBundle.getResourceString(
+                                         "MyJSQLView_JMenuBarActions.dialogtitle.PrinterException",
+                                         "Printer Exception");
             
             JOptionPane.showMessageDialog(null, e.getMessage(), resourceTitle, JOptionPane.ERROR_MESSAGE);
          }
@@ -896,34 +898,25 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                JLabel message;
                JCheckBox reloadDBTables;
                
-               resource = resourceBundle.getResource(
-                                     "MyJSQLView_JMenuBarActions.label.WarningImport");
-               if (resource.equals(""))
-                  message = new JLabel("Warning Import May Cause Loss of Data!", JLabel.CENTER);
-               else
-                  message = new JLabel(resource, JLabel.CENTER);
+               resource = resourceBundle.getResourceString(
+                                     "MyJSQLView_JMenuBarActions.label.WarningImport",
+                                     "Warning Import May Cause Loss of Data!");
+               message = new JLabel(resource, JLabel.CENTER);
                
-               resource = resourceBundle.getResource(
-                                     "MyJSQLView_JMenuBarActions.checkbox.ReloadDatabaseTables");
-               if (resource.equals(""))
-                  reloadDBTables = new JCheckBox("Reload Database Tables?", false);
-               else
-                  reloadDBTables = new JCheckBox(resource, false);
+               resource = resourceBundle.getResourceString(
+                                     "MyJSQLView_JMenuBarActions.checkbox.ReloadDatabaseTables",
+                                     "Reload Database Tables?");
+               reloadDBTables = new JCheckBox(resource, false);
                
                Object[] content = {message, reloadDBTables};
 
-               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.ImportWarning");
-               if (resource.equals(""))
-                  resource = "Import Warning";
-                  
-               resourceOK = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.OK");
-               if (resourceOK.equals(""))
-                  resourceOK = "OK";
+               resource = resourceBundle.getResourceString(
+                                     "MyJSQLView_JMenuBarActions.dialogtitle.ImportWarning",
+                                     "Import Warning");
+               resourceOK = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.OK", "OK");
+               resourceCancel = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.Cancel",
+                                                                 "Cancel");
                
-               resourceCancel = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.Cancel");
-               if (resourceCancel.equals(""))
-                  resourceCancel = "Cancel";
-                  
                importWarningDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                      content, null);
                importWarningDialog.pack();
@@ -956,37 +949,28 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                ButtonGroup insertUpdateOptionsGroup = new ButtonGroup();
                JRadioButton insertRadioButton, updateRadioButton;
                
-               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.radiobutton.Insert");
-               if (resource.equals(""))
-                  insertRadioButton = new JRadioButton("Insert", true);
-               else
-                  insertRadioButton = new JRadioButton(resource, true);
+               resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.radiobutton.Insert",
+                                                           "Insert");
+               insertRadioButton = new JRadioButton(resource, true);
                insertUpdateOptionsGroup.add(insertRadioButton);
                
-               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.radiobutton.Update");
-               if (resource.equals(""))
-                  updateRadioButton = new JRadioButton("Update", false);
-               else
-                  updateRadioButton = new JRadioButton(resource, false);
+               resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.radiobutton.Update",
+                                                           "Update");
+               updateRadioButton = new JRadioButton(resource, false);
                insertUpdateOptionsGroup.add(updateRadioButton);
 
-               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.label.WarningImport");
-               if (resource.equals(""))
-                  resource = "Warning Import May Cause Loss of Data!";
+               resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.label.WarningImport",
+                                                           "Warning Import May Cause Loss of Data!");
                
                Object content[] = {resource, insertRadioButton, updateRadioButton};
                
-               resource = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.InsertOrUpdate");
-               if (resource.equals(""))
-                  resource = "Insert Or Update?";
-                  
-               resourceOK = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.OK");
-               if (resourceOK.equals(""))
-                  resourceOK = "OK";
-               
-               resourceCancel = resourceBundle.getResource("MyJSQLView_JMenuBarActions.button.Cancel");
-               if (resourceCancel.equals(""))
-                  resourceCancel = "Cancel";
+               resource = resourceBundle.getResourceString(
+                                     "MyJSQLView_JMenuBarActions.dialogtitle.InsertOrUpdate",
+                                     "Insert Or Update?"); 
+               resourceOK = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.OK",
+                                                             "OK");
+               resourceCancel = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.Cancel",
+                                                                 "Cancel");
                   
                insertUpdateDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                                      content, null);
@@ -1243,13 +1227,11 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       
       // Create the dialog.
       resourceBundle = MyJSQLView.getLocaleResourceBundle();
-      resourceTitle = resourceBundle.getResource("MyJSQLView_JMenuBarActions.dialogtitle.Alert");
-      if (resourceTitle.equals(""))
-         resourceTitle = "Alert";
-      resourceMessage = resourceBundle.getResource(
-                                           "MyJSQLView_JMenuBarActions.dialogmessage.FileNOTFound");
-      if (resourceMessage.equals(""))
-         resourceMessage = "File NOT Found";
+      resourceTitle = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.dialogtitle.Alert",
+                                                       "Alert");
+      resourceMessage = resourceBundle.getResourceString(
+                                   "MyJSQLView_JMenuBarActions.dialogmessage.FileNOTFound",
+                                   "File NOT Found");
       
       JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle, JOptionPane.ERROR_MESSAGE);
    }

@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.87 05/12/2012
+// Version 6.88 07/07/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -270,6 +270,9 @@
 //             siteNames in fillSiteDataStructure() Changed from Enumeration to Iterator.
 //        6.87 Class Method accessCheck() Added Instance maxColumNameLength. Collected &
 //             Set in ConnectionManager in Same.
+//        6.88 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//             of Resource Strings. Change to resource.getResourceString(key,
+//             default).
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -303,7 +306,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.87 05/12/2012
+ * @version 6.88 07/07/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -362,11 +365,8 @@ public class LoginFrame extends JFrame implements ActionListener
       
       // Set Frame Parameters
       
-      resource = resourceBundle.getResource("LoginFrame.message.Title");
-      if (resource.equals(""))
-         setTitle("MyJSQLView Login");
-      else
-         setTitle("MyJSQLView " + resource);
+      resource = resourceBundle.getResourceString("LoginFrame.message.Title", "Login");
+      setTitle("MyJSQLView " + resource);
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
       // Setting up Various Instances.
@@ -424,16 +424,11 @@ public class LoginFrame extends JFrame implements ActionListener
          fillSitesDefaults();
      
       // Setup Sites Slection JMenu.
-      resource = resourceBundle.getResource("LoginFrame.menu.Sites");
-      if (resource.equals(""))
-         siteSelectMenu = new JMenu("Sites");
-      else
-         siteSelectMenu = new JMenu(resource);
-      resource = resourceBundle.getResource("LoginFrame.tooltip.SiteSelection");
-      if (resource.equals(""))
-         siteSelectMenu.setToolTipText("Site Selection");
-      else
-         siteSelectMenu.setToolTipText(resource);
+      resource = resourceBundle.getResourceString("LoginFrame.menu.Sites", "Sites");
+      siteSelectMenu = new JMenu(resource);
+      
+      resource = resourceBundle.getResourceString("LoginFrame.tooltip.SiteSelection", "Site Selection");
+      siteSelectMenu.setToolTipText(resource);
       fillSiteDataStructures(siteSelectMenu);
       accessDialogMenuBar.add(siteSelectMenu);
 
@@ -441,11 +436,9 @@ public class LoginFrame extends JFrame implements ActionListener
       loginManagerFrame_AccessButton = new JButton(loginManagerIcon);
       loginManagerFrame_AccessButton.setFocusable(false);
       loginManagerFrame_AccessButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("LoginFrame.tooltip.LoginManager");
-      if (resource.equals(""))
-         loginManagerFrame_AccessButton.setToolTipText("Login Manager");
-      else
-         loginManagerFrame_AccessButton.setToolTipText(resource);
+      
+      resource = resourceBundle.getResourceString("LoginFrame.tooltip.LoginManager", "Login Manager");
+      loginManagerFrame_AccessButton.setToolTipText(resource);
       
       if (xmlTranslator.getXMLTranslatorResult())
          loginManagerFrame_AccessButton.addActionListener(this);
@@ -458,11 +451,8 @@ public class LoginFrame extends JFrame implements ActionListener
       advancedOptionsButton = new JButton(advancedConnectionsIcon);
       advancedOptionsButton.setFocusable(false);
       advancedOptionsButton.setMargin(new Insets(0, 0, 0, 0));
-      resource = resourceBundle.getResource("LoginFrame.tooltip.AdvancedOptions");
-      if (resource.equals(""))
-         advancedOptionsButton.setToolTipText("Advanced Options");
-      else
-         advancedOptionsButton.setToolTipText(resource);
+      resource = resourceBundle.getResourceString("LoginFrame.tooltip.AdvancedOptions", "Advanced Options");
+      advancedOptionsButton.setToolTipText(resource);
       advancedOptionsButton.addActionListener(this);
       accessDialogMenuBar.add(advancedOptionsButton);
 
@@ -514,29 +504,20 @@ public class LoginFrame extends JFrame implements ActionListener
       actionPanel = new JPanel();
       actionPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      resource = resourceBundle.getResource("LoginFrame.checkbox.SSH");
-      if (resource.equals(""))
-         sshCheckBox = new JCheckBox("SSH", sshUpIcon);
-      else
-         sshCheckBox = new JCheckBox(resource, sshUpIcon);
+      resource = resourceBundle.getResourceString("LoginFrame.checkbox.SSH", "SSH");
+      sshCheckBox = new JCheckBox(resource, sshUpIcon);
       sshCheckBox.setSelectedIcon(sshDownIcon);
       sshCheckBox.setHorizontalTextPosition(SwingConstants.LEADING);
       sshCheckBox.setFocusPainted(false);
       actionPanel.add(sshCheckBox);
       
-      resource = resourceBundle.getResource("LoginFrame.button.cancel");
-      if (resource.equals(""))
-         cancelButton = new JButton("cancel");
-      else
-         cancelButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("LoginFrame.button.cancel", "cancel");
+      cancelButton = new JButton(resource);
       cancelButton.addActionListener(this);
       actionPanel.add(cancelButton);
       
-      resource = resourceBundle.getResource("LoginFrame.button.login");
-      if (resource.equals(""))
-         loginButton = new JButton("login");
-      else
-         loginButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("LoginFrame.button.login", "login");
+      loginButton = new JButton(resource);
       loginButton.addActionListener(this);
       actionPanel.add(loginButton);
       
@@ -550,17 +531,12 @@ public class LoginFrame extends JFrame implements ActionListener
       (this.getRootPane()).setDefaultButton(loginButton);
 
       // Creating the LoginManager Action Buttons
-      resource = resourceBundle.getResource("LoginFrame.button.saveandexit");
-      if (resource.equals(""))
-         loginManagerFrame_SaveExitButton = new JButton("save and exit");
-      else
-         loginManagerFrame_SaveExitButton = new JButton(resource);
+      resource = resourceBundle.getResourceString("LoginFrame.button.saveandexit", "save and exit");
+      loginManagerFrame_SaveExitButton = new JButton(resource);
       loginManagerFrame_SaveExitButton.addActionListener(this);
-      resource = resourceBundle.getResource("LoginFrame.button.cancel");
-      if (resource.equals(""))
-         loginManagerFrame_CancelButton = new JButton("cancel");
-      else
-         loginManagerFrame_CancelButton = new JButton(resource);
+      
+      resource = resourceBundle.getResourceString("LoginFrame.button.cancel", "cancel");
+      loginManagerFrame_CancelButton = new JButton(resource);
       loginManagerFrame_CancelButton.addActionListener(this);
    }
 
@@ -718,16 +694,11 @@ public class LoginFrame extends JFrame implements ActionListener
 
             // Updating JMenuBar and ComboBoxes.
             JMenu siteSelectMenu;
-            resource = resourceBundle.getResource("LoginFrame.menu.Sites");
-            if (resource.equals(""))
-               siteSelectMenu = new JMenu("Sites");
-            else
-               siteSelectMenu = new JMenu(resource);
-            resource = resourceBundle.getResource("LoginFrame.tooltip.SiteSelection");
-            if (resource.equals(""))
-               siteSelectMenu.setToolTipText("Site Selection");
-            else
-               siteSelectMenu.setToolTipText(resource);
+            resource = resourceBundle.getResourceString("LoginFrame.menu.Sites", "Sites");
+            siteSelectMenu = new JMenu(resource);
+            
+            resource = resourceBundle.getResourceString("LoginFrame.tooltip.SiteSelection", "Site Selection");
+            siteSelectMenu.setToolTipText(resource);
             fillSiteDataStructures(siteSelectMenu);
             accessDialogMenuBar.remove(0);
             accessDialogMenuBar.add(siteSelectMenu, 0);
