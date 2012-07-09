@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.0 07/08/2012
+// Version 8.1 07/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -201,6 +201,8 @@
 //         8.0 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         8.1 07/09/2012 Correction in Class Method createMenuBar() Resource Key QueryFrame.menu.
+//                        CSV/PDFSummaryTable to ExportCSV/PDFSummaryTable.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -238,7 +240,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.0 07/08/2012
+ * @version 8.1 07/09/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1318,14 +1320,14 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_TABLE));
       */
       
-      resource = resourceBundle.getResourceString("QueryFrame.menu.CSVSummaryTable", "Summary Table");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportCSVSummaryTable", "Summary Table");
       exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
       
       resource = resourceBundle.getResourceString("QueryFrame.menu.ExportPDF", "PDF");
       exportCVSMenu = new JMenu(resource);
       
-      resource = resourceBundle.getResourceString("QueryFrame.menu.PDFSummaryTable", "Summary Table");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportPDFSummaryTable", "Summary Table");
       exportCVSMenu.add(menuItem(resource, DATAEXPORT_PDF_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
 
