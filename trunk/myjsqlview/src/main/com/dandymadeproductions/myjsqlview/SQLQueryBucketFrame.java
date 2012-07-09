@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 01/21/2012
+// Version 2.3 07/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,10 @@
 //                        Class Method createSQLObjectDialog(). Modified actionPerformed(),
 //                        & save/openSQLStatementFile() Methods Accordingly.
 //         2.1 01/21/2012 Class Method createSQLObjectDialog() Set formDialog.setMinimumSize().
+//         2.2 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
+//                        of Resource Strings. Change to resource.getResourceString(key,
+//                        default).
+//         2.3 07/09/2012 Correction in Class createPopupMenu() Resource Keys menu to button.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -86,7 +90,7 @@ import javax.swing.*;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.1 01/21/2012
+ * @version 2.3 07/09/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -620,19 +624,19 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       sqlListPopupMenu = new JPopupMenu();
 
-      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.View", "View");
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.View", "View");
       menuItem = menuItem(resource, VIEW);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Add", "Add");
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Add", "Add");
       menuItem = menuItem(resource, ADD);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Edit", "Edit");
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Edit", "Edit");
       menuItem = menuItem(resource, EDIT);
       sqlListPopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.menu.Delete", "Delete");
+      resource = resourceBundle.getResourceString("SQLQueryBucketFrame.button.Delete", "Delete");
       menuItem = menuItem(resource, DELETE);
 
       sqlListPopupMenu.add(menuItem);
