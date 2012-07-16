@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.0 05/07/2012
+// Version 2.1 07/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,10 @@
 //         1.9 01/01/2012 Implemented Class is Serializable.
 //         2.0 05/07/2012 Changed Class Instance localeListData from Hashtable Data Type
 //                        to HashMap.
+//         2.1 07/16/2012 Preliminary Upgrade of Class to Deal With More Versatile
+//                        Resource Locations Files, & URLs. Changes to Constructor,
+//                        Added createFile/HTTP_Resource(), & getDefaultResourceString().
+//                        Change in getResource(String) to getResourceString(String, String).
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,9 +64,12 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -73,52 +80,117 @@ import javax.swing.JOptionPane;
  * Handles also the methods needed to retrieve a resource key.
  * 
  * @author Dana M. Proctor
- * @version 2.0 05/07/2012
+ * @version 2.1 07/16/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
 {
    // Class Instances.
    private static final long serialVersionUID = -6752902010674915905L;
-   
+
+   private URL resourceURL;
+   private String resourceType;
    private HashMap<String, String> localeListData;
+   
+   private static final String FILE_RESOURCE = "file";
+   private static final String HTTP_RESOURCE = "http";
 
    //==============================================================
    // MyJSQLView_ResourceBundle Constructor
    //==============================================================
 
-   public MyJSQLView_ResourceBundle(String localeDirectory, String baseName, String localeString)
+   public MyJSQLView_ResourceBundle(String localePath, String baseName, String localeString)
    {
-      // Constructor Instances.
-      String localeFileName;
-
-      String currentEntry;
-      String key, resource;
-
-      FileInputStream fileInputStream;
-      InputStreamReader inputStreamReader;
-      BufferedReader bufferedReader;
-
       // Setup to process.
       if (localeString.equals(""))
          return;
       else
       {
-         localeFileName = localeDirectory + MyJSQLView_Utils.getFileSeparator() + baseName
-                          + "_" + localeString + ".properties";
+         // Creation of a URL from the given locale path,
+         // base name & locale.
+         try
+         {
+            resourceURL = new URL(localePath  + MyJSQLView_Utils.getFileSeparator() + baseName + "_"
+                                  + localeString + ".properties");
+            
+            //System.out.println("protocol:" + resourceURL.getProtocol() + " host:" + resourceURL.getHost()
+            //                   + " port:" + resourceURL.getPort() +  " file:" + resourceURL.getFile()
+            //                   + "\n" + "URL:" + resourceURL.toExternalForm());
+            
+            resourceType = resourceURL.getProtocol();
+              
+         }
+         catch (MalformedURLException mfe)
+         {
+            String exceptionString = mfe.toString();
+            
+            if (exceptionString.length() > 200)
+               exceptionString = mfe.getMessage().substring(0, 200);
+            
+            displayErrors("MyJSQLView_ResourceBundle Constructor() \n"
+                          + "Failed to create locale resouce URL from, " + localePath + "\n"
+                          + exceptionString);
+            return;
+         } 
       }
 
-      // Begin processing the given locale file to obtain a hashtable
+      // Begin processing the given locale file to obtain a hashmap
       // of the key, resource pairs.
 
-      localeListData = new HashMap <String, String>();
+      localeListData = new HashMap<String, String>();
       
       try
       {
-         fileInputStream = new FileInputStream(localeFileName);
+         if (resourceType.equals(FILE_RESOURCE))
+            createFile_Resource();
+         
+         else if (resourceType.equals(HTTP_RESOURCE))
+            createHttp_Resource();
+         
+         // Unknown
+         else
+         {
+            displayErrors("MyJSQLView_ResourceBundle Constructor() \n"
+                          + "Failed to identity URL protocol in order to process, , "
+                          + resourceURL.getProtocol());
+         }
+      }
+      catch (IOException ioe)
+      {
+         displayErrors("MyJSQLView_ResourceBundle Constructor() \n"
+                       + "Failed to close " + resourceType + " in process.\n"  
+                       + ioe.toString());
+      }
+   }
+   
+   //==============================================================
+   // Class Method to create the resource source from a the local
+   // file system.
+   //==============================================================
+   
+   private void createFile_Resource() throws IOException
+   {
+      // Method Instances
+      FileInputStream fileInputStream;
+      InputStreamReader inputStreamReader;
+      BufferedReader bufferedReader;
+      
+      String currentEntry;
+      String key, resource;
+      
+      // Create a input stream for the locale system
+      // file & load the resource key/values.
+      
+      fileInputStream = null;
+      inputStreamReader = null;
+      bufferedReader = null;
+      
+      try
+      {
+         fileInputStream = new FileInputStream(resourceURL.getFile());
          inputStreamReader = new InputStreamReader(fileInputStream, "UTF-16");
          bufferedReader = new BufferedReader(inputStreamReader);
-         
+
          while ((currentEntry = bufferedReader.readLine()) != null)
          {
             currentEntry = currentEntry.trim();
@@ -128,7 +200,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
                key = currentEntry.substring(0, currentEntry.indexOf("=")).trim();
                resource = currentEntry.substring(currentEntry.indexOf("=") + 1).trim();
                // System.out.println(key + " " + resource);
-               
+
                localeListData.put(key, resource);
             }
          }
@@ -139,36 +211,133 @@ public class MyJSQLView_ResourceBundle implements Serializable
       catch (IOException ioe)
       {
          String ioExceptionString = ioe.toString();
+         
          if (ioExceptionString.length() > 200)
             ioExceptionString = ioe.getMessage().substring(0, 200);
 
-            String optionPaneStringErrors = "MyJSQLView_ResourceBundle Constructor() \n" +
-                                            "Failed to process the given locale file, "
-                                            + localeFileName + "\n"
-                                            + ioExceptionString;
-
-            JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert",
-                                          JOptionPane.ERROR_MESSAGE);
+         displayErrors("MyJSQLView_ResourceBundle createFile_Resource() \n"
+                        + "Failed to process the given locale file, " + resourceURL.toExternalForm()
+                        + "\n" + ioExceptionString);
+      }
+      finally
+      {
+         if (bufferedReader != null)
+            bufferedReader.close();
+         
+         if (inputStreamReader != null)
+            inputStreamReader.close();
+         
+         if (fileInputStream != null)
+            fileInputStream.close();
       }
    }
+   
+   //==============================================================
+   // Class Method to create the resource source from the network.
+   //==============================================================
+   
+   private void createHttp_Resource()
+   {
+      // Method Instances
+      HttpURLConnection urlConnection;
+      InputStreamReader inputStreamReader;
+      BufferedReader bufferedReader;
+      
+      String currentEntry;
+      String key, resource;
+      
+      try
+      {
+         urlConnection = (HttpURLConnection) resourceURL.openConnection();
+         urlConnection.connect();
+         
+         inputStreamReader = new InputStreamReader(urlConnection.getInputStream(), "UTF-16");
+         bufferedReader = new BufferedReader(inputStreamReader);
+         
+         while ((currentEntry = bufferedReader.readLine()) != null)
+         {
+            currentEntry = currentEntry.trim();
 
+            if (currentEntry.indexOf("=") != -1)
+            {
+               key = currentEntry.substring(0, currentEntry.indexOf("=")).trim();
+               resource = currentEntry.substring(currentEntry.indexOf("=") + 1).trim();
+               System.out.println(key + " " + resource);
+
+               localeListData.put(key, resource);
+            }
+         }
+         bufferedReader.close();
+         inputStreamReader.close();
+         
+      }
+      catch (IOException ioe)
+      {
+         String ioExceptionString = ioe.toString();
+         
+         if (ioExceptionString.length() > 200)
+            ioExceptionString = ioe.getMessage().substring(0, 200);
+
+         displayErrors("MyJSQLView_ResourceBundle createHTTP_Resource() \n"
+                        + "Failed to process the given locale http, " + resourceURL.toExternalForm()
+                        + "\n" + ioExceptionString);
+      } 
+   }
+   
+   //==============================================================
+   // Class method to display an error to the standard output if
+   // some type of resource creation/processing occured.
+   //==============================================================
+
+   private void displayErrors(String errorString)
+   {
+      JOptionPane.showMessageDialog(null, errorString, "Alert", JOptionPane.ERROR_MESSAGE);
+   }
+   
    //==============================================================
    // Class Method for allowing package classes to obtain the locale
    // resource given a key.
    //==============================================================
 
-   public String getResource(String resourceKey)
+   public String getResourceString(String resourceKey, String defaultValue)
    {
       // System.out.println(resourceKey);
-      
+
       if (localeListData != null && resourceKey != null)
       {
          if (localeListData.containsKey(resourceKey))
             return localeListData.get(resourceKey);
          else
-            return "";
+         {
+            if (!localeListData.isEmpty() && MyJSQLView.getDebug())
+               System.out.println("Invalid Resource Key: "  + resourceKey);
+            
+            return getDefaultResourceString(defaultValue);
+         }
       }
       else
+      {
+         if (MyJSQLView.getDebug())
+            System.out.println("Either Undefined Locale or Resource Key.");
+         
+         return getDefaultResourceString(defaultValue);
+      }
+   }
+   
+   //==============================================================
+   // Class Method for returning a default resource string.
+   //==============================================================
+   
+   private String getDefaultResourceString(String defaultValue)
+   {
+      if (defaultValue != null)
+         return defaultValue;
+      else
+      {
+         if (MyJSQLView.getDebug())
+            System.out.println("Undefined Resource Default Value.");
+         
          return "";
+      }
    }
 }
