@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.36 07/07/2012
+// Version 3.37 07/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -204,6 +204,9 @@
 //         3.36 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                         of Resource Strings. Change to resource.getResourceString(key,
 //                         default).
+//         3.37 07/16/2012 Change in Constructor Argument for MyJSQLView_ResourceBundle to
+//                         Use the Specification of "file:locale". Preliminary Change
+//                         Made Because of Updates to the Way Plugin's Are Loaded.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -237,7 +240,7 @@ import javax.swing.text.DefaultEditorKit;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.36 07/07/2012
+ * @version 3.37 07/16/2012
  */
 
 public class MyJSQLView implements ActionListener
@@ -259,7 +262,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.36", "Build ID: 20120707"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.37", "Build ID: 20120716"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
@@ -290,7 +293,7 @@ public class MyJSQLView implements ActionListener
       // ==================================================
       // Obtain resouce bundle for internationalization.
       
-      resourceBundle = new MyJSQLView_ResourceBundle("locale", "MyJSQLViewBundle", localeString);
+      resourceBundle = new MyJSQLView_ResourceBundle("file:locale", "MyJSQLViewBundle", localeString);
       
       // ==================================================
       // Setting up a PopupMenu for cut, copy, and pasting.
