@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 07/08/2012
+// Version 1.8 07/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,8 @@
 //         1.7 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         1.8 Change in installPlugin() to Use New Updated Call to PluginLoader
+//             to Use an URL.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,6 +66,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -82,7 +86,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.7 07/08/2012
+ * @version 1.8 07/18/2012
  */
 
 //=================================================================
@@ -570,7 +574,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    {
       // Method Instances.
       JFileChooser pluginFileChooser;
-      String fileName;
+      String fileName, resource;
 
       // Collect/Set the default directory to be used.
       if (lastPluginDirectory.equals(""))
@@ -602,7 +606,19 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
             tableModelLoadingPlugins.setValues(loadingPluginViewTableData);
             
             MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
-            new PluginLoader(parentFrame, fileName);
+            try
+            {
+               URL pluginURL = new URL(fileName);
+               new PluginLoader(parentFrame, pluginURL);
+            }
+            catch (MalformedURLException mfe)
+            {
+               resource = resourceBundle.getResourceString(
+                  "PluginFrame.dialogmessage.FailedToCreateURL", "Failed to Create URL");
+               
+               JOptionPane.showMessageDialog(null, resource + "\n" + mfe.toString(),
+                                             resourceAlert, JOptionPane.ERROR_MESSAGE);
+            }
          }
          else
          {
