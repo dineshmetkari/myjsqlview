@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 07/18/2012
+// Version 2.7 07/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,9 @@
 //                        Change in Each of the load Methods for Collecting the Entry(s)
 //                        to Check for Java Packages. General Clean up to Finalize for
 //                        Upgrade in Loading Plugins from URLs.
+//         2.7 07/20/2012 Added Class Instance pluginURL. Removed String Argument from
+//                        Method loadPluginEntry(). In Same Method Removed Instance
+//                        pluginURL & pathKey, Also closed jarFile in finally.                      
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,7 +115,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.6 07/18/2012
+ * @version 2.7 07/20/2012
  */
 
 class PluginLoader implements Runnable
@@ -123,6 +126,7 @@ class PluginLoader implements Runnable
    private String localSystemFileSeparator;
    private String pluginDirectoryString;
    private String pluginFileName;
+   private URL pluginURL;
    private String pluginConfigFileString;
    private HashMap<URL, String> pluginEntriesHashMap;
    
@@ -161,6 +165,7 @@ class PluginLoader implements Runnable
    public void init(MyJSQLView_Frame parent, URL pluginURL)
    {
       parentFrame = parent;
+      this.pluginURL = pluginURL;
       
       if (pluginURL == null)
          return;
@@ -203,7 +208,7 @@ class PluginLoader implements Runnable
       {
          try
          {
-            loadPluginEntry(pluginFileName);
+            loadPluginEntry();
          }
          catch (IOException ioe){};
       }
@@ -231,14 +236,16 @@ class PluginLoader implements Runnable
    // File URL - file:lib/plugins/TableRecordCount.jar
    // Http URL - http://dandymadeproductions.com/temp/TableRecordCount.jar
    // JAR URL - jar:file:/home/duke/duke.jar!
+   // FTP URL - ftp:/dandymadeproductions.com/
    //
+   // Other Valid Java URL protocols, gopher, mailto, appletresource,
+   // doc, netdoc, systemresource, & verbatim.
    //==============================================================
 
-   private void loadPluginEntry(String fileNameString) throws IOException
+   private void loadPluginEntry() throws IOException
    {
       // Method Instances
-      URL pluginURL;
-      String pathKey, className, currentFileName, pluginEntry;
+      String className, currentFileName, pluginEntry;
       
       ZipFile jarFile;
       File configurationFile;
@@ -247,17 +254,16 @@ class PluginLoader implements Runnable
       // Check for a a valid jar file to be processed
       // then search for a plugin module.
       
-      if (!fileNameString.toLowerCase().endsWith(".jar"))
+      if (!pluginFileName.toLowerCase().endsWith(".jar"))
          return;
       
+      jarFile = null;
       fileWriter = null;
       
       try
       {
          // Create a URL & then file to the JAR file
          // so that it can be searched.
-         
-         pluginURL = new URL(fileNameString);
          
          // Local File system plugin
          if (pluginURL.getProtocol().equals(FILE_URL))
@@ -276,7 +282,6 @@ class PluginLoader implements Runnable
             return;
           
          // Search
-         pathKey = "";
          className = "";
          
          for (Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
@@ -287,7 +292,6 @@ class PluginLoader implements Runnable
             if (currentFileName.endsWith(".class") && currentFileName.indexOf("$") == -1
                 && currentFileName.indexOf(VALID_PLUGIN_MODULENAME) != -1)
             {
-               pathKey = fileNameString;
                currentFileName = currentFileName.replaceAll("/", ".");
                currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
                className = currentFileName;
@@ -295,18 +299,17 @@ class PluginLoader implements Runnable
                if (className.startsWith("java.") || className.startsWith("javax."))
                   continue;
                
-               pluginEntriesHashMap.put(new URL(pathKey), className);
+               pluginEntriesHashMap.put(pluginURL, className);
                // System.out.println("Located:" + pathKey + " " + className);
             }
          }
-         jarFile.close();
          
          // Update the configuration file indicating valid
          // plugin modules that have been loaded manually.
          
-         if (!pathKey.equals("") && !className.equals(""))
+         if (!pluginFileName.equals("") && !className.equals(""))
          {
-            pluginEntry = pathKey + "<$$$>" + className + "\n";
+            pluginEntry = pluginURL.toExternalForm() + "<$$$>" + className + "\n";
             
             // Write new or appending. 
             configurationFile = new File(pluginConfigFileString);
@@ -324,12 +327,15 @@ class PluginLoader implements Runnable
       }
       catch (Exception e)
       {
-         String errorString = "PluginLoader loadPluginEntry() Exception: " + fileNameString + "\n"
+         String errorString = "PluginLoader loadPluginEntry() Exception: " + pluginFileName + "\n"
                               + e.toString();
          displayErrors(errorString);
       }
       finally
       {
+         if (jarFile != null)
+            jarFile.close();
+         
          if (fileWriter != null)
             fileWriter.close();
       }
