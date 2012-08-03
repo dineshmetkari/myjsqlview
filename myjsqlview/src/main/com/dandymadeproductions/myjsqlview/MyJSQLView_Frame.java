@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.1 07/07/2012
+// Version 7.2 08/03/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -176,6 +176,7 @@
 //         7.1 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                         of Resource Strings. Change to resource.getResourceString(key,
 //                         default).
+//         7.2 08/03/2012 Addition of Cache Clearing in myjsqlviewFrameListener on windowClosing().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -205,7 +206,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.1 07/07/2012
+ * @version 7.2 08/03/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -256,6 +257,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          public void windowClosing(WindowEvent e)
          {
             sqlQueryBucketFrame.saveLastUsedList();
+            MyJSQLView_Utils.clearCache();
             System.exit(0);
          }
 
