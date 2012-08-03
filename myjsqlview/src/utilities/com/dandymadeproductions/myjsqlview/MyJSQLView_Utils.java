@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.4 07/08/2012
+// Version 7.5 08/02/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -139,6 +139,7 @@
 //         7.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         7.5 Added Class Methods clearCache() & getCacheDirectory().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -170,7 +171,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.4 07/08/2012
+ * @version 7.5 08/02/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -206,6 +207,52 @@ public class MyJSQLView_Utils extends MyJSQLView
       gbc.gridheight = gh;
       gbc.weightx = wx;
       gbc.weighty = wy;
+   }
+   
+   //==============================================================
+   // Method for clearing the cache directory of files. Assumes
+   // that only files have been placed there, does not crawl.
+   //==============================================================
+   
+   protected static void clearCache()
+   {
+      // Method Instances
+      File cacheDirectory;
+      File[] cacheContents;
+      boolean fileDeleted, cacheClearFailure;
+      
+      // Setup
+      cacheDirectory = new File(MyJSQLView_Utils.getCacheDirectory());
+      cacheClearFailure = false;
+      
+      // See if cache exists
+      if (cacheDirectory.exists() && cacheDirectory.isDirectory())
+      {
+         // Collect contents a delete.
+         try
+         {
+            cacheContents = cacheDirectory.listFiles();
+            
+            int i = 0;
+            while (i < cacheContents.length)
+            {
+               fileDeleted = cacheContents[i].delete();
+               
+               if (!fileDeleted)
+                  cacheClearFailure = true;
+               i++;
+            }
+         }
+         catch (SecurityException se)
+         {
+           if (MyJSQLView.getDebug()) 
+              System.out.println("Failed to Clear Cache: " + se.toString());
+         }
+         
+         if (cacheClearFailure)
+            if (MyJSQLView.getDebug())
+               System.out.println("Failed to Clear a Cache File.");
+      }
    }
    
    //==============================================================
@@ -643,6 +690,16 @@ public class MyJSQLView_Utils extends MyJSQLView
          // System.out.println("IO Exception in InputStream.\n" + e);
          return null;
       }
+   }
+   
+   //==============================================================
+   // Class method to return the MyJSQLView's cache directory.
+   //==============================================================
+
+   public static String getCacheDirectory()
+   {
+      return MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
+             + "cache" + MyJSQLView_Utils.getFileSeparator();
    }
    
    //==============================================================
