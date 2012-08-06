@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 1.4 07/08/2012
+// Version 1.5 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 //         1.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //                default).
+//         1.5 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import javax.swing.JMenuItem;
  * contains the MyJSQLView File|Exit, Plugin Management, & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.4 07/08/2012
+ * @version 1.5 08/06/2012
  */
 
 class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -82,7 +84,7 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       String iconsDirectory;
 
       // Setting up a icons directory instance.
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
       // Setting up a icons directory instance.

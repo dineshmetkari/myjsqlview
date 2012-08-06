@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.0 07/08/2012
+// Version 3.1 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,8 @@
 //         3.0 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         3.1 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -86,7 +88,7 @@ import javax.swing.*;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 3.0 07/08/2012
+ * @version 3.1 08/06/2012
  */
 
 class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -147,7 +149,7 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
 
       // Setting up a icons directory  & other instances.
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
 
       // Setting the frame's main layout & other required
       // fields.
