@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.8 07/18/2012
+// Version 1.9 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,9 @@
 //             default).
 //         1.8 Change in installPlugin() to Use New Updated Call to PluginLoader
 //             to Use an URL.
+//         1.9 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle(). Correction in installPlugin() to Properly
+//             Specify a File URL for fileName.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -86,7 +89,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.8 07/18/2012
+ * @version 1.9 08/06/2012
  */
 
 //=================================================================
@@ -134,7 +137,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
 
       // Setting up resources & instances.
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       
       statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
@@ -566,7 +569,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
    }
    
    //==============================================================
-   // Classs Method to aquire the seleected plugin file or URL to
+   // Classs Method to aquire a local file system plugin file to
    // be installed.
    //==============================================================
    
@@ -595,7 +598,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
 
          // Collect file name.
          fileName = pluginFileChooser.getSelectedFile().getName();
-         fileName = pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
+         fileName = "file:" + pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
 
          // Add the module to the loading list & try Loading
          // the module.
@@ -606,10 +609,10 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
             tableModelLoadingPlugins.setValues(loadingPluginViewTableData);
             
             MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
+            
             try
             {
-               URL pluginURL = new URL(fileName);
-               new PluginLoader(parentFrame, pluginURL);
+               new PluginLoader(parentFrame, new URL(fileName));
             }
             catch (MalformedURLException mfe)
             {
