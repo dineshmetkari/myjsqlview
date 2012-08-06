@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Vivek Singh, Dana M. Proctor
-// Version 2.1 07/08/2012
+// Version 2.2 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,8 @@
 //         2.1 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         2.2 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +86,7 @@ import javax.swing.filechooser.FileFilter;
  * as png image.
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 2.1 07/08/2012
+ * @version 2.2 08/06/2012
  */
 
 public class ImageUtil
@@ -108,7 +110,7 @@ public class ImageUtil
       else
          this.lastSaveDirectory = lastSaveDirectory;
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       
       // Process.
       saveImage(component, imageType);

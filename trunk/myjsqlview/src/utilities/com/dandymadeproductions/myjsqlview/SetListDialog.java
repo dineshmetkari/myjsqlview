@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.4 07/08/2012
+// Version 2.5 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,8 @@
 //         2.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         2.5 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -74,7 +76,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.4 07/08/2012
+ * @version 2.5 08/06/2012
  */
 
 class SetListDialog extends JFrame implements ActionListener
@@ -114,7 +116,7 @@ class SetListDialog extends JFrame implements ActionListener
 
       // Setting the frame's main layout & title
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       
       resource = resourceBundle.getResourceString("SetListDialog.title.ElementSelection",
                                                   "Element Selection");

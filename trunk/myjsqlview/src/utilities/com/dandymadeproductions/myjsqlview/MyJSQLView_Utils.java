@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.5 08/02/2012
+// Version 7.6 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,6 +140,8 @@
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
 //         7.5 Added Class Methods clearCache() & getCacheDirectory().
+//         7.6 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -171,7 +173,7 @@ import java.sql.Statement;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.5 08/02/2012
+ * @version 7.6 08/06/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -524,7 +526,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
       // Create a frame to show with menubar.
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       resourceTitle = resourceBundle.getResourceString("MyJSQLView_Utils.dialogtitle.TextData",
                                                        "Text Data");
       resourceSave = resourceBundle.getResourceString("MyJSQLView_Utils.dialogbutton.Save", "Save");
@@ -559,7 +561,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       
       editorMenuBar = new JMenuBar();
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       resource = resourceBundle.getResourceString("MyJSQLView_Utils.menu.Edit", "Edit");
       editMenu = new JMenu(resource);
       editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
@@ -1107,7 +1109,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
       // Setting up some of the method instances.
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       
       fileSeparator = System.getProperty("file.separator");
       if (fileSeparator == null || fileSeparator.equals(""))
