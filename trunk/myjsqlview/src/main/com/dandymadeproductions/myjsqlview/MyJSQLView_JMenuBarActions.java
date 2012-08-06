@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.40 08/03/2012
+// Version 7.41 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -267,6 +267,8 @@
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
 //        7.40 Addition of Cache Clearing on ACTION_EXIT.
+//        7.41 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -299,7 +301,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.40 08/03/2012
+ * @version 7.41 08/06/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -843,7 +845,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          }
          catch (PrinterException e)
          {
-            resourceBundle = MyJSQLView.getLocaleResourceBundle();
+            resourceBundle = MyJSQLView.getResourceBundle();
             resourceTitle = resourceBundle.getResourceString(
                                          "MyJSQLView_JMenuBarActions.dialogtitle.PrinterException",
                                          "Printer Exception");
@@ -872,7 +874,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       else
          dataFileChooser = new JFileChooser(new File(lastImportDirectory));
 
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       int result = dataFileChooser.showOpenDialog(parent);
 
       // Looks like might be good so lets check and write data.
@@ -1228,7 +1230,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       String resourceTitle, resourceMessage;
       
       // Create the dialog.
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       resourceTitle = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.dialogtitle.Alert",
                                                        "Alert");
       resourceMessage = resourceBundle.getResourceString(

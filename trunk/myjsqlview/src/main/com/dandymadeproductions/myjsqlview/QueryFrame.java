@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.1 07/09/2012
+// Version 8.2 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -203,6 +203,8 @@
 //                        default).
 //         8.1 07/09/2012 Correction in Class Method createMenuBar() Resource Key QueryFrame.menu.
 //                        CSV/PDFSummaryTable to ExportCSV/PDFSummaryTable.
+//         8.2 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -240,7 +242,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.1 07/09/2012
+ * @version 8.2 08/06/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -324,7 +326,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Setting up title, and other instances.
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       
       connectionProperties = ConnectionManager.getConnectionProperties();
       dataSourceType = ConnectionManager.getDataSourceType();

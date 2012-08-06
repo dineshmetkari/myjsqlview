@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 7.7 07/07/2012
+// Version 7.8 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -127,6 +127,8 @@
 //         7.7 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         7.8 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -154,7 +156,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.7 07/07/2012
+ * @version 7.8 08/06/2012
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -178,7 +180,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       ArrayList<String> schemas;
 
       // Setting up a icons directory instance.
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
 
       // JMenu Bar for the Frame.
