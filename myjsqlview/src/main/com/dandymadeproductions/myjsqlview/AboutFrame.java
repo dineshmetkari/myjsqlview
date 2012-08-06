@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 07/07/2012
+// Version 2.5 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,8 @@
 //         2.4 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         2.5 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -78,7 +80,7 @@ import javax.swing.JPanel;
  * MyJSQLView application when the Help About selection is made in the menu bar.
  * 
  * @author Dana M. Proctor
- * @version 2.4 07/07/2012
+ * @version 2.5 08/06/2012
  */
 
 class AboutFrame extends JFrame implements ActionListener
@@ -103,7 +105,7 @@ class AboutFrame extends JFrame implements ActionListener
       JPanel centerPanel, southButtonPanel;
 
       // Setting up the frame.
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       resource = resourceBundle.getResourceString("AboutFrame.message.Title", "About");
       setTitle(resource + " MyJSQLView");
 

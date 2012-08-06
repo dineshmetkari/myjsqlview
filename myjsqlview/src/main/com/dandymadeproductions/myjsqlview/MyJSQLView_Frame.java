@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.2 08/03/2012
+// Version 7.3 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,8 @@
 //                         of Resource Strings. Change to resource.getResourceString(key,
 //                         default).
 //         7.2 08/03/2012 Addition of Cache Clearing in myjsqlviewFrameListener on windowClosing().
+//         7.3 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -206,7 +208,7 @@ import javax.swing.event.ChangeListener;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.2 08/03/2012
+ * @version 7.3 08/06/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -345,7 +347,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             // Obtain a database connection & resources.
             
             dbConnection = ConnectionManager.getConnection("MyJSQLView_Frame createGUI()");
-            resourceBundle = MyJSQLView.getLocaleResourceBundle();
+            resourceBundle = MyJSQLView.getResourceBundle();
             
             dbTablesPanel = new DBTablesPanel(dbConnection, ConnectionManager.getTableNames());
             mainTabsPane.setComponentAt(1, dbTablesPanel);

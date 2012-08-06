@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 07/09/2012
+// Version 2.4 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,8 @@
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
 //         2.3 07/09/2012 Correction in Class createPopupMenu() Resource Keys menu to button.
+//         2.4 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -90,7 +92,7 @@ import javax.swing.*;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.3 07/09/2012
+ * @version 2.4 08/06/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -160,7 +162,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
 
       lastOpenSaveDirectory = "";

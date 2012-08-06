@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 2.6 07/08/2012
+// Version 2.7 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,8 @@
 //         2.6 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         2.7 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,8 +64,6 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Insets;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -75,7 +75,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.6 07/08/2012
+ * @version 2.7 08/06/2012
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
@@ -114,7 +114,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       // Setting up icons directory  & resource instances.
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
 
       // JTool Bar for the Frame.
       buttonItem = null;
@@ -126,29 +126,8 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       
       // File Open
       
-      /* test
-      String path;
-      path = "http://dandymadeproductions.com:80/temp/openScriptIcon.png";
-      path = "file:" + "images/icons/" + "openIcon.png";
-      URL url = null;
-      openIcon = null;
-      try
-      {
-         url = new URL(path);
-         System.out.println("protocol:" + url.getProtocol() + " host:" + url.getHost()
-                            + " port:" + url.getPort() +  " file:" + url.getFile()
-                            + "\n" + "URL:" + url.toExternalForm());
-         openIcon = new ImageIcon(url);
-      }
-      catch (MalformedURLException mfe)
-      {
-         System.out.println("failed");
-      }
-      System.out.println("iconsDirectory: " + iconsDirectory);
-      
-      test ended */
-      
-      openIcon = new ImageIcon(iconsDirectory + "openIcon.png");
+      //openIcon = new ImageIcon(iconsDirectory + "openIcon.png");
+      openIcon = resourceBundle.getResourceImage("images/icons/openIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Open", "Open");
       buttonItem = buttonItem(resource, openIcon, ACTION_OPEN);
       add(buttonItem);

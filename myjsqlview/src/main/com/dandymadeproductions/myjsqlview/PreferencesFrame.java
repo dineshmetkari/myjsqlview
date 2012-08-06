@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.8 07/08/2012
+// Version 8.9 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -182,6 +182,8 @@
 //         8.8 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         8.9 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -211,7 +213,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.8 07/08/2012
+ * @version 8.9 08/06/2012
  */
 
 //=================================================================
@@ -279,7 +281,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
       // Setting up resources and icons directory.
       
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       createNodeResourceNames();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       
