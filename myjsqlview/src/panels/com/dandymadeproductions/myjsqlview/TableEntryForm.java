@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.92 07/08/2012
+// Version 8.93 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -357,6 +357,8 @@
 //        8.92 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//        8.93 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//                        to getResourceBundle().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -390,7 +392,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.92 07/08/2012
+ * @version 8.93 08/06/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -485,7 +487,7 @@ class TableEntryForm extends JFrame implements ActionListener
       setFieldsHashMap = new HashMap <Object, ArrayList<String>>();
       functionsHashMap = new HashMap <Object, String>();
       componentFocusSequence = new ArrayList <Component>();
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
 
       // Setting up a icons directory identifier quote character,
       // & other instances.
