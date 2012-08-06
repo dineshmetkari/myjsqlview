@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 4.5 07/08/2012
+// Version 4.6 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,8 @@
 //         4.5 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         4.6 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,7 +127,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.5 07/08/2012
+ * @version 4.6 08/06/2012
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -161,7 +163,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       // Setting up a file separator and other instances.
       
       String iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
 
       // Panel Decor Stuff.
       setBorder(BorderFactory.createBevelBorder(1));

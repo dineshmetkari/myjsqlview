@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.08 07/08/2012
+// Version 5.09 08/06/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -234,6 +234,8 @@
 //        5.08 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//        5.09 MyJSQLView Class Method Change of getLocaleResourceBundle()
+//             to getResourceBundle().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -271,7 +273,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.08 07/08/2012
+ * @version 5.09 08/06/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -407,7 +409,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       primaryKeys = new ArrayList <String>();
       foreignKeys = new ArrayList <String>();
       exportedKeys = new ArrayList <String>();
-      resourceBundle = MyJSQLView.getLocaleResourceBundle();
+      resourceBundle = MyJSQLView.getResourceBundle();
       
       columnNamesHashMap = new HashMap <String, String>();
       columnClassHashMap = new HashMap <String, String>();
