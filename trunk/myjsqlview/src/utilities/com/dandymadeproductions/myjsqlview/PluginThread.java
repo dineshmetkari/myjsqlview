@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.5 01/01/2012
+// Version 1.6 08/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,9 @@
 //             of PluginModuleInterface Method initPlugin().
 //         1.4 Copyright Update.
 //         1.5 Copyright Update.
+//         1.6 Change in the Derivation of the path in run() to Not Use the
+//             Local File System File Separator Since Ultimately Everything
+//             is Turned Into a URL. 
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -55,7 +58,7 @@ import javax.swing.JPanel;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/01/2012
+ * @version 1.6 08/08/2012
  */
 
 class PluginThread implements Runnable
@@ -91,11 +94,19 @@ class PluginThread implements Runnable
 
    public void run()
    {
-      // Call the plugin's initializing code.
-      String path = pluginModule.getPath_FileName().substring(0, pluginModule.getPath_FileName().indexOf("<$$$>"));
-      if (path.indexOf(MyJSQLView_Utils.getFileSeparator()) != -1)
-         path = path.substring(0, path.lastIndexOf(MyJSQLView_Utils.getFileSeparator()));
+      // Method Instances
+      String path;
+      
+      // Collect path, since code will always be dealing
+      // with URLs for these plugins to not use a local
+      // file System file separator.
+      
+      path = pluginModule.getPath_FileName().substring(0, pluginModule.getPath_FileName().indexOf("<$$$>"));
+      
+      if (path.indexOf("/") != -1)
+         path = path.substring(0, path.lastIndexOf("/"));
      
+      // Call the plugin's initializing code.
       pluginModule.initPlugin(parentFrame, path);
 
       // Check all the main aspects needed by MyJSQLView
