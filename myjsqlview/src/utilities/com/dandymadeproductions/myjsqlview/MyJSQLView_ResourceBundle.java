@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 08/06/2012
+// Version 2.3 08/08/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,10 @@
 //         2.2 08/06/2012 Complete Redesign of Class to Handle Resources Outside the
 //                        Context of Local Files. Now Handles Http & Jar File Resouces
 //                        for Locale & Image Files.
+//         2.3 08/08/2012 Removal of ioExceptionString from Methods createFile/Http/JAR_
+//                        LocaleResource(). Removed Dead Code for Checking imageResourceURL
+//                        in getResourceImage() & Same for imageBytes in getJAR_ImageResource().
+//                        Changed Creation of resourceURL to Just Use String in Constructor.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -95,7 +99,7 @@ import javax.swing.JOptionPane;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.2 08/06/2012
+ * @version 2.3 08/08/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -154,7 +158,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
 
             if (resourceURLString.endsWith(".jar") && resourceURLString.indexOf(":") != -1)
             {
-               resourceURL = new URL(new URL(resourceURLString), "jar:" + new URL(resourceURLString) + "!/");
+               resourceURL = new URL("jar:" + resourceURLString + "!/");
 
                // Determining if caching desired.
                if (cacheJar && (resourceURL.toExternalForm().indexOf("jar:file:") == -1))
@@ -184,14 +188,9 @@ public class MyJSQLView_ResourceBundle implements Serializable
          }
          catch (MalformedURLException mfe)
          {
-            String exceptionString = mfe.toString();
-
-            if (exceptionString.length() > 200)
-               exceptionString = mfe.getMessage().substring(0, 200);
-
             displayErrors("MyJSQLView_ResourceBundle Constructor() \n"
                           + "Failed to create locale resouce URL from, " + resourceURLString + "\n"
-                          + exceptionString);
+                          + mfe.toString());
             return;
          }
       }
@@ -271,15 +270,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
             if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
             {  
                imageResourceURL = new URL(resourceURL.toExternalForm() + imageFileName);
-
-               if (imageResourceURL != null)
-                  return new ImageIcon(imageResourceURL);
-               else
-               {
-                  if (debugMode)
-                     System.out.println("Failed to create image resource URL:" + "NULL");
-                  return null;
-               }
+               return new ImageIcon(imageResourceURL);
             }
 
             //====
@@ -402,14 +393,9 @@ public class MyJSQLView_ResourceBundle implements Serializable
       }
       catch (IOException ioe)
       {
-         String ioExceptionString = ioe.toString();
-
-         if (ioExceptionString.length() > 200)
-            ioExceptionString = ioe.getMessage().substring(0, 200);
-
          displayErrors("MyJSQLView_ResourceBundle createFile_LocaleResource() \n"
                        + "Failed to process the given locale file, " + resourceURL.toExternalForm() + "\n"
-                       + ioExceptionString);
+                       + ioe.toString());
       }
       finally
       {
@@ -442,14 +428,9 @@ public class MyJSQLView_ResourceBundle implements Serializable
       }
       catch (IOException ioe)
       {
-         String ioExceptionString = ioe.toString();
-
-         if (ioExceptionString.length() > 200)
-            ioExceptionString = ioe.getMessage().substring(0, 200);
-
          displayErrors("MyJSQLView_ResourceBundle createHTTP_Resource() \n"
                        + "Failed to process the given locale http, " + resourceURL.toExternalForm() + "\n"
-                       + ioExceptionString);
+                       + ioe.toString());
       }
       finally
       {
@@ -495,7 +476,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
             for (Enumeration<?> entries = jarFile.entries(); entries.hasMoreElements();)
             {
                zipEntry = (ZipEntry) entries.nextElement();
-
+               
                // Locale File Qualifier
                if (zipEntry.getName().endsWith(localeFileName))
                {
@@ -521,14 +502,9 @@ public class MyJSQLView_ResourceBundle implements Serializable
       }
       catch (IOException ioe)
       {
-         String ioExceptionString = ioe.toString();
-
-         if (ioExceptionString.length() > 200)
-            ioExceptionString = ioe.getMessage().substring(0, 200);
-
          displayErrors("MyJSQLView_ResourceBundle createJAR_LocaleResource() \n"
                        + "Failed to process the given locale file, " + localeFileName + "\n"
-                       + ioExceptionString);
+                       + ioe.toString());
       }
       finally
       {
@@ -581,14 +557,9 @@ public class MyJSQLView_ResourceBundle implements Serializable
       }
       catch (IOException ioe)
       {
-         String ioExceptionString = ioe.toString();
-
-         if (ioExceptionString.length() > 200)
-            ioExceptionString = ioe.getMessage().substring(0, 200);
-
          displayErrors("MyJSQLView_ResourceBundle readLocaleResource() \n"
                        + "Failed to process the given locale file, " + resourceURL.toExternalForm() + "\n"
-                       + ioExceptionString);
+                       + ioe.toString());
       }
       finally
       {
@@ -667,15 +638,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
 
                   readPosition += byteChunk;
                }
-
-               if (imageBytes != null)
-                  return new ImageIcon(imageBytes);
-               else
-               {
-                  if (debugMode)
-                     System.out.println("Failed to Read Image File: " + imageFileName);
-                  return null;
-               }
+               return new ImageIcon(imageBytes);
             }
             else
             {
