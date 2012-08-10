@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.0 03/24/2012
+// Version 5.1 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -136,6 +136,8 @@
 //             on finally for Close SQLStatements. Try catch in getTableDefinition().
 //             Made tableDefinition a Class Instance and Each Method No Longer Returning
 //             tableDefinition String.
+//         5.1 Closure for ResultSet, resultSet, in All Create Table Definition Methods
+//             Except PostgreSQL Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -160,7 +162,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.0 03/24/2012
+ * @version 5.1 08/10/2012
  */
 
 class TableDefinitionGenerator
@@ -222,6 +224,7 @@ class TableDefinitionGenerator
       // of the table Structure.
       
       sqlStatement = null;
+      resultSet = null;
       
       try
       {
@@ -244,17 +247,29 @@ class TableDefinitionGenerator
          // Create Table column
          resultSet.next();
          tableDefinition.append(resultSet.getString(2) + ";\n");
-
-         resultSet.close();
       }
       catch (SQLException e)
       {
-         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createMySQLTableDefinition()");
+         ConnectionManager.displaySQLErrors(e,
+            "TableDefinitionGenerator createMySQLTableDefinition()");
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "TableDefinitionGenerator createMySQLTableDefinition()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -677,6 +692,7 @@ class TableDefinitionGenerator
       intervalFieldsHashMap = new HashMap<String, String>();
       columnPrecisionHashMap = new HashMap<String, Integer>();
       sqlStatement = null;
+      resultSet = null;
       
       try
       {
@@ -1059,17 +1075,29 @@ class TableDefinitionGenerator
          }
          tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
          tableDefinition.append("\n);\n");
-
-         resultSet.close();
       }
       catch (SQLException e)
       {
-         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createHSQLTableDefinition()");
+         ConnectionManager.displaySQLErrors(e,
+            "TableDefinitionGenerator createHSQLTableDefinition()");
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "TableDefinitionGenerator createHSQLTableDefinition()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1104,6 +1132,7 @@ class TableDefinitionGenerator
       // Begin creating the table structure scheme.
       
       sqlStatement = null;
+      resultSet = null;
 
       try
       {
@@ -1439,15 +1468,29 @@ class TableDefinitionGenerator
                                       + uniqueKeys.substring(0, uniqueKeys.length() - 1)
                                       + ");\n\n  ");
          }
-
-         resultSet.close();
       }
       catch (SQLException e)
       {
-         ConnectionManager.displaySQLErrors(e, "TableDefinitionGenerator createOracleTableDefinition()");
+         ConnectionManager.displaySQLErrors(e,
+            "TableDefinitionGenerator createOracleTableDefinition()");
       }
       finally
       {
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "TableDefinitionGenerator createOracleTableDefinition()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
          if (sqlStatement != null)
             sqlStatement.close();
       }
@@ -1470,6 +1513,7 @@ class TableDefinitionGenerator
       // of the table Structure.
       
       sqlStatement = null;
+      resultSet = null;
       
       try
       {
@@ -1503,8 +1547,6 @@ class TableDefinitionGenerator
          }
          else
             tableDefinition.append("\n");
-
-         resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1512,8 +1554,20 @@ class TableDefinitionGenerator
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableDefinitionGenerator createSQLiteTableDefinition()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
    
