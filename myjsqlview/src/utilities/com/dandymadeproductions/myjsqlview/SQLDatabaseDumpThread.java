@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.7 05/07/2012
+// Version 8.8 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -222,6 +222,8 @@
 //         8.7 Class Instance columnNameFields Changed from Vector Data Type to ArrayList.
 //             Same for columnNameFields in Method dumpDatabaseData() & indexes/keys in 
 //             insertReplace/explicitStatementData().
+//         8.8 Closure for ResultSet, rs, in dumpDatabaseData() & getRowCount() Moved to
+//             finally.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -253,7 +255,7 @@ import javax.swing.JOptionPane;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.7 05/07/2012
+ * @version 8.8 08/10/2012
  */
 
 class SQLDatabaseDumpThread implements Runnable
@@ -370,6 +372,7 @@ class SQLDatabaseDumpThread implements Runnable
          // Collect Database Table Count and Proceed with Dump.
          tableCount = DBTablesPanel.getTableCount();
          sqlStatement = null;
+         rs = null;
 
          try
          {
@@ -524,7 +527,6 @@ class SQLDatabaseDumpThread implements Runnable
                      }
                   }
                }
-               rs.close();
 
                dumpChunkOfData(dumpData);
                dumpData = "";
@@ -551,12 +553,24 @@ class SQLDatabaseDumpThread implements Runnable
                catch (SecurityException se){}
             }
             databaseDumpProgressBar.dispose();
-            ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread run()");
+            ConnectionManager.displaySQLErrors(e, "SQLDataDumpThread dumbDatabaseData()");
          }
          finally
          {
-            if (sqlStatement != null)
-               sqlStatement.close();
+            try
+            {
+               if (rs != null)
+                  rs.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "SQLDataDumpThread dumbDatabaseData()");
+            }
+            finally
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
          }
       }
       catch (IOException e)
@@ -1545,6 +1559,7 @@ class SQLDatabaseDumpThread implements Runnable
       // Setup
       int rowCount = 0;
       sqlStatement = null;
+      rs = null;
 
       try
       {
@@ -1556,7 +1571,6 @@ class SQLDatabaseDumpThread implements Runnable
          rs.next();
          rowCount = rs.getInt(1);
 
-         rs.close();
          return rowCount;
       }
       catch (SQLException e)
@@ -1566,8 +1580,20 @@ class SQLDatabaseDumpThread implements Runnable
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "SQLDataDumpThread getRowsCount()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
