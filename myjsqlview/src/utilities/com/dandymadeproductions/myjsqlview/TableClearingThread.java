@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.1 03/31/2012
+// Version 2.2 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,7 +47,9 @@
 //         2.0 Removed the Casting of (Connection) for the Returned Instance for the
 //             ConnectionManager.getConnection() in run().
 //         2.1 Class Method run() Added a try catch for clearOracleDBTemporaryTables()
-//             Which Throws a SQLException Through finally Clause for Closing sqlStatment. 
+//             Which Throws a SQLException Through finally Clause for Closing sqlStatment.
+//         2.2 Closure for ResultSet, rs, in run() & clearOracleDBTemporaryTables()
+//             Moved to finally.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import java.sql.Statement;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 2.1 03/31/2012
+ * @version 2.2 08/10/2012
  */
 
 class TableClearingThread implements Runnable
@@ -172,6 +174,7 @@ class TableClearingThread implements Runnable
       // as needed.
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       sqlStatement = null;
+      rs = null;
 
       try
       {
@@ -205,7 +208,6 @@ class TableClearingThread implements Runnable
              * sqlStatement.executeUpdate(sqlStatementString); }
              */
             tabNumber--;
-            rs.close();
          }
       }
       catch (SQLException err)
@@ -214,8 +216,20 @@ class TableClearingThread implements Runnable
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableClearingThread clearOracleDBTemporaryTables()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 }
