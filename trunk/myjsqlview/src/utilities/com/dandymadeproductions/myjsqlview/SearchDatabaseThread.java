@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.4 05/07/2012
+// Version 3.5 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,8 @@
 //             Results for Search of Date Fields. Additional Conditional Checks.
 //         3.4 Changed Class Instance databaseTables & Corresponding Argument in Constructor
 //             from Vector to ArrayList.
+//         3.5 Closure for ResultSet, rs, in run() & createColumnsSQLQuery() Moved to
+//             finally.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -105,7 +107,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.4 05/07/2012
+ * @version 3.5 08/10/2012
  */
 
 class SearchDatabaseThread implements Runnable
@@ -241,11 +243,12 @@ class SearchDatabaseThread implements Runnable
             public void run()
             {
                Statement sqlStatement = null;
+               ResultSet rs = null;
                
                try
                {
                   sqlStatement = dbConnection.createStatement();
-                  ResultSet rs = sqlStatement.executeQuery(searchQuery);
+                  rs = sqlStatement.executeQuery(searchQuery);
                   while (rs.next())
                   {
                      int resultCount = rs.getInt(1);
@@ -261,15 +264,29 @@ class SearchDatabaseThread implements Runnable
                   // System.out.println(e);
                   
                   resultsCount++;
-                  
+               }
+               finally
+               {
                   try
                   {
-                     if (sqlStatement != null)
-                        sqlStatement.close();
+                     if (rs != null)
+                        rs.close();
                   }
                   catch (SQLException sqle)
                   {
-                     // Well Tried.
+                     ConnectionManager.displaySQLErrors(sqle, "SearchDatabaseThread run()");
+                  }
+                  finally
+                  {
+                     try
+                     {
+                        if (sqlStatement != null)
+                           sqlStatement.close();
+                     }
+                     catch (SQLException sqle)
+                     {
+                        ConnectionManager.displaySQLErrors(sqle, "SearchDatabaseThread run()");
+                     }
                   }
                }
             }
@@ -344,6 +361,7 @@ class SearchDatabaseThread implements Runnable
       // search string query.
       
       sqlStatement = null;
+      resultSet = null;
       
       try
       {
@@ -442,7 +460,6 @@ class SearchDatabaseThread implements Runnable
                      + " LIKE \'%" + searchString + "%\' OR ");   
             }
          }
-         resultSet.close();
          
          if (columnsSQLQuery.length() > 4)
             return (columnsSQLQuery.delete((columnsSQLQuery.length() - 4),
@@ -457,8 +474,20 @@ class SearchDatabaseThread implements Runnable
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "SearchDatabaseThread createColumnSQLQuery()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
    
