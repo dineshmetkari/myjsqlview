@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.7 07/20/2012
+// Version 2.8 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,7 +79,10 @@
 //                        Upgrade in Loading Plugins from URLs.
 //         2.7 07/20/2012 Added Class Instance pluginURL. Removed String Argument from
 //                        Method loadPluginEntry(). In Same Method Removed Instance
-//                        pluginURL & pathKey, Also closed jarFile in finally.                      
+//                        pluginURL & pathKey, Also closed jarFile in finally.
+//         2.8 08/10/2012 Error Output for Empty Constructor in Catch. General Cleanup.
+//                        Class Instance pluginEntriesHashMap Change From <URL,String>
+//                        to <String,String>.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -105,7 +108,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import javax.swing.ImageIcon;
 
 /**
@@ -115,7 +117,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.7 07/20/2012
+ * @version 2.8 08/10/2012
  */
 
 class PluginLoader implements Runnable
@@ -128,7 +130,7 @@ class PluginLoader implements Runnable
    private String pluginFileName;
    private URL pluginURL;
    private String pluginConfigFileString;
-   private HashMap<URL, String> pluginEntriesHashMap;
+   private HashMap<String, String> pluginEntriesHashMap;
    
    private static final String CONFIGURATION_FILENAME = "myjsqlview_plugin.conf";
    private static final String VALID_PLUGIN_MODULENAME = "PluginModule.class";
@@ -150,7 +152,15 @@ class PluginLoader implements Runnable
 
    protected PluginLoader(MyJSQLView_Frame parent)
    {
-      try {init(parent, new URL("file:"));} catch (MalformedURLException e){}
+      try
+      {
+         init(parent, new URL("file:"));
+      }
+      catch (MalformedURLException mfe)
+      {
+         displayErrors("PluginLoader Constructor failed to create empty file:URL\n"
+                       + mfe.toString());
+      }
    }
    
    protected PluginLoader(MyJSQLView_Frame parent, URL pluginURL)
@@ -186,7 +196,7 @@ class PluginLoader implements Runnable
       else
          pluginDirectoryString = "";
          
-      pluginEntriesHashMap = new HashMap<URL, String>();
+      pluginEntriesHashMap = new HashMap<String, String>();
       
       // Create and start the class thread.
       pluginLoaderThread = new Thread(this, "PluginLoader Thread");
@@ -299,7 +309,7 @@ class PluginLoader implements Runnable
                if (className.startsWith("java.") || className.startsWith("javax."))
                   continue;
                
-               pluginEntriesHashMap.put(pluginURL, className);
+               pluginEntriesHashMap.put(pluginURL.toExternalForm(), className);
                // System.out.println("Located:" + pathKey + " " + className);
             }
          }
@@ -322,22 +332,32 @@ class PluginLoader implements Runnable
                char[] buffer = new char[pluginEntry.length()];
                pluginEntry.getChars(0, pluginEntry.length(), buffer, 0);
                fileWriter.write(buffer);
+               fileWriter.flush();
             }
          }
       }
       catch (Exception e)
       {
-         String errorString = "PluginLoader loadPluginEntry() Exception: " + pluginFileName + "\n"
-                              + e.toString();
-         displayErrors(errorString);
+         displayErrors("PluginLoader loadPluginEntry() Exception: " + pluginFileName + "\n"
+                        + e.toString());
       }
       finally
       {
-         if (jarFile != null)
-            jarFile.close();
-         
-         if (fileWriter != null)
-            fileWriter.close();
+         try
+         {
+            if (jarFile != null)
+               jarFile.close();
+         }
+         catch (IOException ioe)
+         {
+            displayErrors("PluginLoader loadPluginEntry() Failed to close jarFile\n"
+                          + ioe.toString());
+         }
+         finally
+         {
+            if (fileWriter != null)
+               fileWriter.close();
+         }
       }
    }
 
@@ -393,7 +413,7 @@ class PluginLoader implements Runnable
                   if (currentFileName.startsWith("java.") || currentFileName.startsWith("javax."))
                      continue;
                   
-                  pluginEntriesHashMap.put(new URL(pathKey), currentFileName);
+                  pluginEntriesHashMap.put(pathKey, currentFileName);
                   // System.out.println("Located:" + pathKey + " " + currentFileName);
                }
             }
@@ -401,9 +421,8 @@ class PluginLoader implements Runnable
          }
          catch (Exception e)
          {
-            String errorString = "PluginLoader loadPluginEntries() Exception: " + jarFileNames[i] + "\n"
-                                 + e.toString();
-            displayErrors(errorString);
+            displayErrors("PluginLoader loadPluginEntries() Exception: " + jarFileNames[i] + "\n"
+                                 + e.toString());
          }
          finally
          {
@@ -440,7 +459,8 @@ class PluginLoader implements Runnable
          }
          catch (SecurityException e)
          {
-            displayErrors("Security Exception. " + e);
+            displayErrors("PluginLoader loadConfigurationFilePluginEntries() Security Exception: "
+                          + e.toString());
             return;
          }
          
@@ -461,8 +481,8 @@ class PluginLoader implements Runnable
                
                if (className.startsWith("java.") || className.startsWith("javax."))
                   continue;
-               
-               pluginEntriesHashMap.put(new URL(pathKey), className);
+              
+               pluginEntriesHashMap.put(pathKey, className);
             }
             else
                continue;
@@ -470,15 +490,26 @@ class PluginLoader implements Runnable
       }
       catch (IOException ioe) 
       {
-         displayErrors("File I/O problem, reading " + pluginConfigFileString + "\n" + ioe);
+         displayErrors("PluginLoader loadConfigurationFilePluginEntries() File I/O problem, reading "
+                       + pluginConfigFileString + "\n" + ioe.toString());
       }
       finally
       {
-         if (bufferedReader != null)
-            bufferedReader.close();
-         
-         if (fileReader != null)
-            fileReader.close();
+         try
+         {
+            if (bufferedReader != null)
+               bufferedReader.close();
+         }
+         catch (IOException ioe)
+         {
+            displayErrors("PluginLoader loadConfigurationFilePluginEntries() Failed to close bufferReader\n"
+                          +ioe.toString());
+         }
+         finally
+         {
+            if (fileReader != null)
+               fileReader.close();
+         }
       }
    }
 
@@ -500,24 +531,29 @@ class PluginLoader implements Runnable
 
       // Iterator through the found plugins and load them.
 
-      Set<Map.Entry<URL, String>> keySet = pluginEntriesHashMap.entrySet();
-      Iterator<Map.Entry<URL, String>> pluginIterator = keySet.iterator();
+      Set<Map.Entry<String, String>> keySet = pluginEntriesHashMap.entrySet();
+      Iterator<Map.Entry<String, String>> pluginIterator = keySet.iterator();
 
       while (pluginIterator.hasNext())
       {
-         Map.Entry<URL, String> pluginEntry = pluginIterator.next();
+         Map.Entry<String, String> pluginEntry = pluginIterator.next();
          
-         final URL pluginURL = pluginEntry.getKey();
+         final String pluginURLString = pluginEntry.getKey();
             
-         // System.out.println("protocol:" + pluginURL.getProtocol() + " host:" + pluginURL.getHost()
-         //                    + " port:" + pluginURL.getPort() +  " file:" + pluginURL.getFile()
-         //                    + "\n" + "URL:" + pluginURL.toExternalForm());
-         
          ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
          {
             public ClassLoader run()
             {
-               return new URLClassLoader(new URL[] {pluginURL}, ClassLoader.getSystemClassLoader());    
+               try
+               {
+                  return new URLClassLoader(new URL[] {new URL(pluginURLString)},
+                                            ClassLoader.getSystemClassLoader());
+               }
+               catch (MalformedURLException mfe)
+               {
+                  displayErrors("PluginLoader classLoader Exception: \n" + mfe.toString());
+                  return null;
+               }
             }
          });
 
@@ -530,14 +566,14 @@ class PluginLoader implements Runnable
             {
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.setPath_FileName(pluginEntry.getKey() + "<$$$>" + pluginEntry.getValue());
+               pluginModule.setPath_FileName(pluginEntry.getKey()
+                                             + "<$$$>" + pluginEntry.getValue());
 
                new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
             catch (Exception e)
             {
-               String errorString = "PluginLoader loadPluginModules() Exception: \n" + e.toString();
-               displayErrors(errorString);
+               displayErrors("PluginLoader loadPluginModules() Exception: \n" + e.toString());
             }
          }
       }
