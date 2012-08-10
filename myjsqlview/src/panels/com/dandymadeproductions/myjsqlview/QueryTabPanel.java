@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.6 07/08/2012
+// Version 9.7 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -226,6 +226,8 @@
 //         9.6 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         9.7 Closure for db_resultSet in getColumnNames() & viewSelectedItem()
+//             Moved to finally.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -257,7 +259,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.6 07/08/2012
+ * @version 9.7 08/10/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -970,6 +972,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       // Connecting to the data base, to obtain
       // meta data, and column names.
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -1109,7 +1112,6 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
                sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + ", ";
          }
          sqlTableFieldsString = sqlTableFieldsString.substring(0, sqlTableFieldsString.length() - 2);
-         db_resultSet.close();
 
          // Looks good so validate.
          validQuery = true;
@@ -1123,8 +1125,20 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1899,6 +1913,7 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       // Connecting to the data base, to obtain
       // the selected entry.
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -2150,7 +2165,6 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
             }
             i++;
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -2158,8 +2172,20 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "QueryTabPanel viewSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
