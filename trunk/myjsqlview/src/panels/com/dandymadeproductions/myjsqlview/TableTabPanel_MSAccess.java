@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 07/02/2012
+// Version 2.5 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,8 @@
 //             Instances by Way of add() Instead of addElement().
 //         2.4 Class Method loadTable() Changed lobLessSQLStatementString to StringBuffer
 //             & Chopped String Off Name.
+//         2.5 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
+//             getColumnNames() Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -90,7 +92,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.4 07/02/2012
+ * @version 2.5 08/10/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -129,6 +131,8 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       // meta data, and column names.
       
       sqlStatement = null;
+      db_resultSet = null;
+      rs = null;
       
       try
       {
@@ -316,8 +320,6 @@ public class TableTabPanel_MSAccess extends TableTabPanel
          System.out.println();
          */
          
-         rs.close();
-         db_resultSet.close();
          return true;
       }
       catch (SQLException e)
@@ -327,8 +329,32 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess getColumnNames()");
+         }
+         finally
+         {
+            try
+            {
+               if (db_resultSet != null)
+                  db_resultSet.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess getColumnNames()");
+            }
+            finally
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+         }
       }
    }
 
@@ -712,6 +738,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       // the selected entry.
       
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -1014,7 +1041,6 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             }
             i++;
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1022,8 +1048,20 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess viewSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1175,6 +1213,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       // the selected entries field data.
       
       sqlStatement = null;
+      db_resultSet = null;
 
       try
       {
@@ -1403,7 +1442,6 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                   editForm.setFormField(currentColumnName, (Object) "NULL");
             }
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1411,8 +1449,20 @@ public class TableTabPanel_MSAccess extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess editSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 }
