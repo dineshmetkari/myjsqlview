@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 12.3 07/02/2012
+// Version 12.4 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -275,6 +275,8 @@
 //        12.2 Change in getColumnNames() to Always Check for Foreign Keys.
 //        12.3 Class Method loadTable() Changed lobLessSQLStatementString to StringBuffer
 //             & Chopped String Off Name.
+//        12.4 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
+//             getColumnNames() Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -300,7 +302,7 @@ import java.util.Iterator;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.3 07/02/2012
+ * @version 12.4 08/10/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -342,6 +344,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
       // meta data, and column names.
       
       sqlStatement = null;
+      db_resultSet = null;
+      rs = null;
       
       try
       {
@@ -513,9 +517,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          }
          System.out.println();
          */
-
-         rs.close();
-         db_resultSet.close();
+         
          return true;
       }
       catch (SQLException e)
@@ -525,8 +527,32 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_HSQL getColumnNames()");
+         }
+         finally
+         {
+            try
+            {
+               if (db_resultSet != null)
+                  db_resultSet.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_HSQL getColumnNames()");
+            }
+            finally
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+         }
       }
    }
 
@@ -903,6 +929,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       // the selected entry.
       
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -1192,7 +1219,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
             }
             i++;
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1200,8 +1226,20 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_HSQL viewSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1368,6 +1406,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       // the selected entries field data.
       
       sqlStatement = null;
+      db_resultSet = null;
 
       try
       {
@@ -1614,7 +1653,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   editForm.setFormField(currentColumnName, (Object) "NULL");
             }
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1622,8 +1660,20 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_HSQL editSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 }

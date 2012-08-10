@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.52 07/02/2012
+// Version 11.53 08/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -493,6 +493,8 @@
 //       11.51 Change in getColumnNames() to Always Make a Check for Indexes.
 //       11.52 Class Method loadTable() Changed lobLessSQLStatementString to StringBuffer
 //             & Chopped String Off Name.
+//       11.53 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
+//             getColumnNames() Moved to finally.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -517,7 +519,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.52 07/02/2012
+ * @version 11.53 08/10/2012
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -557,6 +559,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       // meta data, and column names.
       
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -571,6 +574,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = db_resultSet.getMetaData();
+         db_resultSet.close();
 
          // Primary key(s) & special fields.
 
@@ -600,6 +604,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
             if (columnType.indexOf("set") != -1)
                columnSetHashMap.put(parseColumnNameField(colNameString), columnType);
          }
+         db_resultSet.close();
 
          // Additional Indexes
 
@@ -690,7 +695,6 @@ public class TableTabPanel_MySQL extends TableTabPanel
          System.out.println();
          */
 
-         db_resultSet.close();
          return true;
       }
       catch (SQLException e)
@@ -700,8 +704,20 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MySQL getColumnNames()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1131,6 +1147,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       // the selected entry.
       
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -1428,7 +1445,6 @@ public class TableTabPanel_MySQL extends TableTabPanel
             }
             i++;
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1436,8 +1452,20 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MySQL viewSelectedItem()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 
@@ -1607,6 +1635,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
       // the selected entries field data.
       
       sqlStatement = null;
+      db_resultSet = null;
 
       try
       {
@@ -1917,7 +1946,6 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   editForm.setFormField(currentColumnName, (Object) "NULL");
             }
          }
-         db_resultSet.close();
       }
       catch (SQLException e)
       {
@@ -1925,8 +1953,20 @@ public class TableTabPanel_MySQL extends TableTabPanel
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MySQL editSelectedEntry()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
 }
