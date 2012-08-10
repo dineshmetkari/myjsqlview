@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.09 08/06/2012
+// Version 5.10 08/09/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -236,6 +236,7 @@
 //             default).
 //        5.09 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//        5.10 Closure for db_resultSet in setSpecialFieldData() Moved to finally.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -273,7 +274,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.09 08/06/2012
+ * @version 5.10 08/09/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1825,6 +1826,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
       // Setting up & Filling ComboBox Fields
       sqlStatement = null;
+      db_resultSet = null;
       
       try
       {
@@ -1841,7 +1843,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
             while (db_resultSet.next())
                comboBoxList.add(db_resultSet.getString(1));
             fillForm.setComboBoxField(currentColumnName, comboBoxList, currentContentData);
-            db_resultSet.close();
          }
 
          // MyJSQLView Use
@@ -1892,8 +1893,20 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       }
       finally
       {
-         if (sqlStatement != null)
-            sqlStatement.close();
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel setSpecialFieldData()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
       }
    }
    
