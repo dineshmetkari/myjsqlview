@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.1 08/10/2012
+// Version 5.2 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -138,6 +138,8 @@
 //             tableDefinition String.
 //         5.1 Closure for ResultSet, resultSet, in All Create Table Definition Methods
 //             Except PostgreSQL Moved to finally.
+//         5.2 Class Methods createHSQL/OracleTableDefinition() Minor Cleanup of
+//             Unecessary null Checks & Closing Result Set.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -162,7 +164,7 @@ import java.util.Set;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.1 08/10/2012
+ * @version 5.2 08/10/2012
  */
 
 class TableDefinitionGenerator
@@ -748,7 +750,8 @@ class TableDefinitionGenerator
                                     + "' AND TABLE_NAME='" + tableName + "'";
                // System.out.println(sqlStatementString);
             }
-
+            
+            resultSet.close();
             resultSet = sqlStatement.executeQuery(sqlStatementString);
 
             if (resultSet.next())
@@ -756,7 +759,6 @@ class TableDefinitionGenerator
                tableDefinition.append("CREATE " + tableType + " " + schemaTableName
                                        + " AS " + resultSet.getString(1) + ";\n");
             }
-            resultSet.close();
          }
          // TABLE
          else
@@ -778,6 +780,7 @@ class TableDefinitionGenerator
                               + "' AND TABLE_NAME='" + tableName + "'";
          // System.out.println(sqlStatementString);
          
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
 
          while (resultSet.next())
@@ -795,6 +798,7 @@ class TableDefinitionGenerator
          sqlStatementString = "SELECT LIMIT 0 1 * FROM " + schemaTableName;
          // System.out.println(sqlStatementString);
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
          
@@ -805,6 +809,7 @@ class TableDefinitionGenerator
             if (catalogName.equals(""))
                catalogName = null;
 
+         resultSet.close();
          resultSet = dbMetaData.getColumns(catalogName,
                                            tableMetaData.getSchemaName(1),
                                            tableMetaData.getTableName(1), "%");
@@ -985,8 +990,7 @@ class TableDefinitionGenerator
             }
             else
             {
-               if (defaultString == null
-                   && resultSet.getString("IS_NULLABLE").equals("YES"))
+               if (resultSet.getString("IS_NULLABLE").equals("YES"))
                   tableDefinition.append(" DEFAULT NULL,\n    ");
                else
                {
@@ -1009,6 +1013,7 @@ class TableDefinitionGenerator
          onDeleteRule = "";
 
          // Primary Keys
+         resultSet.close();
          resultSet = dbMetaData.getPrimaryKeys(catalogName,
                                                tableMetaData.getSchemaName(1),
                                                tableMetaData.getTableName(1));
@@ -1021,6 +1026,7 @@ class TableDefinitionGenerator
          }
 
          // Unique Keys
+         resultSet.close();
          resultSet = dbMetaData.getIndexInfo(catalogName,
                                              tableMetaData.getSchemaName(1),
                                              tableMetaData.getTableName(1), true, false);
@@ -1045,6 +1051,7 @@ class TableDefinitionGenerator
                                    + "),\n    ");
 
          // Foreign Keys
+         resultSet.close();
          resultSet = dbMetaData.getImportedKeys(catalogName,
                                                 tableMetaData.getSchemaName(1),
                                                 tableMetaData.getTableName(1));
@@ -1335,7 +1342,7 @@ class TableDefinitionGenerator
             }
             else
             {
-               if (columnDefault == null && columnIsNullable.equals("YES"))
+               if (columnIsNullable.equals("YES"))
                   tableDefinition.append(" DEFAULT NULL,\n    ");
                else
                {
