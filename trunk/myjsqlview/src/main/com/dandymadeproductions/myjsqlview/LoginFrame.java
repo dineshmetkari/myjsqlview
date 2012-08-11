@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.89 08/06/2012
+// Version 6.90 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -275,6 +275,8 @@
 //             default).
 //        6.89 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//        6.90 Class Method accessCheck() Change of Conditional Check for null to Empty
+//             String for dbMetaData.getDatabaseProductName/Version()
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -308,7 +310,7 @@ import javax.swing.*;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.89 08/06/2012
+ * @version 6.90 08/11/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1143,7 +1145,7 @@ public class LoginFrame extends JFrame implements ActionListener
             // =======================
             // Database Product Name & Version
             
-            if (dbMetaData.getDatabaseProductName() != null)
+            if (dbMetaData.getDatabaseProductName().equals(""))
                dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
             else
             {
@@ -1162,7 +1164,7 @@ public class LoginFrame extends JFrame implements ActionListener
                else
                   dbProductNameVersion = "Unknown Data Source ";
             }
-            if (dbMetaData.getDatabaseProductVersion() != null)
+            if (dbMetaData.getDatabaseProductVersion().equals(""))
                dbProductNameVersion += dbMetaData.getDatabaseProductVersion();
             
             ConnectionManager.setDBProductName_And_Version(dbProductNameVersion);
