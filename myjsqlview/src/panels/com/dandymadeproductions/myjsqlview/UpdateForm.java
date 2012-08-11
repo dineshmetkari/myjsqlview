@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.6 07/08/2012
+// Version 4.7 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,8 @@
 //         4.6 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         4.7 08/11/2012 Class Method updateTable() Just Create Error Without Assigning to
+//                        timeValue. Also Closing of sqlStatement & db_resultSet Done in finally.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -156,7 +158,7 @@ import javax.swing.*;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.6 07/08/2012
+ * @version 4.7 08/11/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -769,6 +771,9 @@ class UpdateForm extends JFrame implements ActionListener
       tableUpdated = false;
       tryingUpdate = false;
       quoteCheckBoxState = quoteCheckBox.isSelected();
+      
+      sqlStatement = null;
+      db_resultSet = null;
 
       try
       {
@@ -893,7 +898,7 @@ class UpdateForm extends JFrame implements ActionListener
                            
                            // Check for some kind of valid input.
                            if (updateTextString.length() < 8)
-                              timeValue = Time.valueOf("error");
+                              Time.valueOf("error");
                            
                            // Process
                            timeValue = Time.valueOf(updateTextString.substring(0, 7));
@@ -1013,7 +1018,6 @@ class UpdateForm extends JFrame implements ActionListener
                         JOptionPane.showMessageDialog(null, resourceMessage1 + " " + columnName
                                                       + ", " + resourceMessage2 + ": " + columnType,
                                                       resourceTitle, JOptionPane.ERROR_MESSAGE);
-                        sqlStatement.close();
                         dbConnection.setAutoCommit(true);
                         ConnectionManager.closeConnection(dbConnection,
                                                           "TableEntryForm addUpdateTableEntry()");
@@ -1050,6 +1054,7 @@ class UpdateForm extends JFrame implements ActionListener
                
                // Proceed with execution and finish up.
                // System.out.println(sqlStatementString);
+               sqlStatement.close();
                sqlStatement.executeUpdate(sqlStatementString);
                dbConnection.commit();
                dbConnection.setAutoCommit(true);
@@ -1057,7 +1062,6 @@ class UpdateForm extends JFrame implements ActionListener
                tableUpdated = true;
             }
          }
-         sqlStatement.close();
       }
       catch (SQLException e)
       {
@@ -1071,7 +1075,34 @@ class UpdateForm extends JFrame implements ActionListener
             }
             catch (SQLException error)
             {
-               ConnectionManager.displaySQLErrors(e, "UpdateForm updateTable() rollback failed");
+               ConnectionManager.displaySQLErrors(e,
+                  "UpdateForm updateTable() rollback failed");
+            }
+         }
+      }
+      finally
+      {
+         try
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "UpdateForm updateTable() failed closing result set");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "UpdateForm updateTable() failed closing sql statement");
             }
          }
       }
