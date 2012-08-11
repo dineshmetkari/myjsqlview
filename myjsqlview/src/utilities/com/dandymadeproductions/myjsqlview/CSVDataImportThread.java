@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.6 05/07/2012
+// Version 6.7 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,7 @@
 //         6.6 Class Method importCSVFile() Changed Instances primaryKeys, tableFields,
 //             & fields from Vector Data Type to ArrayList. Also the Same Data Type
 //             Changed for refreshTableTabPanel() Instance tableHeadings.
+//         6.7 Class Method importCSVFile() finally for Closing sqlStatement.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -178,7 +179,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.6 05/07/2012
+ * @version 6.7 08/11/2012
  */
 
 class CSVDataImportThread implements Runnable
@@ -320,6 +321,8 @@ class CSVDataImportThread implements Runnable
       // each line and separating field data. Expectation
       // being that the first line will hold the field names
       // thereafter data.
+      
+      sqlStatement = null;
 
       try
       {
@@ -668,6 +671,18 @@ class CSVDataImportThread implements Runnable
          catch (SQLException error)
          {
             ConnectionManager.displaySQLErrors(e, "CSVDataImportThread importCSVFile() rollback failed");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(e, "CSVDataImportThread importCSVFile() failed close");
+            }
          }
       }
       finally
