@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 05/12/2012
+// Version 1.5 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //             & getTableNames() Along With Their Instances schemas & tables.
 //         1.4 Added Class Instance maxColumnNameLength & Corresponding getter/
 //             setter Methods.
+//         1.5 Constructor Change of Conditional Check for null to Empty String
+//             for dbMetaData.getDatabaseProductName/Version()
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import javax.swing.JOptionPane;
  * manage connections to a HSQL database.
  * 
  * @author Dana M. Proctor
- * @version 1.4 05/12/2012
+ * @version 1.5 08/11/2012
  */
 
 public class ConnectionManagerHSQL
@@ -197,13 +199,13 @@ public class ConnectionManagerHSQL
          dbMetaData = dbConnection.getMetaData();
 
          // Product
-         if (dbMetaData.getDatabaseProductName() != null)
+         if (dbMetaData.getDatabaseProductName().equals(""))
             dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
          else
          {
             dbProductNameVersion = "HSQL ";
          }
-         if (dbMetaData.getDatabaseProductVersion() != null)
+         if (dbMetaData.getDatabaseProductVersion().equals(""))
             dbProductNameVersion += dbMetaData.getDatabaseProductVersion();
 
          setDBProductName_And_Version(dbProductNameVersion);
