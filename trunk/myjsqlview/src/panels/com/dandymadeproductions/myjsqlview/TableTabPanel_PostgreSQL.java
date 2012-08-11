@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 14.1 08/10/2012
+// Version 14.2 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -322,6 +322,7 @@
 //             & Chopped String Off Name.
 //        14.1 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
 //             getColumnNames() Moved to finally.
+//        14.2 Closure for rs & sqlStatement in loadTable() Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -347,7 +348,7 @@ import java.util.Iterator;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 14.1 08/10/2012
+ * @version 14.2 08/11/2012
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -691,6 +692,10 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
+      
+      sqlStatement = null;
+      rs = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -931,14 +936,36 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
             j = 0;
             i++;
          }
-         rs.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_PostgreSQL loadTable()");
          return false;
+      }
+      finally
+      {
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_PostgreSQL loadTable()");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_PostgreSQL loadTable()");
+            }
+         }
       }
    }
 

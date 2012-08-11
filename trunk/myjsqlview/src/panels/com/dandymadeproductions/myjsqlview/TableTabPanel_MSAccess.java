@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 08/10/2012
+// Version 2.6 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //             & Chopped String Off Name.
 //         2.5 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
 //             getColumnNames() Moved to finally.
+//         2.6 Closure for rs & sqlStatement in loadTable() Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -92,7 +93,7 @@ import java.util.Iterator;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.5 08/10/2012
+ * @version 2.6 08/11/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -479,6 +480,10 @@ public class TableTabPanel_MSAccess extends TableTabPanel
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
+      
+      sqlStatement = null;
+      rs = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -706,14 +711,36 @@ public class TableTabPanel_MSAccess extends TableTabPanel
             j = 0;
             i++;
          }
-         rs.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_MSAccess loadTable()");
          return false;
+      }
+      finally
+      {
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess loadTable()");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_MSAccess loadTable()");
+            }
+         }
       }
    }
    

@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 11.2 08/10/2012
+// Version 11.3 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -250,6 +250,7 @@
 //             & Chopped String Off Name.
 //        11.2 Closure for db_resultSet in editSelectedItem(), viewSelectedItem() &
 //             getColumnNames() Moved to finally.
+//        11.3 Closure for rs & sqlStatement in loadTable() Moved to finally.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -275,7 +276,7 @@ import java.util.Iterator;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.2 08/10/2012
+ * @version 11.3 08/11/2012
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -628,6 +629,10 @@ public class TableTabPanel_Generic extends TableTabPanel
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
+      
+      sqlStatement = null;
+      rs = null;
+      
       try
       {
          sqlStatement = dbConnection.createStatement();
@@ -862,14 +867,36 @@ public class TableTabPanel_Generic extends TableTabPanel
             j = 0;
             i++;
          }
-         rs.close();
-         sqlStatement.close();
          return true;
       }
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "TableTabPanel_Generic loadTable()");
          return false;
+      }
+      finally
+      {
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_Generic loadTable()");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_Generic loadTable()");
+            }
+         }
       }
    }
    
