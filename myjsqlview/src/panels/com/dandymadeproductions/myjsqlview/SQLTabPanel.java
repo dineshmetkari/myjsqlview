@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 07/08/2012
+// Version 2.2 08/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,7 @@
 //         2.1 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         2.2 Class Method Instance columnSize Change from Integer to int.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +93,7 @@ import javax.swing.table.TableColumn;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.1 07/08/2012
+ * @version 2.2 08/11/2012
  */
 
 class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -252,7 +253,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
 
       String colNameString;
       String columnClass, columnType;
-      Integer columnSize;
+      int columnSize;
       int preferredColumnSize;
       Object currentContentData;
       Object[] rowData;
@@ -310,7 +311,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
-               columnSizeHashMap.put(colNameString, columnSize);
+               columnSizeHashMap.put(colNameString, Integer.valueOf(columnSize));
                preferredColumnSizeHashMap.put(colNameString,
                                               Integer.valueOf(colNameString.length() * 9));
                
@@ -336,7 +337,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                colNameString = tableMetaData.getColumnLabel(i);
                columnClass = tableMetaData.getColumnClassName(i);
                columnType = tableMetaData.getColumnTypeName(i);
-               columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
+               columnSize = tableMetaData.getColumnDisplaySize(i);
 
                // System.out.println(i + " " + colNameString + " " +
                //                     columnClass + " " + columnType + " " +
@@ -374,7 +375,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
                columnNamesHashMap.put(colNameString, colNameString);
                columnClassHashMap.put(colNameString, columnClass);
                columnTypeHashMap.put(colNameString, columnType.toUpperCase());
-               columnSizeHashMap.put(colNameString, columnSize);
+               columnSizeHashMap.put(colNameString, Integer.valueOf(columnSize));
                preferredColumnSizeHashMap.put(colNameString,
                                               Integer.valueOf(colNameString.length() * 9));   
             }
@@ -699,7 +700,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
             columnNamesHashMap.put(colNameString, colNameString);
             columnClassHashMap.put(colNameString, columnClass);
             columnTypeHashMap.put(colNameString, columnType.toUpperCase());
-            columnSizeHashMap.put(colNameString, columnSize);
+            columnSizeHashMap.put(colNameString, Integer.valueOf(columnSize));
             preferredColumnSizeHashMap.put(colNameString,
                                            Integer.valueOf(colNameString.length() * 9));
             
@@ -727,8 +728,7 @@ class SQLTabPanel extends JPanel implements ActionListener, Printable
          if (sqlStatement != null)
             sqlStatement.close();
          
-         if (dbConnection != null)
-            ConnectionManager.closeConnection(dbConnection, "SQLTabPanel executeSQL()");    
+         ConnectionManager.closeConnection(dbConnection, "SQLTabPanel executeSQL()");    
       }
    }
    
