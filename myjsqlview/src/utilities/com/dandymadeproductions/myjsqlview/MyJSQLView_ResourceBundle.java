@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.3 08/08/2012
+// Version 2.4 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,9 @@
 //                        LocaleResource(). Removed Dead Code for Checking imageResourceURL
 //                        in getResourceImage() & Same for imageBytes in getJAR_ImageResource().
 //                        Changed Creation of resourceURL to Just Use String in Constructor.
+//         2.4 08/18/2012 Created the Two Argument Constructor With Caching. Output in Debug
+//                        Mode For Identifying Failed Loading of Local Image Files in Method
+//                        getResourceImage().
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -99,7 +102,7 @@ import javax.swing.JOptionPane;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.3 08/08/2012
+ * @version 2.4 08/18/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -135,14 +138,19 @@ public class MyJSQLView_ResourceBundle implements Serializable
    // also be initialized by a call to he the corresponding
    // setLocaleResource() so that data strings may be loaded.
    //==============================================================
-
+   
    public MyJSQLView_ResourceBundle(String resourceURLString)
+   {
+      this(resourceURLString, true);
+   }
+   
+   public MyJSQLView_ResourceBundle(String resourceURLString, boolean cacheJar)
    {
       // Setup to process.
 
       cacheDirectory = MyJSQLView_Utils.getCacheDirectory();
       debugMode = MyJSQLView.getDebug();
-      cacheJar = true;
+      this.cacheJar = cacheJar;
 
       // Yea, nothing here move on.
 
@@ -270,7 +278,12 @@ public class MyJSQLView_ResourceBundle implements Serializable
             if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
             {  
                imageResourceURL = new URL(resourceURL.toExternalForm() + imageFileName);
-               return new ImageIcon(imageResourceURL);
+               ImageIcon imageIcon = new ImageIcon(imageResourceURL);
+               
+               if (debugMode && (imageIcon.getIconWidth() == -1 || imageIcon.getIconHeight() == -1))
+                  System.out.println("Failed to find image file: " + imageResourceURL.getFile() + "\n");
+               
+               return imageIcon;
             }
 
             //====
