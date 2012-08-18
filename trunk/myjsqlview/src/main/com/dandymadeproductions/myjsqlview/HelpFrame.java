@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2012 Dana M. Proctor
-// Version 2.4 01/01/2012
+// Version 2.5 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 //         2.2 Copyright Update.
 //         2.3 Made Class, Constructor, Method center() public.
 //         2.4 Copyright Update.
+//         2.5 Organized Imports.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,15 +58,21 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.net.*;
-import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.IOException;
+import java.net.URL;
+
+import javax.swing.JButton;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 
 //==================================================================
 //                     MyJSQLView Help Frame
@@ -75,7 +82,7 @@ import java.io.IOException;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.4 01/01/2012
+ * @version 2.5 08/18/2012
  */
 
 public class HelpFrame extends JFrame
