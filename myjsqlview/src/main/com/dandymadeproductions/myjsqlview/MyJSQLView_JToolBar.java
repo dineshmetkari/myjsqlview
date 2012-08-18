@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 2.7 08/06/2012
+// Version 2.8 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //             default).
 //         2.7 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         2.8 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +76,7 @@ import javax.swing.JToolBar;
  * for the MyJSQLView application frame's database tables tab.
  * 
  * @author Dana M. Proctor
- * @version 2.7 08/06/2012
+ * @version 2.8 08/18/2012
  */
 
 class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionCommands
@@ -133,25 +134,25 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       add(buttonItem);
       
       // File Save
-      saveIcon = new ImageIcon(iconsDirectory + "saveIcon.png");
+      saveIcon = resourceBundle.getResourceImage(iconsDirectory + "saveIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Save", "Save");
       buttonItem = buttonItem(resource, saveIcon, ACTION_SAVE);
       add(buttonItem);
       
       // File Print
-      printIcon = new ImageIcon(iconsDirectory + "printIcon.png");
+      printIcon = resourceBundle.getResourceImage(iconsDirectory + "printIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Print", "Pring");
       buttonItem = buttonItem(resource, printIcon, ACTION_PRINT);
       add(buttonItem);
       
       // Page Format
-      pageFormatIcon = new ImageIcon(iconsDirectory + "pageFormatIcon.png");
+      pageFormatIcon = resourceBundle.getResourceImage(iconsDirectory + "pageFormatIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.PageFormat", "Page Format");
       buttonItem = buttonItem(resource, pageFormatIcon, ACTION_PAGE_FORMAT);
       add(buttonItem);
       
       // Exit
-      exitIcon = new ImageIcon(iconsDirectory + "exitIcon.png");
+      exitIcon = resourceBundle.getResourceImage(iconsDirectory + "exitIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Exit", "Exit");
       buttonItem = buttonItem(resource, exitIcon, ACTION_EXIT);
       add(buttonItem);
@@ -162,7 +163,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       // Edit Menu
       
       // Preferences
-      preferencesIcon = new ImageIcon(iconsDirectory + "preferencesIcon.png");
+      preferencesIcon = resourceBundle.getResourceImage(iconsDirectory + "preferencesIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Preferences", "Preferences");
       buttonItem = buttonItem(resource, preferencesIcon, ACTION_PREFERENCES);
       add(buttonItem);
@@ -173,14 +174,14 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       // Data Menu
       
       // Import CSV File
-      csvImportIcon = new ImageIcon(iconsDirectory + "csvImportIcon.png");
+      csvImportIcon = resourceBundle.getResourceImage(iconsDirectory + "csvImportIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ImportCSVFile",
                                                   "Import CSV File");
       buttonItem = buttonItem(resource, csvImportIcon, ACTION_IMPORT_CSV_FILE);
       add(buttonItem);
       
       // Import SQL Dump
-      sqlImportIcon = new ImageIcon(iconsDirectory + "sqlImportIcon.png");
+      sqlImportIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlImportIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ImportSQLDump",
                                                   "Import SQL Dump");
       buttonItem = buttonItem(resource, sqlImportIcon, ACTION_IMPORT_SQL_DUMP);
@@ -189,14 +190,14 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       addSeparator();
       
       // Export CSV Tab Summary Table
-      csvExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "csvExportSummaryTableIcon.png");
+      csvExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory + "csvExportSummaryTableIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportCSVSummaryTable",
                                                   "Export CSV Summary Table");
       buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, ACTION_EXPORT_CSV_SUMMARY_TABLE);
       add(buttonItem);
       
       // Export CSV Table
-      csvExportTableIcon = new ImageIcon(iconsDirectory + "csvExportTableIcon.png");
+      csvExportTableIcon = resourceBundle.getResourceImage(iconsDirectory + "csvExportTableIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportCSVTable",
                                                   "Export CSV Table");
       buttonItem = buttonItem(resource, csvExportTableIcon, ACTION_EXPORT_CSV_TABLE);
@@ -205,7 +206,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       addSeparator();
       
       // Export PDF Tab Summary Table
-      pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
+      pdfExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory + "pdfExportSummaryTableIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportPDFSummaryTable",
                                                   "Export PDF Summary Table");
       buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, ACTION_EXPORT_PDF_SUMMARY_TABLE);
@@ -214,28 +215,28 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       addSeparator();
       
       // Export SQL Tab Summary Table
-      sqlExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "sqlExportSummaryTableIcon.png");
+      sqlExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlExportSummaryTableIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportSQLSummaryTable",
                                                   "Export SQL Summary Table");
       buttonItem = buttonItem(resource, sqlExportTabSummaryTableIcon, ACTION_EXPORT_SQL_SUMMARY_TABLE);
       add(buttonItem);
       
       // Export SQL Table
-      sqlExportTableIcon = new ImageIcon(iconsDirectory + "sqlExportTableIcon.png");
+      sqlExportTableIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlExportTableIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportSQLTable",
                                                   "Export SQL Table");
       buttonItem = buttonItem(resource, sqlExportTableIcon, ACTION_EXPORT_SQL_TABLE);
       add(buttonItem);
       
       // Export SQL Database
-      sqlExportDatabaseIcon = new ImageIcon(iconsDirectory + "sqlExportDatabaseIcon.png");
+      sqlExportDatabaseIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlExportDatabaseIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportSQLDatabase",
                                                   "Export SQL Database");
       buttonItem = buttonItem(resource, sqlExportDatabaseIcon, ACTION_EXPORT_SQL_DATABASE);
       add(buttonItem);
       
       // Export SQL Database Scheme
-      sqlExportDatabaseSchemeIcon = new ImageIcon(iconsDirectory + "sqlExportDatabaseSchemeIcon.png");
+      sqlExportDatabaseSchemeIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlExportDatabaseSchemeIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ExportSQLDatabaseScheme",
                                                   "Export SQL Database Scheme");
       buttonItem = buttonItem(resource, sqlExportDatabaseSchemeIcon, ACTION_EXPORT_SQL_DATABASE_SCHEME);
@@ -247,28 +248,28 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       // Tools Menu
       
       // SQL Query Bucket Frame
-      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "sqlQueryBucketIcon.png");
+      sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlQueryBucketIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.SQLQueryBucket",
                                                   "SQL Query Bucket");
      buttonItem = buttonItem(resource, sqlQueryBucketIcon, ACTION_SQL_QUERY_BUCKET);
       add(buttonItem);
       
       // Query Frame
-      queryFrameIcon = new ImageIcon(iconsDirectory + "queryFrameIcon.png");
+      queryFrameIcon = resourceBundle.getResourceImage(iconsDirectory + "queryFrameIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.QueryFrame",
                                                   "Query Frame");
       buttonItem = buttonItem(resource, queryFrameIcon, ACTION_QUERY_FRAME);
       add(buttonItem);
       
       // Reload Database
-      reloadDatabaseIcon = new ImageIcon(iconsDirectory + "reloadDatabaseIcon.png");
+      reloadDatabaseIcon = resourceBundle.getResourceImage(iconsDirectory + "reloadDatabaseIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.ReloadDatabase",
                                                   "Reload Database");
       buttonItem = buttonItem(resource, reloadDatabaseIcon, ACTION_RELOAD_DATABASE);
       add(buttonItem);
       
       // Search Database
-      searchDatabaseIcon = new ImageIcon(iconsDirectory + "searchDatabaseIcon.png");
+      searchDatabaseIcon = resourceBundle.getResourceImage(iconsDirectory + "searchDatabaseIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.SearchDatabase",
                                                   "Search Database");
       buttonItem = buttonItem(resource, searchDatabaseIcon, ACTION_SEARCH_DATABASE);
@@ -280,13 +281,13 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       // Help Menu
       
       // Manual
-      manualIcon = new ImageIcon(iconsDirectory + "manualIcon.png");
+      manualIcon = resourceBundle.getResourceImage(iconsDirectory + "manualIcon.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.Manual", "Manual");
       buttonItem = buttonItem(resource, manualIcon, ACTION_MANUAL);
       add(buttonItem);
       
       // Legal
-      //legalIcon = new ImageIcon(iconsDirectory + "legalIcon.png");
+      //legalIcon = resourceBundle.getResourceImage(iconsDirectory + "legalIcon.png");
       //resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.Legal");
       //if (resource.equals(""))
       //   buttonItem = buttonItem("Legal", legalIcon, ACTION_LEGAL);
@@ -295,7 +296,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       //add(buttonItem);
       
       // Release
-      //releaseIcon = new ImageIcon(iconsDirectory + "releaseIcon.png");
+      //releaseIcon = resourceBundle.getResourceImage(iconsDirectory + "releaseIcon.png");
       //resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.Release");
       //if (resource.equals(""))
       //   buttonItem = buttonItem("Release", releaseIcon, ACTION_RELEASE_NOTES);
@@ -304,7 +305,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       //add(buttonItem);
       
       // About
-      //aboutIcon = new ImageIcon(iconsDirectory + "aboutIcon.png");
+      //aboutIcon = resourceBundle.getResourceImage(iconsDirectory + "aboutIcon.png");
       //resource = resourceBundle.getResource("MyJSQLView_JToolBar.tooltip.About");
       //if (resource.equals(""))
       //   buttonItem = buttonItem("About", aboutIcon, ACTION_ABOUT);

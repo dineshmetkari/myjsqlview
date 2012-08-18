@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.3 08/06/2012
+// Version 7.4 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,7 @@
 //         7.2 08/03/2012 Addition of Cache Clearing in myjsqlviewFrameListener on windowClosing().
 //         7.3 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //                        to getResourceBundle().
+//         7.4 08/18/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -197,7 +198,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -277,6 +284,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    {
       // Class Instances
       JPanel mainPanel;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator, iconsDirectory;
       ImageIcon mainTabIcon;
       Default_JToolBar defaultToolBar;
@@ -284,13 +292,14 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       
       // Setting up Various Instances.
       
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;;
       
       // Obtain & create Image Icons.
       
-      mainTabIcon = new ImageIcon(iconsDirectory + "mainTabIcon.png");
-      databaseTablesIcon = new ImageIcon(iconsDirectory + "databasetablesIcon.png");
+      mainTabIcon = resourceBundle.getResourceImage(iconsDirectory + "mainTabIcon.png");
+      databaseTablesIcon = resourceBundle.getResourceImage(iconsDirectory + "databasetablesIcon.png");
       
       // Setup the menu bar for the frame.
       

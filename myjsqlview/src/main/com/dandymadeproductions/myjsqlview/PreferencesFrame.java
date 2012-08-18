@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.9 08/06/2012
+// Version 9.0 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -184,6 +184,7 @@
 //             default).
 //         8.9 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         9.0 Collection of All Image Resources Through resourceBundle.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -197,11 +198,21 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JEditorPane;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -213,7 +224,7 @@ import javax.swing.tree.TreeSelectionModel;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 8.9 08/06/2012
+ * @version 9.0 08/18/2012
  */
 
 //=================================================================
@@ -314,7 +325,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       preferencesTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 
       // Setting the leaf icon for nodes.
-      leafIcon = new ImageIcon(iconsDirectory + "preferencesLeafIcon.png");
+      leafIcon = resourceBundle.getResourceImage(iconsDirectory + "preferencesLeafIcon.png");
       if (leafIcon != null)
       {
          DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();

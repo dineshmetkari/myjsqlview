@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.2 08/06/2012
+// Version 8.3 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -205,6 +205,7 @@
 //                        CSV/PDFSummaryTable to ExportCSV/PDFSummaryTable.
 //         8.2 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //                        to getResourceBundle().
+//         8.3 Collection of All Image Resources Through resourceBundle.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -213,7 +214,12 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
@@ -224,9 +230,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -242,7 +249,7 @@ import javax.swing.text.DefaultEditorKit;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.2 08/06/2012
+ * @version 8.3 08/18/2012
  */
 
 class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -353,9 +360,9 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
       lastDirectory = "";
       
-      statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
-      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
-      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "addSQLQueryIcon.png");
+      statusIdleIcon = resourceBundle.getResourceImage(iconsDirectory + "statusIdleIcon.png");
+      statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
+      sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "addSQLQueryIcon.png");
 
       for (int i = 0; i < maxTabs; i++)
       {
@@ -555,8 +562,8 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       resource = resourceBundle.getResourceString("QueryFrame.checkbox.NewTab", "New Tab");
       newTabCheckBox = new JCheckBox(resource, true);
       
-      newTabCheckBox.setIcon(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
-      newTabCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
+      newTabCheckBox.setIcon(resourceBundle.getResourceImage(iconsDirectory + "limitUpIcon.png"));
+      newTabCheckBox.setSelectedIcon(resourceBundle.getResourceImage(iconsDirectory + "limitDownIcon.png"));
       newTabCheckBox.setMargin(new Insets(4, 1, 4, 1));
       newTabCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
       newTabCheckBox.setFocusPainted(false);
@@ -1345,7 +1352,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // ===============
       // Logo
       
-      logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      logoIcon = resourceBundle.getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);
@@ -1372,31 +1379,31 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // File Menu
       
       // Open Script
-      openScriptIcon = new ImageIcon(iconsDirectory + "openScriptIcon.png");
+      openScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "openScriptIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.OpenScript", "Open Script");
       buttonItem = buttonItem(resource, openScriptIcon, FILE_OPEN_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // Save Script
-      saveScriptIcon = new ImageIcon(iconsDirectory + "saveScriptIcon.png");
+      saveScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "saveScriptIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.SaveScript", "Save Script");
       buttonItem = buttonItem(resource, saveScriptIcon, FILE_SAVE_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // File Print
-      printIcon = new ImageIcon(iconsDirectory + "printIcon.png");
+      printIcon = resourceBundle.getResourceImage(iconsDirectory + "printIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.Print", "Print");
       buttonItem = buttonItem(resource, printIcon, FILE_PRINT);
       queryFrameToolBar.add(buttonItem);
       
       // Page Format
-      pageFormatIcon = new ImageIcon(iconsDirectory + "pageFormatIcon.png");
+      pageFormatIcon = resourceBundle.getResourceImage(iconsDirectory + "pageFormatIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.PageFormat", "Page Format");
       buttonItem = buttonItem(resource, pageFormatIcon, FILE_PAGE_FORMAT);
       queryFrameToolBar.add(buttonItem);
       
       // Exit
-      exitIcon = new ImageIcon(iconsDirectory + "exitIcon.png");
+      exitIcon = resourceBundle.getResourceImage(iconsDirectory + "exitIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.Exit", "Exit");
       buttonItem = buttonItem(resource, exitIcon, FILE_EXIT);
       queryFrameToolBar.add(buttonItem);
@@ -1407,7 +1414,7 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // Edit Menu
       
       // Preferences Table Rows
-      tableRowsIcon = new ImageIcon(iconsDirectory + "tableRowsIcon.png");
+      tableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "tableRowsIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.TableRows", "Table Rows");
       buttonItem = buttonItem(resource, tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
       queryFrameToolBar.add(buttonItem);
@@ -1418,14 +1425,16 @@ class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // Data Menu
       
       // Export CSV Summary Table
-      csvExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "csvExportSummaryTableIcon.png");
+      csvExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
+                                                                     + "csvExportSummaryTableIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportCSVSummaryTable",
                                                   "Export CSV Tab Summary Table");
       buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
       queryFrameToolBar.add(buttonItem);
       
       // Export PDF Summary Table
-      pdfExportTabSummaryTableIcon = new ImageIcon(iconsDirectory + "pdfExportSummaryTableIcon.png");
+      pdfExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
+                                                                     + "pdfExportSummaryTableIcon.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportPDFSummaryTable",
                                                   "Export PDF Tab Summary Table");
       buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
