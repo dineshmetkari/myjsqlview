@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 08/06/2012
+// Version 2.5 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,6 +62,7 @@
 //         2.3 07/09/2012 Correction in Class createPopupMenu() Resource Keys menu to button.
 //         2.4 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //                        to getResourceBundle().
+//         2.5 08/18/2012 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +73,14 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
@@ -92,7 +100,7 @@ import javax.swing.*;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.4 08/06/2012
+ * @version 2.5 08/18/2012
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -605,7 +613,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       sqlBucketFrameMenuBar.add(Box.createHorizontalGlue());
 
       // Logo
-      logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      logoIcon = resourceBundle.getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);
@@ -989,8 +997,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // LIMIT
       limitPanel = new JPanel();
       
-      limitCheckBox = new JCheckBox(new ImageIcon(iconsDirectory + "limitUpIcon.png"));
-      limitCheckBox.setSelectedIcon(new ImageIcon(iconsDirectory + "limitDownIcon.png"));
+      limitCheckBox = new JCheckBox(resourceBundle.getResourceImage(iconsDirectory + "limitUpIcon.png"));
+      limitCheckBox.setSelectedIcon(resourceBundle.getResourceImage(iconsDirectory + "limitDownIcon.png"));
       limitCheckBox.setPreferredSize(new Dimension(22, 22));
       limitCheckBox.setMargin(new Insets(4, 1, 4, 1));
       limitCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -1015,7 +1023,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // Color
       colorPanel = new JPanel();
       
-      dialog_colorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
+      dialog_colorButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                       + "transparentUpIcon.png"));
       dialog_colorButton.setBackground(processingBucketListObject.getBackground());
       dialog_colorButton.setFocusable(false);
       dialog_colorButton.setMargin(new Insets(0, 0, 0, 0));

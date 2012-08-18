@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.41 08/06/2012
+// Version 7.42 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -269,6 +269,7 @@
 //        7.40 Addition of Cache Clearing on ACTION_EXIT.
 //        7.41 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//        7.42 Collection of All Image Resources Through resourceBundle.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -288,11 +289,23 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.ArrayList;
+
 import javax.sound.sampled.Clip;
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JTable;
 
 /**
  *    The MyJSQLView_JMenuBarActions class provides the means for
@@ -301,7 +314,7 @@ import javax.swing.*;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.41 08/06/2012
+ * @version 7.42 08/18/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -632,9 +645,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // About
       if (actionCommand.equals(ACTION_ABOUT))
       {
-         AboutFrame about_Frame = new AboutFrame(myJSQLView_Version, webSiteString,
-                                                 new ImageIcon("images" + fileSeparator
-                                                               + "MyJSQLView_Logo.png"));
+         ImageIcon myjsqlviewLogo = MyJSQLView.getResourceBundle().getResourceImage("images" + fileSeparator
+                                                               + "MyJSQLView_Logo.png");
+         AboutFrame about_Frame = new AboutFrame(myJSQLView_Version, webSiteString, myjsqlviewLogo);
          about_Frame.setSize(325, 275);
          about_Frame.center();
          about_Frame.setResizable(false);

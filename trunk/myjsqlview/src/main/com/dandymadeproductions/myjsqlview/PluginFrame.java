@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 08/06/2012
+// Version 2.0 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 //         1.9 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle(). Correction in installPlugin() to Properly
 //             Specify a File URL for fileName.
+//         2.0 Collection of All Image Resources Through resourceBundle.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +90,7 @@ import javax.swing.JTable;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.9 08/06/2012
+ * @version 2.0 08/18/2012
  */
 
 //=================================================================
@@ -140,9 +141,9 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       
-      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
-      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
-      defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
+      removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
+      defaultModuleIcon = resourceBundle.getResourceImage(iconsDirectory + "newsiteLeafIcon.png");
       
       loadingPluginsList = new ArrayList <String>();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -165,7 +166,7 @@ class PluginFrame extends JFrame implements ActionListener, MouseListener
       {
          private static final long serialVersionUID = -2724112697915703694L;
          private String imageFileName = "images" + fileSeparator + "pluginframe.jpg";
-         private Image backgroundImage = new ImageIcon(imageFileName).getImage();
+         private Image backgroundImage = resourceBundle.getResourceImage((imageFileName)).getImage();
          
          public void paintComponent(Graphics g)
          {

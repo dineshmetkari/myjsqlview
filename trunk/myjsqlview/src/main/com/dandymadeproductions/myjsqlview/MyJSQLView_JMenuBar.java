@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 7.8 08/06/2012
+// Version 7.9 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,20 +31,19 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original MyJSQLView JMenuBar Class.
-//         1.1 Preferences Summary Table Fields and Date Format
-//             Additions, YYYY-MM-DD & MM-DD-YYYY.
+//         1.1 Preferences Summary Table Fields and Date Format Additions,
+//             YYYY-MM-DD & MM-DD-YYYY.
 //         1.2 Removed Preferences Date Format.
 //         1.3 Added Logo.
 //         1.4 Modified Export Menu.
 //         1.5 Added Data Preferences Menu Item.
 //         1.6 Main Class Name Change to MyJSQLView.
 //         1.7 Modified Help Menu.
-//         1.8 Changed Edit|Preferences|Summary Table Fields to
-//             Just Edit|Preferences|Table Fields.
+//         1.8 Changed Edit|Preferences|Summary Table Fields to Just Edit|
+//             Preferences|Table Fields.
 //         1.9 Added Tools|Query Frame Menu.
 //         2.0 Data Export Menu, Clarification CSV and SQL.
-//         2.1 Added Per Developer poisonerbg, SQL Table Export
-//             Menu Item.
+//         2.1 Added Per Developer poisonerbg, SQL Table Export Menu Item.
 //         2.2 Removed Data Import | Table, Replaced With Import |
 //             SQL Table.
 //         2.3 Modified logoItem Name and ImageIcon.
@@ -129,6 +128,7 @@
 //             default).
 //         7.8 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         7.9 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -156,7 +156,7 @@ import javax.swing.text.DefaultEditorKit;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 7.8 08/06/2012
+ * @version 7.9 08/18/2012
  */
 
 class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -210,8 +210,9 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
            && ConnectionManager.getConnectionProperties().getProperty(
                          ConnectionProperties.USER).equals("root"))
       {
-         ImageIcon flushIcon = new ImageIcon(iconsDirectory + "flushIcon.png");
-         ImageIcon flushIconPressed = new ImageIcon(iconsDirectory + "flushIconPressed.png");
+         ImageIcon flushIcon = resourceBundle.getResourceImage(iconsDirectory + "flushIcon.png");
+         ImageIcon flushIconPressed = resourceBundle.getResourceImage(iconsDirectory
+                                                                      + "flushIconPressed.png");
          JButton flushButton = new JButton(flushIcon);
          flushButton.setPressedIcon(flushIconPressed);
          flushButton.setDisabledIcon(flushIcon);
@@ -226,7 +227,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       }
 
       // Logo
-      ImageIcon logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      ImageIcon logoIcon = resourceBundle.getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       JButton logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);

@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.2 08/06/2012
+// Version 4.3 08/16/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,7 @@
 //             default).
 //         4.2 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         4.3 Collection of All Image Resources Through resourceBundle.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,8 +119,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.util.Iterator;
 import java.util.ArrayList;
+import java.util.Iterator;
+
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.text.DefaultEditorKit;
@@ -134,7 +136,7 @@ import javax.swing.text.DefaultEditorKit;
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 4.2 08/06/2012
+ * @version 4.3 08/18/2012
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -191,8 +193,8 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       resource = resourceBundle.getResourceString("SearchFrame.message.Title", "Search Frame");
       setTitle("MyJSQLView " + resource);
 
-      searchIcon = new ImageIcon(iconsDirectory + "searchIcon.png");
-      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
+      searchIcon = resourceBundle.getResourceImage(iconsDirectory + "searchIcon.png");
+      removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
 
       // ==================================================
       // Frame Window Closing Addition. Also method for
@@ -659,7 +661,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       searchFrameMenuBar.add(Box.createHorizontalGlue());
 
       // Logo
-      logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      logoIcon = resourceBundle.getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.3 07/07/2012
+// Version 5.4 08/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,7 @@
 //         5.3 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         5.4 Collection of All Image Resources Through resourceBundle.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -137,7 +138,7 @@ import javax.swing.SwingConstants;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.3 07/07/2012
+ * @version 5.4 08/18/2012
  */
 
 class LoginManagerFrame extends JFrame implements ActionListener
@@ -205,7 +206,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       loginManagerMenuBar.setMargin(new Insets(0, 0, 0, 0));
 
       // New Site
-      newSiteButton = new JButton(new ImageIcon(iconsDirectory + "newsiteIcon.png"));
+      newSiteButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                  + "newsiteIcon.png"));
       newSiteButton.setFocusable(false);
       newSiteButton.setMargin(new Insets(0, 0, 0, 0));
       resource = resourceBundle.getResourceString("LoginManagerFrame.tooltip.NewSite", "New Site");
@@ -214,7 +216,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       loginManagerMenuBar.add(newSiteButton);
 
       // Update Site
-      updateSiteButton = new JButton(new ImageIcon(iconsDirectory + "updateSiteIcon.png"));
+      updateSiteButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                     + "updateSiteIcon.png"));
       updateSiteButton.setFocusable(false);
       updateSiteButton.setMargin(new Insets(0, 0, 0, 0));
       resource = resourceBundle.getResourceString("LoginManagerFrame.tooltip.UpdateSite", "Update Site");
@@ -223,7 +226,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       loginManagerMenuBar.add(updateSiteButton);
 
       // Rename
-      renameSiteButton = new JButton(new ImageIcon(iconsDirectory + "renameSiteIcon.png"));
+      renameSiteButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                     + "renameSiteIcon.png"));
       renameSiteButton.setFocusable(false);
       renameSiteButton.setMargin(new Insets(0, 0, 0, 0));
       resource = resourceBundle.getResourceString("LoginManagerFrame.tooltip.RenameSite", "Rename Site");
@@ -232,7 +236,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       loginManagerMenuBar.add(renameSiteButton);
 
       // Delete
-      deleteButton = new JButton(new ImageIcon(iconsDirectory + "removeIcon.png"));
+      deleteButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                 + "removeIcon.png"));
       deleteButton.setFocusable(false);
       deleteButton.setMargin(new Insets(2, 2, 2, 2));
       resource = resourceBundle.getResourceString("LoginManagerFrame.tooltip.Delete", "Delete");
@@ -241,7 +246,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       loginManagerMenuBar.add(deleteButton);
 
       // Advanced
-      advancedButton = new JButton(new ImageIcon(iconsDirectory + "advancedConnectionsIcon.png"));
+      advancedButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                   + "advancedConnectionsIcon.png"));
       advancedButton.setFocusable(false);
       advancedButton.setMargin(new Insets(0, 0, 0, 0));
       resource = resourceBundle.getResourceString("LoginManagerFrame.tooltip.AdvancedParameters",
@@ -288,8 +294,8 @@ class LoginManagerFrame extends JFrame implements ActionListener
       actionPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
       // SSH Just Added Here For Convience
-      sshUpIcon = new ImageIcon(iconsDirectory + "sshUpIcon.png");
-      sshDownIcon = new ImageIcon(iconsDirectory + "sshDownIcon.png");
+      sshUpIcon = resourceBundle.getResourceImage(iconsDirectory + "sshUpIcon.png");
+      sshDownIcon = resourceBundle.getResourceImage(iconsDirectory + "sshDownIcon.png");
       resource = resourceBundle.getResourceString("LoginManagerFrame.checkbox.SSH", "SSH");
       sshCheckBox = new JCheckBox(resource, sshUpIcon);
       sshCheckBox.setSelectedIcon(sshDownIcon);
