@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 01/01/2012
+// Version 2.5 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@
 //         2.2 06/28/2010 Made Class Public in Addition to mainReadDataString().
 //         2.3 01/27/2011 Copyright Update.
 //         2.4 01/01/2012 Copyright Update.
+//         2.5 08/19/2012 Organized Imports.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -62,7 +63,10 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+
 import javax.swing.JOptionPane;
 
 /**
@@ -73,7 +77,7 @@ import javax.swing.JOptionPane;
  * data from a given input file.
  * 
  * @author Dana M. Proctor
- * @version 2.4 01/01/2012
+ * @version 2.5 08/19/2012
  */
 
 public class ReadDataFile
