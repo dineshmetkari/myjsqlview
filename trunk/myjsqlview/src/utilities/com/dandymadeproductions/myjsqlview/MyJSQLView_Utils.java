@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.6 08/06/2012
+// Version 7.7 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,7 @@
 //         7.5 Added Class Methods clearCache() & getCacheDirectory().
 //         7.6 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         7.7 Collection of All Image Resources Through resourceBundle.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -149,31 +150,39 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
 import java.awt.event.KeyEvent;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import javax.sound.sampled.*;
-
-import javax.swing.*;
-import javax.swing.text.DefaultEditorKit;
-
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.*;
+import javax.swing.text.DefaultEditorKit;
 
 /**
  *    The MyJSQLView_Utils class provides various usedful methods
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.6 08/06/2012
+ * @version 7.7 08/19/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1116,7 +1125,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          fileSeparator = "/";
 
       iconsDirectory = "images" + fileSeparator + "icons" + fileSeparator;
-      deleteFileIcon = new ImageIcon(iconsDirectory + "deleteFileIcon.gif");
+      deleteFileIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteFileIcon.gif");
 
       operationCanceled = false;
       resultsOfFileChooser = JFileChooser.CANCEL_OPTION;
@@ -1296,7 +1305,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
             Object[] content = {localeComboBox};
 
-            localeIcon = new ImageIcon(MyJSQLView_Utils.getIconsDirectory()
+            localeIcon = MyJSQLView.getResourceBundle().getResourceImage(MyJSQLView_Utils.getIconsDirectory()
                                        + MyJSQLView_Utils.getFileSeparator() + "localeIcon.gif");
 
             localeSelectDialog = new InputDialog(null, "Language Selection", "ok", "cancel", content,

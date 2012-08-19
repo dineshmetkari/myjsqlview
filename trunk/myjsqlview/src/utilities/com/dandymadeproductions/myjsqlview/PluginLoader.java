@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.8 08/10/2012
+// Version 2.9 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,7 @@
 //         2.8 08/10/2012 Error Output for Empty Constructor in Catch. General Cleanup.
 //                        Class Instance pluginEntriesHashMap Change From <URL,String>
 //                        to <String,String>.
+//         2.9 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import javax.swing.ImageIcon;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 2.8 08/10/2012
+ * @version 2.9 08/19/2012
  */
 
 class PluginLoader implements Runnable
@@ -527,7 +528,8 @@ class PluginLoader implements Runnable
       // Obtain & create default Image Icon.
 
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + localSystemFileSeparator;
-      defaultModuleIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      defaultModuleIcon = MyJSQLView.getResourceBundle().getResourceImage(iconsDirectory
+                                                                          + "newsiteLeafIcon.png");
 
       // Iterator through the found plugins and load them.
 

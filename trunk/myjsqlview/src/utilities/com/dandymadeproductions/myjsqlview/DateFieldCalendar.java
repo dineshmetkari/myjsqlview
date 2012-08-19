@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.1 08/06/2012
+// Version 3.2 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,7 @@
 //                        default).
 //         3.1 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //                        to getResourceBundle().
+//         3.2 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -76,11 +77,33 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.sql.Date;
 import java.util.Calendar;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *    The DateFieldCalendar class provides a frame for creating a
@@ -88,7 +111,7 @@ import javax.swing.*;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 3.1 08/06/2012
+ * @version 3.2 08/19/2012
  */
 
 class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -175,16 +198,16 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
       northPanel = new JPanel();
       northPanel.setBorder(BorderFactory.createEtchedBorder());
 
-      previousYearButton = new JButton(new ImageIcon(iconsDirectory 
-                                                     + "previousYearIcon.png"));
+      previousYearButton = new JButton(resourceBundle.getResourceImage(iconsDirectory 
+                                                                       + "previousYearIcon.png"));
       previousYearButton.setMargin(new Insets(0, 0, 0, 0));
       previousYearButton.setBorder(BorderFactory.createLoweredBevelBorder());
       previousYearButton.setToolTipText("Previous Year");
       previousYearButton.addActionListener(this);
       northPanel.add(previousYearButton);
 
-      previousMonthButton = new JButton(new ImageIcon(iconsDirectory 
-                                                      + "previousMonthIcon.png"));
+      previousMonthButton = new JButton(resourceBundle.getResourceImage(iconsDirectory 
+                                                                        + "previousMonthIcon.png"));
       previousMonthButton.setMargin(new Insets(0, 0, 0, 0));
       previousMonthButton.setBorder(BorderFactory.createLoweredBevelBorder());
       previousMonthButton.setToolTipText("Previous Month");
@@ -202,16 +225,16 @@ class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, M
       yearTextField.addKeyListener(this);
       northPanel.add(yearTextField);
 
-      nextMonthButton = new JButton(new ImageIcon(iconsDirectory 
-                                                  + "nextMonthIcon.png"));
+      nextMonthButton = new JButton(resourceBundle.getResourceImage(iconsDirectory 
+                                                                    + "nextMonthIcon.png"));
       nextMonthButton.setMargin(new Insets(0, 0, 0, 0));
       nextMonthButton.setBorder(BorderFactory.createRaisedBevelBorder());
       nextMonthButton.setToolTipText("Next Month");
       nextMonthButton.addActionListener(this);
       northPanel.add(nextMonthButton);
 
-      nextYearButton = new JButton(new ImageIcon(iconsDirectory 
-                                                 + "nextYearIcon.png"));
+      nextYearButton = new JButton(resourceBundle.getResourceImage(iconsDirectory 
+                                                                   + "nextYearIcon.png"));
       nextYearButton.setMargin(new Insets(0, 0, 0, 0));
       nextYearButton.setBorder(BorderFactory.createRaisedBevelBorder());
       nextYearButton.setToolTipText("Next Year");

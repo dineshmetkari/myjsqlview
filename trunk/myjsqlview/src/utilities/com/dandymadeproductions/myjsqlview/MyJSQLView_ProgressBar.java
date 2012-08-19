@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.9 08/06/2012
+// Version 3.0 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //             default).
 //         2.9 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         3.0 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -82,7 +83,7 @@ import javax.swing.JProgressBar;
  * cancel button.
  * 
  * @author Dana M. Proctor
- * @version 2.9 08/06/2012
+ * @version 3.0 08/19/2012
  */
 
 class MyJSQLView_ProgressBar extends JFrame implements ActionListener
@@ -113,7 +114,7 @@ class MyJSQLView_ProgressBar extends JFrame implements ActionListener
       
       resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      progressBarIcon = new ImageIcon(iconsDirectory + "progressBarIcon.gif");
+      progressBarIcon = resourceBundle.getResourceImage(iconsDirectory + "progressBarIcon.gif");
       
       // Create the components.
       this.getContentPane().setLayout(new BorderLayout());
