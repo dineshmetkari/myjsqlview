@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.7 08/11/2012
+// Version 6.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -153,6 +153,7 @@
 //             & fields from Vector Data Type to ArrayList. Also the Same Data Type
 //             Changed for refreshTableTabPanel() Instance tableHeadings.
 //         6.7 Class Method importCSVFile() finally for Closing sqlStatement.
+//         6.8 Organized Imports.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -170,7 +171,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
-import javax.swing.*;
+
+import javax.swing.JOptionPane;
 
 /**
  *    The CSVDataImportThread class provide the means to import a
@@ -179,7 +181,7 @@ import javax.swing.*;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.7 08/11/2012
+ * @version 6.8 08/19/2012
  */
 
 class CSVDataImportThread implements Runnable
