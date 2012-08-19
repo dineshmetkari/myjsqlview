@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2011 Dana M. Proctor
-// Version 2.4 01/01/2012
+// Version 2.5 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //         2.3 Made Class Public so Outside Classes May Use.
 //         2.4 Cloned Passed Argument Instance content to Like Class Instance
 //             to Isolate.
+//         2.5 Organized Imports.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -59,17 +60,29 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.beans.*;
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
  *    The InputDialog class is used to create a custom input dialog
  * box.
  * 
  * @author Dana M. Proctor
- * @version 2.4 01/01/2012
+ * @version 2.5 08/19/2012
  */
 
 public class InputDialog extends JDialog implements PropertyChangeListener
