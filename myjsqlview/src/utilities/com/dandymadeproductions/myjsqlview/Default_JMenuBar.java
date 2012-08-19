@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 1.7 08/06/2012
+// Version 1.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             default).
 //         1.7 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         1.8 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +63,7 @@ import javax.swing.JMenuItem;
  * contains essentially only the MyJSQLView File|Exit & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.7 08/06/2012
+ * @version 1.8 08/19/2012
  */
 
 class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -100,7 +101,7 @@ class Default_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
       add(Box.createHorizontalGlue());
 
       // Logo (Keep This)
-      ImageIcon logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      ImageIcon logoIcon = resourceBundle.getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       JButton logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);

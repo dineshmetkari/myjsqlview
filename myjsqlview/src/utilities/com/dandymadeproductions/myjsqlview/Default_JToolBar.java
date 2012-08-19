@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 1.2 01/01/2012
+// Version 1.3 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 // Version 1.0 Original Default_JToolBar Class.
 //         1.1 Copyright Update.
 //         1.2 Copyright Update.
+//         1.3 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import javax.swing.JToolBar;
  * a tab/plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.2 01/01/2012
+ * @version 1.3 01/19/2012
  */
 
 class Default_JToolBar extends JToolBar
@@ -83,7 +84,7 @@ class Default_JToolBar extends JToolBar
       // ===============
       // Add Single Blank
       
-      blankIcon = new ImageIcon(iconsDirectory + "blankIcon.png");
+      blankIcon = MyJSQLView.getResourceBundle().getResourceImage(iconsDirectory + "blankIcon.png");
       buttonItem = new JButton(blankIcon);
       buttonItem.setBorderPainted(false);
       buttonItem.setFocusable(false);

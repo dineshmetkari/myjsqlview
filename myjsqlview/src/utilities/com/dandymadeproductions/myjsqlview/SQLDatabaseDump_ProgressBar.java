@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 08/06/2012
+// Version 2.3 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@
 //             default).
 //         2.2 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         2.3 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -56,9 +57,21 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.awt.event.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
 
 /**
  *    The SQLDatabaseDump_ProgressBar class provides the frame and
@@ -66,7 +79,7 @@ import javax.swing.*;
  * during a MyJSQLView SQL database dump.
  * 
  * @author Dana M. Proctor
- * @version 2.2 08/06/2012
+ * @version 2.3 08/19/2012
  */
 
 class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
@@ -104,7 +117,7 @@ class SQLDatabaseDump_ProgressBar extends JFrame implements ActionListener
       
       resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      sqlDatabaseDumpIcon = new ImageIcon(iconsDirectory + "sqlDatabaseDumpIcon.gif");
+      sqlDatabaseDumpIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlDatabaseDumpIcon.gif");
       
       // Begin creating the GUI.
       
