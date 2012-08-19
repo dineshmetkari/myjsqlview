@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 01/01/2012
+// Version 1.5 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,7 @@
 //         1.2 Made Class Public.
 //         1.3 Copyright Update.
 //         1.4 Copyright Update.
+//         1.5 Organized Imports.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -43,14 +44,15 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.io.File;
-import javax.swing.filechooser.*;
+
+import javax.swing.filechooser.FileFilter;
 
 /**
  *    The MyJFileFilter class provides a customer FileFilter instance to
  * be used in selecting MyJSQLView Table State Files.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/01/2012
+ * @version 1.5 08/19/2012
  */
 
 public class MyJFileFilter extends FileFilter
