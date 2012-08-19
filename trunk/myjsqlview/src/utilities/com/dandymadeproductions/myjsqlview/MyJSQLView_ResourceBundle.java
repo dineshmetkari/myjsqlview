@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 08/18/2012
+// Version 2.5 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,8 @@
 //         2.4 08/18/2012 Created the Two Argument Constructor With Caching. Output in Debug
 //                        Mode For Identifying Failed Loading of Local Image Files in Method
 //                        getResourceImage().
+//         2.5 08/19/2012 Added Class Methods getImage() & setImage(), Along With Class
+//                        Instance imagesData.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -102,7 +104,7 @@ import javax.swing.JOptionPane;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.4 08/18/2012
+ * @version 2.5 08/19/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -114,6 +116,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
    private String resourceType;
    private String cacheDirectory, cachedJAR_FileName;
    private HashMap<String, String> localeListData;
+   private HashMap<String, ImageIcon> imagesData;
 
    boolean debugMode, cacheJar;
 
@@ -270,7 +273,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
       if (resourceURL != null && imageFileName != null)
       {
          // System.out.println("Image Resource: " + resourceURL.toExternalForm());
-
+         
          try
          {
             //====
@@ -333,6 +336,23 @@ public class MyJSQLView_ResourceBundle implements Serializable
          return null;
       }
    }
+   
+   //==============================================================
+   // Class Method for allowing classes to obtain a specified
+   // image icon that has already been stored from setImage().
+   //==============================================================
+
+   public ImageIcon getImage(String imageKey)
+   {
+      if (imagesData != null && imagesData.containsKey(imageKey))
+         return imagesData.get(imageKey);
+      else
+      {
+         if (debugMode)
+            System.out.println("Failed to find image key: " + imageKey);
+         return null;
+      }
+   }
 
    //==============================================================
    // Class Method to set the locale aspects of the resource
@@ -384,6 +404,20 @@ public class MyJSQLView_ResourceBundle implements Serializable
          displayErrors("MyJSQLView_ResourceBundle setLocaleResource() \n" + "Failed to close " + resourceType
                        + " in process.\n" + ioe.toString());
       }
+   }
+   
+   //==============================================================
+   // Class Method to set images data. Allows the loading of image
+   // resources at initialization of program rather then collect
+   // as boot occurs over startup classes requests.
+   //==============================================================
+
+   public void setImage(String imageKey, String imageFileName)
+   {
+      if (imagesData == null)
+         imagesData = new HashMap<String, ImageIcon>();
+      
+      imagesData.put(imageKey, getResourceImage(imageFileName));   
    }
 
    //==============================================================
