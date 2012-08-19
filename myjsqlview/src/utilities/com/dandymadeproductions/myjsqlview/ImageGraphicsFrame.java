@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 01/01/2012
+// Version 2.0 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //         1.7 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         1.8 01/27/2011 Copyright Update.
 //         1.9 Copyright Update.
+//         2.0 08/19/2012 Organized Imports.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -47,16 +48,21 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Toolkit;
+
+import javax.swing.BorderFactory;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 /**
  * The ImageGraphicsFrame class provides a canvas/frame that can
  * be painted on to display a table item image.
  * 
  * @author Dana M. Proctor
- * @version 1.8 01/27/2011
+ * @version 2.0 08/19/2011
  */
 
 class ImageGraphicsFrame extends JFrame
