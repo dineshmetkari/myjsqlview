@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.7 01/01/2012
+// Version 1.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.5 02/18/2010 Changed Package to Reflect Dandy Made Productions Code.
 //         1.6 01/27/2011 Copyright Update.
 //         1.7 01/01/2012 Copyright Update.
+//         1.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,14 +53,13 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
-import javax.swing.ImageIcon;
 
 /**
  *    The CSVImportPreferencesFiller class provides a generic panel used in
  * the Preferences Menu CSV Import to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.7 01/01/2012
+ * @version 1.8 08/19/2012
  */
 
 class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyListener
@@ -92,27 +92,32 @@ class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyListener
    {
       // Class Instances
       Thread t;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
       // ======================================================
       // Obtaining the background image(s) and setting up as
       // needed instances values.
 
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
       // Background
-      backgroundImage = new ImageIcon("images" + fileSeparator + "csvImport_sky.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images"
+                                                        + fileSeparator + "csvImport_sky.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
       setSize(backgroundImageWidth, backgroundImageHeight);
 
       // Mountains
-      mountainsImage = new ImageIcon("images" + fileSeparator + "csvImport_wosky.png").getImage();
+      mountainsImage = resourceBundle.getResourceImage("images"
+                                                       + fileSeparator + "csvImport_wosky.png").getImage();
       mountainsImageWidth = mountainsImage.getWidth(null);
       mountainsPosition = new Point(0, 0);
       
       // Ship
-      shipImage = new ImageIcon("images" + fileSeparator + "csvImport_ship.png").getImage();
+      shipImage = resourceBundle.getResourceImage("images"
+                                                  + fileSeparator + "csvImport_ship.png").getImage();
       shipImageWidth = shipImage.getWidth(null);
       shipImageHeight = shipImage.getHeight(null);
       shipPositionHome = new Point();

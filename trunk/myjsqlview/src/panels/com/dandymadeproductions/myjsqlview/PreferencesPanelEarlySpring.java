@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.7 05/10/2012
+// Version 2.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //         2.6 01/01/2012 Copyright Update.
 //         2.7 05/10/2112 Changed Class Instance rainDrops from Vector Data Type to
 //                        ArrayList.
+//         2.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -78,7 +79,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelEarlySpring class provides a generic panel
@@ -86,7 +86,7 @@ import javax.swing.ImageIcon;
  * during the northern hemisphere's early spring months, March-Arpil.
  * 
  * @author Dana M. Proctor
- * @version 2.7 05/10/2012
+ * @version 2.8 08/19/2012
  */
 
 class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
@@ -114,24 +114,26 @@ class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
    {
       // Class Instances
       Thread t;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
       // ==========================================================
       // Obtaining the background image and setting up as
       // needed instances values.
 
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
-      backgroundImage = new ImageIcon("images" + fileSeparator 
-                                      + "PreferencesPanelEarlySpring.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator 
+                                                        + "PreferencesPanelEarlySpring.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
 
       // ===========================================================
       // Obtaing the rain drop image and setting up as needed.
 
-      rainDropImage = new ImageIcon("images" + fileSeparator 
-                                    + "raindrop.gif").getImage();
+      rainDropImage = resourceBundle.getResourceImage("images" + fileSeparator 
+                                                      + "raindrop.gif").getImage();
       rainDropImageWidth = rainDropImage.getWidth(null);
       rainDropImageHeight = rainDropImage.getHeight(null);
       rainDrops = new ArrayList <RainDrop>();

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 01/01/2012
+// Version 1.6 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //                        & paintComponent(). Removed Border Setting.
 //         1.4 01/27/2011 Copyright Update.
 //         1.5 01/01/2012 Copyright Update.
+//         1.6 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,7 +73,7 @@ import java.util.Random;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.5 01/01/2012
+ * @version 1.8 08/18/2012
  */
 
 class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -107,6 +108,7 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
    protected TopTabPanel()
    {
       // Class Instances
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
       String mainTabImageFileName;
       BufferedImage backgroundBufferedImage;
@@ -117,10 +119,13 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
 
       // Setting up as needed instances values & obtaining the
       // background image.
+      
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
       calendar = Calendar.getInstance();
       timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
+      timeOfDay = 18;
 
       // {8:00pm - 4:00am} Night
       if (timeOfDay >= 20 || timeOfDay <= 4)
@@ -135,7 +140,7 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
       else
          mainTabImageFileName = "mainTab_evening.jpg";
 
-      backgroundImage = new ImageIcon("images" + fileSeparator + mainTabImageFileName).getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator + mainTabImageFileName).getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
       

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.1 07/08/2012
+// Version 2.2 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@
 //         2.1 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         2.2 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,19 +59,30 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.util.Random;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 /**
  *    The SplashPanel class provides a startup splash panel that is used on a
  * successful login to indicate the progress of the application initialization.
  * 
  * @author Dana M. Proctor
- * @version 2.1 07/08/2012
+ * @version 2.2 08/19/2012
  */
 
 class SplashPanel extends JPanel implements Runnable
@@ -117,7 +129,8 @@ class SplashPanel extends JPanel implements Runnable
 
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       
-      backgroundImage = new ImageIcon("images" + fileSeparator + "MyJSQLView_Splash.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator
+                                                        + "MyJSQLView_Splash.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
       

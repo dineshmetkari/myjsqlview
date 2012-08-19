@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.1 01/01/2012
+// Version 1.3 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@
 // Version 1.0 09/10/2010 Original GraphicsCanvasPanel Class.
 //         1.1 01/27/2011 Copyright Update.
 //         1.2 01/01/2012 Copyright Update.
+//         1.3 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -42,14 +43,16 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Graphics;
 import java.awt.Image;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JPanel;
 
 /**
  *    The GraphicsCanvasPanel provides a generic panel used to paint a
  * supplied image as its main component.
  * 
  * @author Dana M. Proctor
- * @version 1.2 01/01/2012
+ * @version 1.3 08/19/2012
  */
 
 class GraphicsCanvasPanel extends JPanel
@@ -68,6 +71,7 @@ class GraphicsCanvasPanel extends JPanel
    public GraphicsCanvasPanel(String imageFileNameString)
    {
       // Constructor Instances
+      MyJSQLView_ResourceBundle resourceBundle = MyJSQLView.getResourceBundle();
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
       
       // Setting up the panel stuff.
@@ -76,7 +80,8 @@ class GraphicsCanvasPanel extends JPanel
 
       // Obtaining the image and setting up as needed
       // instances values.
-      backgroundImage = new ImageIcon("images" + fileSeparator + imageFileNameString).getImage();
+      backgroundImage = resourceBundle.getResourceImage("images"
+                                                        + fileSeparator + imageFileNameString).getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
    }

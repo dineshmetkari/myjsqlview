@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.3 05/07/2012
+// Version 5.4 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,7 @@
 //             & setSelectedTableTabPanel().
 //         5.3 Constructor Argument tableNames & Same for reloadPanel() Changed
 //             Data Type from Vector to ArrayList.
+//         5.4 Collection of All Image Resources Through resourceBundle.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -138,10 +139,11 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -157,7 +159,7 @@ import javax.swing.JTextField;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.3 05/07/2012
+ * @version 5.4 08/19/2012
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -192,15 +194,17 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // Constructor Instances
       ImageIcon statusIdleIcon, statusWorkingIcon, sqlQueryBucketIcon;
       JPanel statusControlPanel, statusPanel;
+      MyJSQLView_ResourceBundle resourceBundle;
       String iconsDirectory, tableName;
 
       // Initializing & setting up the panel.
       
+      resourceBundle = MyJSQLView.getResourceBundle();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       
-      statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
-      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
-      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "addSQLQueryIcon.png");
+      statusIdleIcon = resourceBundle.getResourceImage(iconsDirectory + "statusIdleIcon.png");
+      statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
+      sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "addSQLQueryIcon.png");
       
       setLayout(new BorderLayout());
       

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.92 07/08/2012
+// Version 4.93 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,7 @@
 //        4.92 07/07/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//        4.93 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -220,7 +221,7 @@ import javax.swing.JTextField;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.92 07/08/2012
+ * @version 4.93 08/19/2012
  */
 
 class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -364,7 +365,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Help
       helpPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
-      questionIcon = new ImageIcon(iconsDirectory + "bulbIcon.png");
+      questionIcon = resourceBundle.getResourceImage(iconsDirectory + "bulbIcon.png");
       questionButton = new JButton(questionIcon);
       questionButton.setFocusPainted(false);
       questionButton.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -434,7 +435,7 @@ class AdvancedSortSearchForm extends JFrame implements ActionListener
       clearPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
       // Clear Button
-      clearIcon = new ImageIcon(iconsDirectory + "deleteIcon.png");
+      clearIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteIcon.png");
       clearButton = new JButton(clearIcon);
       clearButton.setFocusPainted(false);
       clearButton.setBorder(BorderFactory.createRaisedBevelBorder());
