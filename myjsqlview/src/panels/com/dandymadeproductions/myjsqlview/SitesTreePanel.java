@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 4.6 08/06/2012
+// Version 4.7 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,7 @@
 //             default).
 //         4.6 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         4.7 Collection of All Image Resources Through resourceBundle.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -105,11 +106,19 @@ package com.dandymadeproductions.myjsqlview;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
-import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextField;
+import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -127,7 +136,7 @@ import javax.swing.tree.TreeSelectionModel;
  * site connections and associated parameters.
  * 
  * @author Dana M. Proctor
- * @version 4.6 08/06/2012
+ * @version 4.7 08/19/2012
  */
 
 class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
@@ -180,7 +189,7 @@ class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionL
       sitesTree.setShowsRootHandles(true);
 
       // Setting the leaf icon for nodes.
-      ImageIcon leafIcon = new ImageIcon(iconsDirectory + "newsiteLeafIcon.png");
+      ImageIcon leafIcon = resourceBundle.getResourceImage(iconsDirectory + "newsiteLeafIcon.png");
       if (leafIcon != null)
       {
          DefaultTreeCellRenderer renderer = new DefaultTreeCellRenderer();

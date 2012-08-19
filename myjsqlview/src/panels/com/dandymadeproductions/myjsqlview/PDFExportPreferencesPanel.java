@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.2 07/08/2012
+// Version 2.3 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@
 //         2.2 07/08/2012 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
+//         2.3 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,14 +69,25 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.awt.Color;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -84,7 +96,7 @@ import javax.swing.event.ChangeListener;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 2.2 07/08/2012
+ * @version 2.3 08/19/2012
  */
 
 class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -493,7 +505,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
       gridbag.setConstraints(titleColorLabel, constraints);
       titlePanel.add(titleColorLabel);
 
-      titleColorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
+      titleColorButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                     + "transparentUpIcon.png"));
       titleColorButton.setActionCommand("Title Color");
       titleColorButton.setBackground(DEFAULT_COLOR);
       titleColorButton.setFocusable(false);
@@ -560,7 +573,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Color
 
-      headerColorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
+      headerColorButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                      + "transparentUpIcon.png"));
       headerColorButton.setActionCommand("Header Color");
       headerColorButton.setBackground(Color.BLACK);
       headerColorButton.setFocusable(false);
@@ -599,7 +613,8 @@ class PDFExportPreferencesPanel extends JPanel implements ActionListener, Change
 
       // Header Border Color
 
-      headerBorderColorButton = new JButton(new ImageIcon(iconsDirectory + "transparentUpIcon.png"));
+      headerBorderColorButton = new JButton(resourceBundle.getResourceImage(iconsDirectory
+                                                                            + "transparentUpIcon.png"));
       headerBorderColorButton.setActionCommand("Border Color");
       headerBorderColorButton.setBackground(DEFAULT_COLOR);
       headerBorderColorButton.setFocusable(false);

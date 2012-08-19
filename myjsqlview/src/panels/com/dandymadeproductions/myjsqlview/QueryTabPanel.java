@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.7 08/10/2012
+// Version 9.8 09/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -228,6 +228,7 @@
 //             default).
 //         9.7 Closure for db_resultSet in getColumnNames() & viewSelectedItem()
 //             Moved to finally.
+//         9.8 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -236,7 +237,11 @@
 package com.dandymadeproductions.myjsqlview;
 
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.math.BigDecimal;
@@ -246,10 +251,11 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.StringTokenizer;
-import java.util.ArrayList;
+
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 
@@ -259,7 +265,7 @@ import javax.swing.table.TableColumn;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.7 08/10/2012
+ * @version 9.8 08/19/2012
  */
 
 class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -365,17 +371,17 @@ class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Print
       validQuery = false;
       ascDescString = "ASC";
 
-      ascUpIcon = new ImageIcon(iconsDirectory + "ascUpIcon.png");
-      ascDownIcon = new ImageIcon(iconsDirectory + "ascDownIcon.png");
-      descUpIcon = new ImageIcon(iconsDirectory + "descUpIcon.png");
-      descDownIcon = new ImageIcon(iconsDirectory + "descDownIcon.png");
-      searchIcon = new ImageIcon(iconsDirectory + "searchIcon.png");
-      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
-      advancedSortSearchIcon = new ImageIcon(iconsDirectory + "advancedSortSearchIcon.gif");
-      previousViewIcon = new ImageIcon(iconsDirectory + "previousViewIcon.png");
-      nextViewIcon = new ImageIcon(iconsDirectory + "nextViewIcon.png");
-      previousTableRowsIcon = new ImageIcon(iconsDirectory + "previousTableRowsIcon.png");
-      nextTableRowsIcon = new ImageIcon(iconsDirectory + "nextTableRowsIcon.png");
+      ascUpIcon = resourceBundle.getResourceImage(iconsDirectory + "ascUpIcon.png");
+      ascDownIcon = resourceBundle.getResourceImage(iconsDirectory + "ascDownIcon.png");
+      descUpIcon = resourceBundle.getResourceImage(iconsDirectory + "descUpIcon.png");
+      descDownIcon = resourceBundle.getResourceImage(iconsDirectory + "descDownIcon.png");
+      searchIcon = resourceBundle.getResourceImage(iconsDirectory + "searchIcon.png");
+      removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
+      advancedSortSearchIcon = resourceBundle.getResourceImage(iconsDirectory + "advancedSortSearchIcon.gif");
+      previousViewIcon = resourceBundle.getResourceImage(iconsDirectory + "previousViewIcon.png");
+      nextViewIcon = resourceBundle.getResourceImage(iconsDirectory + "nextViewIcon.png");
+      previousTableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "previousTableRowsIcon.png");
+      nextTableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "nextTableRowsIcon.png");
 
       // General Panel Configurations
       setLayout(new BorderLayout());

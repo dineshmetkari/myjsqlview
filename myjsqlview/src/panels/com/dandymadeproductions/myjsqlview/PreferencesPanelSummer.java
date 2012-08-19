@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.3 05/10/2012
+// Version 3.4 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -71,6 +71,7 @@
 //         3.2 01/01/2012 Copyright Update.
 //         3.3 05/10/2112 Changed Class Instance fireFlies from Vector Data Type to
 //                        ArrayList.
+//         3.4 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -85,7 +86,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelSummer class provides a generic panel used in the
@@ -93,7 +93,7 @@ import javax.swing.ImageIcon;
  * hemisphere's summer months, July-September.
  * @author Dana M. Proctor
  * 
- * @version 3.3 05/10/2012
+ * @version 3.4 08/19/2012
  */
 
 class PreferencesPanelSummer extends PreferencesPanel implements Runnable
@@ -121,6 +121,7 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
    {
       // Class Instances
       Thread t;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
       String[] fireFlyImageName = {"red_firefly.gif", "green_firefly.gif", "blue_firefly.gif",
                                    "yellow_firefly.gif", "purple_firefly.gif", "white_firefly.gif"};
@@ -129,9 +130,11 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // Obtaining the background image and setting up as
       // needed instances values.
 
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
-      backgroundImage = new ImageIcon("images" + fileSeparator + "PreferencesPanelSummer.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator
+                                                        + "PreferencesPanelSummer.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
 
@@ -139,7 +142,8 @@ class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       // Obtaing the firefly images and setting up as needed.
 
       for (int i = 0; i < fireFlyColors; i++)
-         fireFlyImages[i] = new ImageIcon("images" + fileSeparator + fireFlyImageName[i]).getImage();
+         fireFlyImages[i] = resourceBundle.getResourceImage("images" + fileSeparator
+                                                            + fireFlyImageName[i]).getImage();
       fireFlyImageWidth = fireFlyImages[0].getWidth(null);
       fireFlyImageHeight = fireFlyImages[0].getHeight(null);
       fireFlies = new ArrayList <FireFly>();

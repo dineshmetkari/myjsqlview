@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.7 01/01/2012
+// Version 3.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //             indexOf.
 //         3.6 Added developersNames/Titles iText Library & FreeFont.
 //         3.7 Copyright Update.
+//         3.8 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,7 +86,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Line2D;
-import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 /**
@@ -94,7 +94,7 @@ import javax.swing.JPanel;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.7 01/01/2012
+ * @version 3.8 08/19/2012
  */
 
 class CreditsPanel extends JPanel implements Runnable
@@ -128,6 +128,7 @@ class CreditsPanel extends JPanel implements Runnable
       this.myJSQLView_Version = myJSQLView_Version;
       this.webSiteString = webSiteString;
 
+      MyJSQLView_ResourceBundle resourceBundle = MyJSQLView.getResourceBundle();
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
       String dataSourceType = ConnectionManager.getDataSourceType();
       
@@ -136,19 +137,26 @@ class CreditsPanel extends JPanel implements Runnable
       // Get the corresponding background image.
 
       if (dataSourceType.equals(ConnectionManager.MYSQL))
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "dolphin.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "dolphin.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "elephant.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "elephant.jpg")).getImage();
       else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "spiral.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "spiral.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.ORACLE))
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "letterO.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "letterO.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.SQLITE))
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "feather.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "feather.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "key.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "key.jpg")).getImage();
       else
-         backgroundImage = (new ImageIcon("images" + fileSeparator + "battleship.jpg")).getImage();
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "battleship.jpg")).getImage();
 
       Thread t = new Thread(this, "Credits");
       t.start();

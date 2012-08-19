@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.93 08/06/2012
+// Version 8.94 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -359,6 +359,7 @@
 //                        default).
 //        8.93 08/06/2012 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //                        to getResourceBundle().
+//        8.94 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -366,8 +367,8 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -375,15 +376,25 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileReader;
+import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
+
 import javax.sql.rowset.serial.SerialBlob;
 import javax.swing.*;
 
@@ -392,7 +403,7 @@ import javax.swing.*;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.93 08/06/2012
+ * @version 8.94 08/19/2012
  */
 
 class TableEntryForm extends JFrame implements ActionListener
@@ -527,11 +538,11 @@ class TableEntryForm extends JFrame implements ActionListener
       formPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       formPanel.addMouseListener(MyJSQLView.getPopupMenuListener());
 
-      removeUpIcon = new ImageIcon(iconsDirectory + "removeNotIcon.png");
-      removeDownIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
-      functionIcon = new ImageIcon(iconsDirectory + "functionIcon.png");
-      calendarIcon = new ImageIcon(iconsDirectory + "calendarIcon.png");
-      setIcon = new ImageIcon(iconsDirectory + "setIcon.png");
+      removeUpIcon = resourceBundle.getResourceImage(iconsDirectory + "removeNotIcon.png");
+      removeDownIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
+      functionIcon = resourceBundle.getResourceImage(iconsDirectory + "functionIcon.png");
+      calendarIcon = resourceBundle.getResourceImage(iconsDirectory + "calendarIcon.png");
+      setIcon = resourceBundle.getResourceImage(iconsDirectory + "setIcon.png");
 
       // Start Position for components
       int x = 15;
@@ -2374,7 +2385,7 @@ class TableEntryForm extends JFrame implements ActionListener
       functionsComboBox = new JComboBox(functions.toArray());
       functionsComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       Object[] content = {functionsComboBox};
-      functionsPaletteIcon = new ImageIcon(iconsDirectory + "functionsPaletteIcon.gif");
+      functionsPaletteIcon = resourceBundle.getResourceImage(iconsDirectory + "functionsPaletteIcon.gif");
 
       title = resourceBundle.getResourceString("TableEntryForm.dialogtitle.FunctionSelection",
                                                   "Function Selection");

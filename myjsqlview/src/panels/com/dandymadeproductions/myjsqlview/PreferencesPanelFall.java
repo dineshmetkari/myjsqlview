@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.6 05/10/2012
+// Version 2.7 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@
 //         2.5 01/01/2012 Copyright Update.
 //         2.6 05/10/2112 Changed Class Instance leafs from Vector Data Type to
 //                        ArrayList.
+//         2.7 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -74,7 +75,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelFall class provides a generic panel used
@@ -82,7 +82,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's fall months, October-November.
  * 
  * @author Dana M. Proctor
- * @version 2.6 05/10/2012
+ * @version 2.7 08/19/2012
  */
 
 class PreferencesPanelFall extends PreferencesPanel implements Runnable
@@ -111,6 +111,7 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
    {
       // Class Instances
       Thread t;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
       String[] leafImageName = {"red_leaf.gif", "orange_leaf.gif", "tan_leaf.gif",
                                 "red2_leaf.gif", "yellow_leaf.gif"};
@@ -119,9 +120,11 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // Obtaining the background image and setting up as
       // needed instances values.
       
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
-      backgroundImage = new ImageIcon("images" + fileSeparator + "PreferencesPanelFall.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator
+                                                        + "PreferencesPanelFall.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
 
@@ -129,7 +132,8 @@ class PreferencesPanelFall extends PreferencesPanel implements Runnable
       // Obtaing the leaf images and setting up as needed.
 
       for (int i = 0; i < leafColors; i++)
-         leafImages[i] = new ImageIcon("images" + fileSeparator + leafImageName[i]).getImage();
+         leafImages[i] = resourceBundle.getResourceImage("images" + fileSeparator
+                                                         + leafImageName[i]).getImage();
       leafImageWidth = leafImages[0].getWidth(null);
       leafImageHeight = leafImages[0].getHeight(null);
       leafs = new ArrayList <Leaf>();

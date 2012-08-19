@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.10 08/09/2012
+// Version 5.11 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,6 +237,7 @@
 //        5.09 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
 //        5.10 Closure for db_resultSet in setSpecialFieldData() Moved to finally.
+//        5.11 Collection of All Image Resources Through resourceBundle.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -247,7 +248,11 @@ package com.dandymadeproductions.myjsqlview;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
 import java.io.IOException;
@@ -260,6 +265,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
@@ -274,7 +280,7 @@ import javax.swing.table.TableColumn;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.10 08/09/2012
+ * @version 5.11 08/19/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -428,22 +434,22 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       settingState = false;
       ascDescString = "ASC";
 
-      previousStateIcon = new ImageIcon(iconsDirectory + "previousStateIcon.png");
-      nextStateIcon = new ImageIcon(iconsDirectory + "nextStateIcon.png");
-      ascUpIcon = new ImageIcon(iconsDirectory + "ascUpIcon.png");
-      ascDownIcon = new ImageIcon(iconsDirectory + "ascDownIcon.png");
-      descUpIcon = new ImageIcon(iconsDirectory + "descUpIcon.png");
-      descDownIcon = new ImageIcon(iconsDirectory + "descDownIcon.png");
-      searchIcon = new ImageIcon(iconsDirectory + "searchIcon.png");
-      removeIcon = new ImageIcon(iconsDirectory + "removeIcon.png");
-      advancedSortSearchIcon = new ImageIcon(iconsDirectory + "advancedSortSearchIcon.gif");
-      updateIcon = new ImageIcon(iconsDirectory + "updateIcon.gif");
-      previousViewIcon = new ImageIcon(iconsDirectory + "previousViewIcon.png");
-      nextViewIcon = new ImageIcon(iconsDirectory + "nextViewIcon.png");
-      refreshIcon = new ImageIcon(iconsDirectory + "refreshIcon.png");
-      previousTableRowsIcon = new ImageIcon(iconsDirectory + "previousTableRowsIcon.png");
-      nextTableRowsIcon = new ImageIcon(iconsDirectory + "nextTableRowsIcon.png");
-      deleteDataIcon = new ImageIcon(iconsDirectory + "deleteDataIcon.gif");
+      previousStateIcon = resourceBundle.getResourceImage(iconsDirectory + "previousStateIcon.png");
+      nextStateIcon = resourceBundle.getResourceImage(iconsDirectory + "nextStateIcon.png");
+      ascUpIcon = resourceBundle.getResourceImage(iconsDirectory + "ascUpIcon.png");
+      ascDownIcon = resourceBundle.getResourceImage(iconsDirectory + "ascDownIcon.png");
+      descUpIcon = resourceBundle.getResourceImage(iconsDirectory + "descUpIcon.png");
+      descDownIcon = resourceBundle.getResourceImage(iconsDirectory + "descDownIcon.png");
+      searchIcon = resourceBundle.getResourceImage(iconsDirectory + "searchIcon.png");
+      removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
+      advancedSortSearchIcon = resourceBundle.getResourceImage(iconsDirectory + "advancedSortSearchIcon.gif");
+      updateIcon = resourceBundle.getResourceImage(iconsDirectory + "updateIcon.gif");
+      previousViewIcon = resourceBundle.getResourceImage(iconsDirectory + "previousViewIcon.png");
+      nextViewIcon = resourceBundle.getResourceImage(iconsDirectory + "nextViewIcon.png");
+      refreshIcon = resourceBundle.getResourceImage(iconsDirectory + "refreshIcon.png");
+      previousTableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "previousTableRowsIcon.png");
+      nextTableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "nextTableRowsIcon.png");
+      deleteDataIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteDataIcon.gif");
 
       // General Panel Configurations
       setLayout(new BorderLayout());

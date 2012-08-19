@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.7 08/11/2012
+// Version 4.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -126,6 +126,7 @@
 //                        default).
 //         4.7 08/11/2012 Class Method updateTable() Just Create Error Without Assigning to
 //                        timeValue. Also Closing of sqlStatement & db_resultSet Done in finally.
+//         4.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -133,7 +134,12 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -147,18 +153,29 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 /**
  *    This class provides a generic form that is used by each TableTabPanel to
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.7 08/11/2012
+ * @version 4.8 08/19/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -248,9 +265,9 @@ class UpdateForm extends JFrame implements ActionListener
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
 
-      statusIdleIcon = new ImageIcon(iconsDirectory + "statusIdleIcon.png");
-      statusWorkingIcon = new ImageIcon(iconsDirectory + "statusWorkingIcon.png");
-      deleteDataIcon = new ImageIcon(iconsDirectory + "deleteDataIcon.gif");
+      statusIdleIcon = resourceBundle.getResourceImage(iconsDirectory + "statusIdleIcon.png");
+      statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
+      deleteDataIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteDataIcon.gif");
       
       whereComboBox = new JComboBox[updateFormExpressionNumber];
       operatorComboBox = new JComboBox[updateFormExpressionNumber];
@@ -327,7 +344,7 @@ class UpdateForm extends JFrame implements ActionListener
       // Help
       helpPanel = new JPanel(new FlowLayout(FlowLayout.TRAILING));
 
-      questionIcon = new ImageIcon(iconsDirectory + "bulbIcon.png");
+      questionIcon = resourceBundle.getResourceImage(iconsDirectory + "bulbIcon.png");
       questionButton = new JButton(questionIcon);
       questionButton.setFocusPainted(false);
       questionButton.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -395,7 +412,7 @@ class UpdateForm extends JFrame implements ActionListener
       clearPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
       // Clear Button
-      clearIcon = new ImageIcon(iconsDirectory + "deleteIcon.png");
+      clearIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteIcon.png");
       clearButton = new JButton(clearIcon);
       clearButton.setFocusPainted(false);
       clearButton.setBorder(BorderFactory.createRaisedBevelBorder());

@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.7 05/10/2012
+// Version 2.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,8 +61,9 @@
 //         2.4 11/15/2010 Changed paintComponent() to public and drawPanel() to private.
 //         2.5 01/27/2011 Copyright Update.
 //         2.6 01/01/2012 Copyright Update.
-//         2.7 05/10/2112 Changed Class Instance snowFlakes from Vector Data Type to
+//         2.7 05/10/2012 Changed Class Instance snowFlakes from Vector Data Type to
 //                        ArrayList.
+//         2.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +78,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.util.Random;
 import java.util.ArrayList;
-import javax.swing.ImageIcon;
 
 /**
  *    The PreferencesPanelWinter class provides a generic panel used
@@ -85,7 +85,7 @@ import javax.swing.ImageIcon;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.7 05/10/2012
+ * @version 2.8 08/19/2012
  */
 
 class PreferencesPanelWinter extends PreferencesPanel implements Runnable
@@ -113,24 +113,26 @@ class PreferencesPanelWinter extends PreferencesPanel implements Runnable
    {
       // Class Instances
       Thread t;
+      MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
       // ==========================================================
       // Obtaining the background image and setting up as
       // needed instances values.
 
+      resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
-      backgroundImage = new ImageIcon("images" + fileSeparator 
-                                      + "PreferencesPanelWinter.jpg").getImage();
+      backgroundImage = resourceBundle.getResourceImage("images" + fileSeparator 
+                                                        + "PreferencesPanelWinter.jpg").getImage();
       backgroundImageWidth = backgroundImage.getWidth(null);
       backgroundImageHeight = backgroundImage.getHeight(null);
 
       // ===========================================================
       // Obtaing the snowflake image and setting up as needed.
 
-      snowFlakeImage = new ImageIcon("images" + fileSeparator 
-                                     + "snowflake.gif").getImage();
+      snowFlakeImage = resourceBundle.getResourceImage("images" + fileSeparator 
+                                                       + "snowflake.gif").getImage();
       snowFlakeImageWidth = snowFlakeImage.getWidth(null);
       snowFlakeImageHeight = snowFlakeImage.getHeight(null);
       

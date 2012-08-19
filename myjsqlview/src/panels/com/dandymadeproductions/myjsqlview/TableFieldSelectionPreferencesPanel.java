@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 4.7 07/08/2012
+// Version 4.8 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,7 @@
 //         4.7 Changes in Way MyJSQLView_ResourceBundle Handles the Collection
 //             of Resource Strings. Change to resource.getResourceString(key,
 //             default).
+//         4.8 Collection of All Image Resources Through resourceBundle.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -133,7 +134,7 @@ import javax.swing.JScrollPane;
  * display in the MyJSQLView TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 4.7 07/08/2012
+ * @version 4.8 08/19/2012
  */
 
 class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListener, ItemListener
@@ -172,8 +173,8 @@ class TableFieldSelectionPreferencesPanel extends JPanel implements ActionListen
       checkBoxesHashMap = new HashMap <String, JCheckBox>();
       
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      keyUpIcon = new ImageIcon(iconsDirectory + "keyUpIcon.png");
-      keyDownIcon = new ImageIcon(iconsDirectory + "keyDownIcon.png");
+      keyUpIcon = resourceBundle.getResourceImage(iconsDirectory + "keyUpIcon.png");
+      keyDownIcon = resourceBundle.getResourceImage(iconsDirectory + "keyDownIcon.png");
       
       // Setting up table column names' checkboxes that will be used
       // to select the desired tabel fields to be displayed.
