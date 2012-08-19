@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.5 08/06/2012
+// Version 2.6 08/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             default).
 //         2.5 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
+//         2.6 Orgnized Imports.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -60,9 +61,17 @@
 
 package com.dandymadeproductions.myjsqlview;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.ArrayList;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -76,7 +85,7 @@ import javax.swing.ListSelectionModel;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.5 08/06/2012
+ * @version 2.6 08/19/2012
  */
 
 class SetListDialog extends JFrame implements ActionListener
