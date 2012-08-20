@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 05/07/2012
+// Version 2.7 08/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,8 @@
 //         2.5 Copyright Update.
 //         2.6 Changed Argument Requirement tableNames in setDBTables to Data Type
 //             ArrayList from Vector.
+//         2.7 Added Class Instance description. Set getPath_FileName() public &
+//             Added Method getDescription().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +79,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.6 05/07/2012
+ * @version 2.7 08/20/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -85,7 +87,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Class Instances.
    //protected MyJSQLView_Frame parent;
    private String pathFileName;
-   protected String name, version;
+   protected String name, version, description;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
    protected JToolBar toolBar;
@@ -106,6 +108,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       toolBar = null;
       panel = null;
       version = null;
+      description = null;
    }
    
    //==============================================================
@@ -125,7 +128,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Class methods to get/set the plugin's file name.
    //==============================================================
    
-   protected String getPath_FileName()
+   public String getPath_FileName()
    {
       return pathFileName;
    }
@@ -195,6 +198,16 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
 
    public String getVersion()
+   {
+      return null;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's description.
+   // Interface requirement.
+   //==============================================================
+
+   public String getDescription()
    {
       return null;
    }
