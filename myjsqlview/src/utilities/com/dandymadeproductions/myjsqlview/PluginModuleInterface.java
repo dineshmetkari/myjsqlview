@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 05/07/2012
+// Version 1.8 08/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.6 Copyright Update.
 //         1.7 Interface setDBTables() Changed to Have Argument tables to
 //             be a ArrayList Instead of Vector.
+//         1.8 Added Interface getPath_FileName() & getDescription().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import java.util.ArrayList;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/07/2012
+ * @version 1.8 08/20/2012
  */
 
 public interface PluginModuleInterface
@@ -70,6 +71,13 @@ public interface PluginModuleInterface
    //==============================================================
 
    void initPlugin(MyJSQLView_Frame mainFrame, String path);
+   
+   //==============================================================
+   // Class method to allow the collection of the path and file
+   // name that was used to for the plugin.
+   //==============================================================
+   
+   String getPath_FileName();
    
    //==============================================================
    // Class method to allow the collection of a name that will be
@@ -115,6 +123,12 @@ public interface PluginModuleInterface
    //==============================================================
    
    String getVersion();
+   
+   //==============================================================
+   // Class method to return the description of the plugin module.
+   //==============================================================
+   
+   String getDescription();
    
    //==============================================================
    // Class method to allow the setting the database tables.
