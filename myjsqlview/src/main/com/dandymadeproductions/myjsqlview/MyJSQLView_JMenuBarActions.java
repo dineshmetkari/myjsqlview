@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.42 08/18/2012
+// Version 7.43 08/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -270,6 +270,8 @@
 //        7.41 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
 //        7.42 Collection of All Image Resources Through resourceBundle.
+//        7.43 Action ACTION_PLUGIN_MANAGEMENT Made managePluginPreferences Resizable
+//             & Set Inital Size to 750x450.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -314,7 +316,7 @@ import javax.swing.JTable;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.42 08/18/2012
+ * @version 7.43 08/20/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -522,8 +524,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       {
          // Showing the Edit Preferences Frame.
          PluginFrame managePluginPreferences = new PluginFrame(parent);
-         managePluginPreferences.setSize(605, 405);
-         managePluginPreferences.setResizable(false);
+         managePluginPreferences.setSize(750, 450);
          managePluginPreferences.center();
          managePluginPreferences.setVisible(true);
          pluginFrameVisible = true;
