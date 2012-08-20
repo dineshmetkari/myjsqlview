@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 08/19/2012
+// Version 2.6 08/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //                        getResourceImage().
 //         2.5 08/19/2012 Added Class Methods getImage() & setImage(), Along With Class
 //                        Instance imagesData.
+//         2.6 08/20/2012 Change in Constructor boolean Argument cacheJar to Just cache.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -104,7 +105,7 @@ import javax.swing.JOptionPane;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.5 08/19/2012
+ * @version 2.6 08/20/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -147,13 +148,13 @@ public class MyJSQLView_ResourceBundle implements Serializable
       this(resourceURLString, true);
    }
    
-   public MyJSQLView_ResourceBundle(String resourceURLString, boolean cacheJar)
+   public MyJSQLView_ResourceBundle(String resourceURLString, boolean cache)
    {
       // Setup to process.
 
       cacheDirectory = MyJSQLView_Utils.getCacheDirectory();
       debugMode = MyJSQLView.getDebug();
-      this.cacheJar = cacheJar;
+      cacheJar = cache;
 
       // Yea, nothing here move on.
 
