@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 6.11 05/07/2012
+// Version 6.12 08/27/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -133,6 +133,7 @@
 //        6.10 Moved Class Instance limitIncrement to Method run().
 //        6.11 Class Instance columnNameFields & Same in Constructor Argument Data
 //             Type Change from Vector to ArrayList.
+//        6.12 Class Method run() Closing of dbResultSet & sqlStatement in finally.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -161,7 +162,7 @@ import javax.swing.JOptionPane;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.11 05/07/2012
+ * @version 6.12 08/27/2012
  */
 
 class DataDumpThread implements Runnable
@@ -302,6 +303,9 @@ class DataDumpThread implements Runnable
       
       // Have a connection, file to write to and columns so begin
       // dumping data.
+      
+      sqlStatement = null;
+      dbResultSet = null;
       
       try
       {
@@ -554,8 +558,6 @@ class DataDumpThread implements Runnable
          }
          while (currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
          
-         dbResultSet.close();
-         sqlStatement.close();
          dumpProgressBar.dispose();
          ConnectionManager.closeConnection(db_Connection, "DataDumpThread run()");
       }
@@ -564,6 +566,32 @@ class DataDumpThread implements Runnable
          dumpProgressBar.dispose();
          ConnectionManager.displaySQLErrors(e, "DataDumpThread run()");
          ConnectionManager.closeConnection(db_Connection, "DataDumpThread run()");
+      }
+      finally
+      {
+         try
+         {
+            if (dbResultSet != null)
+               dbResultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "DataDumpThread run() failed closing result set");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "DataDumpThread run() failed closing sql statement");
+            }
+         }
       }
    }
    
