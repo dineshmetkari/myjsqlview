@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.5 08/10/2012
+// Version 3.6 08/27/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,8 @@
 //             from Vector to ArrayList.
 //         3.5 Closure for ResultSet, rs, in run() & createColumnsSQLQuery() Moved to
 //             finally.
+//         3.6 Class Method run() Removal of Redundant Closing of rs & sqlStatement
+//             Before finally.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -107,7 +109,7 @@ import javax.swing.JProgressBar;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.5 08/10/2012
+ * @version 3.6 08/27/2012
  */
 
 class SearchDatabaseThread implements Runnable
@@ -256,8 +258,6 @@ class SearchDatabaseThread implements Runnable
                      if (resultCount > 0)
                         resultsCount++;
                   }
-                  rs.close();
-                  sqlStatement.close();
                }
                catch (SQLException e)
                {
