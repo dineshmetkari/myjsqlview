@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.43 08/20/2012
+// Version 7.44 08/27/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -272,6 +272,8 @@
 //        7.42 Collection of All Image Resources Through resourceBundle.
 //        7.43 Action ACTION_PLUGIN_MANAGEMENT Made managePluginPreferences Resizable
 //             & Set Inital Size to 750x450.
+//        7.44 Class Method flushPriviledges() Moved Closing of db_resultSet to
+//             finally. Initialized flushSuccess to false.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -316,7 +318,7 @@ import javax.swing.JTable;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.43 08/20/2012
+ * @version 7.44 08/27/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1198,13 +1200,17 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Get Connection to Database.
       Connection dbConnection = ConnectionManager.getConnection(
          "MyJSQLView_JMenuBarActions.flushPrivileges()");
-      mysqlStatement = null;
       
       if (dbConnection == null)
          return false;
 
       // Connecting to the data base, to obtain
       // the selected entry.
+      
+      mysqlStatement = null;
+      db_resultSet = null;
+      flushSuccess = false;
+      
       try
       {
          // Begin the SQL statement creation.
@@ -1221,12 +1227,23 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       catch (SQLException e)
       {
          ConnectionManager.displaySQLErrors(e, "MyJSQLView_JMenuBarActions.flushPrivileges()");
-         flushSuccess = false;
       }
       finally
       {
-         if (mysqlStatement != null)
-            mysqlStatement.close();
+         try
+         {
+            if (mysqlStatement != null)
+               mysqlStatement.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "MyJSQLView_JMenuBarActions.flushPrivileges()");
+         }
+         finally
+         {
+            if (db_resultSet != null)
+               db_resultSet.close();
+         }
       }
 
       ConnectionManager.closeConnection(dbConnection, "MyJSQLView_JMenuBarActions.flushPrivileges()");
