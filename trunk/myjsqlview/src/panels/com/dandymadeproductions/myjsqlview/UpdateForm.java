@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.8 08/19/2012
+// Version 4.9 08/27/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -127,6 +127,8 @@
 //         4.7 08/11/2012 Class Method updateTable() Just Create Error Without Assigning to
 //                        timeValue. Also Closing of sqlStatement & db_resultSet Done in finally.
 //         4.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
+//         4.9 08/27/2012 Class Method updateTable() Correction in Removing Closing db_resultSet
+//                        Prematurely Before Finally.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -175,7 +177,7 @@ import javax.swing.JTextField;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 4.8 08/19/2012
+ * @version 4.9 08/27/2012
  */
 
 class UpdateForm extends JFrame implements ActionListener
@@ -805,8 +807,6 @@ class UpdateForm extends JFrame implements ActionListener
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
          db_resultSet.next();
          updateRowCount = db_resultSet.getInt(1);
-         db_resultSet.close();
-         sqlStatement.close();
 
          // Show dialog as needed.
          if (updateRowCount != 0)
@@ -1071,7 +1071,6 @@ class UpdateForm extends JFrame implements ActionListener
                
                // Proceed with execution and finish up.
                // System.out.println(sqlStatementString);
-               sqlStatement.close();
                sqlStatement.executeUpdate(sqlStatementString);
                dbConnection.commit();
                dbConnection.setAutoCommit(true);
