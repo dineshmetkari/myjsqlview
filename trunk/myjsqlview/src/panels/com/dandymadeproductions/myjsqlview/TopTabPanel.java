@@ -125,7 +125,6 @@ class TopTabPanel extends JPanel implements MouseListener, Runnable
 
       calendar = Calendar.getInstance();
       timeOfDay = calendar.get(Calendar.HOUR_OF_DAY);
-      timeOfDay = 18;
 
       // {8:00pm - 4:00am} Night
       if (timeOfDay >= 20 || timeOfDay <= 4)
