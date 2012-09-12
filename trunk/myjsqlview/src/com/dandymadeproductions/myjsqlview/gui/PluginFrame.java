@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 09/11/2012
+// Version 2.2 09/12/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,7 @@
 //         2.1 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //             Beginning of Complete Rebuild to Allow Use of External,
 //             Non-Local Repositories.
+//         2.2 PluginRepositoryPanel Referenced From panels Package.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -103,13 +104,13 @@ import javax.swing.table.TableColumn;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.gui.panels.PluginFrameFillerPanel;
+import com.dandymadeproductions.myjsqlview.gui.panels.PluginRepositoryPanel;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.plugin.FILE_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.HTTP_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.plugin.PluginLoader;
 import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
-import com.dandymadeproductions.myjsqlview.plugin.PluginRepositoryPanel;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
 import com.dandymadeproductions.myjsqlview.utilities.JarFileFilter;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
@@ -121,7 +122,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.1 09/11/2012
+ * @version 2.2 09/12/2012
  */
 
 //=================================================================
