@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 1999-2012 Dana M. Proctor
-// Version 2.5 08/18/2012
+// Version 2.6 09/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,12 +51,13 @@
 //         2.3 Made Class, Constructor, Method center() public.
 //         2.4 Copyright Update.
 //         2.5 Organized Imports.
+//         2.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
-package com.dandymadeproductions.myjsqlview;
+package com.dandymadeproductions.myjsqlview.gui;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
@@ -82,7 +83,7 @@ import javax.swing.event.HyperlinkListener;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.5 08/18/2012
+ * @version 2.6 09/11/2012
  */
 
 public class HelpFrame extends JFrame
