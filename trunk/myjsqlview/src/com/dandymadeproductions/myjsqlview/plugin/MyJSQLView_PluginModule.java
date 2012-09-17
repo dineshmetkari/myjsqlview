@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.8 09/12/2012
+// Version 2.9 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,7 @@
 //         2.8 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //             Added Class Method setName(). Changed Getter Methods to Return the
 //             Appropriate Class Instance Instead of Null.
+//         2.9 Correction of Class Method setname() to setName().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -82,7 +83,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.8 09/12/2012
+ * @version 2.9 09/17/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -151,7 +152,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return name;
    }
    
-   public void setname(String content)
+   public void setName(String content)
    {
       this.name = content;
    }
