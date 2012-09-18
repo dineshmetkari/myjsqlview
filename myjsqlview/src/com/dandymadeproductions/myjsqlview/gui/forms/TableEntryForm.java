@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.95 09/11/2012
+// Version 8.96 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -362,6 +362,7 @@
 //        8.94 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //        8.95 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.forms.
 //                        Made Class, Constructor, center(), & Getter/Setter Methods Public.
+//        8.96 09/18/2012 Made Class Instance disposeButton Private and Added getDisposeButton().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -433,7 +434,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.95 09/11/2012
+ * @version 8.96 09/18/2012
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -473,7 +474,7 @@ public class TableEntryForm extends JFrame implements ActionListener
    private boolean addItem;
    private boolean validEntry;
    private JButton cancelButton, updateButton;
-   public JButton disposeButton;
+   private JButton disposeButton;
 
    private DateFieldCalendar dateCalendar;
    private SetListDialog setDialog;
@@ -2547,6 +2548,18 @@ public class TableEntryForm extends JFrame implements ActionListener
       int x = (screen.width - us.width) / 2;
       int y = (screen.height - us.height) / 2;
       setLocation(x, y);
+   }
+   
+   //==============================================================
+   // Class method for outside classes to obtain the dispose button
+   // so a notification can place to notify that a valid update
+   // has taken place so that table data can updated in summary
+   // table.
+   //==============================================================
+
+   public JButton getDisposeButton()
+   {
+      return disposeButton;
    }
 
    //==============================================================
