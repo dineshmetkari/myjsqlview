@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 12.6 09/11/2012
+// Version 12.7 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -279,6 +279,8 @@
 //             getColumnNames() Moved to finally.
 //        12.5 Closure for rs & sqlStatement in loadTable() Moved to finally.
 //        12.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
+//        12.7 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
+//             Collected via getDisposeButton().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -310,7 +312,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.6 09/11/2012
+ * @version 12.7 09/18/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -1309,7 +1311,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       else
          addForm.setSize(800, 400);
 
-      addForm.disposeButton.addActionListener(this);
+      addForm.getDisposeButton().addActionListener(this);
       addForm.addMouseListener(MyJSQLView.getPopupMenuListener());
       addForm.center();
       addForm.setVisible(true);
@@ -1432,7 +1434,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
       }
       else
          editForm.setSize(800, 400);
-      editForm.disposeButton.addActionListener(this);
+      editForm.getDisposeButton().addActionListener(this);
       editForm.center();
       editForm.setVisible(true);
 
