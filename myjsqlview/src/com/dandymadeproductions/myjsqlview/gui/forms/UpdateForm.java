@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.0 09/11/2012
+// Version 5.1 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,8 @@
 //         5.0 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.forms.
 //                        Method Class, Constructor, & Method center(), getKeyComponentsState()
 //                        Public.
+//         5.1 09/18/2012 Made Class Instances disposeButton & findButton Private and Added
+//                        Methods getDisposeButton() & getFindButton().
 //                        
 //=================================================================
 
@@ -186,7 +188,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.0 09/11/2012
+ * @version 5.1 09/18/2012
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -225,7 +227,7 @@ public class UpdateForm extends JFrame implements ActionListener
    private ArrayList<JComponent> stateComponents;
 
    private JButton updateButton, closeButton, clearButton;
-   public JButton findButton, disposeButton;
+   private JButton findButton, disposeButton;
 
    private ImageIcon deleteDataIcon;
 
@@ -1261,6 +1263,30 @@ public class UpdateForm extends JFrame implements ActionListener
       
       // System.out.println(sqlStatementString);
       return sqlStatementString.toString();
+   }
+   
+   //==============================================================
+   // Class method for outside classes to obtain the dispose button
+   // so a notification can place to notify that a valid update
+   // has taken place so that table data can updated in the summary
+   // table.
+   //==============================================================
+
+   public JButton getDisposeButton()
+   {
+      return disposeButton;
+   }
+   
+   //==============================================================
+   // Class method for outside classes to obtain the find button
+   // so a notification can place to notify that a request has
+   // been made to filter the summary table according to the
+   // UpdateForm's selections
+   //==============================================================
+
+   public JButton getFindButton()
+   {
+      return findButton;
    }
 
    //==============================================================
