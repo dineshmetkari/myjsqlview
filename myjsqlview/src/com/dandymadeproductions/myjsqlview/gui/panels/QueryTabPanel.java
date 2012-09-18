@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 9.9 09/11/2012
+// Version 10.0 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -231,6 +231,8 @@
 //         9.8 Collection of All Image Resources Through resourceBundle.
 //         9.9 Change Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class, Constructor, & Getter/Setter Methods Public.
+//        10.0 advSortSearchApplyButton Instance Related to Form advancedSort
+//             SearchFrame.getApplyButton().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -302,7 +304,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 9.9 09/11/2012
+ * @version 1.0.0 09/18/2012
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -768,7 +770,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                                                                     columnClassHashMap, columnTypeHashMap,
                                                                     comboBoxFields);
 
-               advSortSearchApplyButton = advancedSortSearchFrame.applyButton;
+               advSortSearchApplyButton = advancedSortSearchFrame.getApplyButton();
                advSortSearchApplyButton.addActionListener(this);
 
                advancedSortSearchFrame.pack();
