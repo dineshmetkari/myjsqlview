@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.12 09/11/2012
+// Version 5.13 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -240,6 +240,11 @@
 //        5.11 Collection of All Image Resources Through resourceBundle.
 //        5.12 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Method parseColumnNameField() Public.
+//        5.13 advSortSearchApplyButton Instance Related to Form advancedSort
+//             SearchFrame.getApplyButton(). Class Instance createUpdateFrame()
+//             Instance updateFormFindButton Related to UpdateForm Through
+//             getFindButton(); Same Except Just Assign ActionListener for the
+//             Form's disposeButton Through getDisposeButton().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -318,7 +323,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.12 09/11/2012
+ * @version 5.13 09/18/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1002,9 +1007,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                }
                else
                {
-                  // Catches the dummy disposeButton, that
-                  // occurs when the TableEntryForm fires
-                  // the updateButton. Reload and resize
+                  // Catches the dummy disposeButton, that occurs
+                  // when the TableEntryForm or the UpdateForm
+                  // fires the updateButton. Reload and resize
                   // list table & columns.
                   
                   historyAction = false;
@@ -1662,7 +1667,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       advancedSortSearchFrame = new AdvancedSortSearchForm(schemaTableName, resourceBundle,
                                                            columnNamesHashMap, columnClassHashMap,
                                                            columnTypeHashMap, comboBoxFields);
-      advSortSearchApplyButton = advancedSortSearchFrame.applyButton;
+      advSortSearchApplyButton = advancedSortSearchFrame.getApplyButton();
       advSortSearchApplyButton.addActionListener(this);
 
       advancedSortSearchFrame.pack();
@@ -1678,9 +1683,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       updateFrame = new UpdateForm(schemaTableName, resourceBundle, columnNamesHashMap,
                                    columnClassHashMap, columnTypeHashMap, columnSizeHashMap,
                                    comboBoxFields);
-      updateFormFindButton = updateFrame.findButton;
+      updateFormFindButton = updateFrame.getFindButton();
       updateFormFindButton.addActionListener(this);
-      updateFrame.disposeButton.addActionListener(this);
+      updateFrame.getDisposeButton().addActionListener(this);
 
       updateFrame.pack();
       updateFrame.center();
