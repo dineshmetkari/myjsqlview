@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.94 09/11/2012
+// Version 4.95 09/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -195,6 +195,7 @@
 //        4.94 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.forms.
 //                        Made Class, Constructor, & Class Methods center(), getKeyComponents(),
 //                        setKeyComponents(), getAdvancedSortSearchSQL() Public.
+//        4.95 09/18/2012 Made Class Instance applyButton Private and Added getApplyButton().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -241,7 +242,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.94 09/11/2012
+ * @version 4.95 09/18/2012
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -277,7 +278,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
    private ArrayList<JComponent> stateComponents;
 
    private JButton closeButton, clearButton;
-   public JButton applyButton;
+   private JButton applyButton;
 
    //==============================================================
    // AdvancedSortSearchForm Constructor
@@ -1141,7 +1142,18 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       // System.out.println(ascendingDescendingString);
       return ascendingDescendingString;
    }
+   
+   //==============================================================
+   // Class method for outside classes to obtain the apply button
+   // which indicates the user wishes to process the forms
+   // selections.
+   //==============================================================
 
+   public JButton getApplyButton()
+   {
+      return applyButton;
+   }
+   
    //==============================================================
    // Class method for outside classes to obtain the current state
    // of the form.
