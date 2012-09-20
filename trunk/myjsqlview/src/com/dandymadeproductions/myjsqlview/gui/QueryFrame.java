@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.4 09/11/2012
+// Version 8.5 09/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -210,6 +210,7 @@
 //                        Made Class, Constructor, & Class Methods center(), getSelectedTab(),
 //                        clearQueryResultTextArea(), getSelectedTab(), getSelectedTabTitle(),
 //                        & setQueryResultTextArea() Public.
+//         8.5 09/19/2012 Changed All Existing Toolbar Icons With 20x20 Pixels Ones.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -295,7 +296,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.4 09/11/2012
+ * @version 8.5 09/19/2012
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1425,31 +1426,31 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // File Menu
       
       // Open Script
-      openScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "openScriptIcon.png");
+      openScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "openScriptIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.OpenScript", "Open Script");
       buttonItem = buttonItem(resource, openScriptIcon, FILE_OPEN_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // Save Script
-      saveScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "saveScriptIcon.png");
+      saveScriptIcon = resourceBundle.getResourceImage(iconsDirectory + "saveScriptIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.SaveScript", "Save Script");
       buttonItem = buttonItem(resource, saveScriptIcon, FILE_SAVE_SCRIPT);
       queryFrameToolBar.add(buttonItem);
       
       // File Print
-      printIcon = resourceBundle.getResourceImage(iconsDirectory + "printIcon.png");
+      printIcon = resourceBundle.getResourceImage(iconsDirectory + "printIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.Print", "Print");
       buttonItem = buttonItem(resource, printIcon, FILE_PRINT);
       queryFrameToolBar.add(buttonItem);
       
       // Page Format
-      pageFormatIcon = resourceBundle.getResourceImage(iconsDirectory + "pageFormatIcon.png");
+      pageFormatIcon = resourceBundle.getResourceImage(iconsDirectory + "pageFormatIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.PageFormat", "Page Format");
       buttonItem = buttonItem(resource, pageFormatIcon, FILE_PAGE_FORMAT);
       queryFrameToolBar.add(buttonItem);
       
       // Exit
-      exitIcon = resourceBundle.getResourceImage(iconsDirectory + "exitIcon.png");
+      exitIcon = resourceBundle.getResourceImage(iconsDirectory + "exitIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.Exit", "Exit");
       buttonItem = buttonItem(resource, exitIcon, FILE_EXIT);
       queryFrameToolBar.add(buttonItem);
@@ -1460,7 +1461,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       // Edit Menu
       
       // Preferences Table Rows
-      tableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "tableRowsIcon.png");
+      tableRowsIcon = resourceBundle.getResourceImage(iconsDirectory + "tableRowsIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.TableRows", "Table Rows");
       buttonItem = buttonItem(resource, tableRowsIcon, EDITPREFERENCES_TABLE_ROWS);
       queryFrameToolBar.add(buttonItem);
@@ -1472,7 +1473,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Export CSV Summary Table
       csvExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
-                                                                     + "csvExportSummaryTableIcon.png");
+                                                                   + "csvExportSummaryTableIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportCSVSummaryTable",
                                                   "Export CSV Tab Summary Table");
       buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
@@ -1480,7 +1481,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Export PDF Summary Table
       pdfExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
-                                                                     + "pdfExportSummaryTableIcon.png");
+                                                                   + "pdfExportSummaryTableIcon_20x20.png");
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportPDFSummaryTable",
                                                   "Export PDF Tab Summary Table");
       buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
