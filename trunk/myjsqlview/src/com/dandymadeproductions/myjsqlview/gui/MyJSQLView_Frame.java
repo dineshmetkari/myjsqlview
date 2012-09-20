@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.5 09/11/2012
+// Version 7.6 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -183,6 +183,9 @@
 //         7.5 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //                        Made createGUI(), reloadDBTables(), loadQueryBucketList(),
 //                        getPlugins(), & addTab() Public.
+//         7.6 09/20/2012 Change Method addTab() to Collect Plugin Module Parameters From Somewhat
+//                        Internal Representation of Module, Instead of Methods the Plugin Module
+//                        Will Naturally Overide.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -483,12 +486,13 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          mainTabsPane.removeChangeListener(parent);
          
          loadedPluginModules.add(plugin);
-         mainTabsPane.addTab(null, plugin.getTabIcon(), plugin.getPanel(), plugin.getName());
+         mainTabsPane.addTab(null, plugin.getControlledTabIcon(), plugin.getControlledPanel(),
+                             plugin.getControlledName());
          
          if (plugin.getName().equals(""))
-            plugin.setName(Integer.toString(loadedPluginModules.size() + 1));
+            plugin.name = Integer.toString(loadedPluginModules.size() + 1);
          
-         toolBarPanel.add(plugin.getName(), plugin.getToolBar());
+         toolBarPanel.add(plugin.getControlledName(), plugin.getControlledToolBar());
          
          // Lets the PluginFrame know that a new
          // plugin module was loaded.
