@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.6 09/20/2012
+// Version 7.7 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -186,6 +186,8 @@
 //         7.6 09/20/2012 Change Method addTab() to Collect Plugin Module Parameters From Somewhat
 //                        Internal Representation of Module, Instead of Methods the Plugin Module
 //                        Will Naturally Overide.
+//         7.7 09/20/2012 Constructor Cloned the Argument myJSQLView_Version for Use as Class
+//                        Instance.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -232,7 +234,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.5 09/11/2012
+ * @version 7.7 09/11/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -269,7 +271,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             + ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.HOST) + ":"
             + ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB));
 
-      this.myJSQLView_Version = myJSQLView_Version;
+      this.myJSQLView_Version = myJSQLView_Version.clone();
       this.webSiteString = webSiteString;
       
       //==================================================
