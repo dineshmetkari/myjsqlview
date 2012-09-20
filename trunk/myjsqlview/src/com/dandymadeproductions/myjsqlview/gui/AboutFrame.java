@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 09/11/2012
+// Version 2.7 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //         2.5 MyJSQLView Class Method Change of getLocaleResourceBundle()
 //             to getResourceBundle().
 //         2.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         2.7 Constructor Starting of creditsPanel Threading Done Locally Here.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -90,7 +91,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * MyJSQLView application when the Help About selection is made in the menu bar.
  * 
  * @author Dana M. Proctor
- * @version 2.6 09/11/2012
+ * @version 2.7 09/20/2012
  */
 
 class AboutFrame extends JFrame implements ActionListener
@@ -139,6 +140,8 @@ class AboutFrame extends JFrame implements ActionListener
 
       // MyJSQLView Information/Credits
       creditsPanel = new CreditsPanel(myJSQLView_Version, webSiteString);
+      Thread creditsPanelThread = new Thread(creditsPanel, "Credits");
+      creditsPanelThread.start();
 
       buildConstraints(constraints, 1, 0, 1, 1, 95, 100);
       constraints.fill = GridBagConstraints.BOTH;
