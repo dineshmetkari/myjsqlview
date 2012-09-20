@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.8 09/10/2012
+// Version 7.9 09/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -146,6 +146,7 @@
 //         7.8 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made getMyJSQLViewDirectory(), processLocaleLanguage(), setLocalTimeZone(),
 //             clearCache(), & getUnlimitedSQLStatementString() Public.
+//         7.9 Made Method getStandardCharacters() Public.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -207,7 +208,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 7.8 09/10/2012
+ * @version 7.9 09/19/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -882,7 +883,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    // Class method to allow standard characters retrieval.
    //==============================================================
 
-   protected static char[] getStandardCharacters()
+   public static char[] getStandardCharacters()
    {
       return "k8^ef1209rEW-+$xB1aH".toCharArray();
    }
