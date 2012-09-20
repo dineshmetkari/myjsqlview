@@ -34,6 +34,7 @@
 //         1.1 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, setThreadAction(), & suspendPanel()
 //                        Public.
+//         1.2 09/20/2012 Removed the Starting of the Thread for the Panel From Constructor.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the PluginFrame to provide a generic animated filler graphic.   
  * 
  * @author Dana M. Proctor
- * @version 1.1 09/11/2012
+ * @version 1.2 09/20/2012
  */
 
 public class PluginFrameFillerPanel extends JPanel implements Runnable
@@ -96,7 +97,6 @@ public class PluginFrameFillerPanel extends JPanel implements Runnable
    public PluginFrameFillerPanel()
    {
       // Class Instances
-      Thread t;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
       
@@ -138,12 +138,6 @@ public class PluginFrameFillerPanel extends JPanel implements Runnable
       }
       
       setPreferredSize(new Dimension(baseImageWidth, (2 * baseImageHeight) - 30));
-
-      //======================================================
-      // Run the panel's thread.
-
-      t = new Thread(this, "LakeApp");
-      t.start();
    }
    
    //==============================================================
@@ -219,7 +213,7 @@ public class PluginFrameFillerPanel extends JPanel implements Runnable
          // dispy defines the vertical sine displacement. It
          // attenuates higher up the image, for perspective.
          
-         disp_Y = (int) ((baseImageHeight / 14)
+         disp_Y = (int) ((baseImageHeight / 14.0)
                          * ((double) i + 28.0)
                          * Math.sin((double) ((baseImageHeight / 14)
                          * (baseImageHeight - i)) / (double) (i + 1)
