@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.7 09/12/2012
+// Version 1.8 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //             Local File System File Separator Since Ultimately Everything
 //             is Turned Into a URL.
 //         1.7 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
+//         1.8 Change in run() to Access MyJSQLView_PluginModule Protected
+//             Class Instances Directly for Setting.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -62,7 +64,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/12/2012
+ * @version 1.8 09/20/2012
  */
 
 class PluginThread implements Runnable
@@ -123,16 +125,16 @@ class PluginThread implements Runnable
       else
       {
          if ((pluginModule.getName()).length() > 50)
-            pluginModule.name = ((pluginModule.getName()).substring(0, 49));
+            pluginModule.name = (pluginModule.getName()).substring(0, 49);
          else
             pluginModule.name = pluginModule.getName();
       }
 
       // Main Panel
       if (pluginModule.getPanel() == null)
-         pluginModule.panel = (new JPanel());
+         pluginModule.panel = new JPanel();
       else
-         pluginModule.panel = pluginModule.getPanel();
+         pluginModule.panel = (pluginModule.getPanel());
 
       // Tab Icon
       if (pluginModule.getTabIcon() == null)
@@ -155,9 +157,15 @@ class PluginThread implements Runnable
       
       // Version
       if (pluginModule.getVersion() == null)
-         pluginModule.version = "";
+         pluginModule.version = "Not Identified";
       else
          pluginModule.version = pluginModule.getVersion();
+      
+      // Description
+      if (pluginModule.getDescription() == null)
+         pluginModule.description = "Not Given";
+      else
+         pluginModule.description = pluginModule.getDescription();
 
       // Store/Add Plugin
       MyJSQLView_Frame.addTab(pluginModule, parentFrame);
