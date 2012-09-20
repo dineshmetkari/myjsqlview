@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.0 09/11/2012
+// Version 3.1 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,8 @@
 //         2.9 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         3.0 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //                        Made Class & Constructor Public.
+//         3.1 09/20/2012 Class Method loadPluginModules() Direct Setting of the Modules Path
+//                        by Using the Protected Class Instance pathFileName.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +128,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.0 09/11/2012
+ * @version 3.1 09/20/2012
  */
 
 public class PluginLoader implements Runnable
@@ -577,8 +579,7 @@ public class PluginLoader implements Runnable
             {
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.setPath_FileName(pluginEntry.getKey()
-                                             + "<$$$>" + pluginEntry.getValue());
+               pluginModule.pathFileName = pluginEntry.getKey() + "<$$$>" + pluginEntry.getValue();
 
                new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
