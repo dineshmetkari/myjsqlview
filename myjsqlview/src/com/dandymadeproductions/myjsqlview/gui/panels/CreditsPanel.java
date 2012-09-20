@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.9 09/10/2012
+// Version 4.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,9 @@
 //         3.8 Collection of All Image Resources Through resourceBundle.
 //         3.9 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class & Constructor Public.
+//         4.0 Constructor Cloned the Argument myJSQLView_Version for Use as Class
+//             Instance. Removed the Starting of the Thread for the Panel From
+//             Constructor.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -102,7 +105,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 3.9 09/10/2012
+ * @version 4.0 09/20/2012
  */
 
 public class CreditsPanel extends JPanel implements Runnable
@@ -133,7 +136,7 @@ public class CreditsPanel extends JPanel implements Runnable
 
    public CreditsPanel(String[] myJSQLView_Version, String webSiteString)
    {
-      this.myJSQLView_Version = myJSQLView_Version;
+      this.myJSQLView_Version = myJSQLView_Version.clone();
       this.webSiteString = webSiteString;
 
       MyJSQLView_ResourceBundle resourceBundle = MyJSQLView.getResourceBundle();
@@ -165,9 +168,6 @@ public class CreditsPanel extends JPanel implements Runnable
       else
          backgroundImage = (resourceBundle.getResourceImage("images"
                                                             + fileSeparator + "battleship.jpg")).getImage();
-
-      Thread t = new Thread(this, "Credits");
-      t.start();
    }
 
    //================================================================
