@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.7 09/11/2012
+// Version 3.8 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,6 +91,7 @@
 //         3.7 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made Class, Constructor, & Class Methods cancel() & getResultData()
 //             Public.
+//         3.8 Class Method getResultData() Return a Clone of resultData.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -115,7 +116,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.7 09/11/2012
+ * @version 3.8 09/20/2012
  */
 
 public class SearchDatabaseThread implements Runnable
@@ -514,6 +515,6 @@ public class SearchDatabaseThread implements Runnable
 
    public Object[][] getResultData()
    {
-      return resultData;
+      return resultData.clone();
    }
 }
