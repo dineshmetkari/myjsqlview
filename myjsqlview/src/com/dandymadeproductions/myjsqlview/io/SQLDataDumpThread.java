@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 7.04 09/11/2012
+// Version 7.05 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -308,6 +308,8 @@
 //        7.04 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, Constructor & Method generateHeaders() & genCommentsSep()
 //             Public.
+//        7.05 Created Clone of Argument myJSQLView_Version in Both Constructors for Local
+//             Same Class Instance. Removed the Starting of Thread From Constructor.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -348,13 +350,12 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.04 09/11/2012
+ * @version 7.05 09/20/2012
  */
 
 public class SQLDataDumpThread implements Runnable
 {
    // Class Instances.
-   Thread dumpThread;
    private Object dumpData;
    private String exportedTable;
    private ArrayList<String> columnNameFields;
@@ -379,7 +380,7 @@ public class SQLDataDumpThread implements Runnable
 
    public SQLDataDumpThread(String[] myJSQLView_Version)
    {
-      this.myJSQLView_Version = myJSQLView_Version;
+      this.myJSQLView_Version = myJSQLView_Version.clone();
 
       // Setup export options & identifer String.
       dataSourceType = ConnectionManager.getDataSourceType();
@@ -406,7 +407,7 @@ public class SQLDataDumpThread implements Runnable
       this.limits = limits;
       this.tableColumnClassHashMap = tableColumnClassHashMap;
       this.tableColumnTypeHashMap = tableColumnTypeHashMap;
-      this.myJSQLView_Version = myJSQLView_Version;
+      this.myJSQLView_Version = myJSQLView_Version.clone();
       this.exportedTable = exportedTable;
       this.fileName = fileName;
       
@@ -440,12 +441,6 @@ public class SQLDataDumpThread implements Runnable
          dbSchemaTableName = dbIdentifierQuoteString + exportedTable + dbIdentifierQuoteString;
          schemaTableName = identifierQuoteString + exportedTable + identifierQuoteString;
       }
-
-      // Create and start the class thread.
-      dumpThread = new Thread(this, "SQLDataDumpThread");
-      // System.out.println("SQL Data Dumb Thread");
-
-      dumpThread.start();
    }
 
    //==============================================================
