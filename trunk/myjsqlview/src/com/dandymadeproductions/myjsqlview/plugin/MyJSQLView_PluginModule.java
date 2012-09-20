@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.9 09/17/2012
+// Version 3.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //             Added Class Method setName(). Changed Getter Methods to Return the
 //             Appropriate Class Instance Instead of Null.
 //         2.9 Correction of Class Method setname() to setName().
+//         3.0 Made All Class Instances Protected. Added Controlled Getter Methods.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -83,15 +84,16 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.9 09/17/2012
+ * @version 3.0 09/20/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 {
    // Class Instances.
    //protected MyJSQLView_Frame parent;
-   private String pathFileName;
-   protected String name, version, description;
+   protected String pathFileName;
+   public String name;
+   protected String version, description;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
    protected JToolBar toolBar;
@@ -137,9 +139,9 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return pathFileName;
    }
    
-   public void setPath_FileName(String content)
+   protected String getControlledPath_FileName()
    {
-      this.pathFileName = content;
+      return pathFileName;
    }
    
    //==============================================================
@@ -152,9 +154,9 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return name;
    }
    
-   public void setName(String content)
+   public String getControlledName()
    {
-      this.name = content;
+      return name;
    }
 
    //==============================================================
@@ -165,6 +167,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
 
    public ImageIcon getTabIcon()
+   {
+      return tabIcon;
+   }
+   
+   public ImageIcon getControlledTabIcon()
    {
       return tabIcon;
    }
@@ -180,6 +187,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return menuBar;
    }
    
+   public JMenuBar getControlledMenuBar()
+   {
+      return menuBar;
+   }
+   
    //==============================================================
    // Class method to allow the collection of a JToolBar to be
    // used with the plugin module.
@@ -187,6 +199,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //==============================================================
 
    public JToolBar getToolBar()
+   {
+      return toolBar;
+   }
+   
+   public JToolBar getControlledToolBar()
    {
       return toolBar;
    }
@@ -201,6 +218,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return panel;
    }
    
+   public JPanel getControlledPanel()
+   {
+      return panel;
+   }
+   
    //==============================================================
    // Class method to obtain the plugin's version number.
    // Interface requirement.
@@ -211,12 +233,22 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       return version;
    }
    
+   public String getControlledVersion()
+   {
+      return version;
+   }
+   
    //==============================================================
    // Class method to obtain the plugin's description.
    // Interface requirement.
    //==============================================================
 
    public String getDescription()
+   {
+      return description;
+   }
+   
+   public String getControlledDescription()
    {
       return description;
    }
