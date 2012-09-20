@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.9 09/12/2012
+// Version 2.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //         1.8 Added Interface getPath_FileName() & getDescription().
 //         1.9 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //             Added Class Method setName().
+//         2.0 Removed Class Method setName().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -66,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 1.9 09/12/2012
+ * @version 2.0 09/20/2012
  */
 
 public interface PluginModuleInterface
@@ -90,8 +91,6 @@ public interface PluginModuleInterface
    //==============================================================
 
    String getName();
-   
-   void setName(String name);
    
    //==============================================================
    // Class method to allow the collection of a image icon that
