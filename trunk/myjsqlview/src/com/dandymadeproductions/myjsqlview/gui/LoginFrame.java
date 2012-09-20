@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.91 09/10/2012
+// Version 6.92 09/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -279,6 +279,8 @@
 //             String for dbMetaData.getDatabaseProductName/Version().
 //        6.91 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //             Made Constructor & Method center() Public.
+//        6.92 Removed Import of XMLUtilities & SiteParameters From Utilities
+//             & Structures Since Both Moved to this Classes' Package.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -324,10 +326,8 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.AdvancedParametersPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.SplashPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.StandardParametersPanel;
-import com.dandymadeproductions.myjsqlview.structures.SiteParameters;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
-import com.dandymadeproductions.myjsqlview.utilities.XMLTranslator;
 
 /**
  *    This LoginFrame class provides the framework for a login access
@@ -337,7 +337,7 @@ import com.dandymadeproductions.myjsqlview.utilities.XMLTranslator;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.91 09/10/2012
+ * @version 6.92 09/19/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
