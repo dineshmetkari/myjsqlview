@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 09/11/2012
+// Version 1.7 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.5 Copyright Update.
 //         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
+//         1.7 Removal of Starting the Class's Runnable Thread in the Constructor.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -50,13 +51,12 @@ package com.dandymadeproductions.myjsqlview.io;
  * dump a database table's current state to a local file.   
  * 
  * @author Dana M. Proctor
- * @version 1.6 09/11/2012
+ * @version 1.7 09/21/2012
  */
 
 public class SaveTableStateThread implements Runnable
 {
    // Class Instances
-   Thread t;
    private Object tableState;
    private String fileName;
 
@@ -68,12 +68,6 @@ public class SaveTableStateThread implements Runnable
    {
       this.fileName = fileName;
       tableState = dumpData;
-
-      // Create and start the class thread.
-      t = new Thread(this, "SaveTableStateThread");
-      // System.out.println("Save Table State Thread");
-
-      t.start();
    }
 
    //==============================================================

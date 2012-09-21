@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.1 09/11/2012
+// Version 2.2 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,7 @@
 //         2.0 Copyright Update.
 //         2.1 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
+//         2.2 Removal of Starting the Class's Runnable Thread in the Constructor.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -98,13 +99,12 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 2.1 09/11/2012
+ * @version 2.2 09/21/2012
  */
 
 public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
 {
    // Class Instances
-   Thread t;
    private JTable summaryListTable;
    private HashMap<String, String> tableColumnTypeHashMap;
    private String exportedTable, fileName;
@@ -127,12 +127,6 @@ public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
       this.tableColumnTypeHashMap = tableColumnTypeHashMap;
       this.exportedTable = exportedTable;
       this.fileName = fileName;
-
-      // Create and start the class thread.
-      t = new Thread(this, "PDFDataTableDumpThread");
-      // System.out.println("PDF Data Dumb Thread");
-
-      t.start();
    }
 
    //==============================================================

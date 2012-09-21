@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 6.9 09/11/2012
+// Version 7.0 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,7 @@
 //         6.8 Organized Imports.
 //         6.9 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, & Constructor, Public.
+//         7.0 Removal of Starting the Class's Runnable Thread in the Constructor.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -189,13 +190,12 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 6.9 09/11/2012
+ * @version 7.0 09/21/2012
  */
 
 public class CSVDataImportThread implements Runnable
 {
    // Class Instance Fields.
-   Thread importThread;
    String dataSourceType, fileName, csvOption;
    boolean validImport, temporaryDataFile;
 
@@ -213,10 +213,6 @@ public class CSVDataImportThread implements Runnable
 
       // Setup some needed instances.
       dataSourceType = ConnectionManager.getDataSourceType();
-
-      // Proceed with the process.
-      importThread = new Thread(this, "CSVDataImportThread");
-      importThread.start();
    }
 
    //==============================================================

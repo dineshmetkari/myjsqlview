@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.2 09/11/2012
+// Version 3.3 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //             Some Minor Formatting Changes.
 //         3.2 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, & Constructor Public.
+//         3.3 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -96,13 +97,12 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 3.2 09/11/2012
+ * @version 3.3 09/21/2012
  */
 
 public class DataTableDumpThread implements Runnable
 {
    // Class Instances
-   Thread t;
    private JTable summaryListTable;
    private HashMap<String, String> tableColumnNamesHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
@@ -121,12 +121,6 @@ public class DataTableDumpThread implements Runnable
       this.tableColumnTypeHashMap = tableColumnTypeHashMap;
       this.exportedTable = exportedTable;
       this.fileName = fileName;
-
-      // Create and start the class thread.
-      t = new Thread(this, "DataTableDumpThread");
-      // System.out.println("Data Table Dumb Thread");
-
-      t.start();
    }
 
    //==============================================================

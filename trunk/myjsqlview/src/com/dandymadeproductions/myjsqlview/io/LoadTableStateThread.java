@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.8 09/11/2012
+// Version 1.9 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //             Vector to Data Type to ArrayList.
 //         1.8 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
+//         1.9 Removal of Starting the Class's Runnable Thread in the Constructor.
 //          
 //-----------------------------------------------------------------
 //              danap@dandymadeproductions.com
@@ -66,13 +67,12 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * a summary table configuration state.
  * 
  * @author Dana M. Proctor
- * @version 1.8 09/11/2012
+ * @version 1.9 09/21/2012
  */
 
 public class LoadTableStateThread implements Runnable
 {
    // Class Instance Fields.
-   Thread importThread;
    private String fileName;
 
    //==============================================================
@@ -82,11 +82,6 @@ public class LoadTableStateThread implements Runnable
    public LoadTableStateThread(String fileName)
    {
       this.fileName = fileName;
-
-      importThread = new Thread(this, "LoadTableStateThread");
-      // System.out.println("Load Table State Thread");
-
-      importThread.start();
    }
 
    //==============================================================

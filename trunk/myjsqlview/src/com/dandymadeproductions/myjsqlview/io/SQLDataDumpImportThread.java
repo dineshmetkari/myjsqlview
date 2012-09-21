@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
-// Version 5.5 09/11/2012
+// Version 5.6 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -123,6 +123,7 @@
 //             Vector to Data Type to ArrayList.
 //         5.5 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
+//         5.6 Removal of Starting the Class's Runnable Thread in the Constructor.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -155,13 +156,12 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.5 09/11/2012
+ * @version 5.6 09/21/2012
  */
 
 public class SQLDataDumpImportThread implements Runnable
 {
    // Class Instance Fields.
-   Thread importThread;
    String fileName;
    String dataSourceType;
    boolean validImport, reloadDatabase;
@@ -176,11 +176,6 @@ public class SQLDataDumpImportThread implements Runnable
       this.reloadDatabase = reloadedDatabase;
       
       dataSourceType = ConnectionManager.getDataSourceType();
-
-      importThread = new Thread(this, "SQLDataDumpImportThread");
-      // System.out.println("SQL Data Dumb Import Thread");
-
-      importThread.start();
    }
 
    //==============================================================
