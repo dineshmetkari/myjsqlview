@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 09/11/2012
+// Version 2.6 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,6 +58,8 @@
 //                        from Vector Data Type to ArrayList.
 //         2.5 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //                        Made Class & Constructor Public.
+//         2.6 09/20/2012 Constructor & Method setValues() Cloned Argument tableData.
+//                        
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +79,7 @@ import javax.swing.table.AbstractTableModel;
  * actions are generated.
  * 
  * @author Dana M. Proctor
- * @version 2.5 09/11/2012
+ * @version 2.6 09/20/2012
  */
 
 public class MyJSQLView_TableModel extends AbstractTableModel
@@ -97,7 +99,7 @@ public class MyJSQLView_TableModel extends AbstractTableModel
    public MyJSQLView_TableModel(ArrayList<String> headings, Object[][] tableData)
    {
       this.headings = headings;
-      data = tableData;
+      data = tableData.clone();
       editableColumns = new boolean[headings.size()];
    }
    
@@ -197,7 +199,7 @@ public class MyJSQLView_TableModel extends AbstractTableModel
 
    public void setValues(Object[][] tableData)
    {
-      data = tableData;
+      data = tableData.clone();
       fireTableDataChanged();
    }
 }
