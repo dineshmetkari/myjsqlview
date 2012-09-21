@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 9.1 09/11/2012
+// Version 9.2 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -186,6 +186,8 @@
 //             to getResourceBundle().
 //         9.0 Collection of All Image Resources Through resourceBundle.
 //         9.1 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         9.2 Created csvImportPanelFillerThread in Constructor & Used to Start the
+//             CSVImportPanelFillerThread.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -254,7 +256,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.1 09/11/2012
+ * @version 9.2 09/20/2012
  */
 
 //=================================================================
@@ -473,6 +475,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // ***************************************
       // Data CSV Import Option Panel
       csvImportPanel = new CSVImportPreferencesPanel(resourceBundle);
+      Thread csvImportPanelFillerThread = new Thread(csvImportPanel.csvImportPanelFiller,
+                                                     "CSVImportPreferencesPanelFiller");
+      csvImportPanelFillerThread.start();
       csvImportPanel.csvImportPanelFiller.setThreadAction(true);  
       optionsPanel.add("CSV " + resourceImport, csvImportPanel);
 
