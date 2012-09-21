@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 8.9 09/11/2012
+// Version 9.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -227,6 +227,8 @@
 //         8.9 Change Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, Constructor & Methods generateHeaders() & genCommentSep()
 //             Public.
+//         9.0 Created Clone of Argument myJSQLView_Version in Constructor for Local
+//             Same Class Instance. Removed the Starting of Thread From Constructor.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -274,13 +276,12 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 8.9 09/11/2012
+ * @version 9.0 09/20/2012
  */
 
 public class SQLDatabaseDumpThread implements Runnable
 {
    // Class Instances.
-   Thread dumpThread;
    private Object dumpData;
    private ArrayList<String> columnNameFields;
    private HashMap<String, String> tableColumnNames;
@@ -306,13 +307,7 @@ public class SQLDatabaseDumpThread implements Runnable
    public SQLDatabaseDumpThread(String fileName, String[] myJSQLView_Version)
    {
       this.fileName = fileName;
-      this.myJSQLView_Version = myJSQLView_Version;
-
-      // Create and start the class thread.
-      dumpThread = new Thread(this, "SQLDatabaseDumpThread");
-      // System.out.println("SQL Data Dumb Thread");
-
-      dumpThread.start();
+      this.myJSQLView_Version = myJSQLView_Version.clone();
    }
 
    //==============================================================
