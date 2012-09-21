@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.7 09/20/2012
+// Version 7.8 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -188,6 +188,8 @@
 //                        Will Naturally Overide.
 //         7.7 09/20/2012 Constructor Cloned the Argument myJSQLView_Version for Use as Class
 //                        Instance.
+//         7.8 09/21/2012 Created Thread mainTabPanelThread in Method createGUI() to be Used to
+//                        Start the mainTabPanel Thread.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -234,7 +236,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.7 09/11/2012
+ * @version 7.8 09/21/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -350,6 +352,9 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Standard dmp Main Tab
       
       mainTabPanel = new TopTabPanel();
+      Thread mainTabPanelThread = new Thread(mainTabPanel, "TopTabPanelThread");
+      mainTabPanelThread.start();
+      
       mainTabsPane.addTab(null, mainTabIcon, mainTabPanel, "Dandy Made Productions");   
       
       //=========================================
