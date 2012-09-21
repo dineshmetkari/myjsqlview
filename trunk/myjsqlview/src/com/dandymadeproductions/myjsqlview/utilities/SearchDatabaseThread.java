@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor.
-// Version 3.8 09/20/2012
+// Version 3.9 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -92,6 +92,8 @@
 //             Made Class, Constructor, & Class Methods cancel() & getResultData()
 //             Public.
 //         3.8 Class Method getResultData() Return a Clone of resultData.
+//         3.9 Constructor Argument selectedTables Cloned. Removed Starting of Thread
+//             in Constructor.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -116,13 +118,12 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.8 09/20/2012
+ * @version 3.9 09/20/2012
  */
 
 public class SearchDatabaseThread implements Runnable
 {
    // Class Instances
-   Thread searchThread;
    private ArrayList<String> databaseTables;
    private boolean[] selectedTables;
    private String searchQueryString;
@@ -142,18 +143,12 @@ public class SearchDatabaseThread implements Runnable
                                JProgressBar progressBar, JButton searchCompleteButton)
    {
       this.databaseTables = databaseTables;
-      this.selectedTables = selectedTables;
+      this.selectedTables = selectedTables.clone();
       this.searchQueryString = searchString;
       this.searchProgressBar = progressBar;
       this.searchCompleteButton = searchCompleteButton;
 
       cancelSearch = false;
-
-      // Create and start the class thread.
-      searchThread = new Thread(this, "SearchDatabaseThread");
-      //System.out.println("SearchDatabaseThread Thread");
-
-      searchThread.start();
    }
    
    //==============================================================
