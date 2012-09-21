@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.6 09/19/2012
+// Version 5.7 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,7 @@
 //         5.6 Moved SitesTreePanel Class Into This Code. Removed Import of
 //             SiteParameters From Structures Since It Moved to this Classes'
 //             Package.
+//         5.7 Made Inner Class SitesTreePanel static.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -168,7 +169,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.6 09/19/2012
+ * @version 5.7 09/21/2012
  */
 
 public class LoginManagerFrame extends JFrame implements ActionListener
@@ -480,7 +481,7 @@ public class LoginManagerFrame extends JFrame implements ActionListener
     * @version 4.9 09/19/2012
     */
    
-   class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
+   static class SitesTreePanel extends JPanel implements TreeModelListener, TreeSelectionListener
    {
       // Class Instances.
       private static final long serialVersionUID = -3291619646627993470L;
