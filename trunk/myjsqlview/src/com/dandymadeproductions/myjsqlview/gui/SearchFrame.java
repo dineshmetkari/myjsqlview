@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.4 09/11/2012
+// Version 4.5 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,8 @@
 //             to getResourceBundle().
 //         4.3 Collection of All Image Resources Through resourceBundle.
 //         4.4 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         4.5 Class Method actionPerformed() Created sqlSearchDatabaseThread to
+//             Run the Searches.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -147,7 +149,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SearchResultTableCellRender
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 4.4 09/11/2012
+ * @version 4.5 09/20/2012
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -466,7 +468,9 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
                   searchDatabase = new SearchDatabaseThread(databaseTables, selectedTables,
                                                             searchTextField.getText(),
                                                             searchProgressBar,
-                                                            searchCompleteButton); 
+                                                            searchCompleteButton);
+                  Thread searchDatabaseThread = new Thread(searchDatabase, "SearchDatabase");
+                  searchDatabaseThread.start();
                }
             }
          }
