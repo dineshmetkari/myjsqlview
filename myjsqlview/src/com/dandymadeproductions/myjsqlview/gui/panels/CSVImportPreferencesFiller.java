@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.9 09/10/2012
+// Version 2.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.9 09/10/2012 Changed Class Package to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, setThreadAction(), & suspendPanel()
 //                        Public.
+//         2.0 09/20/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +76,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the Preferences Menu CSV Import to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.9 09/10/2012
+ * @version 2.0 09/20/2012
  */
 
 public class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyListener
@@ -107,7 +108,6 @@ public class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyL
    public CSVImportPreferencesFiller()
    {
       // Class Instances
-      Thread t;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
@@ -159,9 +159,6 @@ public class CSVImportPreferencesFiller extends Canvas implements Runnable, KeyL
 
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "CSVImportPreferencesPanelFiller");
-      t.start();
    }
 
    //==============================================================
