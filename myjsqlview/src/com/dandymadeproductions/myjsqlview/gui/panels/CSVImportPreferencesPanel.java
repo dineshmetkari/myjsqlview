@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.6 09/10/2012
+// Version 3.7 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,8 @@
 //         3.6 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, & Getter/Setter Methods Public Along With
 //                        csvImportPanelFiller.
+//         3.7 09/20/2012 Creation of csvImportPanelFillerThread in Constructor and Starting
+//                        There for the CSVImportPreferencesFiller.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -115,7 +117,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.6 09/10/2012
+ * @version 3.7 09/20/2012
  */
 
 public class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -167,6 +169,9 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
          BorderFactory.createLoweredBevelBorder()));
       
       csvImportPanelFiller = new CSVImportPreferencesFiller();
+      Thread csvImportPanelFillerThread = new Thread(csvImportPanelFiller,
+                                                     "CSVImportPreferencesPanelFiller");
+      csvImportPanelFillerThread.start();
       csvImportPanelFiller.setThreadAction(true);
      
       fillerPanel.add(csvImportPanelFiller);
