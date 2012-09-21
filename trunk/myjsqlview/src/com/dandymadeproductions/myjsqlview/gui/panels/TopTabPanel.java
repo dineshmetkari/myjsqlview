@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 09/11/2012
+// Version 1.8 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.6 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         1.7 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, & Constructor Public.
+//         1.8 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -80,7 +81,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/11/2012
+ * @version 1.8 09/21/2012
  */
 
 public class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -122,7 +123,6 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
       Graphics2D g2D;
       int timeOfDay;
       Calendar calendar;
-      Thread t;
 
       // Setting up as needed instances values & obtaining the
       // background image.
@@ -193,10 +193,6 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
       suspendThread = false;
       delayAnimation = true;
       addMouseListener(this);
-
-      // Run the panel's thread.
-      t = new Thread(this, "TopTabPanel");
-      t.start();
    }
 
    //==============================================================

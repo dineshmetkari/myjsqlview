@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.4 09/10/2012
+// Version 1.5 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.4 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, Along With setThreadAction() &
 //                        suspendPanel() Public.
+//         1.5 09/20/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +62,7 @@ import com.dandymadeproductions.myjsqlview.gui.sprites.Blossom;
  * the Preferences Menu General Options to provide a generic filler animated graphic.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/10/2012
+ * @version 1.5 09/21/2012
  */
 
 public class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
@@ -90,7 +91,7 @@ public class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
    public GeneralOptionsPreferencesFiller()
    {
       // Class Instances
-      Thread t;
+      
       
       // Setup blossom to be animated.
       blossom = new Blossom();
@@ -105,15 +106,9 @@ public class GeneralOptionsPreferencesFiller extends Canvas implements Runnable
       positionIncrementX = DEFAULT_POSITION_INCREMENT_X;
       positionIncrementY = DEFAULT_POSITION_INCREMENT_Y;
       setBackground(Color.BLACK);
-
-      // ======================================================
-      // Run the panel's thread.
-
+      
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "GeneralOptionsPreferencesPanelFiller");
-      t.start();
    }
 
    //==============================================================

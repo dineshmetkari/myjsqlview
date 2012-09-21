@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 3.5 09/11/2012
+// Version 3.6 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //         3.4 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         3.5 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class & Constructor Public.
+//         3.6 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -100,7 +101,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * hemisphere's summer months, July-September.
  * @author Dana M. Proctor
  * 
- * @version 3.5 09/11/2012
+ * @version 3.6 09/21/2012
  */
 
 public class PreferencesPanelSummer extends PreferencesPanel implements Runnable
@@ -127,7 +128,6 @@ public class PreferencesPanelSummer extends PreferencesPanel implements Runnable
    public PreferencesPanelSummer()
    {
       // Class Instances
-      Thread t;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
       String[] fireFlyImageName = {"red_firefly.gif", "green_firefly.gif", "blue_firefly.gif",
@@ -155,12 +155,8 @@ public class PreferencesPanelSummer extends PreferencesPanel implements Runnable
       fireFlyImageHeight = fireFlyImages[0].getHeight(null);
       fireFlies = new ArrayList <FireFly>();
 
-      // Run the panel's thread.
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "PreferencesPanel");
-      t.start();
    }
 
    //==============================================================
