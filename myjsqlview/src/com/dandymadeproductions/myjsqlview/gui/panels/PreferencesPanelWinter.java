@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.9 09/11/2012
+// Version 3.0 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
 //         2.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         2.9 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class & Constructor Public.
+//         3.0 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -92,7 +93,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the northern hemisphere's winter months, December-February.
  * 
  * @author Dana M. Proctor
- * @version 2.9 09/11/2012
+ * @version 3.0 09/21/2012
  */
 
 public class PreferencesPanelWinter extends PreferencesPanel implements Runnable
@@ -119,7 +120,6 @@ public class PreferencesPanelWinter extends PreferencesPanel implements Runnable
    public PreferencesPanelWinter()
    {
       // Class Instances
-      Thread t;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
@@ -145,12 +145,8 @@ public class PreferencesPanelWinter extends PreferencesPanel implements Runnable
       
       snowFlakes = new ArrayList <SnowFlake>();
 
-      // Run the panel's thread.
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "PreferencesPanel");
-      t.start();
    }
 
    //==============================================================

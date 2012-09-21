@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.9 09/11/2012
+// Version 3.0 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //         2.8 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         2.9 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class & Constuctor Public.
+//         3.0 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -93,7 +94,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * during the northern hemisphere's early spring months, March-Arpil.
  * 
  * @author Dana M. Proctor
- * @version 2.9 09/11/2012
+ * @version 3.0 09/21/2012
  */
 
 public class PreferencesPanelEarlySpring extends PreferencesPanel implements Runnable
@@ -120,7 +121,6 @@ public class PreferencesPanelEarlySpring extends PreferencesPanel implements Run
    public PreferencesPanelEarlySpring()
    {
       // Class Instances
-      Thread t;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator;
 
@@ -145,12 +145,8 @@ public class PreferencesPanelEarlySpring extends PreferencesPanel implements Run
       rainDropImageHeight = rainDropImage.getHeight(null);
       rainDrops = new ArrayList <RainDrop>();
 
-      // Run the panel's thread.
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "PreferencesPanel");
-      t.start();
    }
 
    //==============================================================

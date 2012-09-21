@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.3 09/10/2012
+// Version 2.4 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -55,6 +55,7 @@
 //         2.3 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, setThreadAction(), & suspendPanel()
 //                        Public.
+//         2.4 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -89,7 +90,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * successful login to indicate the progress of the application initialization.
  * 
  * @author Dana M. Proctor
- * @version 2.3 09/10/2012
+ * @version 2.4 09/21/2012
  */
 
 public class SplashPanel extends JPanel implements Runnable
@@ -123,7 +124,6 @@ public class SplashPanel extends JPanel implements Runnable
    public SplashPanel(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Instances
-      Thread t;
       String fileSeparator, resource;
 
       // Setting up the panel stuff.
@@ -157,12 +157,8 @@ public class SplashPanel extends JPanel implements Runnable
       //loadingString = "Loading";
       //loadingFont = new Font("Serif", Font.PLAIN, 38);
       
-      // Run the panel's thread.
       runThread = true;
       suspendThread = false;
-
-      t = new Thread(this, "SplashPanel");
-      t.start();
    }
 
    //==============================================================
