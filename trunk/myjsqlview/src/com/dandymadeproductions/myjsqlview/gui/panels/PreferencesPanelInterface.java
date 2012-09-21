@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 1.7 09/11/2012
+// Version 1.8 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //         1.5 Copyright Update.
 //         1.6 Copyright Update.
 //         1.7 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
+//         1.8 Insured Extends Runnable Since All PreferencesPanel Are Animation. 
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -53,10 +54,10 @@ package com.dandymadeproductions.myjsqlview.gui.panels;
  * PreferencesPanels Should All be Animatied Scenes.
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/11/2012
+ * @version 1.8 09/21/2012
  */
 
-interface PreferencesPanelInterface
+interface PreferencesPanelInterface extends Runnable
 {
    //==============================================================
    // Class Method to start and stop the thread.
