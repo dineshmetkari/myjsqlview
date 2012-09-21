@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 2.3 09/11/2012
+// Version 2.4 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //             Moved to finally.
 //         2.3 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made Class & Constructor Public.
+//         2.4 Removal of Starting the Class's Runnable Thread in the Constructor.
 //                         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -72,13 +73,12 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * of the Query Tool.
  * 
  * @author Dana Proctor
- * @version 2.3 09/11/2012
+ * @version 2.4 09/21/2012
  */
 
 public class TableClearingThread implements Runnable
 {
    // Class Instances.
-   Thread clearTableThread;
    int tabNumber;
 
    //==============================================================
@@ -88,12 +88,6 @@ public class TableClearingThread implements Runnable
    public TableClearingThread(int tabNumber)
    {
       this.tabNumber = tabNumber;
-
-      // Create and start the class thread.
-      clearTableThread = new Thread(this, "SQLDataDumpThread");
-      // System.out.println("ClearTable Thread");
-
-      clearTableThread.start();
    }
 
    //==============================================================
