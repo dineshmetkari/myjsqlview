@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.92 09/19/2012
+// Version 6.93 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -281,6 +281,8 @@
 //             Made Constructor & Method center() Public.
 //        6.92 Removed Import of XMLUtilities & SiteParameters From Utilities
 //             & Structures Since Both Moved to this Classes' Package.
+//        6.93 Creation of splashPanelThread in Method createSplashWindow() for
+//             Starting the splashPanel Animation.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -337,7 +339,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.92 09/19/2012
+ * @version 6.93 09/21/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1313,6 +1315,8 @@ public class LoginFrame extends JFrame implements ActionListener
       splashWindow.setSize(imageSize);
       
       splashPanel = new SplashPanel(resourceBundle);
+      Thread splashPanelThread = new Thread(splashPanel, "SplashPanelThread");
+      splashPanelThread.start();
       
       splashWindow.getContentPane().add(splashPanel, BorderLayout.CENTER);
       splashWindow.setLocation((screenSize.width - imageSize.width) / 2,
