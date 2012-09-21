@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.8 09/21/2012
+// Version 7.9 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -190,6 +190,9 @@
 //                        Instance.
 //         7.8 09/21/2012 Created Thread mainTabPanelThread in Method createGUI() to be Used to
 //                        Start the mainTabPanel Thread.
+//         7.9 09/21/2012 Initialized static Instances mainTabsPane, toolBarCardLayout, & toolBarPanel
+//                        at Declaration. Moved Class Instance databaseTablesIcon to createGUI()
+//                        Method.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -236,7 +239,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.8 09/21/2012
+ * @version 7.9 09/21/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -244,21 +247,21 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    // Class Instances.
    private static final long serialVersionUID = -5105256432038108191L;
 
-   private String[] myJSQLView_Version;
-   private String webSiteString;
-   private static ImageIcon databaseTablesIcon;
-   private static SQLQueryBucketFrame sqlQueryBucketFrame = new SQLQueryBucketFrame();
+   private TopTabPanel mainTabPanel;
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
    private MyJSQLView_Top_JMenuBar topMenuBar;
-   private static JPanel toolBarPanel;
-   private CardLayout toolBarCardLayout;
    
-   private TopTabPanel mainTabPanel;
-   private static JTabbedPane mainTabsPane;
+   private String[] myJSQLView_Version;
+   private String webSiteString;
+   
+   private static JTabbedPane mainTabsPane = new JTabbedPane();
+   private static CardLayout toolBarCardLayout = new CardLayout();
+   private static JPanel toolBarPanel = new JPanel(toolBarCardLayout);
    private static DBTablesPanel dbTablesPanel;
    
    private static ArrayList<MyJSQLView_PluginModule> loadedPluginModules = 
                                                   new ArrayList <MyJSQLView_PluginModule>();
+   private static SQLQueryBucketFrame sqlQueryBucketFrame = new SQLQueryBucketFrame();
    protected static final JButton pluginFrameListenButton = new JButton();
    
    //==============================================================
@@ -307,7 +310,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       JPanel mainPanel;
       MyJSQLView_ResourceBundle resourceBundle;
       String fileSeparator, iconsDirectory;
-      ImageIcon mainTabIcon;
+      ImageIcon mainTabIcon, databaseTablesIcon;
       Default_JToolBar defaultToolBar;
       MyJSQLView_JToolBar myJSQLViewToolBar;
       
@@ -336,14 +339,11 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       mainPanel = new JPanel(new BorderLayout());
       
       // Toolbar
-      toolBarCardLayout = new CardLayout();
-      toolBarPanel = new JPanel(toolBarCardLayout);
       defaultToolBar = new Default_JToolBar("Default ToolBar");
       toolBarPanel.add("0", defaultToolBar);
       mainPanel.add(toolBarPanel, BorderLayout.PAGE_START);
 
       // Central Area
-      mainTabsPane = new JTabbedPane();
       mainTabsPane.setTabPlacement(JTabbedPane.RIGHT);
       mainTabsPane.setBorder(BorderFactory.createLoweredBevelBorder());
       mainTabsPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
