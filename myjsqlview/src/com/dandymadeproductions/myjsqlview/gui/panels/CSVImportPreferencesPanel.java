@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.7 09/20/2012
+// Version 3.8 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,7 @@
 //                        csvImportPanelFiller.
 //         3.7 09/20/2012 Creation of csvImportPanelFillerThread in Constructor and Starting
 //                        There for the CSVImportPreferencesFiller.
+//         3.8 09/20/2012 Backed Out 3.7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.7 09/20/2012
+ * @version 3.8 09/20/2012
  */
 
 public class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -136,7 +137,7 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
    // CSVImportPreferencesPanel Constructor
    //===========================================================
 
-   public  CSVImportPreferencesPanel(MyJSQLView_ResourceBundle resourceBundle)
+   public CSVImportPreferencesPanel(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Instances
       JPanel mainPanel, fillerDelimiterPanel;
@@ -169,9 +170,6 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
          BorderFactory.createLoweredBevelBorder()));
       
       csvImportPanelFiller = new CSVImportPreferencesFiller();
-      Thread csvImportPanelFillerThread = new Thread(csvImportPanelFiller,
-                                                     "CSVImportPreferencesPanelFiller");
-      csvImportPanelFillerThread.start();
       csvImportPanelFiller.setThreadAction(true);
      
       fillerPanel.add(csvImportPanelFiller);
