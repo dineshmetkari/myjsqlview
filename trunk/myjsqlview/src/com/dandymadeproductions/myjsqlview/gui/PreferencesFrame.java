@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 9.2 09/20/2012
+// Version 9.3 09/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -188,6 +188,8 @@
 //         9.1 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         9.2 Created csvImportPanelFillerThread in Constructor & Used to Start the
 //             CSVImportPanelFillerThread.
+//         9.3 Created preferencesTopPanelThread in Constructor to Be used to Start the
+//             preferencesTopPanel Thread.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -256,7 +258,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.2 09/20/2012
+ * @version 9.3 09/21/2012
  */
 
 //=================================================================
@@ -432,6 +434,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       else
          preferencesTopPanel = new PreferencesPanelFall();
       
+      Thread preferencesTopPanelThread = new Thread(preferencesTopPanel, "PreferencesTopPanel");
+      preferencesTopPanelThread.start();
+      
       optionsPanel.add(resourcePreferences, preferencesTopPanel);
       
       // ***************************************
@@ -444,6 +449,9 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // General Options Panel
       generalPreferencesPanel = new GeneralPreferencesPanel(resourceBundle);
       generalPreferencesPanel.setBorder(BorderFactory.createLoweredBevelBorder());
+      Thread generalOptionsPanelFillerThread = new Thread(generalPreferencesPanel.generalOptionsPanelFiller,
+                                                          "GeneralOptionsPreferencesPanelFiller");
+      generalOptionsPanelFillerThread.start();
       optionsPanel.add(resourceGeneralOptions, generalPreferencesPanel);
 
       // ***************************************
