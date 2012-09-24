@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 09/11/2012
+// Version 2.6 09/24/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,8 @@
 //         2.3 01/27/2011 Copyright Update.
 //         2.4 01/01/2012 Copyright Update.
 //         2.5 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
+//         2.6 09/24/2012 Comment Changes & Inclusion of finally in Method writeDataFileText()
+//                        for fileStream & filebuff Closing.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -64,6 +66,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
 
 /**
@@ -73,7 +76,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * also provides a generic means to output byte[] data to a file.
  * 
  * @author Dana M. Proctor
- * @version 2.5 09/11/2012
+ * @version 2.6 09/24/2012
  */
 
 public class WriteDataFile
@@ -93,9 +96,13 @@ public class WriteDataFile
 
    private void writeDataFileText(String outputFileString, byte[] buf, boolean showDumpProgressBar)
    {
+      fileStream = null;
+      filebuff = null;
+      
       try
       {
          // Setting up OutputStream
+         
          fileStream = new FileOutputStream(outputFileString);
          filebuff = new BufferedOutputStream(fileStream);
 
@@ -125,15 +132,13 @@ public class WriteDataFile
                filebuff.write(buf[i++]);
          }
          filebuff.flush();
-         filebuff.close();
          fileStream.flush();
-         fileStream.close();
       }
       catch (IOException e)
       {
          String ioExceptionString = e.toString();
          if (ioExceptionString.length() > 200)
-            ioExceptionString = e.getMessage().substring(0, 200);
+            ioExceptionString = e.toString().substring(0, 200);
 
          String optionPaneStringErrors = "Error Writing File: " + outputFileString 
                                          + "\n" + "IOException: "
@@ -141,6 +146,34 @@ public class WriteDataFile
 
          JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert",
                                        JOptionPane.ERROR_MESSAGE);
+      }
+      finally
+      {
+         try
+         {
+            if (filebuff != null)
+               filebuff.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("WriteDataFile writeDataFileText() \n"
+                                  + "Failed to Close BufferedOutputStream. " + ioe.toString());
+         }
+         finally
+         {
+            try
+            {
+               if (fileStream != null)
+                  fileStream.close();
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("WriteDataFile writeDataFileText() \n"
+                                     + "Failed to Close FileOutputStream. " + ioe.toString());
+            }     
+         }
       }
    }
 
