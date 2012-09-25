@@ -11,7 +11,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.2 09/12/2012
+// Version 1.3 09/25/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //         1.1 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //             Made Constructor Public.
 //         1.2 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
+//         1.3 Rolling Update. Change in Constructor Argument from ArrayList to
+//             PluginRepository. Added Methods getRepositoryName/Path/Type().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -53,6 +55,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
 
@@ -63,7 +66,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
  * the panel to display and allow selecting of plugins.
  * 
  * @author Dana M. Proctor
- * @version 1.2 09/12/2012
+ * @version 1.3 09/25/2012
  */
 
 public class PluginRepositoryPanel extends JPanel
@@ -71,6 +74,7 @@ public class PluginRepositoryPanel extends JPanel
    // Class Instances.
    private static final long serialVersionUID = -7266741803741987318L;
    
+   private PluginRepository pluginRepository;
    private Object[][] pluginsTableData;
    private MyJSQLView_TableModel tableModel;
    private JTable pluginsTable;
@@ -79,8 +83,10 @@ public class PluginRepositoryPanel extends JPanel
    // PluginRepositoryPanel Constructor
    //===========================================================
 
-   public PluginRepositoryPanel(ArrayList<String> pluginsList)
+   public PluginRepositoryPanel(PluginRepository pluginRepository)
    {
+      this.pluginRepository = pluginRepository;
+      
       // Instances
       ArrayList<String> tableHeadings;
       MyJSQLView_ResourceBundle resourceBundle;
@@ -90,7 +96,7 @@ public class PluginRepositoryPanel extends JPanel
       // Setup
       
       tableHeadings = new ArrayList <String>();
-      pluginsTableData = new Object[pluginsList.size()][1];
+      pluginsTableData = new Object[pluginRepository.getPluginItems().size()][1];
       resourceBundle = MyJSQLView.getResourceBundle();
       setLayout(new BorderLayout());
       
@@ -99,7 +105,7 @@ public class PluginRepositoryPanel extends JPanel
       resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Plugin", "Plugin");
       tableHeadings.add(resource);
       
-      Iterator<String> pluginsListIterator = pluginsList.iterator();
+      Iterator<String> pluginsListIterator = pluginRepository.getPluginItems().iterator();
       int i = 0;
 
       while (pluginsListIterator.hasNext())
@@ -117,6 +123,36 @@ public class PluginRepositoryPanel extends JPanel
       
       tableScrollPane = new JScrollPane(pluginsTable);
       add(tableScrollPane, BorderLayout.CENTER);
+   }
+   
+   //==============================================================
+   // Class method to return the name of plugin repository that
+   // the panel houses.
+   //==============================================================
+   
+   public String getRepositoryName()
+   {
+      return pluginRepository.getName();
+   }
+   
+   //==============================================================
+   // Class method to return the name of plugin repository that
+   // the panel houses.
+   //==============================================================
+   
+   public String getRepositoryPath()
+   {
+      return pluginRepository.getPath();
+   }
+   
+   //==============================================================
+   // Class method to return the type of plugin repository that
+   // the panel houses.
+   //==============================================================
+   
+   public String getRepositoryType()
+   {
+      return pluginRepository.getRepositoryType();
    }
    
    //==============================================================
