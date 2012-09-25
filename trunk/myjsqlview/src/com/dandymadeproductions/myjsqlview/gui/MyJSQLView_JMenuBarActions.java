@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.46 09/21/2012
+// Version 7.47 09/25/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -277,6 +277,8 @@
 //        7.45 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //        7.46 Change in Starting All Threaded Actions Here Instead of in the Individual
 //             Class's Constructors. Effects Most Actions That Involves Threads.
+//        7.47 Method actionSelection() Change in managePluginPreferences Size to
+//             750x475.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -341,7 +343,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.46 09/21/2012
+ * @version 7.47 09/25/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -549,7 +551,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       {
          // Showing the Edit Preferences Frame.
          PluginFrame managePluginPreferences = new PluginFrame(parent);
-         managePluginPreferences.setSize(750, 450);
+         managePluginPreferences.setSize(750, 475);
          managePluginPreferences.center();
          managePluginPreferences.setVisible(true);
          pluginFrameVisible = true;
