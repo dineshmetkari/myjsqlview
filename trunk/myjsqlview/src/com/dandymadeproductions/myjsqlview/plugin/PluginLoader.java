@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.1 09/20/2012
+// Version 3.2 09/26/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,7 @@
 //                        Made Class & Constructor Public.
 //         3.1 09/20/2012 Class Method loadPluginModules() Direct Setting of the Modules Path
 //                        by Using the Protected Class Instance pathFileName.
+//         3.2 09/26/2012 Added Class Instance pathClassSeparator.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -128,7 +129,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.1 09/20/2012
+ * @version 3.2 09/26/2012
  */
 
 public class PluginLoader implements Runnable
@@ -145,6 +146,7 @@ public class PluginLoader implements Runnable
    
    private static final String CONFIGURATION_FILENAME = "myjsqlview_plugin.conf";
    private static final String VALID_PLUGIN_MODULENAME = "PluginModule.class";
+   public static final String pathClassSeparator = "<$$$>";
    
    private static final String FILE_URL = "file";
    private static final String HTTP_URL = "http";
@@ -330,7 +332,7 @@ public class PluginLoader implements Runnable
          
          if (!pluginFileName.equals("") && !className.equals(""))
          {
-            pluginEntry = pluginURL.toExternalForm() + "<$$$>" + className + "\n";
+            pluginEntry = pluginURL.toExternalForm() + pathClassSeparator + className + "\n";
             
             // Write new or appending. 
             configurationFile = new File(pluginConfigFileString);
@@ -485,10 +487,10 @@ public class PluginLoader implements Runnable
          {
             currentLine = currentLine.trim();
             
-            if (currentLine.indexOf("<$$$>") != -1)
+            if (currentLine.indexOf(pathClassSeparator) != -1)
             {
-               pathKey = currentLine.substring(0, currentLine.indexOf("<$$$>"));
-               className = currentLine.substring(currentLine.indexOf("<$$$>") + 5);
+               pathKey = currentLine.substring(0, currentLine.indexOf(pathClassSeparator));
+               className = currentLine.substring(currentLine.indexOf(pathClassSeparator) + 5);
                
                if (className.startsWith("java.") || className.startsWith("javax."))
                   continue;
@@ -579,7 +581,7 @@ public class PluginLoader implements Runnable
             {
                Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
                MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.pathFileName = pluginEntry.getKey() + "<$$$>" + pluginEntry.getValue();
+               pluginModule.pathFileName = pluginEntry.getKey() + pathClassSeparator + pluginEntry.getValue();
 
                new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
             }
