@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.8 09/20/2012
+// Version 1.9 09/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //         1.7 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //         1.8 Change in run() to Access MyJSQLView_PluginModule Protected
 //             Class Instances Directly for Setting.
+//         1.9 Change in run() to Set the pluginModule.author.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -64,7 +65,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * main frame.
  * 
  * @author Dana M. Proctor
- * @version 1.8 09/20/2012
+ * @version 1.9 09/29/2012
  */
 
 class PluginThread implements Runnable
@@ -129,13 +130,25 @@ class PluginThread implements Runnable
          else
             pluginModule.name = pluginModule.getName();
       }
-
-      // Main Panel
-      if (pluginModule.getPanel() == null)
-         pluginModule.panel = new JPanel();
+      
+      // Author
+      if (pluginModule.getAuthor() == null)
+         pluginModule.author = "Not Identified";
       else
-         pluginModule.panel = (pluginModule.getPanel());
-
+         pluginModule.author = pluginModule.getAuthor();
+      
+      // Version
+      if (pluginModule.getVersion() == null)
+         pluginModule.version = "Not Identified";
+      else
+         pluginModule.version = pluginModule.getVersion();
+      
+      // Description
+      if (pluginModule.getDescription() == null)
+         pluginModule.description = "Not Given";
+      else
+         pluginModule.description = pluginModule.getDescription();
+      
       // Tab Icon
       if (pluginModule.getTabIcon() == null)
          pluginModule.tabIcon = defaultIcon;
@@ -155,17 +168,11 @@ class PluginThread implements Runnable
       else
          pluginModule.toolBar = pluginModule.getToolBar();
       
-      // Version
-      if (pluginModule.getVersion() == null)
-         pluginModule.version = "Not Identified";
+      // Main Panel
+      if (pluginModule.getPanel() == null)
+         pluginModule.panel = new JPanel();
       else
-         pluginModule.version = pluginModule.getVersion();
-      
-      // Description
-      if (pluginModule.getDescription() == null)
-         pluginModule.description = "Not Given";
-      else
-         pluginModule.description = pluginModule.getDescription();
+         pluginModule.panel = (pluginModule.getPanel());
 
       // Store/Add Plugin
       MyJSQLView_Frame.addTab(pluginModule, parentFrame);
