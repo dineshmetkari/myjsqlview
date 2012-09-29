@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.0 09/20/2012
+// Version 3.1 09/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@
 //             Appropriate Class Instance Instead of Null.
 //         2.9 Correction of Class Method setname() to setName().
 //         3.0 Made All Class Instances Protected. Added Controlled Getter Methods.
+//         3.1 Added Class Instance author & Methods getAuthor() & getControlledAuthor().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +85,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.0 09/20/2012
+ * @version 3.1 09/29/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -92,7 +93,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Class Instances.
    //protected MyJSQLView_Frame parent;
    protected String pathFileName;
-   public String name;
+   public String name, author;
    protected String version, description;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
@@ -109,12 +110,13 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       
       pathFileName = null;
       name = null;
+      author = null;
+      version = null;
+      description = null;
       tabIcon = null;
       menuBar = null;
       toolBar = null;
       panel = null;
-      version = null;
-      description = null;
    }
    
    //==============================================================
@@ -157,6 +159,51 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public String getControlledName()
    {
       return name;
+   }
+   
+   //==============================================================
+   // Class method to get/set the plugin's name.
+   // Interface requirement.
+   //==============================================================
+
+   public String getAuthor()
+   {
+      return author;
+   }
+   
+   public String getControlledAuthor()
+   {
+      return author;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's version number.
+   // Interface requirement.
+   //==============================================================
+
+   public String getVersion()
+   {
+      return version;
+   }
+   
+   public String getControlledVersion()
+   {
+      return version;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's description.
+   // Interface requirement.
+   //==============================================================
+
+   public String getDescription()
+   {
+      return description;
+   }
+   
+   public String getControlledDescription()
+   {
+      return description;
    }
 
    //==============================================================
@@ -221,36 +268,6 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public JPanel getControlledPanel()
    {
       return panel;
-   }
-   
-   //==============================================================
-   // Class method to obtain the plugin's version number.
-   // Interface requirement.
-   //==============================================================
-
-   public String getVersion()
-   {
-      return version;
-   }
-   
-   public String getControlledVersion()
-   {
-      return version;
-   }
-   
-   //==============================================================
-   // Class method to obtain the plugin's description.
-   // Interface requirement.
-   //==============================================================
-
-   public String getDescription()
-   {
-      return description;
-   }
-   
-   public String getControlledDescription()
-   {
-      return description;
    }
    
    //==============================================================
