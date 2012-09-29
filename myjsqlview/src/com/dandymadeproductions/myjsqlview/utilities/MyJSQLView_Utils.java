@@ -537,7 +537,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    }
    
    //==============================================================
-   // Class method to create a JMenu for the a EditorPane. 
+   // Class method to create a InputDialog with a EditorPane. 
    //==============================================================
 
    public static InputDialog createTextDialog(boolean typeEdit, JEditorPane editorPane)
