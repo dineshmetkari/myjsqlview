@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.0 09/20/2012
+// Version 2.1 09/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //         1.9 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //             Added Class Method setName().
 //         2.0 Removed Class Method setName().
+//         2.1 Added Class Method getAuthor().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -67,7 +68,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.0 09/20/2012
+ * @version 2.1 09/29/2012
  */
 
 public interface PluginModuleInterface
@@ -86,11 +87,32 @@ public interface PluginModuleInterface
    String getPath_FileName();
    
    //==============================================================
-   // Class method to allow the collection/setting of a name that
-   // will be used as the tooltip in the MyJSQLViews tab structure.
+   // Class method to allow the collection of a name that will be
+   // used to identify & set the tooltip in the MyJSQLViews tab
+   // structure.
    //==============================================================
 
    String getName();
+   
+   //==============================================================
+   // Class method to allow the collection of a author of the
+   // plugin module.
+   //==============================================================
+
+   String getAuthor();
+   
+   //==============================================================
+   // Class method to return the version release number of the
+   // plugin module.
+   //==============================================================
+   
+   String getVersion();
+   
+   //==============================================================
+   // Class method to return the description of the plugin module.
+   //==============================================================
+   
+   String getDescription();
    
    //==============================================================
    // Class method to allow the collection of a image icon that
@@ -122,19 +144,6 @@ public interface PluginModuleInterface
    //==============================================================
    
    JPanel getPanel();
-   
-   //==============================================================
-   // Class method to return the version release number of the
-   // plugin module.
-   //==============================================================
-   
-   String getVersion();
-   
-   //==============================================================
-   // Class method to return the description of the plugin module.
-   //==============================================================
-   
-   String getDescription();
    
    //==============================================================
    // Class method to allow the setting the database tables.
