@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.1 09/29/2012
+// Version 2.2 09/30/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,7 +45,8 @@
 //         1.9 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //             Added Class Method setName().
 //         2.0 Removed Class Method setName().
-//         2.1 Added Class Method getAuthor().
+//         2.1 Added Class Interface getAuthor().
+//         2.2 Added Class Interfaces getCategory() & getSize().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.1 09/29/2012
+ * @version 2.2 09/30/2012
  */
 
 public interface PluginModuleInterface
@@ -113,6 +114,18 @@ public interface PluginModuleInterface
    //==============================================================
    
    String getDescription();
+   
+   //==============================================================
+   // Class method to return the category of the plugin module.
+   //==============================================================
+   
+   String getCategory();
+   
+   //==============================================================
+   // Class method to return the size of the plugin module.
+   //==============================================================
+   
+   int getSize();
    
    //==============================================================
    // Class method to allow the collection of a image icon that
