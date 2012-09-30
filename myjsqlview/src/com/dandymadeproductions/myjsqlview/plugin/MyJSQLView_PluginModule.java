@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.1 09/29/2012
+// Version 3.2 09/30/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,7 @@
 //         2.9 Correction of Class Method setname() to setName().
 //         3.0 Made All Class Instances Protected. Added Controlled Getter Methods.
 //         3.1 Added Class Instance author & Methods getAuthor() & getControlledAuthor().
+//         3.2 Added Class Instances category, size, & Their Getter Methods.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,7 +86,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.1 09/29/2012
+ * @version 3.2 09/30/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -94,7 +95,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    //protected MyJSQLView_Frame parent;
    protected String pathFileName;
    public String name, author;
-   protected String version, description;
+   protected String version, description, category;
+   protected int size;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
    protected JToolBar toolBar;
@@ -113,6 +115,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       author = null;
       version = null;
       description = null;
+      category = null;
+      size = 0;
       tabIcon = null;
       menuBar = null;
       toolBar = null;
@@ -204,6 +208,36 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public String getControlledDescription()
    {
       return description;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's category.
+   // Interface requirement.
+   //==============================================================
+
+   public String getCategory()
+   {
+      return category;
+   }
+   
+   public String getControlledCategory()
+   {
+      return category;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's size.
+   // Interface requirement.
+   //==============================================================
+
+   public int getSize()
+   {
+      return size;
+   }
+   
+   public int getControlledSize()
+   {
+      return size;
    }
 
    //==============================================================
