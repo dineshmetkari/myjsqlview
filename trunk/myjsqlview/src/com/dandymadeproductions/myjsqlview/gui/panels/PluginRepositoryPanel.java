@@ -11,7 +11,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 10/01/2012
+// Version 1.5 10/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,9 @@
 //             to tableHeadings & Proper Filling of Plugin Listing Table. Changed
 //             Method getSelectedPlugin() to getSelectedPluginInfo() & Return Type
 //             & Composition. Added Method getSelectedPluginPath().
+//         1.5 Change in Constructor Instance pluginModule to plugin & Type Plugin
+//             Along pluginListIterator to Reflect. Also the Same Type Change in
+//             getSelectPluginInfo() for selectedPlugin.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -65,7 +68,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableColumn;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
-import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
+import com.dandymadeproductions.myjsqlview.plugin.Plugin;
 import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
@@ -77,7 +80,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
  * the panel to display and allow selecting of plugins.
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/01/2012
+ * @version 1.5 10/01/2012
  */
 
 public class PluginRepositoryPanel extends JPanel
@@ -107,11 +110,13 @@ public class PluginRepositoryPanel extends JPanel
       
       // Instances
       ArrayList<String> tableHeadings;
-      MyJSQLView_PluginModule pluginModule;
-      ImageIcon tabIcon;
+      Iterator<Plugin> pluginsListIterator;
+      Plugin plugin;
+      
       TableColumn tableColumn;
       JScrollPane tableScrollPane;
       
+      ImageIcon tabIcon;
       MyJSQLView_ResourceBundle resourceBundle;
       String resource, resourceTabIcon;
       
@@ -140,19 +145,19 @@ public class PluginRepositoryPanel extends JPanel
       resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Size", "Size");
       tableHeadings.add(resource);
       
-      Iterator<MyJSQLView_PluginModule> pluginsListIterator = pluginRepository.getPluginItems().iterator();
+      pluginsListIterator = pluginRepository.getPluginItems().iterator();
       
       int i = 0;
 
       while (pluginsListIterator.hasNext())
       {
-         pluginModule = pluginsListIterator.next();
+         plugin = pluginsListIterator.next();
          
          pluginsTableData[i][TABICON_COLUMN] = tabIcon;
-         pluginsTableData[i][NAME_COLUMN] = pluginModule.getControlledName();
-         pluginsTableData[i][VERSION_COLUMN] = pluginModule.getControlledVersion();
-         pluginsTableData[i][CATEGORY_COLUMN] = pluginModule.getControlledCategory();
-         pluginsTableData[i][SIZE_COLUMN] = Integer.valueOf(pluginModule.getSize());
+         pluginsTableData[i][NAME_COLUMN] = plugin.getControlledName();
+         pluginsTableData[i][VERSION_COLUMN] = plugin.getControlledVersion();
+         pluginsTableData[i][CATEGORY_COLUMN] = plugin.getControlledCategory();
+         pluginsTableData[i][SIZE_COLUMN] = Integer.valueOf(plugin.getSize());
          
          i++;
       }
@@ -220,7 +225,7 @@ public class PluginRepositoryPanel extends JPanel
          if (pluginListTable.getValueAt(selectedRow, 0) != null)
          {
             Object[] pluginInfo = new Object[5];
-            MyJSQLView_PluginModule selectedPlugin;
+            Plugin selectedPlugin;
             
             selectedPlugin = (pluginRepository.getPluginItems()).get(selectedRow);
             pluginInfo[0] = selectedPlugin.getName();
