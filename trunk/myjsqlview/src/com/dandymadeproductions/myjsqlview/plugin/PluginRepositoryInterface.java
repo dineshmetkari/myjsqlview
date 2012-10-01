@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.1 09/11/2012
+// Version 1.2 09/30/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 //=================================================================
 // Version 1.0 Initial PluginRepositoryInterface Class.
 //         1.1 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
+//         1.2 Changed Interface addPluginItem(String) to MyJSQLView_PluginModule
+//             Argument. Same With getPluginItems().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -47,10 +49,10 @@ import java.util.ArrayList;
  * within the  MyJSQLView as a repository definition for plugins.   
  * 
  * @author Dana M. Proctor
- * @version 1.0 09/08/2012
+ * @version 1.2 09/30/2012
  */
 
-interface PluginRepositoryInterface
+public interface PluginRepositoryInterface
 {  
    //==============================================================
    // Class method to setup up the repository.
@@ -70,7 +72,7 @@ interface PluginRepositoryInterface
    // Class method to add an plugin item to the repository.
    //==============================================================
 
-   void addPluginItem(String pluginItem);
+   void addPluginItem(MyJSQLView_PluginModule pluginItem);
    
    //==============================================================
    // Class method to allow the collection of a name that will be
@@ -99,5 +101,5 @@ interface PluginRepositoryInterface
    // that are associated with the repository.
    //==============================================================
 
-   ArrayList<String> getPluginItems();
+   ArrayList<MyJSQLView_PluginModule> getPluginItems();
 }
