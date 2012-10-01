@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.2 09/30/2012
+// Version 3.3 10/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //         3.0 Made All Class Instances Protected. Added Controlled Getter Methods.
 //         3.1 Added Class Instance author & Methods getAuthor() & getControlledAuthor().
 //         3.2 Added Class Instances category, size, & Their Getter Methods.
+//         3.3 Comment Change.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -86,7 +87,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.2 09/30/2012
+ * @version 3.3 10/01/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -166,7 +167,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    }
    
    //==============================================================
-   // Class method to get/set the plugin's name.
+   // Class method to get/set the plugin's author.
    // Interface requirement.
    //==============================================================
 
