@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.2 10/01/2012
+// Version 1.3 10/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@
 //         1.2 Changed Class Instance pluginList Parameter from String to
 //             MyJSQLView_PluginModule. Likewise for Method addPluginItem() &
 //             getPluginItems().
+//         1.3 Changed Class Instance pluginList Parameter from MyJSQLView_PluginModule
+//             to Plugin Likewise for Method addPluginItem() & getPluginItems().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,7 +58,7 @@ import javax.swing.JOptionPane;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/01/2012
+ * @version 1.3 10/01/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -65,7 +67,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    private String repositoryName;
    private String repositoryPath;
    private String repositoryType;
-   private ArrayList<MyJSQLView_PluginModule> pluginsList;
+   private ArrayList<Plugin> pluginsList;
    
    public static final String FILE = "file";
    public static final String HTTP = "http";
@@ -81,7 +83,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
       repositoryName = "";
       repositoryPath = "";
       repositoryType = UNKNOWN;
-      pluginsList = new ArrayList <MyJSQLView_PluginModule>();
+      pluginsList = new ArrayList <Plugin>();
    }
    
    //==============================================================
@@ -97,7 +99,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    // Class method to add an plugin item to the repository.
    //==============================================================
 
-   public void addPluginItem(MyJSQLView_PluginModule pluginItem)
+   public void addPluginItem(Plugin pluginItem)
    {
       pluginsList.add(pluginItem);
    }
@@ -137,7 +139,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    // that are associated with the repository.
    //==============================================================
 
-   public ArrayList<MyJSQLView_PluginModule> getPluginItems()
+   public ArrayList<Plugin> getPluginItems()
    {
       return pluginsList;
    }
