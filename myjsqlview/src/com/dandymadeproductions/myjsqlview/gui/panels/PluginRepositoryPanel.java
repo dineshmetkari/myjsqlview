@@ -11,7 +11,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.3 09/25/2012
+// Version 1.4 10/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,13 @@
 //         1.2 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //         1.3 Rolling Update. Change in Constructor Argument from ArrayList to
 //             PluginRepository. Added Methods getRepositoryName/Path/Type().
+//         1.4 Changed Class Instance pluginsTable to pluginListTable. Added static
+//             final Class Instances for Table Column Definitions. Added Constructor
+//             Argument ListSelectionListener. Added Constructor Instances pluginModule,
+//             tabIcon, tableColumn, & resourceTabIcon. Also in Constructor Additions
+//             to tableHeadings & Proper Filling of Plugin Listing Table. Changed
+//             Method getSelectedPlugin() to getSelectedPluginInfo() & Return Type
+//             & Composition. Added Method getSelectedPluginPath().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -50,11 +57,15 @@ import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.TableColumn;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
@@ -66,7 +77,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
  * the panel to display and allow selecting of plugins.
  * 
  * @author Dana M. Proctor
- * @version 1.3 09/25/2012
+ * @version 1.4 10/01/2012
  */
 
 public class PluginRepositoryPanel extends JPanel
@@ -75,53 +86,90 @@ public class PluginRepositoryPanel extends JPanel
    private static final long serialVersionUID = -7266741803741987318L;
    
    private PluginRepository pluginRepository;
-   private Object[][] pluginsTableData;
+   private JTable pluginListTable;
    private MyJSQLView_TableModel tableModel;
-   private JTable pluginsTable;
-
+   private Object[][] pluginsTableData;
+   
+   private static final int TABICON_COLUMN = 0;
+   private static final int NAME_COLUMN = 1;
+   private static final int VERSION_COLUMN = 2;
+   private static final int CATEGORY_COLUMN = 3;
+   private static final int SIZE_COLUMN = 4;
+   
    //===========================================================
    // PluginRepositoryPanel Constructor
    //===========================================================
 
-   public PluginRepositoryPanel(PluginRepository pluginRepository)
+   public PluginRepositoryPanel(PluginRepository pluginRepository,
+                                ListSelectionListener listSelectionListener)
    {
       this.pluginRepository = pluginRepository;
       
       // Instances
       ArrayList<String> tableHeadings;
-      MyJSQLView_ResourceBundle resourceBundle;
+      MyJSQLView_PluginModule pluginModule;
+      ImageIcon tabIcon;
+      TableColumn tableColumn;
       JScrollPane tableScrollPane;
-      String resource;
+      
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resource, resourceTabIcon;
       
       // Setup
-      
       tableHeadings = new ArrayList <String>();
-      pluginsTableData = new Object[pluginRepository.getPluginItems().size()][1];
+      pluginsTableData = new Object[pluginRepository.getPluginItems().size()][5];
       resourceBundle = MyJSQLView.getResourceBundle();
       setLayout(new BorderLayout());
       
-      // Setup table, listing of plugins.
+      // Setup table, headings then listing of plugins.
       
-      resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Plugin", "Plugin");
+      resourceTabIcon = resourceBundle.getResourceString("PluginRepositoryPanel.label.TabIcon", "Tab Icon");
+      tableHeadings.add(resourceTabIcon);
+      
+      tabIcon = resourceBundle.getResourceImage("images/icons/" + "newsiteLeafIcon.png");
+      
+      resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Name", "Name");
       tableHeadings.add(resource);
       
-      Iterator<String> pluginsListIterator = pluginRepository.getPluginItems().iterator();
+      resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Version", "Version");
+      tableHeadings.add(resource);
+      
+      resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Category", "Category");
+      tableHeadings.add(resource);
+      
+      resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Size", "Size");
+      tableHeadings.add(resource);
+      
+      Iterator<MyJSQLView_PluginModule> pluginsListIterator = pluginRepository.getPluginItems().iterator();
+      
       int i = 0;
 
       while (pluginsListIterator.hasNext())
-         pluginsTableData[i++][0] = pluginsListIterator.next();
-      
+      {
+         pluginModule = pluginsListIterator.next();
+         
+         pluginsTableData[i][TABICON_COLUMN] = tabIcon;
+         pluginsTableData[i][NAME_COLUMN] = pluginModule.getControlledName();
+         pluginsTableData[i][VERSION_COLUMN] = pluginModule.getControlledVersion();
+         pluginsTableData[i][CATEGORY_COLUMN] = pluginModule.getControlledCategory();
+         pluginsTableData[i][SIZE_COLUMN] = Integer.valueOf(pluginModule.getSize());
+         
+         i++;
+      }
       
       tableModel = new MyJSQLView_TableModel(tableHeadings, pluginsTableData);
 
-      pluginsTable = new JTable(tableModel);
-      pluginsTable.getTableHeader().setFont(new Font(getFont().getName(), Font.BOLD,
+      pluginListTable = new JTable(tableModel);
+      pluginListTable.getTableHeader().setFont(new Font(getFont().getName(), Font.BOLD,
                                                      getFont().getSize()));
+      tableColumn = pluginListTable.getColumnModel().getColumn(TABICON_COLUMN);
+      tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
+      pluginListTable.getSelectionModel().addListSelectionListener(listSelectionListener);
       
       // Create a scrollpane for the plugins table and place
       // in the center of the panel.
       
-      tableScrollPane = new JScrollPane(pluginsTable);
+      tableScrollPane = new JScrollPane(pluginListTable);
       add(tableScrollPane, BorderLayout.CENTER);
    }
    
@@ -156,26 +204,55 @@ public class PluginRepositoryPanel extends JPanel
    }
    
    //==============================================================
-   // Class method to return the selected plugin entry in the
-   // panel if any.
+   // Class method to return the selected plugin entry information.
    //==============================================================
    
-   public String getSelectedPlugin()
+   public Object[] getSelectedPluginInfo()
    {
       int selectedRow;
-      String pluginName = "";
       
       // Obtain the selected plugin if any.
       
-      selectedRow = pluginsTable.getSelectedRow();
+      selectedRow = pluginListTable.getSelectedRow();
 
       if (selectedRow != -1)
       {
-         if (pluginsTable.getValueAt(selectedRow, 0) != null)
+         if (pluginListTable.getValueAt(selectedRow, 0) != null)
          {
-            pluginName = (String) pluginsTable.getValueAt(selectedRow, 0);
+            Object[] pluginInfo = new Object[5];
+            MyJSQLView_PluginModule selectedPlugin;
+            
+            selectedPlugin = (pluginRepository.getPluginItems()).get(selectedRow);
+            pluginInfo[0] = selectedPlugin.getName();
+            pluginInfo[1] = selectedPlugin.getAuthor();
+            pluginInfo[2] = selectedPlugin.getVersion();
+            pluginInfo[3] = selectedPlugin.getPath_FileName();
+            pluginInfo[4] = selectedPlugin.getDescription();
+            
+            return pluginInfo;
          }
       }
-      return pluginName;
+      return null;
+   }
+   
+   //==============================================================
+   // Class method to return the selected plugin entry path.
+   //==============================================================
+   
+   public String getSelectedPluginPath()
+   {
+      int selectedRow;
+      String pluginPath = "";
+      
+      // Obtain the selected plugin if any.
+      
+      selectedRow = pluginListTable.getSelectedRow();
+
+      if (selectedRow != -1)
+      {
+         if (pluginListTable.getValueAt(selectedRow, 0) != null)
+            pluginPath = ((pluginRepository.getPluginItems()).get(selectedRow)).getPath_FileName();
+      }
+      return pluginPath;
    }
 }
