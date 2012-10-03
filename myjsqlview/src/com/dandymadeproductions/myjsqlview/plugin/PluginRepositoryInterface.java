@@ -35,7 +35,7 @@
 //         1.2 Changed Interface addPluginItem(String) to MyJSQLView_PluginModule
 //             Argument. Same With getPluginItems().
 //         1.3 Class Methods addPluginItem() & getPluginItems() Change to Plugin.
-//         1.4 Minor Code Formatting.
+//         1.4 Minor Code Formatting & Return Type for setRepository().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -68,7 +68,7 @@ public interface PluginRepositoryInterface
    // exp. http://dandymadeproductions.com/
    //==============================================================
 
-   void setRepository(String repository);
+   boolean setRepository(String repository);
    
    //==============================================================
    // Class method to add an plugin item to the repository.
