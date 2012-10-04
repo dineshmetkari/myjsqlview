@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.0 09/21/2012
+// Version 8.1 10/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -149,6 +149,9 @@
 //         7.9 Made Method getStandardCharacters() Public.
 //         8.0 Removed the Use of MyJSQLView_ResouceBundle For Getting localeIcon
 //             in Method processLocaleLanguage().
+//         8.1 Class Method clearCache() Identifiable Error Output to Routine &
+//             Skipping Directory Entries. Commented Out System.out in Method
+//             processLocaleLanguage().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -210,7 +213,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.0 09/21/2012
+ * @version 8.1 10/11/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -275,22 +278,25 @@ public class MyJSQLView_Utils extends MyJSQLView
             int i = 0;
             while (i < cacheContents.length)
             {
-               fileDeleted = cacheContents[i].delete();
-               
-               if (!fileDeleted)
-                  cacheClearFailure = true;
+               if (cacheContents[i].isFile())
+               {
+                  fileDeleted = cacheContents[i].delete();
+                  
+                  if (!fileDeleted)
+                     cacheClearFailure = true;  
+               }
                i++;
             }
          }
          catch (SecurityException se)
          {
            if (MyJSQLView.getDebug()) 
-              System.out.println("Failed to Clear Cache: " + se.toString());
+              System.out.println("MyJSQLView_Utils clearCache() Failed to Clear Cache: " + se.toString());
          }
          
          if (cacheClearFailure)
             if (MyJSQLView.getDebug())
-               System.out.println("Failed to Clear a Cache File.");
+               System.out.println("MyJSQLView_Utils clearCache() Failed to Clear a Cache File.");
       }
    }
    
@@ -1315,7 +1321,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             for (int i = 0; i < localeFileNames.length; i++)
             {
                lastIndexOfDot = localeFileNames[i].lastIndexOf(".");
-               System.out.println(localeFileNames[i]);
+               // System.out.println(localeFileNames[i]);
 
                if (lastIndexOfDot > 0
                    && (localeFileNames[i].substring(lastIndexOfDot + 1).equals("properties")))
