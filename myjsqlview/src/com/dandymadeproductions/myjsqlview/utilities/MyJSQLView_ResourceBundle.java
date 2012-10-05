@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.7 09/10/2012
+// Version 2.8 10/05/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -70,6 +70,9 @@
 //                        Instance imagesData.
 //         2.6 08/20/2012 Change in Constructor boolean Argument cacheJar to Just cache.
 //         2.7 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
+//         2.8 10/05/2012 All debug Output Displays Class & Method Information. Added Class
+//                        Methods getResourceFile() & getResourceBytes(). Class Method
+//                        getJAR_ImageResource() Changed to getJAR_Resource().
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -91,6 +94,7 @@ import java.net.HttpURLConnection;
 import java.net.JarURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarFile;
@@ -108,7 +112,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.7 09/10/2012
+ * @version 2.8 10/05/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -187,7 +191,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
                   catch (IOException ioe)
                   {
                      if (debugMode)
-                        System.out.println("Failed to Close Cache Stream.\n" + ioe.toString());
+                        System.out.println("MyJSQLView_ResourceBundle Constructor()\n"
+                                           + "Failed to Close Cache Stream.\n" + ioe.toString());
                   }
                }
             }
@@ -232,7 +237,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
          else
          {
             if (!localeListData.isEmpty() && debugMode)
-               System.out.println("Invalid Resource Key: " + resourceKey);
+               System.out.println("MyJSQLView_ResourceBundle getResourceString()\n"
+                                  + "Invalid Resource Key: " + resourceKey);
 
             return getDefaultResourceString(defaultValue);
          }
@@ -240,7 +246,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
       else
       {
          if (debugMode)
-            System.out.println("Either Undefined Locale or Resource Key.");
+            System.out.println("MyJSQLView_ResourceBundle getResourceString()\n"
+                               + "Either Undefined Locale or Resource Key.");
 
          return getDefaultResourceString(defaultValue);
       }
@@ -257,7 +264,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
       else
       {
          if (debugMode)
-            System.out.println("Undefined Resource Default Value.");
+            System.out.println("MyJSQLView_ResourceBundle getDefaultResourceString()\n"
+                               + "Undefined Resource Default Value.");
 
          return "";
       }
@@ -288,7 +296,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
                ImageIcon imageIcon = new ImageIcon(imageResourceURL);
                
                if (debugMode && (imageIcon.getIconWidth() == -1 || imageIcon.getIconHeight() == -1))
-                  System.out.println("Failed to find image file: " + imageResourceURL.getFile() + "\n");
+                  System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
+                                     + "Failed to find image file: " + imageResourceURL.getFile() + "\n");
                
                return imageIcon;
             }
@@ -300,15 +309,16 @@ public class MyJSQLView_ResourceBundle implements Serializable
                try
                {
                   if (cacheJar && (resourceURL.toExternalForm().indexOf("jar:file:") == -1))
-                     return getJAR_ImageResource(imageFileName, new URL("jar:file:" + cachedJAR_FileName
-                                                                        + "!/"));
+                     return new ImageIcon(getJAR_Resource(
+                        imageFileName, new URL("jar:file:" + cachedJAR_FileName + "!/")));
                   else
-                     return getJAR_ImageResource(imageFileName, resourceURL);
+                     return new ImageIcon(getJAR_Resource(imageFileName, resourceURL));
                }
                catch (IOException ioe)
                {
                   if (debugMode)
-                     System.out.println("Failed to close resources or create cache URL.\n"
+                     System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
+                                        + "Failed to close resources or create cache URL.\n"
                                         + ioe.toString());
                   return null;
                }
@@ -328,14 +338,220 @@ public class MyJSQLView_ResourceBundle implements Serializable
          catch (MalformedURLException mfe)
          {
             if (debugMode)
-               System.out.println("Failed to Create Image URL.\n" + mfe.toString());
+               System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
+                                  + "Failed to Create Image URL.\n" + mfe.toString());
             return null;
          }
       }
       else
       {
          if (debugMode)
-            System.out.println("Either Undefined resourceURL or image file.");
+            System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
+                               + "Either Undefined resourceURL or image file.");
+
+         return null;
+      }
+   }
+   
+   //==============================================================
+   // Class Method for allowing classes to obtain a specified
+   // file resource.
+   //==============================================================
+
+   public File getResourceFile(String fileName)
+   {
+      // Method Instances
+      URL fileResourceURL = null;
+
+      // Check some type of valid input.
+      if (resourceURL != null && fileName != null)
+      {
+         // System.out.println("File Resource: " + resourceURL.toExternalForm());
+            
+         //====
+         // Handle resource from file & http locations.
+         if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
+         {  
+            try
+            {
+               fileResourceURL = new URL(resourceURL.toExternalForm() + fileName);
+               return new File(fileResourceURL.toURI());
+            }
+            catch (Exception e)
+            {
+               displayErrors("MyJSQLView_ResourceBundle getResourceFile() \n"
+                             + "Failed to identity URL protocol in order to process, , "
+                             + fileResourceURL.toExternalForm());
+               return null;
+            }
+         }
+
+         //====
+         // Does not resource from a jar file.
+         else if (resourceType.equals(JAR_RESOUCE))
+         {
+            JOptionPane.showMessageDialog(null, "MyJSQLView_ResourceBundle getResourceFile() Only Supports\n"
+                                                + "Local File Resources!", "Alert", JOptionPane.ERROR_MESSAGE);
+            return null;
+         }
+
+         //====
+         // Unknown
+         else
+         {
+            displayErrors("MyJSQLView_ResourceBundle getResourceFile() \n"
+                          + "Failed to identity URL protocol in order to process, , "
+                          + resourceURL.getProtocol());
+            return null;
+          }   
+      }
+      else
+      {
+         if (debugMode)
+            System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
+                               + "Either Undefined resourceURL or image file.");
+
+         return null;
+      }
+   }
+   
+   //==============================================================
+   // Class Method for allowing classes to obtain a specified
+   // resource via a byte array. Use this for local & remote
+   // resources.
+   //==============================================================
+
+   public byte[] getResourceBytes(String resourceName)
+   {
+      // Method Instances
+      URL byteResourceURL = null;
+      InputStream inputStream;
+      BufferedInputStream bufferedInputStream;
+      int inSize;
+      byte[] resourceBytes;
+
+      // Check some type of valid input.
+      if (resourceURL != null && resourceName != null)
+      {
+         // System.out.println("Byte Resource: " + resourceURL.toExternalForm());
+         
+         try
+         {
+            //====
+            // Handle resource from file & http locations.
+            if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
+            {  
+               byteResourceURL = new URL(resourceURL.toExternalForm() + resourceName);
+               
+               inputStream = null;
+               bufferedInputStream = null;
+               
+               try
+               {
+                  if (resourceType.equals(FILE_RESOURCE))
+                     inputStream = new FileInputStream(new File(resourceURL.toExternalForm()
+                                                       + resourceName));
+                  else
+                  {
+                     URLConnection urlConnection = byteResourceURL.openConnection();
+                     inputStream = urlConnection.getInputStream();
+                     
+                  }
+                  bufferedInputStream = new BufferedInputStream(inputStream);
+                  inSize = bufferedInputStream.available();
+                  resourceBytes = new byte[inSize];
+                  
+                  int i = 0;
+                  
+                  while (i < inSize)
+                     resourceBytes[i++] = (byte) bufferedInputStream.read();
+                  
+                  return resourceBytes;
+                  
+               }
+               catch (IOException ioe)
+               {
+                  if (MyJSQLView.getDebug())
+                     System.out.println("MyJSQLView_ResourceBundle getResourceBytes() \n"
+                                        + "Error Reading Resource. " + ioe.toString());
+                  return null;
+               }
+               finally
+               {
+                  try
+                  {
+                     if (bufferedInputStream != null)
+                        bufferedInputStream.close();
+                  }
+                  catch (IOException ioe)
+                  {
+                     if (MyJSQLView.getDebug())
+                        System.out.println("MyJSQLView_ResourceBundle getResourceBytes() \n"
+                                           + "Failed to Close BufferedInputStream. " + ioe.toString());
+                  }
+                  finally
+                  {
+                     try
+                     {
+                        if (inputStream != null)
+                           inputStream.close();
+                     }
+                     catch (IOException ioe)
+                     {
+                        if (MyJSQLView.getDebug())
+                           System.out.println("WriteDataFile writeDataFileText() \n"
+                                              + "Failed to Close FileOutputStream. " + ioe.toString());
+                     }     
+                  }
+               }
+            }
+
+            //====
+            // Handle resource from a jar file.
+            else if (resourceType.equals(JAR_RESOUCE))
+            {
+               try
+               {
+                  if (cacheJar && (resourceURL.toExternalForm().indexOf("jar:file:") == -1))
+                     return getJAR_Resource(resourceName, new URL("jar:file:" + cachedJAR_FileName
+                                                                        + "!/"));
+                  else
+                     return getJAR_Resource(resourceName, resourceURL);
+               }
+               catch (IOException ioe)
+               {
+                  if (debugMode)
+                     System.out.println("MyJSQLView_ResourceBundle getResourceBytes()\n"
+                                        + "Failed to close resources or create cache URL.\n"
+                                        + ioe.toString());
+                  return null;
+               }
+            }
+
+            //====
+            // Unknown
+            else
+            {
+               displayErrors("MyJSQLView_ResourceBundle getResourceBytes() \n"
+                             + "Failed to identity URL protocol in order to process, , "
+                             + resourceURL.getProtocol());
+               return null;
+            }
+
+         }
+         catch (MalformedURLException mfe)
+         {
+            if (debugMode)
+               System.out.println("MyJSQLView_ResourceBundle getResourceBytes()\n"
+                                  + "Failed to Create Resource URL.\n" + mfe.toString());
+            return null;
+         }
+      }
+      else
+      {
+         if (debugMode)
+            System.out.println("MyJSQLView_ResourceBundle getResourceBytes()\n"
+                               + "Either Undefined resourceURL or resource name.");
 
          return null;
       }
@@ -353,7 +569,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
       else
       {
          if (debugMode)
-            System.out.println("Failed to find image key: " + imageKey);
+            System.out.println("MyJSQLView_ResourceBundle getImage()\n"
+                               + "Failed to find image key: " + imageKey);
          return null;
       }
    }
@@ -531,7 +748,6 @@ public class MyJSQLView_ResourceBundle implements Serializable
                // Locale File Qualifier
                if (zipEntry.getName().endsWith(localeFileName))
                {
-
                   break;
                }
                else
@@ -627,29 +843,29 @@ public class MyJSQLView_ResourceBundle implements Serializable
    // resource type.
    //==============================================================
 
-   private ImageIcon getJAR_ImageResource(String imageFileName, URL imageResourceURL) throws IOException
+   private byte[] getJAR_Resource(String resourceName, URL resourceURL) throws IOException
    {
       // Method Instances
       JarURLConnection jarURLConnection;
       JarFile jarFile;
       ZipEntry zipEntry;
       InputStream inputStream;
-      int imageFileSize;
-      byte[] imageBytes;
+      int fileSize;
+      byte[] resourceBytes;
 
       // Setup
       jarFile = null;
       inputStream = null;
-      imageBytes = null;
+      resourceBytes = null;
 
       try
       {
-         // System.out.println("Image Resource JAR: " + imageResourceURL.toExternalForm());
+         // System.out.println("Resource JAR: " + imageResourceURL.toExternalForm());
          
-         jarURLConnection = (JarURLConnection) imageResourceURL.openConnection();
+         jarURLConnection = (JarURLConnection) resourceURL.openConnection();
          jarFile = jarURLConnection.getJarFile();
 
-         zipEntry = jarFile.getEntry(imageFileName);
+         zipEntry = jarFile.getEntry(resourceName);
 
          // Try Brute Forcing it.
          if (zipEntry == null)
@@ -659,7 +875,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
                zipEntry = (ZipEntry) entries.nextElement();
 
                // Image File Qualifier
-               if (zipEntry.getName().equals(imageFileName))
+               if (zipEntry.getName().equals(resourceName))
                   break;
                else
                   zipEntry = null;
@@ -671,44 +887,47 @@ public class MyJSQLView_ResourceBundle implements Serializable
          {
             inputStream = jarFile.getInputStream(zipEntry);
 
-            imageFileSize = (int) zipEntry.getSize();
+            fileSize = (int) zipEntry.getSize();
 
             // Obtain bytes
-            if (imageFileSize != -1)
+            if (fileSize != -1)
             {
-               imageBytes = new byte[imageFileSize];
+               resourceBytes = new byte[fileSize];
 
                int readPosition = 0;
                int byteChunk = 0;
 
-               while ((imageFileSize - readPosition) > 0)
+               while ((fileSize - readPosition) > 0)
                {
-                  byteChunk = inputStream.read(imageBytes, readPosition, imageFileSize - readPosition);
+                  byteChunk = inputStream.read(resourceBytes, readPosition, fileSize - readPosition);
                   if (byteChunk == -1)
                      break;
 
                   readPosition += byteChunk;
                }
-               return new ImageIcon(imageBytes);
+               return resourceBytes;
             }
             else
             {
                if (debugMode)
-                  System.out.println("Failed to Determine Image File Size: " + imageFileName);
+                  System.out.println("MyJSQLView_ResourceBundle getJAR_Resource()\n"
+                                     + "Failed to Determine Resource Size: " + resourceName);
                return null;
             }
          }
          else
          {
             if (debugMode)
-               System.out.println("Image File Entry Not Found: " + imageFileName);
+               System.out.println("MyJSQLView_ResourceBundle getJAR_Resource()\n"
+                                  + "Resource Entry Not Found: " + resourceName);
             return null;
          }
       }
       catch (IOException ioe)
       {
          if (debugMode)
-            System.out.println("Failed Processing of Image from Jar: " + imageFileName);
+            System.out.println("MyJSQLView_ResourceBundle getJAR_Resource()\n"
+                               + "Failed Processing of Resource from Jar: " + resourceName);
          return null;
       }
       finally
@@ -759,7 +978,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
             if (!cacheDirectoryFile.mkdir())
                if (debugMode)
                {
-                  System.out.println("Failed to create Cache Directory");
+                  System.out.println("MyJSQLView_ResourceBundle cacheJAR()\n"
+                                     + "Failed to create Cache Directory");
                   return cached;
                }
 
@@ -775,7 +995,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
       catch (IOException ioe)
       {
          if (debugMode)
-            System.out.println("Failed to Cache JAR.\n" + ioe.toString());
+            System.out.println("MyJSQLView_ResourceBundle cacheJAR()\n"
+                               + "Failed to Cache JAR.\n" + ioe.toString());
       }
       finally
       {
