@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.4 10/01/2012
+// Version 2.5 10/04/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,11 @@
 //             Changed Behavior of stateChanged() Repository Tabs in Displaying Information.
 //             Added ListSelectionListener & Its Associated Method. Added Class Method
 //             displayPluginInfo().
+//         2.5 Rolling Update Continuing the Rebuild from 2.1, 2.2, 2.3, & 2.4. Many
+//             Changes. Removed Class Instance repositoryType. General Cleanup. Class
+//             Method installFilePlugin() Only Add Loading Plugin to List if PluginLoading
+//             Does Not Throw an Inital MalFormedURLException. Class Method addRepository()
+//             Still Testing & Finalizing.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,7 +149,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.4 10/01/2012
+ * @version 2.5 10/104/2012
  */
 
 //=================================================================
@@ -179,7 +184,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    private ImageIcon statusWorkingIcon, deleteRepositoryIcon;
    private ImageIcon defaultModuleIcon, removeIcon;
    
-   private String tabType, repositoryType;
+   private String tabType;
    private int currentTabIndex, removeTabIndex, addTabIndex;
    
    private static final String MANAGE = "manage";
@@ -289,9 +294,12 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
       
       // Default MyJSQLView repository.
       
+      
       //createDefaultMyJSQLViewRepository();
       
+      
       // Additional repositories as defined by configuration file?
+      
       
       //com.dandymadeproductions.myjsqlview.gui.panels.InstallPanel_JEdit testPanel = 
       //   new com.dandymadeproductions.myjsqlview.gui.panels.InstallPanel_JEdit(false);
@@ -420,9 +428,10 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          {
             infoViewCardLayout.show(infoViewPanel, INFO_VIEW_LOADING_STATUS);
             
-            // Install from local file.
+            // Local file.
             if (tabType.equals(MANAGE))
                installFilePlugin(this);
+            // Repository
             else
             {
                Object selectedComponent = centralTabsPane.getSelectedComponent();
@@ -448,8 +457,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
             
             // Update loading plugins list.
             displayLoadingPluginsData();
-            //loadingPluginsTableModel.setValues(loadingPluginTableData);  
          }
+         // Refresh repository plugin list.
          else if (frameSource == refreshButton)
          {
             if (!tabType.equals(MANAGE))
@@ -524,6 +533,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          }
          
          // Set the appropriate information view.
+         
          if (tabType.equals(MANAGE))
          {
             loadedPluginsTable.clearSelection();
@@ -683,19 +693,18 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          fileName = pluginFileChooser.getSelectedFile().getName();
          fileName = "file:" + pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
 
-         // Add the module to the loading list & try Loading
-         // the module.
+         // Try Loading the module and if appears ok add
+         // the module to the loading list.
          if (!fileName.equals(""))
          {
-            loadingPluginsList.add(fileName);
-            displayLoadingPluginsData();
-            //loadingPluginsTableModel.setValues(loadingPluginTableData);
-            
             MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
             
             try
             {
                new PluginLoader(parentFrame, new URL(fileName));
+               
+               loadingPluginsList.add(fileName);
+               displayLoadingPluginsData();
             }
             catch (MalformedURLException mfe)
             {
@@ -733,7 +742,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
       
       for (int i = 0; i < loadedPlugins.size(); i++)
       {
-         // Plugin tab icon, name, version and remove element.
+         // Plugin tab icon, name, author, version, path,
+         // description and remove element.
          
          if (loadedPlugins.get(i).getControlledTabIcon() == null)
             loadedPluginTableData[i][TABICON_COLUMN] = defaultModuleIcon;
@@ -758,15 +768,14 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    
    //==============================================================
    // Class Method for displaying the plugin information for a
-   // given 
+   // given selection either in the manage tab, already loaded
+   // plugin, or a repository.
    //==============================================================
 
    private void displayPluginInfo(Object[] params)
    {
       // Method Instances
       String infoText, path;
-      
-      // Display info for loaded plugin.
       
       // Name, Author, Version, Path, & Desciption
       if (params == null || params.length != 5)
@@ -829,7 +838,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
 
    private void refreshRepository()
    {
-      System.out.println("Refreshing Repository");
+      System.out.println("PluginFrame refreshRepository() Refreshing Repository");
    }
    
    //==============================================================
@@ -875,7 +884,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    
    //==============================================================
    // Class Method for adding a plugin repository, these are not
-   // local file systems repositories normally.
+   // local file systems repositories normally but may be.
    //==============================================================
 
    private void addRepository()
@@ -900,7 +909,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          addedTabIndex = removeTabIndex;
       
       // Setup and display a option pane to collect the
-      // repository name and location, url.
+      // repository name and location, url. Give it some
+      // default input for help.
       
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryName", "RepositoryName");
       repositoryNameLabel = new JLabel(resource, JLabel.CENTER);
@@ -954,27 +964,31 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
                pluginRepository = new FILE_PluginRepository();
             }
                
-            pluginRepository.setRepository(repositoryURLString);
             pluginRepository.setName(repositoryNameString);
+            // Still testing.
+            //((HTTP_PluginRepository) pluginRepository).setRepository2(repositoryNameString);
             
-            // Load up the tab with a predefined repository panel.
-            
-            pluginRepositoryPanel = new PluginRepositoryPanel(pluginRepository, this);
-            pluginRepositoryPanel.setBorder(BorderFactory.createCompoundBorder(
-               BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createLoweredBevelBorder()));
-            
-            centralTabsPane.insertTab(pluginRepository.getName(), null, pluginRepositoryPanel,
-                                     pluginRepository.getName(), addedTabIndex);
+            if (pluginRepository.setRepository(repositoryURLString) == true)
+            {
+               // Load up the tab with a predefined repository panel.
                
-            // Manage tracking and indexing on tabs.
-            
-            repositoryHashtable.put(repositoryNameString, repositoryURLString);
-            tabType = REPOSITORY;
-            currentTabIndex = addedTabIndex;
-            centralTabsPane.setSelectedIndex(addedTabIndex);
+               pluginRepositoryPanel = new PluginRepositoryPanel(pluginRepository, this);
+               pluginRepositoryPanel.setBorder(BorderFactory.createCompoundBorder(
+                  BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createLoweredBevelBorder()));
                
-            removeTabIndex++;
-            addTabIndex++;
+               centralTabsPane.insertTab(pluginRepository.getName(), null, pluginRepositoryPanel,
+                                        pluginRepository.getName(), addedTabIndex);
+                  
+               // Manage tracking and indexing on tabs.
+               
+               repositoryHashtable.put(repositoryNameString, repositoryURLString);
+               tabType = REPOSITORY;
+               currentTabIndex = addedTabIndex;
+               centralTabsPane.setSelectedIndex(addedTabIndex);
+                  
+               removeTabIndex++;
+               addTabIndex++;
+            }
          }  
       }
    }
@@ -1189,7 +1203,6 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
       tableScrollPane = new JScrollPane(loadingPluginTable);
       
       loadingViewPanel = new JPanel(new GridLayout(1, 1, 0, 0));
-      //loadingViewPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       loadingViewPanel.add(tableScrollPane);
       
       return loadingViewPanel;
