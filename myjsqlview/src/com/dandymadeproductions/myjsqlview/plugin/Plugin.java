@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.0 10/01/2012
+// Version 1.1 10/04/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial MyJSQLView Plugin Class.
+//         1.1 Added Class Instance jar & Getter/Setter Methods.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,12 +48,13 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * aspects of the Plugin Frame Repository Listings of Available Plugin Modules.  
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/01/2012
+ * @version 1.1 10/04/2012
  */
 
 public class Plugin extends MyJSQLView_PluginModule
 {
    // Class Instances
+   private String jar;
 
    //==============================================================
    // Plugin Constructor.
@@ -133,5 +135,19 @@ public class Plugin extends MyJSQLView_PluginModule
    public void setSize(int value)
    {
       size = value;
+   }
+   
+   //==============================================================
+   // Class method to get/set the plugin's jar.
+   //==============================================================
+   
+   public String getJAR()
+   {
+      return jar;
+   }
+
+   public void setJAR(String value)
+   {
+      jar = value;
    }
 }
