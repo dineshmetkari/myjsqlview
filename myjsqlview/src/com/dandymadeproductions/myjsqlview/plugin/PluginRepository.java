@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.3 10/01/2012
+// Version 1.4 10/04/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,7 @@
 //             getPluginItems().
 //         1.3 Changed Class Instance pluginList Parameter from MyJSQLView_PluginModule
 //             to Plugin Likewise for Method addPluginItem() & getPluginItems().
+//         1.4 Added static final Class Instance REPOSITORY_CACHED_FILE.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +59,7 @@ import javax.swing.JOptionPane;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/01/2012
+ * @version 1.4 10/04/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -73,6 +74,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    public static final String HTTP = "http";
    public static final String FTP = "ftp";
    public static final String UNKNOWN = "unknown";
+   public static final String REPOSITORY_CACHED_FILE = "repository-cache.xml";
    
    //===========================================================
    // PluginRepository Constructor
