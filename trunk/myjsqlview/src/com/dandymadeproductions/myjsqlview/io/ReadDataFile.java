@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 09/11/2012
+// Version 2.7 10/05/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,8 @@
 //         2.4 01/01/2012 Copyright Update.
 //         2.5 08/19/2012 Organized Imports.
 //         2.6 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
+//         2.7 10/05/2012 Class Method readInputFileText() Moved Closing fileStream
+//                        & fileBuff to finally.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -70,6 +72,7 @@ import java.io.IOException;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
 
 /**
@@ -80,7 +83,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * data from a given input file.
  * 
  * @author Dana M. Proctor
- * @version 2.6 09/11/2012
+ * @version 2.7 10/05/2012
  */
 
 public class ReadDataFile
@@ -103,6 +106,9 @@ public class ReadDataFile
 
    private byte[] readInputFileText(String inputFileString, boolean showDumpProgressBar)
    {
+      fileStream = null;
+      filebuff = null;
+      
       try
       {
          // Setting up InputStreams
@@ -149,8 +155,6 @@ public class ReadDataFile
             while (i < inSize)
                inBytes[i++] = (byte) filebuff.read();
          }
-         filebuff.close();
-         fileStream.close();
 
          // Check to see if canceled.
          if (validRead)
@@ -169,6 +173,34 @@ public class ReadDataFile
 
          JOptionPane.showMessageDialog(null, optionPaneStringErrors, "Alert", JOptionPane.ERROR_MESSAGE);
          return inBytes = null;
+      }
+      finally
+      {
+         try
+         {
+            if (filebuff != null)
+               filebuff.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("ReadDataFile readInputFileText() \n"
+                                  + "Failed to Close BufferedInputStream. " + ioe.toString());
+         }
+         finally
+         {
+            try
+            {
+               if (fileStream != null)
+                  fileStream.close();
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("ReadDataFile readInputFileText() \n"
+                                     + "Failed to Close FileInputStream. " + ioe.toString());
+            }     
+         }
       }
    }
 
