@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.2 09/26/2012
+// Version 3.3 10/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,9 +86,12 @@
 //         2.9 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         3.0 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //                        Made Class & Constructor Public.
-//         3.1 09/20/2012 Class Method loadPluginModules() Direct Setting of the Modules Path
-//                        by Using the Protected Class Instance pathFileName.
+//         3.1 09/20/2012 Class Method loadPluginModules() Direct Setting of the Modules
+//                        Path by Using the Protected Class Instance pathFileName.
 //         3.2 09/26/2012 Added Class Instance pathClassSeparator.
+//         3.3 10/10/2012 Class Method loadPluginModules() Attempt to Remove an Offending
+//                        pluginURLString When an Exception is Caught from the Plugin
+//                        Configuration File.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -119,6 +122,7 @@ import javax.swing.ImageIcon;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.gui.PluginFrame;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -129,7 +133,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.2 09/26/2012
+ * @version 3.3 10/10/2012
  */
 
 public class PluginLoader implements Runnable
@@ -567,6 +571,7 @@ public class PluginLoader implements Runnable
                catch (MalformedURLException mfe)
                {
                   displayErrors("PluginLoader classLoader Exception: \n" + mfe.toString());
+                  PluginFrame.removePluginConfigurationModule(pluginURLString);
                   return null;
                }
             }
@@ -588,6 +593,7 @@ public class PluginLoader implements Runnable
             catch (Exception e)
             {
                displayErrors("PluginLoader loadPluginModules() Exception: \n" + e.toString());
+               PluginFrame.removePluginConfigurationModule(pluginURLString);
             }
          }
       }
