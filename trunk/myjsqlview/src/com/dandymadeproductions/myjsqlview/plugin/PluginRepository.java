@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 10/04/2012
+// Version 1.5 10/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //         1.3 Changed Class Instance pluginList Parameter from MyJSQLView_PluginModule
 //             to Plugin Likewise for Method addPluginItem() & getPluginItems().
 //         1.4 Added static final Class Instance REPOSITORY_CACHED_FILE.
+//         1.5 Added Interface Requirements setRepositoryType() & clearPluginItems().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -59,7 +60,7 @@ import javax.swing.JOptionPane;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/04/2012
+ * @version 1.5 10/10/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -98,12 +99,31 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    }
    
    //==============================================================
+   // Class method to set the repository type.
+   //==============================================================
+   
+   public void setType(String type)
+   {
+      repositoryType = type; 
+   }
+  
+   //==============================================================
    // Class method to add an plugin item to the repository.
    //==============================================================
 
    public void addPluginItem(Plugin pluginItem)
    {
       pluginsList.add(pluginItem);
+   }
+   
+   //==============================================================
+   // Class method to clear the plugin items in the repository
+   // list.
+   //==============================================================
+
+   public void clearPluginItems()
+   {
+      pluginsList.clear();
    }
    
    //==============================================================
