@@ -1,0 +1,24 @@
+<!-- DTD used by MyJSQLView to validate a repository XML file used to
+     describe available plugins at the location. The location would
+     normally desribed as a URL based resource. 
+
+     Version 1.0 10/07/2012 Original myjsqlview_plugins.dtd.
+     
+     danap@dandymadeproductions.com
+-->
+
+<!ENTITY % att-bool '( TRUE | FALSE )' >
+
+<!ELEMENT PLUGINS ( PLUGIN+ ) >
+
+<!ELEMENT PLUGIN ( AUTHOR?, VERSION, PATH, DESCRIPTION?, CATEGORY?, SIZE? ) >
+<!ATTLIST PLUGIN
+	NAME CDATA #REQUIRED 
+	JAR CDATA #REQUIRED >
+
+<!ELEMENT AUTHOR ( #PCDATA ) >
+<!ELEMENT VERSION ( #PCDATA ) >
+<!ELEMENT PATH ( #PCDATA ) >
+<!ELEMENT DESCRIPTION ( #PCDATA ) >
+<!ELEMENT CATEGORY ( #PCDATA ) >
+<!ELEMENT SIZE ( #PCDATA ) >
