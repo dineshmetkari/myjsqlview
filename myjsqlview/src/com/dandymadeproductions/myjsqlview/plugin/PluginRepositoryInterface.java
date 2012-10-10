@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.4 10/03/2012
+// Version 1.5 10/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //             Argument. Same With getPluginItems().
 //         1.3 Class Methods addPluginItem() & getPluginItems() Change to Plugin.
 //         1.4 Minor Code Formatting & Return Type for setRepository().
+//         1.5 Added Class Interfaces setRepositoryType() & clearPluginItems().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -51,7 +52,7 @@ import java.util.ArrayList;
  * within the  MyJSQLView as a repository definition for plugins.   
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/03/2012
+ * @version 1.5 10/10/2012
  */
 
 public interface PluginRepositoryInterface
@@ -61,6 +62,12 @@ public interface PluginRepositoryInterface
    //==============================================================
    
    void setName(String repositoryName);
+   
+   //==============================================================
+   // Class method to set the repository type.
+   //==============================================================
+   
+   void setType(String repositoryType);
    
    //==============================================================
    // Class method to setup up the repository.
@@ -75,6 +82,13 @@ public interface PluginRepositoryInterface
    //==============================================================
 
    void addPluginItem(Plugin pluginItem);
+   
+   //==============================================================
+   // Class method to clear the plugin items in the repository
+   // list.
+   //==============================================================
+
+   void clearPluginItems();
    
    //==============================================================
    // Class method to allow the collection of a name that will be
