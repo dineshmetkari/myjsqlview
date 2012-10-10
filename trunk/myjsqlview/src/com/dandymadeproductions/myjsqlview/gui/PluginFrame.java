@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 10/07/2012
+// Version 2.7 10/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,6 +76,9 @@
 //             createDefaultMyJSQLViewRepository(), Re-organized Order of Tab Adding, Added
 //             in Method removeRepository() Cache Clearing Through runnable, Added Class
 //             Methods deleteRepositoryCache() & createRepository(). Formatted.
+//         2.7 Added Class Instance MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE. Implemented Install
+//             From HTTP_Repository in actionPerformed(). Added Class Method addPlugin().
+//             Made removePluginConfigurationModule() proteced & static.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -153,14 +156,14 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.6 10/07/2012
+ * @version 2.7 10/10/2012
  */
 
 //=================================================================
 // MyJSQLView PluginFrame
 //=================================================================
 
-class PluginFrame extends JFrame implements ActionListener, ChangeListener, ListSelectionListener,
+public class PluginFrame extends JFrame implements ActionListener, ChangeListener, ListSelectionListener,
                                             MouseListener
 {
    // Creation of the necessary class instance
@@ -205,7 +208,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    private static final int DESCRIPTION_COLUMN = 6;
 
    private static final String MYJSQLVIEW_REPOSITORY_NAME = "MyJSQLView";
-   private static final String MYJSQLVIEW_REPOSITORY = "http://myjsqlview.org/temp/";
+   private static final String MYJSQLVIEW_REPOSITORY = "http://plugins.myjsqlview.org/";
+   private static final String MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE = "myjsqlview_plugin.conf";
 
    //==============================================================
    // PluginFrame Constructor
@@ -313,12 +317,9 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
       createRepository(MYJSQLVIEW_REPOSITORY_NAME, MYJSQLVIEW_REPOSITORY);
 
       // Additional repositories as defined by configuration file?
-
-      // com.dandymadeproductions.myjsqlview.gui.panels.InstallPanel_JEdit
-      // testPanel =
-      // new
-      // com.dandymadeproductions.myjsqlview.gui.panels.InstallPanel_JEdit(false);
-      // centralTabsPane.addTab("JEdit", null, testPanel, "JEdit");
+      
+      
+      
 
       centralTabsPane.setSelectedIndex(0);
       splitPane.setTopComponent(centralTabsPane);
@@ -443,9 +444,27 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
                if (selectedComponent != null && selectedComponent instanceof PluginRepositoryPanel)
                {
                   PluginRepositoryPanel selectedRepositoryPanel = (PluginRepositoryPanel) selectedComponent;
-
-                  System.out.println("Installing Repository Plugin from: "
-                                     + selectedRepositoryPanel.getName());
+                  String repositoryType = selectedRepositoryPanel.getRepositoryType();
+                  
+                  if (repositoryType.equals(PluginRepository.FILE))
+                  {
+                     System.out.println("File Repository Install");
+                  }
+                  else if (repositoryType.equals(PluginRepository.FTP))
+                  {
+                     System.out.println("FTP Repository Install");
+                  }
+                  else if (repositoryType.equals(PluginRepository.HTTP))
+                  {
+                     String selectedPluginPath = selectedRepositoryPanel.getSelectedPluginPath();
+                     
+                     if (!selectedPluginPath.isEmpty())
+                        loadPlugin(selectedPluginPath);
+                  }
+                  else
+                  {
+                     System.out.println("Unknown Repository Install");
+                  }
                }
             }
          }
@@ -660,7 +679,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          // Remove Plugin Action
          if (tableColumn == REMOVE_COLUMN)
          {
-            removePluginConfigurationModule(tableRow);
+            removePluginConfigurationModule(MyJSQLView_Frame.getPlugins().get(tableRow).getPath_FileName());
             MyJSQLView_Frame.removeTab(tableRow);
             generateLoadedPluginsList(MyJSQLView_Frame.getPlugins());
             loadedPluginsTableModel.setValues(loadedPluginTableData);
@@ -678,7 +697,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    {
       // Method Instances.
       JFileChooser pluginFileChooser;
-      String fileName, resource;
+      String fileName;
 
       // Collect/Set the default directory to be used.
       if (lastPluginDirectory.equals(""))
@@ -705,23 +724,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          // the module to the loading list.
          if (!fileName.equals(""))
          {
-            MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
-
-            try
-            {
-               new PluginLoader(parentFrame, new URL(fileName));
-
-               loadingPluginsList.add(fileName);
-               displayLoadingPluginsData();
-            }
-            catch (MalformedURLException mfe)
-            {
-               resource = resourceBundle.getResourceString("PluginFrame.dialogmessage.FailedToCreateURL",
-                                                           "Failed to Create URL");
-
-               JOptionPane.showMessageDialog(null, resource + "\n" + mfe.toString(), resourceAlert,
-                                             JOptionPane.ERROR_MESSAGE);
-            }
+            loadPlugin(fileName);
          }
          else
          {
@@ -733,6 +736,35 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
             JOptionPane.showMessageDialog(null, optionPaneStringErrors, resourceAlert,
                JOptionPane.ERROR_MESSAGE);
          }
+      }
+   }
+   
+   //==============================================================
+   // Class Method for starting the process of actually loading the
+   // plugin into the MyJSQLView_Frame.
+   //==============================================================
+   
+   private void loadPlugin(String URLString)
+   {
+      // Method Instances
+      String resource;
+      
+      MyJSQLView_Frame.pluginFrameListenButton.addActionListener(this);
+
+      try
+      {
+         new PluginLoader(parentFrame, new URL(URLString));
+
+         loadingPluginsList.add(URLString);
+         displayLoadingPluginsData();
+      }
+      catch (MalformedURLException mfe)
+      {
+         resource = resourceBundle.getResourceString("PluginFrame.dialogmessage.FailedToCreateURL",
+                                                     "Failed to Create URL");
+
+         JOptionPane.showMessageDialog(null, resource + "\n" + mfe.toString(), resourceAlert,
+                                       JOptionPane.ERROR_MESSAGE);
       }
    }
 
@@ -869,8 +901,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
       message.setForeground(Color.RED);
       Object[] content = {message};
 
-      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
       resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
       deleteDialog = new InputDialog(null, resourceAlert, resourceOK, resourceCancel, content,
                                      deleteRepositoryIcon);
@@ -1028,7 +1060,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
             repositoryName = repositoryName.replaceAll("/", "");
          
          // Check if exists
-         if (!repositoryHashtable.containsKey(repositoryName))
+         if (!repositoryHashtable.containsKey(repositoryName) && !repositoryName.isEmpty())
             createRepository(repositoryName, repositoryURLTextField.getText());
          else
          {
@@ -1071,7 +1103,7 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
 
          // Create an appropriate repository.
 
-         if (repositoryURLString.indexOf(PluginRepository.HTTP) != -1)
+         if (repositoryURLString.toLowerCase().startsWith(PluginRepository.HTTP))
          {
             pluginRepository = new HTTP_PluginRepository();
          }
@@ -1080,9 +1112,8 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
             pluginRepository = new FILE_PluginRepository();
          }
 
+         // Setup the repository.
          pluginRepository.setName(repositoryNameString);
-         // Still testing.
-         ((HTTP_PluginRepository) pluginRepository).setRepository2(repositoryNameString);
 
          if (pluginRepository.setRepository(repositoryURLString) == true)
          {
@@ -1113,21 +1144,29 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
    // the myjsqlview_plugin.conf file.
    //==============================================================
 
-   private void removePluginConfigurationModule(int index)
+   public static void removePluginConfigurationModule(String pluginPathFileName)
    {
       // Method Instances
-      String pluginConfigurationFileName = "myjsqlview_plugin.conf";
+      //String pluginConfigurationFileName = "myjsqlview_plugin.conf";
       String pluginConfigFileString;
-      String currentLine, pluginPathFileName;
+      String currentLine;
+      //String pluginPathFileName;
       File configurationFile;
       FileReader fileReader;
       BufferedReader bufferedReader;
       StringBuffer newPluginConfigurationFileContents;
-      String resource;
-
+      
+      MyJSQLView_ResourceBundle resourceBundle;
+      String resource, resourceAlert;
+      
+      // Setup Resources
+      resourceBundle = MyJSQLView.getResourceBundle();
+      resourceAlert = resourceBundle.getResourceString("PluginFrame.dialogtitle.Alert", "Alert");
+      
       // Create configuration file name for retrieval.
       pluginConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
-                               + MyJSQLView_Utils.getFileSeparator() + pluginConfigurationFileName;
+                               + MyJSQLView_Utils.getFileSeparator()
+                               + MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE;
 
       try
       {
@@ -1157,7 +1196,6 @@ class PluginFrame extends JFrame implements ActionListener, ChangeListener, List
          fileReader = new FileReader(pluginConfigFileString);
          bufferedReader = new BufferedReader(fileReader);
          newPluginConfigurationFileContents = new StringBuffer();
-         pluginPathFileName = MyJSQLView_Frame.getPlugins().get(index).getPath_FileName();
 
          while ((currentLine = bufferedReader.readLine()) != null)
          {
