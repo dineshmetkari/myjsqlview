@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.8 10/05/2012
+// Version 2.9 10/10/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,8 @@
 //         2.8 10/05/2012 All debug Output Displays Class & Method Information. Added Class
 //                        Methods getResourceFile() & getResourceBytes(). Class Method
 //                        getJAR_ImageResource() Changed to getJAR_Resource().
+//         2.9 10/10/2012 Class Method Use of New Method Instance fileResource to Return
+//                        Valid Object from Routine.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,7 +114,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.8 10/05/2012
+ * @version 2.9 10/10/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -362,6 +364,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
    {
       // Method Instances
       URL fileResourceURL = null;
+      File fileResource;
 
       // Check some type of valid input.
       if (resourceURL != null && fileName != null)
@@ -375,7 +378,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
             try
             {
                fileResourceURL = new URL(resourceURL.toExternalForm() + fileName);
-               return new File(fileResourceURL.toURI());
+               fileResource = new File(fileResourceURL.toURI());
             }
             catch (Exception e)
             {
@@ -384,6 +387,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
                              + fileResourceURL.toExternalForm());
                return null;
             }
+            return fileResource;
          }
 
          //====
