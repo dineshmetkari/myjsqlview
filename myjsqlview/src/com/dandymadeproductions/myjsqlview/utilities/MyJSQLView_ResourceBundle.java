@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.9 10/10/2012
+// Version 3.0 10/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,8 @@
 //                        getJAR_ImageResource() Changed to getJAR_Resource().
 //         2.9 10/10/2012 Class Method Use of New Method Instance fileResource to Return
 //                        Valid Object from Routine.
+//         3.0 10/11/2012 Class Method getResourceFile() Change in Creation of fileResource
+//                        to Use a Generic OS Independent Path Creation for File Types.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -114,7 +116,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 2.9 10/10/2012
+ * @version 3.0 10/11/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -373,12 +375,12 @@ public class MyJSQLView_ResourceBundle implements Serializable
             
          //====
          // Handle resource from file & http locations.
-         if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
+         if (resourceType.equals(FILE_RESOURCE))
          {  
             try
             {
                fileResourceURL = new URL(resourceURL.toExternalForm() + fileName);
-               fileResource = new File(fileResourceURL.toURI());
+               fileResource = new File(fileResourceURL.getFile());
             }
             catch (Exception e)
             {
@@ -389,10 +391,10 @@ public class MyJSQLView_ResourceBundle implements Serializable
             }
             return fileResource;
          }
-
+         
          //====
-         // Does not resource from a jar file.
-         else if (resourceType.equals(JAR_RESOUCE))
+         // Does not resource from a HTTP or JARS files.
+         else if (resourceType.equals(HTTP_RESOURCE) || resourceType.equals(JAR_RESOUCE))
          {
             JOptionPane.showMessageDialog(null, "MyJSQLView_ResourceBundle getResourceFile() Only Supports\n"
                                                 + "Local File Resources!", "Alert", JOptionPane.ERROR_MESSAGE);
