@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.1 10/04/2012
+// Version 1.2 10/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 // Version 1.0 Initial MyJSQLView FILE_PluginRepository Class.
 //         1.1 Added Return boolean Type for setRepository() As Defined With
 //             PluginRepositoryInterface.
+//         1.2 Inserted Place Holder for PluginRepositoryInterface Requirement
+//             refresh();
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,7 +49,7 @@ package com.dandymadeproductions.myjsqlview.plugin;
  * networked file system.
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/04/2012
+ * @version 1.2 10/11/2012
  */
 
 public class FILE_PluginRepository extends PluginRepository
@@ -74,5 +76,15 @@ public class FILE_PluginRepository extends PluginRepository
    public boolean setRepository(String repository)
    {
       return true;
+   }
+   
+   //==============================================================
+   // Class method to refresh the repository by trying to download
+   // the plugin list and reading again.
+   //==============================================================
+   
+   public void refresh()
+   {
+      
    }
 }
