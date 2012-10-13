@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 10/10/2012
+// Version 1.6 10/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //             to Plugin Likewise for Method addPluginItem() & getPluginItems().
 //         1.4 Added static final Class Instance REPOSITORY_CACHED_FILE.
 //         1.5 Added Interface Requirements setRepositoryType() & clearPluginItems().
+//         1.6 Provided Additional Comments.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import javax.swing.JOptionPane;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/10/2012
+ * @version 1.6 10/13/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -79,6 +80,15 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    
    //===========================================================
    // PluginRepository Constructor
+   //
+   // **NOTE**
+   //
+   // A repository can not be just created from the constructor
+   // alone. The repository needs to use the methods setName()
+   // and setRepository() to properly set the repository for use.
+   // The method setName() can be called from here, but each
+   // unique repository type that extends this class should
+   // implement their own setRepository() method.
    //===========================================================
    
    public PluginRepository()
