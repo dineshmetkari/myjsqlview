@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 10/10/2012
+// Version 1.6 10/11/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,9 +34,10 @@
 //         1.1 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
 //         1.2 Changed Interface addPluginItem(String) to MyJSQLView_PluginModule
 //             Argument. Same With getPluginItems().
-//         1.3 Class Methods addPluginItem() & getPluginItems() Change to Plugin.
+//         1.3 Interfaces addPluginItem() & getPluginItems() Change to Plugin.
 //         1.4 Minor Code Formatting & Return Type for setRepository().
-//         1.5 Added Class Interfaces setRepositoryType() & clearPluginItems().
+//         1.5 Added Interfaces setRepositoryType() & clearPluginItems().
+//         1.6 Added Interface refresh().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -52,69 +53,75 @@ import java.util.ArrayList;
  * within the  MyJSQLView as a repository definition for plugins.   
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/10/2012
+ * @version 1.6 10/11/2012
  */
 
 public interface PluginRepositoryInterface
 {  
    //==============================================================
-   // Class method to set the repository name.
+   // Interface method to set the repository name.
    //==============================================================
    
    void setName(String repositoryName);
    
    //==============================================================
-   // Class method to set the repository type.
+   // Interface method to set the repository type.
    //==============================================================
    
    void setType(String repositoryType);
    
    //==============================================================
-   // Class method to setup up the repository.
+   // Interface method to setup up the repository.
    // The argument should be a reference to a network location.
-   // exp. http://dandymadeproductions.com/
+   // exp. http://dandymadeproductions.com/ ???
    //==============================================================
 
    boolean setRepository(String repository);
    
    //==============================================================
-   // Class method to add an plugin item to the repository.
+   // Interface method to add an plugin item to the repository.
    //==============================================================
 
    void addPluginItem(Plugin pluginItem);
    
    //==============================================================
-   // Class method to clear the plugin items in the repository
+   // Interface method to clear the plugin items in the repository
    // list.
    //==============================================================
 
    void clearPluginItems();
    
    //==============================================================
-   // Class method to allow the collection of a name that will be
-   // associated with the repository.
+   // Class method to allow the refreshing the collection of plugin
+   // item in the repository list.
+   //==============================================================
+   
+   void refresh();
+   
+   //==============================================================
+   // Interface method to allow the collection of a name that will
+   // be associated with the repository.
    //==============================================================
 
    String getName();
    
    //==============================================================
-   // Class method to allow the collection of a path that will be
-   // associated with the repository.
+   // Interface method to allow the collection of a path that will
+   // be associated with the repository.
    //==============================================================
    
    String getPath();
    
    //==============================================================
-   // Class method to allow the return of some predifined type,
+   // Interface method to allow the return of some predifined type,
    // example URL, http, ftp, other?
    //==============================================================
    
    String getRepositoryType();
    
-   
    //==============================================================
-   // Class method to allow the collection of the list of plugins
-   // that are associated with the repository.
+   // Interface method to allow the collection of the list of
+   // plugins that are associated with the repository.
    //==============================================================
 
    ArrayList<Plugin> getPluginItems();
