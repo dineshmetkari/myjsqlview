@@ -3,13 +3,15 @@
 //=================================================================
 //
 //    This class provides the general framework to create a HTTP
-// type repository that would be derived from a web server.
+// type repository that would be derived from a web server. A web
+// HTTP type repository will try to cache the plugin list as derived
+// from a XML file at the resource.
 //
 //                 << HTTP_PluginRepository.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.1 10/10/2012
+// Version 1.2 10/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +37,11 @@
 //             Repository. Implemented Class Methods setRepository(), downloadPluginList()
 //             & readPluginList(). Still Needs to be Throughly Reviewed & Verify Checks
 //             When Errors Occur.
+//         1.2 Implemented PluginRepositoryInterface Requirement refresh(). Removed
+//             Class Instance cacheRepository. Moved isRepositoryCached from
+//             Constructor to Class Instance. Added Argument allowRetry to Method
+//             readPluginList(). Reviewed, Commented, & Used Various Output Routines
+//             Either debugMode or displayErrors() to Provide Information/Exceptions.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,18 +69,19 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
  *    The HTTP_PluginRepository class provides the general framework to
- * create a HTTP type repository that is derived from a web server.   
+ * create a HTTP type repository that would be derived from a web server.
+ * A web HTTP type repository will try to cache the plugin list as derived
+ * from a XML file at the resource.
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/10/2012
+ * @version 1.2 10/13/2012
  */
 
 public class HTTP_PluginRepository extends PluginRepository
 {
    // Class Instances
    private String remoteRepositoryURL, cachedRepositoryURL;
-   private boolean debugMode, cacheRepository;
-   private boolean downloadRepository;
+   private boolean debugMode, isRepositoryCached, downloadRepository;
    
    private static final int GZIP_MAGIC_1 = 0x1f;
    private static final int GZIP_MAGIC_2 = 0x8b;
@@ -85,16 +93,21 @@ public class HTTP_PluginRepository extends PluginRepository
 
    public HTTP_PluginRepository()
    {  
-      // Just Setup
+      // Just Setup. The downloadRepository used
+      // here for mainly testing, debugging. Since
+      // this type of repository will always try to
+      // download the plugin list if not cached.
+      
       debugMode = MyJSQLView.getDebug();
-      cacheRepository = false;
+      isRepositoryCached = false;
       downloadRepository = true;
       
       setType(PluginRepository.HTTP);
    }
    
    //==============================================================
-   // Class method to setup up the repository, type HTTP.
+   // Class method to setup up the repository, in this case type
+   // HTTP.
    //==============================================================
    
    public boolean setRepository(String path)
@@ -114,11 +127,11 @@ public class HTTP_PluginRepository extends PluginRepository
       
       cachedRepositoryDirectoryString = MyJSQLView_Utils.getCacheDirectory() + getName();
       localSystemFileSeparator = MyJSQLView_Utils.getFileSeparator();
-      isRepositoryCached = false;
       validRepository = false;
       
-      // Check for a valid repository and if not create at least
-      // the directory.
+      // Check for a valid existing repository that is cached and if
+      // not create at least the directory. A valid repository must
+      // exist, isRepositoryCached, and contain the cached file.
       
       cachedRepositoryDirectory = new File(cachedRepositoryDirectoryString);
       
@@ -154,16 +167,28 @@ public class HTTP_PluginRepository extends PluginRepository
       
       if (downloadRepository && isRepositoryCached && !validRepository)
       {
-         System.out.println("Downloading Repository List");
+         if (debugMode)
+            System.out.println("HTTP_PluginRepository setRepository() Downloading Repository List");
          validRepository = downloadPluginList();
       }
       
       // Read the plugin list from the cache.
       
       if (validRepository)
-         validRepository = readPluginList();
+         validRepository = readPluginList(true);
       
       return validRepository;
+   }
+   
+   //==============================================================
+   // Class method to refresh the repository by trying to download
+   // the plugin list and reading the cache again.
+   //==============================================================
+   
+   public void refresh()
+   {
+      if (isRepositoryCached && downloadPluginList())
+         readPluginList(true);
    }
    
    //==============================================================
@@ -179,7 +204,6 @@ public class HTTP_PluginRepository extends PluginRepository
       
       InputStream inputStream;
       BufferedInputStream bufferedInputStream;
-      
       FileOutputStream fileOutputStream;
       BufferedOutputStream bufferedOutputStream;
       
@@ -203,8 +227,8 @@ public class HTTP_PluginRepository extends PluginRepository
          // Authorization Needed.
          if(httpConnection.getResponseCode() == HttpURLConnection.HTTP_PROXY_AUTH)
          {
-            if (debugMode)
-               System.out.println("HTTP_PluginRepository downloadPluginList() Need Authorization.");
+            displayErrors("HTTP_PluginRepository downloadPlugins()\n"
+                          + "Repository URL Requires Authorization.");
          }
          // Looks Good.
          else if(httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
@@ -233,17 +257,15 @@ public class HTTP_PluginRepository extends PluginRepository
          }
          else
          {
-            if (debugMode)
-               System.out.println("HTTP_PluginRepository downloadPluginList() HTTP Error:\n"
-                                  + httpConnection.getResponseCode() + " : "
-                                  + httpConnection.getResponseMessage());
+            displayErrors("HTTP_PluginRepository downloadPluginList() HTTP Error:\n"
+                          + httpConnection.getResponseCode() + " : "
+                          + httpConnection.getResponseMessage());
          }
       }
       // MalformedURLException, IOException, FileNotFoundException, UnknownHostException?
       catch(Exception e)
       {
-         if (debugMode)
-            System.out.println("HTTP_PluginRepository downloadPluginList() HTTP Error:\n" + e.toString());
+         displayErrors("HTTP_PluginRepository downloadPluginList() Exception:\n" + e.toString());
       }  
       finally
       {
@@ -309,7 +331,7 @@ public class HTTP_PluginRepository extends PluginRepository
    // cache.
    //==============================================================
    
-   private boolean readPluginList()
+   private boolean readPluginList(boolean allowRetry)
    {
       // Class methods
       XMLReader xmlParser;
@@ -370,20 +392,13 @@ public class HTTP_PluginRepository extends PluginRepository
       // MalFormedURLException, SAXException, IOException
       catch (Exception e)
       {
-         if (cachedRepositoryURL.startsWith("file:"))
+         if (cachedRepositoryURL.startsWith("file:") && allowRetry)
          {
-            /*
-            // "Unable to read plugin list, deleting cached file and try again");
-            new File(cachedURL.substring(8)).delete();
-            if (allowRetry)
-            {
-               plugins.clear();
-               readPluginList(false);
-            }
-            */
+            clearPluginItems();
+            readPluginList(false);
          }
-         if (debugMode)
-            System.out.println("HTTP_PluginRepository readPluginList() Exception: " + e.toString());
+         else
+            displayErrors("HTTP_PluginRepository readPluginList() Exception: " + e.toString());
       }
       finally
       {
@@ -396,7 +411,7 @@ public class HTTP_PluginRepository extends PluginRepository
          {
             if (debugMode)
                System.out.println("HTTP_PluginRepository readPluginList() "
-                                  + "Failed to close URL InputStream. " + ioe.toString());
+                                  + "Failed to close urlInputStream. " + ioe.toString());
          }
          finally
          {
@@ -409,7 +424,7 @@ public class HTTP_PluginRepository extends PluginRepository
             {
                if (debugMode)
                   System.out.println("HTTP_PluginRepository readPluginList() "
-                                     + "Failed to close InputStream. " + ioe1.toString());
+                                     + "Failed to close inputStream. " + ioe1.toString());
             }
             finally
             {
@@ -422,7 +437,7 @@ public class HTTP_PluginRepository extends PluginRepository
                {
                   if (debugMode)
                      System.out.println("HTTP_PluginRepository readPluginList() "
-                                        + "Failed to close InputStreamReader. " + ioe1.toString());
+                                        + "Failed to close inputStreamReader. " + ioe1.toString());
                }
             }
          }
