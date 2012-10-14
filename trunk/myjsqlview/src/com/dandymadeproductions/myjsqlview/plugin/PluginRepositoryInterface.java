@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 10/11/2012
+// Version 1.7 10/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.4 Minor Code Formatting & Return Type for setRepository().
 //         1.5 Added Interfaces setRepositoryType() & clearPluginItems().
 //         1.6 Added Interface refresh().
+//         1.7 Added Interface setPath().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import java.util.ArrayList;
  * within the  MyJSQLView as a repository definition for plugins.   
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/11/2012
+ * @version 1.7 10/13/2012
  */
 
 public interface PluginRepositoryInterface
@@ -63,6 +64,12 @@ public interface PluginRepositoryInterface
    //==============================================================
    
    void setName(String repositoryName);
+   
+   //==============================================================
+   // Interface method to set the repository path.
+   //==============================================================
+   
+   void setPath(String repositoryPath);
    
    //==============================================================
    // Interface method to set the repository type.
