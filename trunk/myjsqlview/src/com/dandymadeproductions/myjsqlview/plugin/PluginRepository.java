@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 10/13/2012
+// Version 1.7 10/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,9 @@
 //         1.4 Added static final Class Instance REPOSITORY_CACHED_FILE.
 //         1.5 Added Interface Requirements setRepositoryType() & clearPluginItems().
 //         1.6 Provided Additional Comments.
+//         1.7 Implement PluginRepositoryInterface Interface setPath(). Added Class
+//             Instances cachedRepositoryDirectoryString, debugMode, isRepositoryCached,
+//             & REPOSITORY_PATH_FILE.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,6 +57,10 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+
 /**
  *    The PluginRepository class provides the general framework and link
  * to the PluginRepository Interface inheritance for all PluginReposities
@@ -61,7 +68,7 @@ import javax.swing.JOptionPane;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/13/2012
+ * @version 1.7 10/13/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -72,10 +79,14 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    private String repositoryType;
    private ArrayList<Plugin> pluginsList;
    
+   protected String cachedRepositoryDirectoryString;
+   protected boolean debugMode, isRepositoryCached;
+   
    public static final String FILE = "file";
    public static final String HTTP = "http";
    public static final String FTP = "ftp";
    public static final String UNKNOWN = "unknown";
+   public static final String REPOSITORY_PATH_FILE = ".path";
    public static final String REPOSITORY_CACHED_FILE = "repository-cache.xml";
    
    //===========================================================
@@ -96,6 +107,10 @@ public abstract class PluginRepository implements PluginRepositoryInterface
       repositoryName = "";
       repositoryPath = "";
       repositoryType = UNKNOWN;
+      
+      debugMode = MyJSQLView.getDebug();
+      isRepositoryCached = false;
+      
       pluginsList = new ArrayList <Plugin>();
    }
    
@@ -106,6 +121,26 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    public void setName(String name)
    {
       repositoryName = name; 
+   }
+   
+   //==============================================================
+   // Class method to set the repository path.
+   //==============================================================
+   
+   public void setPath(String path)
+   {
+      // Method Instances
+      String cachedRepositoryPathFile;
+      
+      repositoryPath = path;
+      
+      if (!path.isEmpty() && isRepositoryCached)
+      {
+         cachedRepositoryPathFile = cachedRepositoryDirectoryString
+                                    + MyJSQLView_Utils.getFileSeparator()
+                                    + PluginRepository.REPOSITORY_PATH_FILE;
+         WriteDataFile.mainWriteDataString(cachedRepositoryPathFile, path.getBytes(), false);
+      }
    }
    
    //==============================================================
