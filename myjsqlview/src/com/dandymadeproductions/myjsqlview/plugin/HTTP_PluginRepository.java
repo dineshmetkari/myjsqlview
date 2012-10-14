@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.2 10/13/2012
+// Version 1.3 10/14/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,10 @@
 //             Constructor to Class Instance. Added Argument allowRetry to Method
 //             readPluginList(). Reviewed, Commented, & Used Various Output Routines
 //             Either debugMode or displayErrors() to Provide Information/Exceptions.
+//         1.3 Moved Class Instances debugMode & isRepositoryCached to Parent
+//             PluginRepository Class. Changed REMOTE_REPOSITORY_FILENAME to a gz
+//             File. In Method setRepository() setPath() on validRepository. Commented
+//             Out Some debugMode System Outs.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,7 +68,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
@@ -74,18 +77,18 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from a XML file at the resource.
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/13/2012
+ * @version 1.3 10/14/2012
  */
 
 public class HTTP_PluginRepository extends PluginRepository
 {
    // Class Instances
    private String remoteRepositoryURL, cachedRepositoryURL;
-   private boolean debugMode, isRepositoryCached, downloadRepository;
+   private boolean downloadRepository;
    
    private static final int GZIP_MAGIC_1 = 0x1f;
    private static final int GZIP_MAGIC_2 = 0x8b;
-   private static final String REMOTE_REPOSITORY_FILENAME = "myjsqlview_plugin_list.xml";
+   private static final String REMOTE_REPOSITORY_FILENAME = "myjsqlview_plugin_list.xml.gz";
    
    //==============================================================
    // HTTP_PluginRepository Constructor
@@ -93,13 +96,13 @@ public class HTTP_PluginRepository extends PluginRepository
 
    public HTTP_PluginRepository()
    {  
+      super();
+      
       // Just Setup. The downloadRepository used
       // here for mainly testing, debugging. Since
       // this type of repository will always try to
       // download the plugin list if not cached.
       
-      debugMode = MyJSQLView.getDebug();
-      isRepositoryCached = false;
       downloadRepository = true;
       
       setType(PluginRepository.HTTP);
@@ -113,10 +116,9 @@ public class HTTP_PluginRepository extends PluginRepository
    public boolean setRepository(String path)
    {
       // Method Instances
-      String cachedRepositoryDirectoryString;
       File cachedRepositoryDirectory, cachedRepositoryListFile;
       String localSystemFileSeparator;
-      boolean isRepositoryCached, validRepository;
+      boolean validRepository;
       
       // Setup
       
@@ -167,15 +169,19 @@ public class HTTP_PluginRepository extends PluginRepository
       
       if (downloadRepository && isRepositoryCached && !validRepository)
       {
-         if (debugMode)
-            System.out.println("HTTP_PluginRepository setRepository() Downloading Repository List");
+         // System.out.println("HTTP_PluginRepository setRepository() Downloading Repository List");
          validRepository = downloadPluginList();
       }
       
-      // Read the plugin list from the cache.
+      // Read the plugin list from the cache & set path in
+      // the cache directory for later identification when
+      // reloading application.
       
       if (validRepository)
          validRepository = readPluginList(true);
+      
+      if (validRepository)
+         setPath(path);
       
       return validRepository;
    }
@@ -354,8 +360,7 @@ public class HTTP_PluginRepository extends PluginRepository
       {
          if (cachedRepositoryURL != remoteRepositoryURL) 
          {
-            if (debugMode)
-               System.out.println("HTTP_PluginRepository readPluginList() Using Cached Plugin List.");
+            // System.out.println("HTTP_PluginRepository readPluginList() Using Cached Plugin List.");
          }
          
          urlInputStream = new URL(cachedRepositoryURL).openStream();
