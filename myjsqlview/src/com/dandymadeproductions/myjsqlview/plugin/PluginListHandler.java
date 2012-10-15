@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2001-2012 Slava Pestov, Dana M. Proctor
-// Version 1.2 10/10/2012
+// Version 1.3 10/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,9 @@
 // Version 1.0 XML handler for the plugin list used with jEdit Application.
 //         1.1 JEdit PluginListHandler.java 12504 2008-04-22 23:12:43Z ezust
 //         1.2 Modified for Use With the MyJSQLView Application.
+//         1.3 Changed Class Instance size From int to StringBuilder. Removed
+//             SIZE from attribute() Method & Added to characters(). Modifications
+//             to startElements() & endElements() to Same for size.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +65,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * Conjuction With myjsqlview_plugins.dtd.
  * 
  * @author Slava Pestov, Dana M. Proctor
- * @version 1.2 10/10/2012
+ * @version 1.3 10/15/2012
  */
 
 class PluginListHandler extends DefaultHandler
@@ -78,7 +81,7 @@ class PluginListHandler extends DefaultHandler
    private StringBuilder path;
    private StringBuilder description;
    private StringBuilder category;
-   private int size;
+   private StringBuilder size;
    
    boolean debug;
    
@@ -98,6 +101,7 @@ class PluginListHandler extends DefaultHandler
       path = new StringBuilder();
       description = new StringBuilder();
       category = new StringBuilder();
+      size = new StringBuilder();
       
       debug = MyJSQLView.getDebug();  
    }
@@ -135,28 +139,11 @@ class PluginListHandler extends DefaultHandler
    }
    
    public void attribute(String aname, String value, boolean isSpecified)
-   {
+   {  
       if (aname.equals("NAME"))
          name = value;
       else if (aname.equals("JAR"))
          jar = value;
-      else if (aname.equals("SIZE"))
-      {
-         try
-         {
-            size = Integer.parseInt(value);
-         }
-         catch (NumberFormatException nfe)
-         {
-            size = 0;
-         }
-         
-         if (size == 0)
-         {
-            if (debug)
-               System.out.println("PluginListHandler attribute() Size Zero");
-         }
-      }
    }
    
    public void characters(char[] c, int off, int len)
@@ -183,6 +170,10 @@ class PluginListHandler extends DefaultHandler
       {
          category.append(c, off, len);
       }
+      else if (tag.equals("SIZE"))
+      {
+         size.append(c, off, len);
+      }
    }
 
    public void startElement(String uri, String localName, String tag, Attributes attrs)
@@ -203,13 +194,17 @@ class PluginListHandler extends DefaultHandler
          path.setLength(0);
          description.setLength(0);
          category.setLength(0);
+         size.setLength(0);
          
          plugin = new Plugin();
       }
    }
 
    public void endElement(String uri, String localName, String tag)
-   {
+   {  
+      // Method Instances
+      int pluginSize;
+      
       popElement();
 
       if (tag.equals("PLUGIN"))
@@ -221,7 +216,16 @@ class PluginListHandler extends DefaultHandler
          plugin.setPath_FileName(path.toString());
          plugin.setDescription(description.toString());
          plugin.setCategory(category.toString());
-         plugin.setSize(size);
+         
+         try
+         {
+            pluginSize = Integer.parseInt(size.toString());
+         }
+         catch (NumberFormatException nfe)
+         {
+            pluginSize = 0;
+         }
+         plugin.setSize(pluginSize);
          
          pluginRepository.addPluginItem(plugin);
          
@@ -232,7 +236,7 @@ class PluginListHandler extends DefaultHandler
          path.setLength(0);
          description.setLength(0);
          category.setLength(0);
-         size = 0;
+         size.setLength(0);
       }
    }
 
