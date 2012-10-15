@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.7 10/13/2012
+// Version 1.8 10/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //         1.7 Implement PluginRepositoryInterface Interface setPath(). Added Class
 //             Instances cachedRepositoryDirectoryString, debugMode, isRepositoryCached,
 //             & REPOSITORY_PATH_FILE.
+//         1.8 Class Instance REPOSITORY_CACHED_FILE Changed to Compressed File Name.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to properly derive a file/network repository.   
  * 
  * @author Dana M. Proctor
- * @version 1.7 10/13/2012
+ * @version 1.8 10/15/2012
  */
 
 public abstract class PluginRepository implements PluginRepositoryInterface
@@ -87,7 +88,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    public static final String FTP = "ftp";
    public static final String UNKNOWN = "unknown";
    public static final String REPOSITORY_PATH_FILE = ".path";
-   public static final String REPOSITORY_CACHED_FILE = "repository-cache.xml";
+   public static final String REPOSITORY_CACHED_FILE = "repository-cache.xml.gz";
    
    //===========================================================
    // PluginRepository Constructor
