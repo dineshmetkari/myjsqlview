@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.7 10/10/2012
+// Version 2.8 10/14/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,13 @@
 //         2.7 Added Class Instance MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE. Implemented Install
 //             From HTTP_Repository in actionPerformed(). Added Class Method addPlugin().
 //             Made removePluginConfigurationModule() proteced & static.
+//         2.8 Commented Out the Creation of Default MyJSQLView Repository. Implemented
+//             the Loading Existing Repositoies Through loadCachedRepositories(). Moved
+//             Some Instances From Inner Blocks to Method Scope in actionPerformed().
+//             Removed Class Method refreshRepository() & Implemented Directly in
+//             actionPerformed() at refreshButton Detection. Class Method addRepository()
+//             Referenced in Setting Dialog Information With MYJSQLVIEW_REPOSITORY_NAME
+//             & MYJSQLVIEW_REPOSITORY.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -139,6 +146,7 @@ import javax.swing.text.html.HTMLEditorKit;
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.gui.panels.PluginFrameFillerPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.PluginRepositoryPanel;
+import com.dandymadeproductions.myjsqlview.io.ReadDataFile;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.plugin.FILE_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.HTTP_PluginRepository;
@@ -156,7 +164,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.7 10/10/2012
+ * @version 2.8 10/14/2012
  */
 
 //=================================================================
@@ -314,12 +322,11 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
       // Default MyJSQLView repository.
 
-      createRepository(MYJSQLVIEW_REPOSITORY_NAME, MYJSQLVIEW_REPOSITORY);
+      //createRepository(MYJSQLVIEW_REPOSITORY_NAME, MYJSQLVIEW_REPOSITORY);
 
       // Additional repositories as defined by configuration file?
       
-      
-      
+      loadCachedRepositories();
 
       centralTabsPane.setSelectedIndex(0);
       splitPane.setTopComponent(centralTabsPane);
@@ -423,7 +430,12 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    public void actionPerformed(ActionEvent evt)
    {
       // Method Instances
-      Object frameSource = evt.getSource();
+      Object frameSource;
+      Object selectedTabComponent;
+      PluginRepositoryPanel selectedRepositoryPanel;
+      String repositoryType;
+      
+      frameSource = evt.getSource();
 
       // Overall action buttons.
       if (frameSource instanceof JButton)
@@ -439,12 +451,12 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             // Repository
             else
             {
-               Object selectedComponent = centralTabsPane.getSelectedComponent();
+               selectedTabComponent = centralTabsPane.getSelectedComponent();
 
-               if (selectedComponent != null && selectedComponent instanceof PluginRepositoryPanel)
+               if (selectedTabComponent != null && selectedTabComponent instanceof PluginRepositoryPanel)
                {
-                  PluginRepositoryPanel selectedRepositoryPanel = (PluginRepositoryPanel) selectedComponent;
-                  String repositoryType = selectedRepositoryPanel.getRepositoryType();
+                  selectedRepositoryPanel = (PluginRepositoryPanel) selectedTabComponent;
+                  repositoryType = selectedRepositoryPanel.getRepositoryType();
                   
                   if (repositoryType.equals(PluginRepository.FILE))
                   {
@@ -485,7 +497,16 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          else if (frameSource == refreshButton)
          {
             if (!tabType.equals(MANAGE))
-               refreshRepository();
+            {
+               selectedTabComponent = centralTabsPane.getSelectedComponent();
+
+               if (selectedTabComponent != null && selectedTabComponent instanceof PluginRepositoryPanel)
+               {
+                  selectedRepositoryPanel = (PluginRepositoryPanel) selectedTabComponent;
+                  selectedRepositoryPanel.refreshRepository();
+                  pluginInformationTextPane.setText("");
+               }
+            }
          }
          // Must be action of Close buttton.
          else
@@ -873,15 +894,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    }
 
    //==============================================================
-   // Class Method for refreshing an existing repository.
-   //==============================================================
-
-   private void refreshRepository()
-   {
-      System.out.println("PluginFrame refreshRepository() Refreshing Repository");
-   }
-
-   //==============================================================
    // Class Method for removing a plugin repository.
    //==============================================================
 
@@ -1021,19 +1033,19 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       repositoryNameLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryNameTextField = new JTextField();
-      repositoryNameTextField.setText("MyJSQLView");
+      repositoryNameTextField.setText(MYJSQLVIEW_REPOSITORY_NAME);
 
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryURL", "RepositoryURL");
       repositoryURLLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryURLTextField = new JTextField();
-      repositoryURLTextField.setText("http://myjsqlview.org");
+      repositoryURLTextField.setText(MYJSQLVIEW_REPOSITORY);
 
       Object content[] = {repositoryNameLabel, repositoryNameTextField, repositoryURLLabel,
                           repositoryURLTextField};
 
-      resourceOK = resourceBundle.getResourceString("PluginFrame.button.OK", "OK");
-      resourceCancel = resourceBundle.getResourceString("PluginFrame.button.Cancel", "Cancel");
+      resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
       InputDialog repositoryDialog = new InputDialog(null, resource, resourceOK, resourceCancel, content,
                                                      null);
@@ -1116,7 +1128,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          pluginRepository.setName(repositoryNameString);
 
          if (pluginRepository.setRepository(repositoryURLString) == true)
-         {
+         {  
             // Load up the tab with a predefined repository panel.
 
             pluginRepositoryPanel = new PluginRepositoryPanel(pluginRepository, this);
@@ -1139,6 +1151,9 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       }
    }
 
+   
+   // !!! Review threading this method, syncronize?
+   
    //==============================================================
    // Class Method for removing a manually installed plugin from
    // the myjsqlview_plugin.conf file.
@@ -1147,10 +1162,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    public static void removePluginConfigurationModule(String pluginPathFileName)
    {
       // Method Instances
-      //String pluginConfigurationFileName = "myjsqlview_plugin.conf";
       String pluginConfigFileString;
       String currentLine;
-      //String pluginPathFileName;
       File configurationFile;
       FileReader fileReader;
       BufferedReader bufferedReader;
@@ -1289,6 +1302,54 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       pluginViewPanel.add(tableScrollPane);
 
       return pluginViewPanel;
+   }
+   
+   //==============================================================
+   // Class Method for inspecting the cache to determine if existing
+   // established repostiories should be created.
+   //==============================================================
+
+   private void loadCachedRepositories()
+   {
+      // Method Instances
+      File cacheDirectory, pathFile;
+      File[] cacheContents;
+      String path;
+      
+      // Setup
+      cacheDirectory = new File(MyJSQLView_Utils.getCacheDirectory());
+      
+      // See if cache exists
+      if (cacheDirectory.exists() && cacheDirectory.isDirectory())
+      {
+         try
+         {
+            cacheContents = cacheDirectory.listFiles();
+            
+            int i = 0;
+            while (i < cacheContents.length)
+            {
+               if (cacheContents[i].isDirectory())
+               {
+                  pathFile = new File(cacheContents[i].getAbsoluteFile() + fileSeparator
+                                      + PluginRepository.REPOSITORY_PATH_FILE);
+                  
+                  if (pathFile.exists())
+                  {
+                     path = new String((ReadDataFile.mainReadDataString(pathFile.getAbsolutePath(), false)));
+                     createRepository(cacheContents[i].getName(), path);  
+                  }
+               }
+               i++;
+            }
+         }
+         catch (SecurityException se)
+         {
+           if (MyJSQLView.getDebug()) 
+              System.out.println("PluginFrame loadCachedRepositories() Failed to Load Repositories: "
+                                 + se.toString());
+         }
+      }
    }
 
    //==============================================================
