@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.8 10/14/2012
+// Version 2.9 10/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,8 @@
 //             actionPerformed() at refreshButton Detection. Class Method addRepository()
 //             Referenced in Setting Dialog Information With MYJSQLVIEW_REPOSITORY_NAME
 //             & MYJSQLVIEW_REPOSITORY.
+//         2.9 Moved Constructor Instances tabType, & currentTabIndex Default Setting Until
+//             After Tabs Setup.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,7 +166,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.8 10/14/2012
+ * @version 2.9 10/15/2012
  */
 
 //=================================================================
@@ -254,9 +256,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       repositoryHashtable = new Hashtable <String, String>();
       loadingPluginsList = new ArrayList <String>();
 
-      currentTabIndex = 0;
-      tabType = MANAGE;
-
       // Setting the frame's title, main panel, & window listener.
 
       resource = resourceBundle.getResourceString("PluginFrame.message.Title", "Plugin Management");
@@ -328,6 +327,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       
       loadCachedRepositories();
 
+      tabType = MANAGE;
+      currentTabIndex = 0;
       centralTabsPane.setSelectedIndex(0);
       splitPane.setTopComponent(centralTabsPane);
 
