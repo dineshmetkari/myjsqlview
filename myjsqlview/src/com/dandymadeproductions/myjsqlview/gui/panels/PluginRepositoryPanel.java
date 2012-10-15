@@ -11,7 +11,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.5 10/01/2012
+// Version 1.6 10/15/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,9 @@
 //         1.5 Change in Constructor Instance pluginModule to plugin & Type Plugin
 //             Along pluginListIterator to Reflect. Also the Same Type Change in
 //             getSelectPluginInfo() for selectedPlugin.
+//         1.6 Added Class Methods refreshRepository(), loadPluginTableData(), &
+//             formatSize(). Moved tableScrollPane, & tabIcon from Constructor
+//             Instances to Class. 
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -57,6 +60,7 @@ package com.dandymadeproductions.myjsqlview.gui.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -80,7 +84,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
  * the panel to display and allow selecting of plugins.
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/01/2012
+ * @version 1.6 10/15/2012
  */
 
 public class PluginRepositoryPanel extends JPanel
@@ -92,6 +96,8 @@ public class PluginRepositoryPanel extends JPanel
    private JTable pluginListTable;
    private MyJSQLView_TableModel tableModel;
    private Object[][] pluginsTableData;
+   private JScrollPane tableScrollPane;
+   private ImageIcon tabIcon;
    
    private static final int TABICON_COLUMN = 0;
    private static final int NAME_COLUMN = 1;
@@ -110,19 +116,13 @@ public class PluginRepositoryPanel extends JPanel
       
       // Instances
       ArrayList<String> tableHeadings;
-      Iterator<Plugin> pluginsListIterator;
-      Plugin plugin;
-      
       TableColumn tableColumn;
-      JScrollPane tableScrollPane;
       
-      ImageIcon tabIcon;
       MyJSQLView_ResourceBundle resourceBundle;
       String resource, resourceTabIcon;
       
       // Setup
       tableHeadings = new ArrayList <String>();
-      pluginsTableData = new Object[pluginRepository.getPluginItems().size()][5];
       resourceBundle = MyJSQLView.getResourceBundle();
       setLayout(new BorderLayout());
       
@@ -145,6 +145,41 @@ public class PluginRepositoryPanel extends JPanel
       resource = resourceBundle.getResourceString("PluginRepositoryPanel.label.Size", "Size");
       tableHeadings.add(resource);
       
+      loadPluginTableData();
+      tableModel = new MyJSQLView_TableModel(tableHeadings, pluginsTableData);
+
+      pluginListTable = new JTable(tableModel);
+      pluginListTable.getTableHeader().setFont(new Font(getFont().getName(), Font.BOLD,
+                                                     getFont().getSize()));
+      tableColumn = pluginListTable.getColumnModel().getColumn(TABICON_COLUMN);
+      tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
+      tableColumn = pluginListTable.getColumnModel().getColumn(SIZE_COLUMN);
+      //tableColumn.set
+      pluginListTable.getSelectionModel().addListSelectionListener(listSelectionListener);
+      
+      // Create a scrollpane for the plugins table and place
+      // in the center of the panel.
+      
+      tableScrollPane = new JScrollPane(pluginListTable);
+      add(tableScrollPane, BorderLayout.CENTER);
+   }
+   
+   //==============================================================
+   // Class method to load/reload the plugin data into the list
+   // plugins table.
+   //==============================================================
+   
+   private void loadPluginTableData()
+   {
+      // Method Instances
+      Plugin plugin;
+      ArrayList<Plugin> pluginsList;
+      Iterator<Plugin> pluginsListIterator;
+      
+      pluginsList = pluginRepository.getPluginItems();
+      
+      pluginsTableData = new Object[pluginsList.size()][5];
+      
       pluginsListIterator = pluginRepository.getPluginItems().iterator();
       
       int i = 0;
@@ -157,27 +192,36 @@ public class PluginRepositoryPanel extends JPanel
          pluginsTableData[i][NAME_COLUMN] = plugin.getControlledName();
          pluginsTableData[i][VERSION_COLUMN] = plugin.getControlledVersion();
          pluginsTableData[i][CATEGORY_COLUMN] = plugin.getControlledCategory();
-         pluginsTableData[i][SIZE_COLUMN] = Integer.valueOf(plugin.getSize());
+         pluginsTableData[i][SIZE_COLUMN] = formatSize(plugin.getSize());
          
          i++;
-      }
-      
-      tableModel = new MyJSQLView_TableModel(tableHeadings, pluginsTableData);
-
-      pluginListTable = new JTable(tableModel);
-      pluginListTable.getTableHeader().setFont(new Font(getFont().getName(), Font.BOLD,
-                                                     getFont().getSize()));
-      tableColumn = pluginListTable.getColumnModel().getColumn(TABICON_COLUMN);
-      tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
-      pluginListTable.getSelectionModel().addListSelectionListener(listSelectionListener);
-      
-      // Create a scrollpane for the plugins table and place
-      // in the center of the panel.
-      
-      tableScrollPane = new JScrollPane(pluginListTable);
-      add(tableScrollPane, BorderLayout.CENTER);
+      }  
    }
    
+   //==============================================================
+   // Class method to format the size table model column to an
+   // abreviated scientific format.
+   //==============================================================
+   
+   private static String formatSize(int size)
+   {
+      // Mehthod Instances
+      NumberFormat sizeFormat;
+      String sizeString;
+      
+      sizeFormat = NumberFormat.getInstance();
+      sizeFormat.setMaximumFractionDigits(3);
+      sizeFormat.setMinimumFractionDigits(1);
+      
+      // 1048576?
+      if (size < 1048576)
+         sizeString = sizeFormat.format(size/1000.0d) + "KB";
+      else
+         sizeString = sizeFormat.format(size/1048576.0d) + "MB";
+      
+      return sizeString;
+   }
+    
    //==============================================================
    // Class method to return the name of plugin repository that
    // the panel houses.
@@ -259,5 +303,19 @@ public class PluginRepositoryPanel extends JPanel
             pluginPath = ((pluginRepository.getPluginItems()).get(selectedRow)).getPath_FileName();
       }
       return pluginPath;
+   }
+   
+   //==============================================================
+   // Class method to accces the repository in this panel and try
+   // refresh its plugin listing.
+   //==============================================================
+   
+   public void refreshRepository()
+   {
+      pluginRepository.clearPluginItems();
+      pluginRepository.refresh();
+      loadPluginTableData();
+      tableModel.setValues(pluginsTableData);
+      tableScrollPane.getVerticalScrollBar().setValue(0);
    }
 }
