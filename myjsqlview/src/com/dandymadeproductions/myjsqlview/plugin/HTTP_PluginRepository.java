@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.3 10/14/2012
+// Version 1.4 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,9 @@
 //             PluginRepository Class. Changed REMOTE_REPOSITORY_FILENAME to a gz
 //             File. In Method setRepository() setPath() on validRepository. Commented
 //             Out Some debugMode System Outs.
+//         1.4 Moved a System.out, Commented, from setRepostiory() to downloadPluginList().
+//             Class Method readPluginList() in Catch Check for a SAXException on File
+//             Cache Parsing to Try to Re-Download Plugin List to Correct.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,6 +68,7 @@ import java.net.URL;
 import java.util.zip.GZIPInputStream;
 
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -77,7 +81,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from a XML file at the resource.
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/14/2012
+ * @version 1.4 10/18/2012
  */
 
 public class HTTP_PluginRepository extends PluginRepository
@@ -168,14 +172,11 @@ public class HTTP_PluginRepository extends PluginRepository
       // Determine if a download should occur.
       
       if (downloadRepository && isRepositoryCached && !validRepository)
-      {
-         // System.out.println("HTTP_PluginRepository setRepository() Downloading Repository List");
          validRepository = downloadPluginList();
-      }
       
       // Read the plugin list from the cache & set path in
       // the cache directory for later identification when
-      // reloading application.
+      // reloading application's plugin frame.
       
       if (validRepository)
          validRepository = readPluginList(true);
@@ -227,6 +228,8 @@ public class HTTP_PluginRepository extends PluginRepository
       
       try
       {
+         // System.out.println("HTTP_PluginRepository downloadPluginList() Downloading Repository List");
+         
          downloadURL = new URL(remoteRepositoryURL);
          httpConnection = (HttpURLConnection) downloadURL.openConnection();
          
@@ -396,10 +399,14 @@ public class HTTP_PluginRepository extends PluginRepository
       }
       // MalFormedURLException, SAXException, IOException
       catch (Exception e)
-      {
+      { 
          if (cachedRepositoryURL.startsWith("file:") && allowRetry)
          {
             clearPluginItems();
+            
+            if (e instanceof SAXException)
+               downloadPluginList();
+            
             readPluginList(false);
          }
          else
