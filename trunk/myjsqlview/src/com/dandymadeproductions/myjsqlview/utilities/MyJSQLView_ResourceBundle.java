@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.0 10/11/2012
+// Version 3.1 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,8 @@
 //                        Valid Object from Routine.
 //         3.0 10/11/2012 Class Method getResourceFile() Change in Creation of fileResource
 //                        to Use a Generic OS Independent Path Creation for File Types.
+//         3.1 10/18/2012 Class Method setLocaleResource() Correction in Creation of File
+//                        Type Resource to Handle WinOS Network Paths.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,7 +118,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 3.0 10/11/2012
+ * @version 3.1 10/18/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -605,7 +607,8 @@ public class MyJSQLView_ResourceBundle implements Serializable
       {
          if (resourceType.equals(FILE_RESOURCE))
          {
-            createFile_LocaleResource(resourceURL.getPath() + localeFileName);
+            createFile_LocaleResource((resourceURL.toExternalForm()).substring(
+               resourceURL.toExternalForm().indexOf("file:") + 5) + localeFileName);
          }
 
          else if (resourceType.equals(HTTP_RESOURCE))
