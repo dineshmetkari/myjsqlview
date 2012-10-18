@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.3 10/10/2012
+// Version 3.4 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -92,6 +92,8 @@
 //         3.3 10/10/2012 Class Method loadPluginModules() Attempt to Remove an Offending
 //                        pluginURLString When an Exception is Caught from the Plugin
 //                        Configuration File.
+//         3.4 10/18/2012 Class Method loadPluginEntry() Correction in Creation of File
+//                        Type Resource to Handle WinOS Network Paths.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -133,7 +135,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.3 10/10/2012
+ * @version 3.4 10/18/2012
  */
 
 public class PluginLoader implements Runnable
@@ -294,7 +296,10 @@ public class PluginLoader implements Runnable
          
          // Local File system plugin
          if (pluginURL.getProtocol().equals(FILE_URL))
-            jarFile = new ZipFile(new File(pluginURL.getFile()));
+         {
+            jarFile = new ZipFile(new File((pluginURL.toExternalForm()).substring(
+               pluginURL.toExternalForm().indexOf("file:") + 5)));
+         }
          
          // Http plugin
          else if (pluginURL.getProtocol().equals(HTTP_URL))
