@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.6 09/21/2012
+// Version 8.7 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -213,6 +213,7 @@
 //         8.5 09/19/2012 Changed All Existing Toolbar Icons With 20x20 Pixels Ones.
 //         8.6 09/21/2012 Creation of tableClearingThread in actionPerformed() & Used to Start
 //                        Said Thread to Process Activity.
+//         8.7 10/18/2012 Class Method setRowPreferences() Dressed Up JTextField.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -270,6 +271,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.JToolBar;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultEditorKit;
@@ -298,7 +300,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.6 09/21/2012
+ * @version 8.7 10/18/2012
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1064,6 +1066,9 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JLabel warning, warningMessage1, warningMessage2;
       
       rowSizeTextField = new JTextField();
+      rowSizeTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+         BorderFactory.createLoweredBevelBorder()));
       if (currentQueryIndex <= summaryTableRowSize.length)
          rowSizeTextField.setText(Integer.toString(summaryTableRowSize[currentQueryIndex]));
       
