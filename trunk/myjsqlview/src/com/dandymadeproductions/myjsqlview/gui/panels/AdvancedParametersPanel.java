@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.5 09/10/2012
+// Version 2.6 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -60,6 +60,7 @@
 //             default).
 //         2.5 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class, Constructor, & All Getter/Setter Methods Public.
+//         2.6 Constructor Dressed Up JComboBoxes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,6 +72,7 @@ import java.awt.GridLayout;
 import java.util.ArrayList;
 import java.util.Iterator;
 
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -83,7 +85,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.5 09/10/2012
+ * @version 2.6 10/18/2012
  */
 
 public class AdvancedParametersPanel extends JPanel
@@ -117,6 +119,7 @@ public class AdvancedParametersPanel extends JPanel
       add(driverLabel);
 
       driverJComboBox = new JComboBox(driverList.toArray());
+      driverJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       driverJComboBox.setEditable(true);
       driverJComboBox.setBounds(0, 0, 40, 12);
       driverJComboBox.addItem("");
@@ -128,6 +131,7 @@ public class AdvancedParametersPanel extends JPanel
       add(protocolLabel);
 
       protocolJComboBox = new JComboBox(protocolList.toArray());
+      protocolJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       protocolJComboBox.setEditable(true);
       protocolJComboBox.setBounds(0, 0, 40, 12);
       protocolJComboBox.addItem("");
@@ -140,6 +144,7 @@ public class AdvancedParametersPanel extends JPanel
       add(subProtocolLabel);
 
       subProtocolJComboBox = new JComboBox(subProtocolList.toArray());
+      subProtocolJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       subProtocolJComboBox.setEditable(true);
       subProtocolJComboBox.setBounds(0, 0, 40, 12);
       subProtocolJComboBox.addItem("");
@@ -151,6 +156,7 @@ public class AdvancedParametersPanel extends JPanel
       add(portLabel);
 
       portJComboBox = new JComboBox(portList.toArray());
+      portJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       portJComboBox.setEditable(true);
       portJComboBox.setBounds(0, 0, 40, 12);
       portJComboBox.addItem("");
