@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 3.0 09/10/2012
+// Version 3.1 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //             default).
 //         3.0 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Change Class, Constructor, and Getter/Setter Method Public.
+//         3.1 Constructor Dressed Up JComboBoxes & JPasswordField.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -74,10 +75,13 @@ package com.dandymadeproductions.myjsqlview.gui.panels;
 import java.awt.GridLayout;
 import java.util.Iterator;
 import java.util.ArrayList;
+
+import javax.swing.BorderFactory;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.border.EtchedBorder;
 
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 
@@ -87,7 +91,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 3.0 09/10/2012
+ * @version 3.1 10/18/2012
  */
 
 public class StandardParametersPanel extends JPanel
@@ -120,6 +124,7 @@ public class StandardParametersPanel extends JPanel
       add(hostLabel);
 
       hostJComboBox = new JComboBox(hostList.toArray());
+      hostJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       hostJComboBox.setEditable(true);
       hostJComboBox.setBounds(0, 0, 40, 12);
       hostJComboBox.addItem("");
@@ -131,6 +136,7 @@ public class StandardParametersPanel extends JPanel
       add(dbLabel);
 
       dbJComboBox = new JComboBox(databaseList.toArray());
+      dbJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       dbJComboBox.setEditable(true);
       dbJComboBox.setBounds(0, 0, 40, 12);
       dbJComboBox.addItem("");
@@ -142,6 +148,7 @@ public class StandardParametersPanel extends JPanel
       add(userLabel);
 
       userJComboBox = new JComboBox(userList.toArray());
+      userJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       userJComboBox.setEditable(true);
       userJComboBox.setBounds(0, 0, 40, 12);
       userJComboBox.addItem("");
@@ -153,6 +160,9 @@ public class StandardParametersPanel extends JPanel
       add(passwordLabel);
 
       passwordTextField = new JPasswordField();
+      passwordTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+         BorderFactory.createLoweredBevelBorder()));
       add(passwordTextField);
    }
 
