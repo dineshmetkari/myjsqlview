@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.7 09/21/2012
+// Version 5.8 10/18/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,7 @@
 //             SiteParameters From Structures Since It Moved to this Classes'
 //             Package.
 //         5.7 Made Inner Class SitesTreePanel static.
+//         5.8 Class Methods addSite() & renameSite() Dressed Up JTextField.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,6 +145,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.event.TreeSelectionEvent;
@@ -169,7 +171,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.7 09/21/2012
+ * @version 5.8 10/18/2012
  */
 
 public class LoginManagerFrame extends JFrame implements ActionListener
@@ -733,6 +735,9 @@ public class LoginManagerFrame extends JFrame implements ActionListener
             message = new JLabel(resource, JLabel.CENTER);
             
             JTextField siteNameTextField = new JTextField(10);
+            siteNameTextField.setBorder(BorderFactory.createCompoundBorder(
+               BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+               BorderFactory.createLoweredBevelBorder()));
             Object[] content = {message, siteNameTextField};
             
             resource = resourceBundle.getResourceString("SitesTreePanel.dialogTitle.SiteDialog",
@@ -930,6 +935,9 @@ public class LoginManagerFrame extends JFrame implements ActionListener
             message = new JLabel(resource, JLabel.CENTER);
 
             JTextField siteNameTextField = new JTextField(10);
+            siteNameTextField.setBorder(BorderFactory.createCompoundBorder(
+               BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+               BorderFactory.createLoweredBevelBorder()));
             Object[] content = {message, siteNameTextField};
             
             resource = resourceBundle.getResourceString("SitesTreePanel.dialogTitle.SiteDialog",
