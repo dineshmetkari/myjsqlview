@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.1 10/19/2012
+// Version 3.2 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -93,6 +93,8 @@
 //             in Same addRepositoryIcon to Dialog.
 //         3.1 Synchronized Method removePluginConfiguationModule() & Threaded Call to in
 //             Method mouseClicked() for Removal of Repository Tab.
+//         3.2 Added protected Method startAnimation() to Begin the Animation with the
+//             northFillerPanel.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -172,7 +174,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.1 10/19/2012
+ * @version 3.2 10/19/2012
  */
 
 //=================================================================
@@ -187,6 +189,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
    private MyJSQLView_Frame parentFrame;
    private JPanel mainPanel;
+   private PluginFrameFillerPanel northFillerPanel;
    private JSplitPane splitPane;
    private JTabbedPane centralTabsPane;
    private CardLayout infoViewCardLayout;
@@ -237,7 +240,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       parentFrame = parent;
 
       // Constructor Instances.
-      PluginFrameFillerPanel northFillerPanel;
       JPanel southButtonPanel, buttonPanel;
       JPanel pluginViewPanel, loadingViewPanel;
       JScrollPane infoScrollPane;
@@ -281,8 +283,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       // Animated Filler Panel.
 
       northFillerPanel = new PluginFrameFillerPanel();
-      Thread northFillerPanelThread = new Thread(northFillerPanel, "PluginFrame Filler Panel");
-      northFillerPanelThread.start();
       mainPanel.add(northFillerPanel, BorderLayout.NORTH);
 
       // ======================================================
@@ -1436,7 +1436,17 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       gbc.weightx = wx;
       gbc.weighty = wy;
    }
+   
+   //==============================================================
+   // Class method to start the north animation panel.
+   //==============================================================
 
+   protected void startAnimation()
+   {
+      Thread northFillerPanelThread = new Thread(northFillerPanel, "PluginFrame Filler Panel");
+      northFillerPanelThread.start();
+   }
+   
    //==============================================================
    // Class method to center the frame.
    //==============================================================
