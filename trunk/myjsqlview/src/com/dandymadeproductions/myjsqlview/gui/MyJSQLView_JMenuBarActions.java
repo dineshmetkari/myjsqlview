@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.47 09/25/2012
+// Version 7.48 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -279,6 +279,7 @@
 //             Class's Constructors. Effects Most Actions That Involves Threads.
 //        7.47 Method actionSelection() Change in managePluginPreferences Size to
 //             750x475.
+//        7.48 Method actionSelection() Plugin Frame startAnimation().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -343,7 +344,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.47 09/25/2012
+ * @version 7.48 10/19/2012
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -554,6 +555,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          managePluginPreferences.setSize(750, 475);
          managePluginPreferences.center();
          managePluginPreferences.setVisible(true);
+         managePluginPreferences.startAnimation();
          pluginFrameVisible = true;
          return;
       }
