@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.0 10/19/2012
+// Version 3.1 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -91,6 +91,8 @@
 //         3.0 Added Class Instance addRepositoryIcon. Class Method addRepository() Added
 //             Instance resourceTitle for Dialog & Changed Borders for JTextFields. Added
 //             in Same addRepositoryIcon to Dialog.
+//         3.1 Synchronized Method removePluginConfiguationModule() & Threaded Call to in
+//             Method mouseClicked() for Removal of Repository Tab.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -170,7 +172,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.0 10/19/2012
+ * @version 3.1 10/19/2012
  */
 
 //=================================================================
@@ -707,7 +709,17 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          // Remove Plugin Action
          if (tableColumn == REMOVE_COLUMN)
          {
-            removePluginConfigurationModule(MyJSQLView_Frame.getPlugins().get(tableRow).getPath_FileName());
+            final String pathFileName = MyJSQLView_Frame.getPlugins().get(tableRow).getPath_FileName();
+            
+            Thread removePluginConfigurationModuleThread = new Thread(new Runnable()
+            {
+               public void run()
+               {
+                  removePluginConfigurationModule(pathFileName);
+               }
+            }, "PluginFrame.removePluginConfigurationModuleThread");
+            removePluginConfigurationModuleThread.start();
+            
             MyJSQLView_Frame.removeTab(tableRow);
             generateLoadedPluginsList(MyJSQLView_Frame.getPlugins());
             loadedPluginsTableModel.setValues(loadedPluginTableData);
@@ -1163,16 +1175,13 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          }
       }
    }
-
-   
-   // !!! Review threading this method, syncronize?
    
    //==============================================================
    // Class Method for removing a manually installed plugin from
    // the myjsqlview_plugin.conf file.
    //==============================================================
 
-   public static void removePluginConfigurationModule(String pluginPathFileName)
+   public static synchronized void removePluginConfigurationModule(String pluginPathFileName)
    {
       // Method Instances
       String pluginConfigFileString;
