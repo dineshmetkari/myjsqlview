@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.1 09/18/2012
+// Version 5.2 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -134,6 +134,7 @@
 //                        Public.
 //         5.1 09/18/2012 Made Class Instances disposeButton & findButton Private and Added
 //                        Methods getDisposeButton() & getFindButton().
+//         5.2 10/19/2012 Dressed All JComboBoxes & JTextFields in Form With New Borders.
 //                        
 //=================================================================
 
@@ -174,6 +175,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
@@ -188,7 +190,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.1 09/18/2012
+ * @version 5.2 10/19/2012
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -642,6 +644,7 @@ public class UpdateForm extends JFrame implements ActionListener
       updatePanel.add(setLabel);
 
       updateColumnComboBox = new JComboBox(updateComboBoxColumnNames.toArray());
+      updateColumnComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -659,6 +662,9 @@ public class UpdateForm extends JFrame implements ActionListener
       updatePanel.add(withLabel);
 
       updateColumnToTextField = new JTextField(15);
+      updateColumnToTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+         BorderFactory.createLoweredBevelBorder()));
 
       buildConstraints(constraints, 4, 0, 1, 1, 100, 100);
       constraints.fill = GridBagConstraints.NONE;
@@ -704,6 +710,7 @@ public class UpdateForm extends JFrame implements ActionListener
          wherePanel.add(whereLabel[i]);
 
          whereComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         whereComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(whereComboBox[i]);
 
          buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
@@ -713,6 +720,7 @@ public class UpdateForm extends JFrame implements ActionListener
          wherePanel.add(whereComboBox[i]);
 
          operatorComboBox[i] = new JComboBox(whereOperators);
+         operatorComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(operatorComboBox[i]);
 
          buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
@@ -722,6 +730,9 @@ public class UpdateForm extends JFrame implements ActionListener
          wherePanel.add(operatorComboBox[i]);
 
          whereTextField[i] = new JTextField(15);
+         whereTextField[i].setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+            BorderFactory.createLoweredBevelBorder()));
          stateComponents.add(whereTextField[i]);
 
          buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
@@ -733,6 +744,7 @@ public class UpdateForm extends JFrame implements ActionListener
          if (i < andOrComboBox.length)
          {
             andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
             stateComponents.add(andOrComboBox[i]);

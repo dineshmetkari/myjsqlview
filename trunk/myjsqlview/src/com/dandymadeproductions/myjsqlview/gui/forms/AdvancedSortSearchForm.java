@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 4.95 09/18/2012
+// Version 4.96 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -196,6 +196,7 @@
 //                        Made Class, Constructor, & Class Methods center(), getKeyComponents(),
 //                        setKeyComponents(), getAdvancedSortSearchSQL() Public.
 //        4.95 09/18/2012 Made Class Instance applyButton Private and Added getApplyButton().
+//        4.96 10/19/2012 Dressed All JComboBoxes & JTextFields in Form With New Borders.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -228,6 +229,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.border.EtchedBorder;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
@@ -242,7 +244,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.95 09/18/2012
+ * @version 4.96 10/19/2012
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -350,6 +352,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       selectTypePanel.add(selectTypeLabel);
 
       selectTypeComboBox = new JComboBox();
+      selectTypeComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       selectTypeComboBox.addItem("All");
       selectTypeComboBox.addItem("Distinct");
       stateComponents.add(selectTypeComboBox);
@@ -370,10 +373,12 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       aggregatePanel.add(aggregateLabel);
 
       aggregateFunctionComboBox = new JComboBox(aggregateFunctions);
+      aggregateFunctionComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       stateComponents.add(aggregateFunctionComboBox);
       aggregatePanel.add(aggregateFunctionComboBox);
       
       aggregateComboBox = new JComboBox(comboBoxColumnNames.toArray());
+      aggregateComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       stateComponents.add(aggregateComboBox);
       aggregatePanel.add(aggregateComboBox);
       
@@ -672,6 +677,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          sortPanel.add(sortByLabel[i]);
 
          sortComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         sortComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(sortComboBox[i]);
 
          buildConstraints(constraints, 1, i, 1, 1, 100, 100);
@@ -681,6 +687,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          sortPanel.add(sortComboBox[i]);
 
          sort_AscendingDescendingComboBox[i] = new JComboBox();
+         sort_AscendingDescendingComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderDESC);
          stateComponents.add(sort_AscendingDescendingComboBox[i]);
@@ -739,6 +746,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          groupPanel.add(groupByLabel[i]);
 
          groupComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         groupComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(groupComboBox[i]);
 
          buildConstraints(constraints, 1, i, 1, 1, 100, 100);
@@ -748,6 +756,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          groupPanel.add(groupComboBox[i]);
 
          group_AscendingDescendingComboBox[i] = new JComboBox();
+         group_AscendingDescendingComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          group_AscendingDescendingComboBox[i].addItem("");
          group_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
          group_AscendingDescendingComboBox[i].addItem(resourceOrderDESC);
@@ -806,6 +815,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          searchPanel.add(searchLabel[i]);
 
          searchComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         searchComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(searchComboBox[i]);
 
          buildConstraints(constraints, 1, (i + 3), 1, 1, 100, 100);
@@ -815,6 +825,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          searchPanel.add(searchComboBox[i]);
 
          operatorComboBox[i] = new JComboBox(whereOperators);
+         operatorComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(operatorComboBox[i]);
 
          buildConstraints(constraints, 2, (i + 3), 1, 1, 100, 100);
@@ -824,6 +835,9 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          searchPanel.add(operatorComboBox[i]);
 
          searchTextField[i] = new JTextField(15);
+         searchTextField[i].setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+            BorderFactory.createLoweredBevelBorder()));
          stateComponents.add(searchTextField[i]);
 
          buildConstraints(constraints, 3, (i + 3), 1, 1, 100, 100);
@@ -835,6 +849,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          if (i < andOrComboBox.length)
          {
             andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
             stateComponents.add(andOrComboBox[i]);
