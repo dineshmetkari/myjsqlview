@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.9 10/15/2012
+// Version 3.0 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,9 @@
 //             & MYJSQLVIEW_REPOSITORY.
 //         2.9 Moved Constructor Instances tabType, & currentTabIndex Default Setting Until
 //             After Tabs Setup.
+//         3.0 Added Class Instance addRepositoryIcon. Class Method addRepository() Added
+//             Instance resourceTitle for Dialog & Changed Borders for JTextFields. Added
+//             in Same addRepositoryIcon to Dialog.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -138,6 +141,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.border.EtchedBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -166,7 +170,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.9 10/15/2012
+ * @version 3.0 10/19/2012
  */
 
 //=================================================================
@@ -198,7 +202,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private String fileSeparator, iconsDirectory, lastPluginDirectory;
    private String resourceAlert;
 
-   private ImageIcon statusWorkingIcon, deleteRepositoryIcon;
+   private ImageIcon statusWorkingIcon;
+   private ImageIcon addRepositoryIcon, deleteRepositoryIcon;
    private ImageIcon defaultModuleIcon, removeIcon;
 
    private String tabType;
@@ -250,6 +255,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
       statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
       removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
+      addRepositoryIcon = resourceBundle.getResourceImage(iconsDirectory + "addRepositoryIcon.gif");
       deleteRepositoryIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteDataIcon.gif");
       defaultModuleIcon = resourceBundle.getResourceImage(iconsDirectory + "newsiteLeafIcon.png");
 
@@ -1024,22 +1030,28 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       JTextField repositoryNameTextField, repositoryURLTextField;
 
       String resource, resourceOK, resourceCancel;
-      String repositoryName;
+      String resourceTitle, repositoryName;
 
       // Setup and display a option pane to collect the
       // repository name and location, url. Give it some
       // default input for help.
-
+      resourceTitle = resourceBundle.getResourceString("PluginFrame.message.AddRepository", "Add Repository");
+      
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryName", "RepositoryName");
       repositoryNameLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryNameTextField = new JTextField();
+      repositoryNameTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
+         BorderFactory.createLoweredBevelBorder()));
       repositoryNameTextField.setText(MYJSQLVIEW_REPOSITORY_NAME);
 
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryURL", "RepositoryURL");
       repositoryURLLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryURLTextField = new JTextField();
+      repositoryURLTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED), BorderFactory.createLoweredBevelBorder()));
       repositoryURLTextField.setText(MYJSQLVIEW_REPOSITORY);
 
       Object content[] = {repositoryNameLabel, repositoryNameTextField, repositoryURLLabel,
@@ -1048,8 +1060,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
       resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
-      InputDialog repositoryDialog = new InputDialog(null, resource, resourceOK, resourceCancel, content,
-                                                     null);
+      InputDialog repositoryDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel, content,
+                                                     addRepositoryIcon);
       repositoryDialog.pack();
       repositoryDialog.setResizable(false);
       repositoryDialog.center();
