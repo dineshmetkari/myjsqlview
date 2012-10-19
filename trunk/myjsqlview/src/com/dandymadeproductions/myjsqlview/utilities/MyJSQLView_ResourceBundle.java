@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.1 10/18/2012
+// Version 3.2 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,8 @@
 //                        to Use a Generic OS Independent Path Creation for File Types.
 //         3.1 10/18/2012 Class Method setLocaleResource() Correction in Creation of File
 //                        Type Resource to Handle WinOS Network Paths.
+//         3.2 10/19/2012 Class Method getResourceFile() Catch Output Resource URL from
+//                        resourceURL.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +120,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 3.1 10/18/2012
+ * @version 3.2 10/19/2012
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -388,7 +390,7 @@ public class MyJSQLView_ResourceBundle implements Serializable
             {
                displayErrors("MyJSQLView_ResourceBundle getResourceFile() \n"
                              + "Failed to identity URL protocol in order to process, , "
-                             + fileResourceURL.toExternalForm());
+                             + resourceURL.toExternalForm() + fileName);
                return null;
             }
             return fileResource;
