@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.4 10/18/2012
+// Version 3.5 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,8 @@
 //                        Configuration File.
 //         3.4 10/18/2012 Class Method loadPluginEntry() Correction in Creation of File
 //                        Type Resource to Handle WinOS Network Paths.
+//         3.5 10/19/2012 Threaded Calls to PluginFrame.removePluginConfigurationModule()
+//                        in loadPluginModules().
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -135,7 +137,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.4 10/18/2012
+ * @version 3.5 10/19/2012
  */
 
 public class PluginLoader implements Runnable
@@ -576,7 +578,14 @@ public class PluginLoader implements Runnable
                catch (MalformedURLException mfe)
                {
                   displayErrors("PluginLoader classLoader Exception: \n" + mfe.toString());
-                  PluginFrame.removePluginConfigurationModule(pluginURLString);
+                  Thread removePluginConfigurationModuleThread = new Thread(new Runnable()
+                  {
+                     public void run()
+                     {
+                        PluginFrame.removePluginConfigurationModule(pluginURLString);
+                     }
+                  }, "PluginLoader.removePluginConfigurationModuleThread1");
+                  removePluginConfigurationModuleThread.start();
                   return null;
                }
             }
@@ -598,7 +607,14 @@ public class PluginLoader implements Runnable
             catch (Exception e)
             {
                displayErrors("PluginLoader loadPluginModules() Exception: \n" + e.toString());
-               PluginFrame.removePluginConfigurationModule(pluginURLString);
+               Thread removePluginConfigurationModuleThread = new Thread(new Runnable()
+               {
+                  public void run()
+                  {
+                     PluginFrame.removePluginConfigurationModule(pluginURLString);
+                  }
+               }, "PluginLoader.removePluginConfigurationModuleThread2");
+               removePluginConfigurationModuleThread.start();
             }
          }
       }
