@@ -11,7 +11,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 1.6 10/15/2012
+// Version 1.7 10/19/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,7 +50,8 @@
 //             getSelectPluginInfo() for selectedPlugin.
 //         1.6 Added Class Methods refreshRepository(), loadPluginTableData(), &
 //             formatSize(). Moved tableScrollPane, & tabIcon from Constructor
-//             Instances to Class. 
+//             Instances to Class.
+//         1.7 Cleanup in Constructor for Instance tableColumn.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -84,7 +85,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_TableModel;
  * the panel to display and allow selecting of plugins.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/15/2012
+ * @version 1.7 10/19/2012
  */
 
 public class PluginRepositoryPanel extends JPanel
@@ -153,8 +154,6 @@ public class PluginRepositoryPanel extends JPanel
                                                      getFont().getSize()));
       tableColumn = pluginListTable.getColumnModel().getColumn(TABICON_COLUMN);
       tableColumn.setPreferredWidth(resourceTabIcon.length() - 10);
-      tableColumn = pluginListTable.getColumnModel().getColumn(SIZE_COLUMN);
-      //tableColumn.set
       pluginListTable.getSelectionModel().addListSelectionListener(listSelectionListener);
       
       // Create a scrollpane for the plugins table and place
