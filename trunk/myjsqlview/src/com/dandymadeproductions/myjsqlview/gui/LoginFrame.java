@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 6.93 09/21/2012
+// Version 6.94 10/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -283,6 +283,8 @@
 //             & Structures Since Both Moved to this Classes' Package.
 //        6.93 Creation of splashPanelThread in Method createSplashWindow() for
 //             Starting the splashPanel Animation.
+//        6.94 Correction in accessCheck() for dbMetaData.getDatabaseProductName/
+//             Version() Conditional Checks for Negation of Empty String.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -339,7 +341,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.93 09/21/2012
+ * @version 6.94 10/20/2012
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1174,7 +1176,7 @@ public class LoginFrame extends JFrame implements ActionListener
             // =======================
             // Database Product Name & Version
             
-            if (dbMetaData.getDatabaseProductName().equals(""))
+            if (!dbMetaData.getDatabaseProductName().isEmpty())
                dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
             else
             {
@@ -1193,7 +1195,7 @@ public class LoginFrame extends JFrame implements ActionListener
                else
                   dbProductNameVersion = "Unknown Data Source ";
             }
-            if (dbMetaData.getDatabaseProductVersion().equals(""))
+            if (!dbMetaData.getDatabaseProductVersion().isEmpty())
                dbProductNameVersion += dbMetaData.getDatabaseProductVersion();
             
             ConnectionManager.setDBProductName_And_Version(dbProductNameVersion);
