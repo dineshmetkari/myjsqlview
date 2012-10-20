@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2007-2012 Dana M. Proctor
-// Version 5.3 09/11/2012
+// Version 5.4 10/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,8 @@
 //             Unecessary null Checks & Closing Result Set.
 //         5.3 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made Class, Constructor & Method getTableDefinition() Public.
+//         5.4 Method createHSQLTableDefinition() Added Instance timeStampTMZFieldsHashMap
+//             to Collect DATETIME_PRECISION for Timestamp With TimeZone Fields.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -171,7 +173,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.3 09/11/2012
+ * @version 5.4 10/20/2012
  */
 
 public class TableDefinitionGenerator
@@ -675,6 +677,7 @@ public class TableDefinitionGenerator
       String tableType;
       String catalogName;
       String autoIncrementColumnName;
+      HashMap<String, String> timeStampTMZFieldsHashMap;
       HashMap<String, String> timeTMZFieldsHashMap;
       HashMap<String, String> intervalFieldsHashMap;
       HashMap<String, Integer> columnPrecisionHashMap;
@@ -697,6 +700,7 @@ public class TableDefinitionGenerator
       // of the table Structure.
       
       dataSourceType = ConnectionManager.getDataSourceType();
+      timeStampTMZFieldsHashMap = new HashMap<String, String>();
       timeTMZFieldsHashMap = new HashMap<String, String>();
       intervalFieldsHashMap = new HashMap<String, String>();
       columnPrecisionHashMap = new HashMap<String, Integer>();
@@ -778,6 +782,7 @@ public class TableDefinitionGenerator
          
          sqlStatementString = "SELECT " + dbIdentifierQuoteString + "COLUMN_NAME" + dbIdentifierQuoteString
                               + "," + dbIdentifierQuoteString + "DATA_TYPE" + dbIdentifierQuoteString
+                              + "," + dbIdentifierQuoteString + "DATETIME_PRECISION" + dbIdentifierQuoteString
                               + "," + dbIdentifierQuoteString + "DTD_IDENTIFIER" + dbIdentifierQuoteString
                               + " FROM " + dbIdentifierQuoteString
                               + "INFORMATION_SCHEMA" + dbIdentifierQuoteString + "."
@@ -792,11 +797,17 @@ public class TableDefinitionGenerator
 
          while (resultSet.next())
          {
-            if (resultSet.getString("DATA_TYPE").equals("INTERVAL"))
-               intervalFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
-                                         resultSet.getString("DTD_IDENTIFIER"));
+            if (resultSet.getString("DATA_TYPE").equals("TIMESTAMP WITH TIME ZONE"))
+               timeStampTMZFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
+                                         "TIMESTAMP(" + resultSet.getString("DATETIME_PRECISION")
+                                         + ") WITH TIME ZONE");
+            
             if (resultSet.getString("DATA_TYPE").equals("TIME WITH TIME ZONE"))
                timeTMZFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
+                                         resultSet.getString("DTD_IDENTIFIER"));
+            
+            if (resultSet.getString("DATA_TYPE").equals("INTERVAL"))
+               intervalFieldsHashMap.put(resultSet.getString("COLUMN_NAME"),
                                          resultSet.getString("DTD_IDENTIFIER"));
          }
          
@@ -935,9 +946,9 @@ public class TableDefinitionGenerator
             // Timestamp
             else if (columnType.indexOf("TIMESTAMP") != -1)
             {
-               // Unable to tell where the precision is
-               // located in system table. Column_Size of
-               // 29 Seems to Indicate Timestamp(0) for HSQL.
+               // Unable to tell where the precision is located in system
+               // table. Column_Size of 29 Seems to Indicate Timestamp(0) for HSQL.
+               
                if (dataSourceType.equals(ConnectionManager.HSQL))
                {
                   if (columnSize.equals("29"))
@@ -949,7 +960,12 @@ public class TableDefinitionGenerator
                {
                   // HSQL2 Defines, precision but can not determine.
                   // tableDefinition.append(columnType + "(" + columnPrecision + ")");
-                  tableDefinition.append(columnType);
+                  // so...
+                  
+                  if (timeStampTMZFieldsHashMap.get(columnName) != null)
+                     tableDefinition.append(timeStampTMZFieldsHashMap.get(columnName));
+                  else
+                     tableDefinition.append(columnType);
                }           
             }
             // Interval
