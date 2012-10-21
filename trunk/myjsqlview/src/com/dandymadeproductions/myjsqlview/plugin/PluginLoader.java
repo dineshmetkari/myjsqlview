@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.5 10/19/2012
+// Version 3.6 10/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -96,6 +96,8 @@
 //                        Type Resource to Handle WinOS Network Paths.
 //         3.5 10/19/2012 Threaded Calls to PluginFrame.removePluginConfigurationModule()
 //                        in loadPluginModules().
+//         3.6 10/21/2012 Change in Derivation in loadDefaultPluginEntries() to Proper
+//                        Format pathKey for WinOS.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -137,7 +139,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.5 10/19/2012
+ * @version 3.6 10/21/2012
  */
 
 public class PluginLoader implements Runnable
@@ -429,7 +431,8 @@ public class PluginLoader implements Runnable
                if (currentFileName.endsWith(".class") && currentFileName.indexOf("$") == -1
                    && currentFileName.indexOf(VALID_PLUGIN_MODULENAME) != -1)
                {
-                  pathKey = "file:" + pluginDirectoryString + jarFileNames[i];
+                  pathKey =  (new URL("file:" + pluginDirectoryString + jarFileNames[i])).toExternalForm();
+                  // System.out.println("Located:" + pathKey);
                   
                   currentFileName = currentFileName.replaceAll("/", ".");
                   currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
@@ -438,7 +441,6 @@ public class PluginLoader implements Runnable
                      continue;
                   
                   pluginEntriesHashMap.put(pathKey, currentFileName);
-                  // System.out.println("Located:" + pathKey + " " + currentFileName);
                }
             }
             jarFile.close();
@@ -507,6 +509,7 @@ public class PluginLoader implements Runnable
                   continue;
               
                pluginEntriesHashMap.put(pathKey, className);
+               // System.out.println("Located:" + pathKey);  
             }
             else
                continue;
