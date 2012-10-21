@@ -1,4 +1,4 @@
-MyJSQLView Version 3.35
+MyJSQLView Version 3.40
 
 Copyright 2005-2012
 by Dana Proctor
@@ -70,11 +70,11 @@ Requirements:
 
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
    * Java Runtime Environment, JRE 1.5 or Newer.
-   * HSQL 2.2.5 - 2.2.8. *NOTE, 1.8.x No Longer Supported
+   * HSQL 2.2.5 - 2.2.9. *NOTE, 1.8.x No Longer Supported
    * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
    * MySQL 5.0.7 - 5.1.61, JDBC 5.0.7, 5.1.5, 5.1.8.
    * Oracle 10g JDBC 14.
-   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801-9.1-901.
+   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801-9.1-903.
    * Xerial SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
 
 Installation Notes:
@@ -97,7 +97,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.34 does not, will have an example configuration
+additional database, release v3.40 does not, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
@@ -207,6 +207,10 @@ L.S. Proctor who provided support and mental clarity.
 Version History:
 
 Production (2008-12-31):
+
+   * Version 3.40 Code reorganization to have sub-packages to myjsqlview. Rebuild
+                  of resource bundler to handle network assets. Complete rebuild
+                  of plugin framework to handle network located plugins.
    * Version 3.35 Maintenance update to address issues with immutable strings
                   associated with the SQL Query Bucket, alias name resolution
                   in the Query Frame, and a complete update to data types to

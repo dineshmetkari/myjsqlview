@@ -13,7 +13,7 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.35<br></u></b>
+			<b><u>MyJSQLView Version 3.40<br></u></b>
 		</p>
 		<p align="center">
 			Copyright 2005-2012<br>
@@ -91,11 +91,11 @@
 		<ul>
   			<li> Microsoft<sup>&reg;</sup> Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, &amp; X-Window Environment.</li>
                     	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.5</font> or Newer.</li>
-			<li>HSQL <font color="#ff0000">2.2.5 - 2.2.8</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
+			<li>HSQL <font color="#ff0000">2.2.5 - 2.2.9</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 			<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge, Control Panel Data Sources.</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
-			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.0-801-9.1-901</font>.</li>
+			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.0-801-9.1-903</font>.</li>
 			<li>Xerial SQLite JDBC <font color="#ff0000">3.6.20 - 3.7.2</font>. Note, SQLite need not be installed on the system.</li>
 			
 		</ul>
@@ -120,7 +120,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.34</b> does not, will have an example configuration
+			additional database, release <b>v3.40</b> does not, will have an example configuration
 			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -232,6 +232,12 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.40</td>
+      				<td width="80%">Code reorganization to have sub-packages to myjsqlview. Rebuild
+                  				of resource bundler to handle network assets. Complete rebuild
+                  				of plugin framework to handle network located plugins.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.35</td>
       				<td width="80%">Maintenance update to address issues with immutable strings
