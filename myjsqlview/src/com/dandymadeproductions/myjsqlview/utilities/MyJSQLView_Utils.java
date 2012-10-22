@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 8.1 10/11/2012
+// Version 8.2 10/21/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,8 @@
 //         8.1 Class Method clearCache() Identifiable Error Output to Routine &
 //             Skipping Directory Entries. Commented Out System.out in Method
 //             processLocaleLanguage().
+//         8.2 Class Method getCacheDirectory() Implemented the Attempt to Try & Create
+//             the Cache Directory on the File System if Does not Exist.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -213,7 +215,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.1 10/11/2012
+ * @version 8.2 10/21/2012
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -743,8 +745,29 @@ public class MyJSQLView_Utils extends MyJSQLView
 
    public static String getCacheDirectory()
    {
-      return MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
-             + "cache" + MyJSQLView_Utils.getFileSeparator();
+      // Method Instances
+      String cacheDirectory;
+      File cacheDirectoryFile;
+      
+      cacheDirectory =  MyJSQLView_Utils.getMyJSQLViewDirectory() + MyJSQLView_Utils.getFileSeparator()
+                        + "cache" + MyJSQLView_Utils.getFileSeparator();
+      
+      cacheDirectoryFile = new File(cacheDirectory);
+      
+      if (!cacheDirectoryFile.isDirectory())
+      {
+         try
+         {
+            cacheDirectoryFile.mkdirs();
+         }
+         catch (SecurityException se)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("Failed to Make Cache Directory.\n"
+                                  + se.toString());
+         }
+      }
+      return cacheDirectory;
    }
    
    //==============================================================
