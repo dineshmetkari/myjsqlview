@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.5 05/28/2012
+// Version 1.6 10/22/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.3 Update to Sync With MyJSQLView v3.33 Release.
 //         1.4 Update to Sync With MyJSQLView v3.34 Release.
 //         1.5 Update to Sync With MyJSQLView v3.35 Release.
+//         1.6 Update to Sync With MyJSQLView v3.40 Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,21 +45,22 @@
 
 package myplugin;
 
-import javax.swing.JPanel;
-import javax.swing.JMenuBar;
-import javax.swing.JToolBar;
-import javax.swing.ImageIcon;
 import java.util.ArrayList;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 
 /**
  *    The PluginModule class provides the hook to incorporate a external
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.5 05/28/2012
+ * @version 1.6 10/22/2012
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
