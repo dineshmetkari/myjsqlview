@@ -8,8 +8,8 @@
 //                  << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2011 Dana M. Proctor
-// Version 1.7 05/07/2011
+// Copyright (C) 2006-2012 Dana M. Proctor
+// Version 2.1 09/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,13 @@
 //         1.6 Change in MyJSQLView Package of MyJSQLView_Access Change to
 //             ConnectionManager.
 //         1.7 Changed Argument tableNames in setDBTables() to ArrayList.
+//         1.8 Requirement Addition for TableRecordCountPanel Argument of path.
+//         1.9 Added Class Method getTabIcon() for Testing With MyJSQLView
+//             in the Rebuild of the Plugin Loading Framework.
+//         2.0 Added Class Instance pluginName to Meet New MyJSQLView v3.35++
+//             Plugin Requirements.
+//         2.1 Added Class Instance pluginAuthor to Meet New MyJSQLView v3.35++
+//             Plugin Requirements.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -51,24 +58,27 @@
 
 package com.dandymadeproductions.tablerecordcount;
 
-import javax.swing.JPanel;
 import java.util.ArrayList;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
+import javax.swing.ImageIcon;
+import javax.swing.JPanel;
+
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 
 /**
  *    The PluginModule class provides the hook to incorporate a external plugin
  * module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.7 05/07/2011
+ * @version 2.1 09/29/2012
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
 {
    // Class Instances
+   private String pluginName, pluginAuthor;
    private TableRecordCountPanel tableRecordCountPanel;
 
    //==============================================================
@@ -86,17 +96,29 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public void initPlugin(MyJSQLView_Frame parentFrame, String path)
    {
-      tableRecordCountPanel = new TableRecordCountPanel(ConnectionManager.getTableNames());
+      pluginName = "Table Record Count";
+      pluginAuthor = "Dandy Made Productions";
+      tableRecordCountPanel = new TableRecordCountPanel(path, ConnectionManager.getTableNames());
    }
 
    //==============================================================
-   // Class method to meet the interface requirements for returning
+   // Class method to meet the interface requirements for getting
    // the name of the module.
    //==============================================================
 
    public String getName()
    {
-      return "Table Record Count";
+      return pluginName;
+   }
+   
+   //==============================================================
+   // Class method to meet the interface requirements for getting
+   // the author of the module.
+   //==============================================================
+
+   public String getAuthor()
+   {
+      return pluginAuthor;
    }
    
    //==============================================================
@@ -107,6 +129,16 @@ public class PluginModule extends MyJSQLView_PluginModule
    public String getVersion()
    {
       return TableRecordCountPanel.getVersion();
+   }
+   
+   //==============================================================
+   // Class method to meet the interface requirements of returning
+   // a ImageIcon that will be used as the plugin's tab Icon.
+   //==============================================================
+
+   public ImageIcon getTabIcon()
+   {
+      return tableRecordCountPanel.getTabIcon();
    }
 
    //==============================================================

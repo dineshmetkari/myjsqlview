@@ -8,8 +8,8 @@
 //               << TableRecordCountPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2011 Dana M. Proctor
-// Version 1.9 05/07/2011
+// Copyright (C) 2005-2012 Dana M. Proctor
+// Version 2.3 10/23/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,12 @@
 //             ConnectionManager. Changes to executeRecordCount().
 //         1.9 Changed Constructor & Class Method reloadPanel() Arguments
 //             to be ArrayList Data Type Instead of Vector.
+//         2.0 Introduced Class Instance resourceBundle and Its Use in Constructor.
+//         2.1 Added Class Instance tabIcon. Change in resourceBundle Creation
+//             to Sync With MyJSQLView API Change. Examples to Setup Said
+//             Instance via Local Files or JAR Resource.
+//         2.2 Organized Imports to Meet MyJSQLView v3.35++ Code Re-Structuring.
+//         2.3 Minor Code Organizing, Move resouceBundle to Constructor.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,40 +70,68 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.DBTablesPanel;
-import com.dandymadeproductions.myjsqlview.TableTabPanel;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
+import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
- * The TableRecordCountPanel class provides the panel that holds components
- * associated with the MyJSQLView basic tutorial for a plugin module.
+ *    The TableRecordCountPanel class provides the panel that holds
+ * components associated with the MyJSQLView basic tutorial for a
+ * plugin module.
  * 
  * @author Dana M. Proctor
- * @version 1.9 05/07/2011
+ * @version 2.3 10/23/2012
  */
 
 class TableRecordCountPanel extends JPanel implements ActionListener
 {
    // Class Instances.
    private static final long serialVersionUID = 2500935698652883672L;
-   private final static String version = "Version 1.9";
+   
+   private ImageIcon tabIcon;
    private JComboBox tableSelectionComboBox;
    private JLabel recordCountLabel;
    private boolean disableActions;
+   
+   private final static String VERSION = "Version 2.3";
 
    //==============================================================
    // TableRecordCountPanel Constructor
    //==============================================================
 
-   TableRecordCountPanel(ArrayList<String> tableNames)
+   TableRecordCountPanel(String path, ArrayList<String> tableNames)
    {
       // Method Instances.
+      MyJSQLView_ResourceBundle resourceBundle;
+      String pathDirectory, localeDirectory, imagesDirectory, resource;
       JLabel tableNameLabel;
+      
+      // Setup the plugin's components, do not
+      // use local file system's file separator!
+      
+      // file & http, locale resource not in jar
+      //pathDirectory = path + "/" + "TableRecordCount" + "/";
+      //localeDirectory = "locale/";
+      //imagesDirectory = "images/icons/";
+      
+      // file & http, locale resource in jar
+      pathDirectory = path + "/" + "TableRecordCount.jar";
+      localeDirectory = "lib/plugins/TableRecordCount/locale/";
+      imagesDirectory = "lib/plugins/TableRecordCount/images/icons/";
+      
+      resourceBundle = new MyJSQLView_ResourceBundle(pathDirectory);
+      resourceBundle.setLocaleResource(localeDirectory, "TableRecordCount", MyJSQLView.getLocaleString());
+      
+      tabIcon = resourceBundle.getResourceImage(imagesDirectory + "tabIcon.png");
 
       // Create the components to select the database table,
       // identify the record count and the actual processed
@@ -119,11 +153,14 @@ class TableRecordCountPanel extends JPanel implements ActionListener
       add(tableSelectionComboBox);
 
       // Identify Count.
-      tableNameLabel = new JLabel("Record Count: ");
+      resource = resourceBundle.getResourceString("TableRecordCountPanel.label.RecordCount",
+                                                  "Record Count");
+      tableNameLabel = new JLabel(resource + ": ");
       add(tableNameLabel);
 
       // Record Count Value.
       recordCountLabel = new JLabel("0");
+      
       add(recordCountLabel);
    }
 
@@ -266,6 +303,15 @@ class TableRecordCountPanel extends JPanel implements ActionListener
 
    protected static String getVersion()
    {
-      return version;
+      return VERSION;
+   }
+   
+   //==============================================================
+   // Class method to get the plugin's version.
+   //==============================================================
+
+   protected ImageIcon getTabIcon()
+   {
+      return tabIcon;
    }
 }
