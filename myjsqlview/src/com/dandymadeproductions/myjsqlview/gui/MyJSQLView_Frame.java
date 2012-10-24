@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 7.9 09/21/2012
+// Version 8.0 10/24/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -193,6 +193,8 @@
 //         7.9 09/21/2012 Initialized static Instances mainTabsPane, toolBarCardLayout, & toolBarPanel
 //                        at Declaration. Moved Class Instance databaseTablesIcon to createGUI()
 //                        Method.
+//         8.0 10/24/2012 Class Method removeTab() Check to Insure the loadedPluginModules ToolBar
+//                        Exists, Not NULL.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -239,7 +241,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 7.9 09/21/2012
+ * @version 8.0 09/24/2012
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -516,7 +518,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    public static void removeTab(int index)
    { 
       mainTabsPane.removeTabAt(index + 2);
-      toolBarPanel.remove((loadedPluginModules.get(index)).getToolBar());
+      if ((loadedPluginModules.get(index)).getToolBar() != null)
+         toolBarPanel.remove((loadedPluginModules.get(index)).getToolBar());
       loadedPluginModules.remove(index);
    }
    
