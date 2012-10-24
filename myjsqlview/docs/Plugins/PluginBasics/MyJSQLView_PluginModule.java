@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 2.6 05/07/2012
+// Version 3.3 10/01/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -58,12 +58,22 @@
 //         2.5 Copyright Update.
 //         2.6 Changed Argument Requirement tableNames in setDBTables to Data Type
 //             ArrayList from Vector.
+//         2.7 Added Class Instance description. Set getPath_FileName() public &
+//             Added Method getDescription().
+//         2.8 Changed Package Name to com.dandymadeproductions.myjsqlview.plugin.
+//             Added Class Method setName(). Changed Getter Methods to Return the
+//             Appropriate Class Instance Instead of Null.
+//         2.9 Correction of Class Method setname() to setName().
+//         3.0 Made All Class Instances Protected. Added Controlled Getter Methods.
+//         3.1 Added Class Instance author & Methods getAuthor() & getControlledAuthor().
+//         3.2 Added Class Instances category, size, & Their Getter Methods.
+//         3.3 Comment Change.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
 
-package com.dandymadeproductions.myjsqlview;
+package com.dandymadeproductions.myjsqlview.plugin;
 
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
@@ -77,15 +87,17 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 2.6 05/07/2012
+ * @version 3.3 10/01/2012
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 {
    // Class Instances.
    //protected MyJSQLView_Frame parent;
-   private String pathFileName;
-   protected String name, version;
+   protected String pathFileName;
+   public String name, author;
+   protected String version, description, category;
+   protected int size;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
    protected JToolBar toolBar;
@@ -101,11 +113,15 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
       
       pathFileName = null;
       name = null;
+      author = null;
+      version = null;
+      description = null;
+      category = null;
+      size = 0;
       tabIcon = null;
       menuBar = null;
       toolBar = null;
       panel = null;
-      version = null;
    }
    
    //==============================================================
@@ -125,24 +141,104 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Class methods to get/set the plugin's file name.
    //==============================================================
    
-   protected String getPath_FileName()
+   public String getPath_FileName()
    {
       return pathFileName;
    }
    
-   protected void setPath_FileName(String content)
+   protected String getControlledPath_FileName()
    {
-      this.pathFileName = content;
+      return pathFileName;
    }
    
    //==============================================================
-   // Class method to obtain the plugin's name.
+   // Class method to get/set the plugin's name.
    // Interface requirement.
    //==============================================================
 
    public String getName()
    {
-      return null;
+      return name;
+   }
+   
+   public String getControlledName()
+   {
+      return name;
+   }
+   
+   //==============================================================
+   // Class method to get/set the plugin's author.
+   // Interface requirement.
+   //==============================================================
+
+   public String getAuthor()
+   {
+      return author;
+   }
+   
+   public String getControlledAuthor()
+   {
+      return author;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's version number.
+   // Interface requirement.
+   //==============================================================
+
+   public String getVersion()
+   {
+      return version;
+   }
+   
+   public String getControlledVersion()
+   {
+      return version;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's description.
+   // Interface requirement.
+   //==============================================================
+
+   public String getDescription()
+   {
+      return description;
+   }
+   
+   public String getControlledDescription()
+   {
+      return description;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's category.
+   // Interface requirement.
+   //==============================================================
+
+   public String getCategory()
+   {
+      return category;
+   }
+   
+   public String getControlledCategory()
+   {
+      return category;
+   }
+   
+   //==============================================================
+   // Class method to obtain the plugin's size.
+   // Interface requirement.
+   //==============================================================
+
+   public int getSize()
+   {
+      return size;
+   }
+   
+   public int getControlledSize()
+   {
+      return size;
    }
 
    //==============================================================
@@ -154,7 +250,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
    public ImageIcon getTabIcon()
    {
-      return null;
+      return tabIcon;
+   }
+   
+   public ImageIcon getControlledTabIcon()
+   {
+      return tabIcon;
    }
 
    //==============================================================
@@ -165,7 +266,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
    public JMenuBar getMenuBar()
    {
-      return null;
+      return menuBar;
+   }
+   
+   public JMenuBar getControlledMenuBar()
+   {
+      return menuBar;
    }
    
    //==============================================================
@@ -176,7 +282,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
    public JToolBar getToolBar()
    {
-      return null;
+      return toolBar;
+   }
+   
+   public JToolBar getControlledToolBar()
+   {
+      return toolBar;
    }
    
    //==============================================================
@@ -186,17 +297,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
    public JPanel getPanel()
    {
-      return null;
+      return panel;
    }
    
-   //==============================================================
-   // Class method to obtain the plugin's version number.
-   // Interface requirement.
-   //==============================================================
-
-   public String getVersion()
+   public JPanel getControlledPanel()
    {
-      return null;
+      return panel;
    }
    
    //==============================================================
