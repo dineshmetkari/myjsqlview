@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2011 Dana M. Proctor
-// Version 1.9 05/07/2011
+// Version 2.3 09/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,14 @@
 //             Compliance With Java 5.0 API.
 //         1.9 Change of tableNames Argument in setDBTables() from Vector Data
 //             Type to ArrayList.
+//         2.0 Updated Imports in Order Properly Load MyJSQLView Classes Which
+//             Changed Packaging for v3.35++. Added Method setName() to Meet
+//             MyJSQLView_PluginModule Interface Requirements.
+//         2.1 Collected tabIcon From dataProfiler Call.
+//         2.2 Removed All Overridden Method Except setDBTables(), So They the
+//             Core MyJSQLView_PluginModule Handles After Just Setting Instances
+//             in initPlugin().
+//         2.3 Added Class Method getAuthor() & getDescription().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -55,23 +63,23 @@
 
 package com.dandymadeproductions.tablefieldprofiler;
 
-import javax.swing.JPanel;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuBar;
-import javax.swing.JToolBar;
 import java.util.ArrayList;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 
 /**
  *    The PluginModule class provides the hook to incorporate a external
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.9 05/07/2011
+ * @version 2.3 09/29/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -79,7 +87,6 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class Instances
    // private MyJSQLView_Frame parent;
    private TableFieldProfiler dataProfiler;
-   private ImageIcon tabIcon;
 
    //==============================================================
    // MyJSQLView_PluginModule Constructor.
@@ -96,21 +103,12 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public void initPlugin(MyJSQLView_Frame mainFrame, String path)
    {
-      // Instance Methods
-      String fileSeparator, iconsDirectory;
-
       // Main Class
       dataProfiler = new TableFieldProfiler(mainFrame, path, ConnectionManager.getTableNames());
-
-      // Plugin Tab Icon.
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      iconsDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "images"
-                       + fileSeparator + "icons" + fileSeparator;
-      tabIcon = new ImageIcon(iconsDirectory + "informationIcon.png");
    }
-
+   
    //==============================================================
-   // Class method to meet the interface requirements for returning
+   // Class method to meet the interface requirements for getting
    // the name of the module.
    //==============================================================
 
@@ -118,17 +116,42 @@ public class PluginModule extends MyJSQLView_PluginModule
    {
       return "Table Field Profiler";
    }
-   
+  
    //==============================================================
-   // Class method to obtain the plugin's version number.
-   // Interface requirement.
+   // Class method to meet the interface requirements for getting
+   // the author of the module.
    //==============================================================
 
+   public String getAuthor()
+   {
+      return "Dandy Made Productions";
+   }
+   
+   //==============================================================
+   // Class method to return the version release number of the
+   // plugin module.
+   //==============================================================
+   
    public String getVersion()
    {
       return TableFieldProfiler.getVersion();
    }
-
+   
+   //==============================================================
+   // Class method to meet the interface requirements for getting
+   // the description for the module.
+   //==============================================================
+   
+   public String getDescription()
+   {
+      return "The TableFieldProfiler module encompasses aspects that give general\n"
+             + "information for a database's table fields and also a cluster and number\n"
+             + "analysis. The information is presented in the form of graphic charts,\n"
+             + "pie, bar, & bubble for the field's record count, distribution, and\n"
+             + "patterns. The analysis aspect of the profiler gives frequency, variation,\n"
+             + "percentile, and clustered average information for a field.";
+   }
+   
    //==============================================================
    // Class method to meet the interface requirements of returning
    // a ImageIcon that will be used as the plugin's tab Icon.
@@ -136,30 +159,29 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public ImageIcon getTabIcon()
    {
-      return tabIcon;
+      return dataProfiler.getTabIcon();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements of returning
-   // a JMenuBar that can be used to control various aspects of
-   // the modules functionality.
+   // a Menu Bar that will be used as the plugin's Menu Bar.
    //==============================================================
 
    public JMenuBar getMenuBar()
    {
       return dataProfiler.getMenuBar();
    }
-
+   
    //==============================================================
-   // Class method to allow the collection of a JToolBar to be
-   // used with the plugin module.
+   // Class method to meet the interface requirements of returning
+   // a Too Bar that will be used as the plugin's Tool Bar.
    //==============================================================
 
    public JToolBar getToolBar()
    {
       return dataProfiler.getToolBar();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements for returning
    // a JPanel for inclusion in the MyJSQLView application's main
@@ -170,7 +192,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    {
       return dataProfiler.getPanel();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements for being
    // able to set the database tables.

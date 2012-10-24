@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor.
-// Version 2.1 02/02/2012
+// Version 2.4 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,13 @@
 //         1.9 Commented Out the Tools Cluster Analysis for Version Release 4.0.
 //         2.0 Uncommented the Tools Cluster Analysis Menu Items.
 //         2.1 Added Field Menu to Tools Menu.
+//         2.2 Updated Imports in Order Properly Load MyJSQLView Classes
+//             Which Changed Packaging for v3.35++. Update in Methods
+//             createFileMenu() & createToolsMenu() for Collection of
+//             String Resources.
+//         2.3 Collection of ImageIcons Through the resourceBundle Instance.
+//         2.4 Changed the logoIcon in Constructor to be Obtained From the
+//             MyJSQLView Resource Bundle.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,6 +64,7 @@
 package com.dandymadeproductions.tablefieldprofiler;
 
 import java.awt.Font;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -65,17 +73,18 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_MenuActionCommands;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MenuActionCommands;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
  *    The Profiler_MenuBar class is used to constructed the menubar for the
  * Table Field Profiler plugin module.
  * 
  * @author Dana M. Proctor
- * @version 2.1 02/02/2012
+ * @version 2.4 09/17/2012
  */
 
 class Profiler_MenuBar extends JMenuBar
@@ -117,7 +126,7 @@ class Profiler_MenuBar extends JMenuBar
 
       // Logo
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      ImageIcon logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      ImageIcon logoIcon = MyJSQLView.getResourceBundle().getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       JButton logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);
@@ -139,27 +148,21 @@ class Profiler_MenuBar extends JMenuBar
       // ===========
       // File Menu
 
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.File",
+                                                  "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Open
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Open");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Open", ACTION_FILE_OPEN));
-      else
-         fileMenu.add(menuItem(resource, ACTION_FILE_OPEN));
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Open",
+                                                  "Open");
+      fileMenu.add(menuItem(resource, ACTION_FILE_OPEN));
       fileMenu.addSeparator();
        
       // Exit
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Exit");
-      if (resource.equals(""))
-         item = new JMenuItem("Exit");
-      else
-         item = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Exit",
+                                                  "Exit");
+      item = new JMenuItem(resource);
       item.addActionListener(mainFrame);
       item.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_EXIT);
       fileMenu.add(item);
@@ -181,20 +184,16 @@ class Profiler_MenuBar extends JMenuBar
       // ===========
       // Tools Menu
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Tools");
-      if (resource.equals(""))
-         toolsMenu = new JMenu("Tools");
-      else
-         toolsMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Tools",
+                                                  "Tools");
+      toolsMenu = new JMenu(resource);
       toolsMenu.setFont(toolsMenu.getFont().deriveFont(Font.BOLD));
       
       // MyJSQLView SQL Query Bucket
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.SQLQueryBucket");
-      if (resource.equals(""))
-         item = new JMenuItem("SQL Query Bucket");
-      else
-         item = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.SQLQueryBucket",
+                                                  "SQL Query Bucket");
+      item = new JMenuItem(resource);
       item.addActionListener(mainFrame);
       item.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_SQL_QUERY_BUCKET);
       toolsMenu.add(item);
@@ -203,35 +202,27 @@ class Profiler_MenuBar extends JMenuBar
       
       // Field Information
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Field");
-      if (resource.equals(""))
-         fieldMenu = new JMenu("Tools");
-      else
-         fieldMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Field",
+                                                  "Tools");
+      fieldMenu = new JMenu(resource);
       
       toolsMenu.add(fieldMenu);
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Information");
-      if (resource.equals(""))
-         fieldMenu.add(menuItem("Information", ACTION_FIELD_INFORMATION));
-      else
-         fieldMenu.add(menuItem(resource, ACTION_FIELD_INFORMATION));
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Information",
+                                                  "Information");
+      fieldMenu.add(menuItem(resource, ACTION_FIELD_INFORMATION));
       
       // Field Analysis
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.NumberAnalysis");
-      if (resource.equals(""))
-         fieldMenu.add(menuItem("Number Analysis", ACTION_FIELD_NUMBER_ANALYSIS));
-      else
-         fieldMenu.add(menuItem(resource, ACTION_FIELD_NUMBER_ANALYSIS));
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.NumberAnalysis",
+                                                  "Number Analysis");
+      fieldMenu.add(menuItem(resource, ACTION_FIELD_NUMBER_ANALYSIS));
       
       // Field Cluster Analysis
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.ClusterAnalysis");
-      if (resource.equals(""))
-         fieldMenu.add(menuItem("Cluster Analysis", ACTION_FIELD_CLUSTER_ANALYSIS));
-      else
-         fieldMenu.add(menuItem(resource, ACTION_FIELD_CLUSTER_ANALYSIS));
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.ClusterAnalysis",
+                                                  "Cluster Analysis");
+      fieldMenu.add(menuItem(resource, ACTION_FIELD_CLUSTER_ANALYSIS));
       
       add(toolsMenu);
    }

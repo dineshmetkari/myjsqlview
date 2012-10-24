@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor.
-// Version 1.6 01/22/2012
+// Version 1.7 09/13/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,9 @@
 //             in Constructor. Added Detection of Selection of TABLE_FIELD_CLUSTER_
 //             ANALYSIS in actionPerformed(). Derived Card String in actionPerformed()
 //             From TableFieldProfiler.
+//         1.7 Updated Imports in Order Properly Load MyJSQLView Classes Which
+//             Changed Packaging for v3.35++. Update in Methods openAction()
+//             for Collection of String Resources. 
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,10 +72,10 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import com.dandymadeproductions.myjsqlview.MyJFileFilter;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_MenuActionCommands;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MenuActionCommands;
+import com.dandymadeproductions.myjsqlview.utilities.MyJFileFilter;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
  *    The MenuActionListener class provides the means for controlling the
@@ -81,7 +84,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * Profiler_ToolBar classes. 
  * 
  * @author Vivek Singh, Dana M. Proctor
- * @version 1.6 01/22/2012
+ * @version 1.7 09/13/2012
  */
 
 class MenuActionListener implements ActionListener
@@ -225,14 +228,10 @@ class MenuActionListener implements ActionListener
          }
          else
          {
-            resourceTitleAlert = resourceBundle.getResource("MenuActionListener.dialogtitle.Alert");
-            if (resourceTitleAlert.equals(""))
-               resourceTitleAlert = "Alert";
-            
-            resourceError = resourceBundle.getResource("MenuActionListener.dialogmessage.FileNOTFound");
-            if (resourceError.equals(""))
-               resourceError = "File NOT Found";
-           
+            resourceTitleAlert = resourceBundle.getResourceString("MenuActionListener.dialogtitle.Alert",
+                                                                  "Alert");
+            resourceError = resourceBundle.getResourceString("MenuActionListener.dialogmessage.FileNOTFound",
+                                                             "File NOT Found");
             JOptionPane.showMessageDialog(null, resourceError, resourceTitleAlert,
                                           JOptionPane.ERROR_MESSAGE);
          }
