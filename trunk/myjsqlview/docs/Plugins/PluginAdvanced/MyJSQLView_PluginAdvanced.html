@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Advanced</h2></div>
-	<div style="font-size:16px"><center><b>May 28, 2012</b></center></div>
+	<div style="font-size:16px"><center><b>October 23, 2012</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -63,11 +63,12 @@
 				the PluginModule classes only implemented the most essential methods required
 				by the PluginModuleInterface such as initPlugin(), getName(), getPanel(), and
 				setDBTables(). In the Table Field Profiler's PluginModule class we likewise
-				have these methods, but also override the methods getVersion(), getTabIcon(),
-				getMenuBar(), and getToolBar() from the MyJSQLViewPluginInterface class. All
-				of these additional methods the Table Field Profiler PluginModule class overrides
-				return constructs from the Table Field Profiler's main class TableFieldProfiler,
-				except the getTabIcon() method.
+				have these methods, but also override the methods getAuthor(), getVersion(),
+				getDescription(), getTabIcon(), getMenuBar(), and getToolBar() from the
+				MyJSQLViewPluginInterface class. All of these additional methods the Table Field
+				Profiler PluginModule class overrides return constructs from the Table Field
+				Profiler's main class TableFieldProfiler, except the getName(), getAuthor(),
+				and getDescription() methods.
 			</p>
 
 			<p>
@@ -91,7 +92,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2011 Dana M. Proctor
-// Version 1.9 05/07/2011
+// Version 2.3 09/29/2011
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,8 +117,7 @@
 ~
 ~
 ~
-//         1.9 Change of tableNames Argument in setDBTables() from Vector Data
-//             Type to ArrayList.
+//         2.3 Added Class Method getAuthor() &#038; getDescription().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,23 +125,23 @@
 
 package com.dandymadeproductions.tablefieldprofiler;
 
-import javax.swing.JPanel;
-import javax.swing.ImageIcon;
-import javax.swing.JMenuBar;
-import javax.swing.JToolBar;
 import java.util.ArrayList;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_PluginModule;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 
 /**
  *    The PluginModule class provides the hook to incorporate a external
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.9 05/07/2011
+ * @version 2.3 09/29/2011
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
@@ -149,7 +149,6 @@ public class PluginModule extends MyJSQLView_PluginModule
    // Class Instances
    // private MyJSQLView_Frame parent;
    private TableFieldProfiler dataProfiler;
-   private ImageIcon tabIcon;
 
    //==============================================================
    // MyJSQLView_PluginModule Constructor.
@@ -166,21 +165,12 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public void initPlugin(MyJSQLView_Frame mainFrame, String path)
    {
-      // Instance Methods
-      String fileSeparator, iconsDirectory;
-
       // Main Class
       dataProfiler = new TableFieldProfiler(mainFrame, path, ConnectionManager.getTableNames());
-
-      // Plugin Tab Icon.
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      iconsDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "images"
-                       + fileSeparator + "icons" + fileSeparator;
-      tabIcon = new ImageIcon(iconsDirectory + "informationIcon.png");
    }
-
+   
    //==============================================================
-   // Class method to meet the interface requirements for returning
+   // Class method to meet the interface requirements for getting
    // the name of the module.
    //==============================================================
 
@@ -188,17 +178,42 @@ public class PluginModule extends MyJSQLView_PluginModule
    {
       return "Table Field Profiler";
    }
-   
+  
    //==============================================================
-   // Class method to obtain the plugin's version number.
-   // Interface requirement.
+   // Class method to meet the interface requirements for getting
+   // the author of the module.
    //==============================================================
 
+   public String getAuthor()
+   {
+      return "Dandy Made Productions";
+   }
+   
+   //==============================================================
+   // Class method to return the version release number of the
+   // plugin module.
+   //==============================================================
+   
    public String getVersion()
    {
       return TableFieldProfiler.getVersion();
    }
-
+   
+   //==============================================================
+   // Class method to meet the interface requirements for getting
+   // the description for the module.
+   //==============================================================
+   
+   public String getDescription()
+   {
+      return "The TableFieldProfiler module encompasses aspects that give general\n"
+             + "information for a database's table fields and also a cluster and number\n"
+             + "analysis. The information is presented in the form of graphic charts,\n"
+             + "pie, bar, &#038; bubble for the field's record count, distribution, and\n"
+             + "patterns. The analysis aspect of the profiler gives frequency, variation,\n"
+             + "percentile, and clustered average information for a field.";
+   }
+   
    //==============================================================
    // Class method to meet the interface requirements of returning
    // a ImageIcon that will be used as the plugin's tab Icon.
@@ -206,30 +221,29 @@ public class PluginModule extends MyJSQLView_PluginModule
 
    public ImageIcon getTabIcon()
    {
-      return tabIcon;
+      return dataProfiler.getTabIcon();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements of returning
-   // a JMenuBar that can be used to control various aspects of
-   // the modules functionality.
+   // a Menu Bar that will be used as the plugin's Menu Bar.
    //==============================================================
 
    public JMenuBar getMenuBar()
    {
       return dataProfiler.getMenuBar();
    }
-
+   
    //==============================================================
-   // Class method to allow the collection of a JToolBar to be
-   // used with the plugin module.
+   // Class method to meet the interface requirements of returning
+   // a Too Bar that will be used as the plugin's Tool Bar.
    //==============================================================
 
    public JToolBar getToolBar()
    {
       return dataProfiler.getToolBar();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements for returning
    // a JPanel for inclusion in the MyJSQLView application's main
@@ -240,7 +254,7 @@ public class PluginModule extends MyJSQLView_PluginModule
    {
       return dataProfiler.getPanel();
    }
-
+   
    //==============================================================
    // Class method to meet the interface requirements for being
    // able to set the database tables.
@@ -260,27 +274,24 @@ public class PluginModule extends MyJSQLView_PluginModule
 			<p>
 				Like all plugins for MyJSQLView a developer should orientate initialization
 				of components for a plugin in the initPlugin() method of the PluginModule class.
-				In this method for the Table Field Profiler module we essentially create two
-				class objects dataProfiler and tabIcon. The first, dataProfiler, forms the
-				basis for the module and takes three arguments. The first two come directly
-				from the call to the initPlugin() method and are the MyJSQLView's main frame
-				and a path object. The third is a call to the MyJSQLView's class ConnectionManager
-				for the database tables associated with a connection. We will discuss shortly
-				more about the dataProfiler object, but first lets speak more of the path
-				argument because it is used in the creation of the tabIcon instance.<br /><br />
+				In this method for the Table Field Profiler module we essentially just create
+				the class object dataProfiler, of type TableFieldProfiler. The dataProfiler
+				object forms the basis for the module and takes three arguments. The first two
+				come directly from the call to the initPlugin() method and are the MyJSQLView's
+				main frame and a path object. The third is a call to the MyJSQLView's class
+				ConnectionManager for the database tables associated with a connection. We will
+				discuss shortly more about the dataProfiler object, but first lets speak more
+				about of the path argument because it is used to derive resources for the plugin
+				<br /><br />
 				
-				The path instance that is passed to plugin modules gives the directory that
-				was derived by MyJSQLView in loading the plugin's JAR file. A developer
-				should create resources for a plugin with this in mind. The standard taken by
-				the MyJSQLView group is to have a directory under this path by the same name
-				as the plugin and in this directory have images and other pertinent objects
-				required by the plugin. Please see <b>Figure 2.</b> below. With this in mind
-				the tabIcon object is created by first producing an iconsDirectory with the
-				path object, file separators, and our known icons directory of <b>images/icons</b>
-				and then appending this with the file's name. Once the initPlugin() completes
-				then all aspects of creating a MyJSQLView plugin module should be initialized.
-				So MyJSQLView will call the getter methods as needed at the appropriate time
-				to add the plugin to the main tab in the application.
+				The path instance that is passed to plugin modules gives the URL that was derived
+				by MyJSQLView in loading the plugin's JAR file. A developer should create resources
+				for a plugin with this in mind. The standard taken by the MyJSQLView group is to
+				have a directory in this path, location of JAR file, by the same name as the plugin
+				and in this directory have images and other pertinent objects required by the plugin.
+				Please see <b>Figure 2.</b> below. With this in mind lets move on to the dataProfiler
+				object to understand the use of this path and the other arguments in the instantiation
+				of this class.
 			</p>
 
 			<p align="center"><img src="plugin_directory.jpg" alt="illustration 2" width="404" height="180"></p>
@@ -298,13 +309,13 @@ public class PluginModule extends MyJSQLView_PluginModule
 				main object for plugins is always a Java JPanel component that is the face of
 				the plugin in the MyJSQLView application tab interface. So what we will see in
 				the TableFieldProfiler core class is the creation of a top JPanel object and
-				since this plugin is more versatile than a basic one the creation of a menu
-				and toolbar objects. <b>Listing 2.</b> below shows the TableFieldProfiler class
-				and as seen is composed of a constructor and five methods. Four of the methods
-				just return the objects indicated, JPanel, JMenuBar, and JToolBar and the fourth
-				a version String. The last method setDBTables() was highlighted in the Plugin
-				Basics and is used to reload database tables if that action is taken within
-				the MyJSQLView application.
+				since this plugin is more versatile than a basic one the creation of resources
+				and menu and toolbar objects. <b>Listing 2.</b> below shows the TableFieldProfiler
+				class and as seen is composed of a constructor and six methods. Three of the
+				methods just return the objects indicated, JPanel, JMenuBar, and JToolBar. The
+				other two a version String and an ImageIcon. The last method setDBTables() was
+				highlighted in the Plugin Basics and is used to reload database tables if that
+				action is taken within the MyJSQLView application.
 			</p>
 
 			<p>
@@ -329,7 +340,7 @@ public class PluginModule extends MyJSQLView_PluginModule
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor
-// Version 4.5 05/07/2012
+// Version 4.8 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -354,10 +365,9 @@ public class PluginModule extends MyJSQLView_PluginModule
 ~
 ~
 ~
-//         4.4 Conditional Check of tableFieldClusterAnalysisPanel for NULL in Method
-//             setDBTables().
-//         4.5 Changed in Constructor Argument tableNames from Vector to ArrayList.
-//                           
+//         4.8 Removed Class Instances path, Created Class Instance imagesDirectory.
+//             Passed as Argument in Creation of Main Tab Panel for Analysis.
+//
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -366,14 +376,15 @@ package com.dandymadeproductions.tablefieldprofiler;
 
 import java.awt.CardLayout;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 
 /**
  *    The TableFieldProfiler class provides the main access point for setting up
@@ -381,14 +392,15 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * application.
  * 
  * @author Dana M. Proctor
- * @version 4.5 05/07/2012
+ * @version 4.8 09/17/2012
  */
 
 class TableFieldProfiler
 {
    // Class Instances
    private MyJSQLView_Frame parent;
-   private String path;
+   private String imagesDirectory;
+   private ImageIcon tabIcon;
    private Profiler_MenuBar menuBar;
    private Profiler_ToolBar toolBar;
    private JPanel dataProfilerMainPanel;
@@ -403,7 +415,7 @@ class TableFieldProfiler
    protected static final String NUMBER_ANALYSIS_CARD = "Number Analysis";
    protected static final String CLUSTER_ANALYSIS_CARD = "Cluster Analysis";
    
-   private final static String version = "Version 4.5";
+   private final static String version = "Version 4.8";
    
    //==============================================================
    // TableFieldProfiler Constructor
@@ -412,10 +424,9 @@ class TableFieldProfiler
    TableFieldProfiler(MyJSQLView_Frame parent, String path, ArrayList&#060;String&#062; tableNames)
    {
       this.parent = parent;
-      this.path = path;
       
       // Constructor Instances.
-      String fileSeparator, localeDirectory;
+      String pathDirectory, localeDirectory;
       MenuActionListener pluginMenuListener;
 
       // Setup the Main panel and the plugin's components.
@@ -423,21 +434,34 @@ class TableFieldProfiler
       profilerCardLayout = new CardLayout();
       dataProfilerMainPanel = new JPanel(profilerCardLayout);
       
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      localeDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "locale";
-      resourceBundle = new MyJSQLView_ResourceBundle(localeDirectory, "TableFieldProfiler",
-                                                     MyJSQLView.getLocaleString());
+      // file &#038; http, locale resource not in jar
+      pathDirectory = path + "/" + "TableFieldProfiler" + "/";
+      localeDirectory = "locale/";
+      imagesDirectory = "images/icons/";
+      
+      // file &#038; http, locale resource in jar
+      //pathDirectory = path + "/" + "TableFieldProfiler.jar";
+      //localeDirectory = "lib/plugins/TableFieldProfiler/locale/";
+      //imagesDirectory = "lib/plugins/TableFieldProfiler/images/icons/";
+      
+      resourceBundle = new MyJSQLView_ResourceBundle(pathDirectory);
+      resourceBundle.setLocaleResource(localeDirectory, "TableFieldProfiler", MyJSQLView.getLocaleString());
+      
+      tabIcon = resourceBundle.getResourceImage(imagesDirectory + "informationIcon.png");
 
       // Table Field Information Panel.
-      tableFieldInformationPanel = new TableFieldChartsPanel(path, resourceBundle, tableNames);
+      tableFieldInformationPanel = new TableFieldChartsPanel(resourceBundle, imagesDirectory,
+                                                             tableNames);
       dataProfilerMainPanel.add(INFORMATION_CARD, tableFieldInformationPanel);
 
       // Table Field Analysis Panel.
-      tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, path, resourceBundle, tableNames);
+      tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, resourceBundle, imagesDirectory,
+                                                            tableNames);
       dataProfilerMainPanel.add(NUMBER_ANALYSIS_CARD, tableFieldAnalysisPanel);
          
       // Table Field Cluster Analysis Panel.
-      tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(path, resourceBundle, tableNames);
+      tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(resourceBundle, imagesDirectory,
+                                                                          tableNames);
       dataProfilerMainPanel.add(CLUSTER_ANALYSIS_CARD, tableFieldClusterAnalysisPanel);
 
       // Setup the MenuBar and ToolBar to be used by the plugin.
@@ -446,8 +470,8 @@ class TableFieldProfiler
                                                   tableFieldAnalysisPanel, tableFieldClusterAnalysisPanel,
                                                   dataProfilerMainPanel, profilerCardLayout);
       menuBar = new Profiler_MenuBar(parent, resourceBundle, pluginMenuListener);
-      toolBar = new Profiler_ToolBar("Table Field Profiler ToolBar", parent, path, resourceBundle,
-                                     pluginMenuListener);
+      toolBar = new Profiler_ToolBar("Table Field Profiler ToolBar", parent, resourceBundle,
+                                     imagesDirectory, pluginMenuListener);
    }
 
    //==============================================================
@@ -485,6 +509,16 @@ class TableFieldProfiler
    {
       return version;
    }
+   
+   //==============================================================
+   // Class method to get the icon that will be used in the 
+   // MyJSQLView tab.
+   //==============================================================
+
+   protected ImageIcon getTabIcon()
+   {
+      return tabIcon;
+   }
 
    //==============================================================
    // Class method to set the database tables.
@@ -497,13 +531,15 @@ class TableFieldProfiler
       if (tableFieldInformationPanel == null || tableFieldAnalysisPanel == null
             || tableFieldClusterAnalysisPanel == null)
       {
-         tableFieldInformationPanel = new TableFieldChartsPanel(path, resourceBundle, tableNames);
+         tableFieldInformationPanel = new TableFieldChartsPanel(resourceBundle, imagesDirectory, tableNames);
          dataProfilerMainPanel.add("Information", tableFieldInformationPanel);
 
-         tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, path, resourceBundle, tableNames);
+         tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, resourceBundle, imagesDirectory,
+                                                               tableNames);
          dataProfilerMainPanel.add("Analysis", tableFieldAnalysisPanel);
          
-         tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(path, resourceBundle, tableNames);
+         tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(resourceBundle, imagesDirectory,
+                                                                             tableNames);
          dataProfilerMainPanel.add(CLUSTER_ANALYSIS_CARD, tableFieldClusterAnalysisPanel); 
       }
       else
@@ -535,29 +571,42 @@ class TableFieldProfiler
 				tab for the Table Field Profiler module. Since this particular plugin is
 				composed of three tools, a field information, field number analysis units and
 				cluster analysis, we set the layout for that panel to a cardlayout. In that way
-				the three tools can be switched as required by the user. The next task that is
-				done is to create a resource bundle that can be used in the language support for
-				the module. The code accomplishes that by obtaining the file separator character
-				from the MyJSQLView_Utils class and creating a localeDirectory instance. The
-				localeDirectory string is once again derived from the path object that was
-				discussed early and our standard directory setup for the plugin as illustrated
-				in <b>Figure 2.</b> Though one could use the standard Java API for a Resource
-				object MyJSQLView uses its own resource class called MyJSQLView_ResourceBundle
-				to derive all language locale information. So our resourceBundle is instantiated
-				from that class which takes the path to the resource, name of the resource,
-				and language required. The language required is obtained directly from the
-				MyJSQLView API method getLocaleString(). That language locale string is chosen
-				by the user when MyJSQLView is first run or by argument to the application.<br /><br />
+				the three tools can be switched as required by the user. Once that is done we
+				begin the derivation of a resource source for the plugin that is based on the
+				path argument string. As of <b>v3.40</b> of MyJSQLView all plugins have the
+				ability to be loaded remotely rather than just from the local machine's file
+				system. When a developer creates the plugin a decision should be made to allow
+				these local/remote resources to be either sourced in the JAR file of the
+				plugin or not.<br><br>
 
+				In the TableFieldProfiler constructor we see the two ways that this may be
+				implemented, one commented out. The example uses resources that will NOT be
+				included in the JAR and uses three instances to derive the pathDirectory,
+				localeDirectory, &#038; imagesDirectory from the path and layout that was
+				chosen by the plugin as shown in <b>Figure 2.</b> We then create a MyJSQLView_ResourceBundle
+				based on the pathDirectory and set the locale for the plugin. The language
+				locale can be obtained directly from the MyJSQLView API method getLocaleString().
+				That language locale string is chosen by the user when MyJSQLView is first
+				run or by argument to the application. Though one could use the standard Java
+				API for a Resource object MyJSQLView uses its own resource class which provides
+				greater flexibility, control and organizing resources in a plugin environment.<br /><br />
+
+				In the constructor we now see the use of a resource object. The tabIcon is
+				acquired through the MyJSQLView_ResourceBundle's getResourceImage(). In that
+				method we pass the imagesDirectory and the name of the image file. The tabIcon
+				will be returned through the class method getTabIcon() to the plugin module
+				so that it may be displayed in MyJSQLview's main tab pane. Likewise we may
+				also use the resourceBundle oject to obtain a getResourceString(). That method
+				is demonstrated in the discussion of the Profiler_MenuBar class below.<br><br>
+				
 				&nbsp;&nbsp;&nbsp;&nbsp;Now that all the main setup in the constructor has been
-				accomplished then the only activities left to do is to create the two
+				accomplished then the only activities left to do is to create the three
 				tools for the plugin, and of course the menu and toolbar objects. The three
-				tools are added to the dataProfilerMainPanel only after a check to see if
-				any tables are actually in the database. Notice we pass as arguments to those
-				two classes the path, and resourceBundle objects so they can establish there
-				own reference to resources as required. The menu and toolbar objects for the
-				plugin are created through two separate classes Profiler_MenuBar and
-				Profiler_ToolBar. An Action Listener object is also create to handle the
+				tools are added to the dataProfilerMainPanel. Notice we pass as arguments to
+				those three classes the resourceBundle and imagesDirectory objects so they can
+				establish there own reference to resources as required. The menu and toolbar
+				objects for the plugin are created through two separate classes Profiler_MenuBar
+				and Profiler_ToolBar. An Action Listener object is also created to handle the
 				processing of events in the plugin. The Action Listener class, MenuActionListener,
 				is not covered in this tutorial, but is supplied like all resources via
 				links available at the end of this tutorial.<br /><br />
@@ -617,7 +666,7 @@ class TableFieldProfiler
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor.
-// Version 2.1 02/02/2012
+// Version 2.4 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 ~
@@ -634,7 +683,8 @@ class TableFieldProfiler
 ~
 ~
 ~
-//         2.1 Added Field Menu to Tools Menu.
+//         2.4 Changed the logoIcon in Constructor to be Obtained From the
+//             MyJSQLView Resource Bundle.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -643,6 +693,7 @@ class TableFieldProfiler
 package com.dandymadeproductions.tablefieldprofiler;
 
 import java.awt.Font;
+
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
@@ -651,17 +702,18 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_MenuActionCommands;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MenuActionCommands;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
  *    The Profiler_MenuBar class is used to constructed the menubar for the
  * Table Field Profiler plugin module.
  * 
  * @author Dana M. Proctor
- * @version 2.1 02/02/2012
+ * @version 2.4 09/17/2012
  */
 
 class Profiler_MenuBar extends JMenuBar
@@ -703,7 +755,7 @@ class Profiler_MenuBar extends JMenuBar
 
       // Logo
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
-      ImageIcon logoIcon = new ImageIcon(iconsDirectory + "myjsqlviewIcon.gif");
+      ImageIcon logoIcon = MyJSQLView.getResourceBundle().getResourceImage(iconsDirectory + "myjsqlviewIcon.gif");
       JButton logoIconItem = new JButton(logoIcon);
       logoIconItem.setDisabledIcon(logoIcon);
       logoIconItem.setFocusPainted(false);
@@ -725,27 +777,21 @@ class Profiler_MenuBar extends JMenuBar
       // ===========
       // File Menu
 
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.File");
-      if (resource.equals(""))
-         fileMenu = new JMenu("File");
-      else
-         fileMenu = new JMenu(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.File",
+                                                  "File");
+      fileMenu = new JMenu(resource);
       fileMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
       
       // Open
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Open");
-      if (resource.equals(""))
-         fileMenu.add(menuItem("Open", ACTION_FILE_OPEN));
-      else
-         fileMenu.add(menuItem(resource, ACTION_FILE_OPEN));
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Open",
+                                                  "Open");
+      fileMenu.add(menuItem(resource, ACTION_FILE_OPEN));
       fileMenu.addSeparator();
-
+       
       // Exit
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Exit");
-      if (resource.equals(""))
-         item = new JMenuItem("Exit");
-      else
-         item = new JMenuItem(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Exit",
+                                                  "Exit");
+      item = new JMenuItem(resource);
       item.addActionListener(mainFrame);
       item.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_EXIT);
       fileMenu.add(item);
@@ -755,7 +801,6 @@ class Profiler_MenuBar extends JMenuBar
 ~
 ~
 ~
-~   
    //==============================================================
    // Instance method used for the TableFieldProfiler's creation
    // of menu bar items. Helper Method.
@@ -779,17 +824,16 @@ class Profiler_MenuBar extends JMenuBar
 				&nbsp;&nbsp;&nbsp;&nbsp;Moving forward with the menu systems for the plugin we
 				have the class method createFileMenu(). Here is where we will create
 				a File menu with sub items of <b>File | Open</b>, and <b>File Exit</b>.
-				The first is basic in nature and are derived by collecting the appropriate
-				language resource from the resourceBundle and calling an additional helper
-				method to create the JMenuItem. Note we assign an ActionListener for that
-				sub item of the custom MenuActionListener, menuListener, in the helper
-				method menuItem(). The last menu sub item is slightly different from
-				the first because it is a call to exit the application. It is done
-				via one of MyJSQLView own action events that is part of MyJSQLView's
-				main frame. We find the action event needed by making a reference to
-				the MyJSQLView_MenuActionCommands class. In this case the action command
-				string is ACTION_EXIT. We complete the File menu by adding the JMenu
-				to the classes' own add method.
+				The first is basic in nature and is derived by using the resourceBundle.getResourceString()
+				and calling an additional helper method to create the JMenuItem. Note we
+				assign an ActionListener for that sub item of the custom MenuActionListener,
+				menuListener, in the helper method menuItem(). The last menu sub item is
+				slightly different from the first because it is a call to exit the application.
+				It is done via one of MyJSQLView own action events that is part of MyJSQLView's
+				main frame. We find the action event needed by making a reference to the
+				MyJSQLView_MenuActionCommands class. In this case the action command string
+				is ACTION_EXIT. We complete the File menu by adding the JMenu to the classes'
+				own add method.
 			</p>
 
 			<a name="Summary"></a>
@@ -800,17 +844,16 @@ class Profiler_MenuBar extends JMenuBar
 				module was chosen because it demonstrates advanced features that a plugin may
 				need in order to accomplish its purposes. Some of those advanced aspects of
 				plugin creation have to do with returning a version string and tab icon image
-				for the MyJSQLView's tabbed pane. Other requirements that a plugin made need
+				for the MyJSQLView's tabbed pane. Other requirements that a plugin may need
 				to implement is language support. MyJSQLView provides a class, MyJSQLView_ResourceBundle,
-				and a method to return user selected locale information via the MyJSQLView.getLocaleString().
-				MyJSQLView also can help a plugin to determine the location of resources via
-				the path string object that is passed to the initPlugin() method of the PluginModule
-				class. The final advanced features that a plugin may wish to produce is a menu
-				and tool bar components. The PluginModule class provides a means to return
-				those objects so they may be assigned to the tab interface for the plugin. In
-				addition MyJSQLView also makes its own menu items, action events, available to a
-				plugin via the MyJSQLView_Frame class and its corresponding action commands in
-				the MyJSQLView_MenuActionCommands class.
+				and a method to return user selected locale information via MyJSQLView.getLocaleString()
+				to accomplish this goal. MyJSQLView determines the location of resources via the path string object
+				that is passed to the initPlugin() method of the PluginModule class. The final
+				advanced features that a plugin may wish to produce is a menu and tool bar components.
+				The PluginModule class provides a means to return those objects so they may be
+				assigned to the tab interface for the plugin. In addition MyJSQLView also makes
+				its own menu items, and action events available to a plugin via the MyJSQLView_Frame
+				class and its corresponding action commands in the MyJSQLView_MenuActionCommands class.
 			</p>
 
 			<hr>
