@@ -1,0 +1,22 @@
+MyJSQLView Version 3.40 Released
+
+The MyJSQLView project is pleased to release v3.40 to the public. The
+release marks a major reorganizational effort to the source code and plugin
+management. Though the public will notice little with regard to the source
+subpackaging the plugin management changes bring the ability to now load plugins
+from remote locations. Plugin repositories can now be created by individuals or
+organizations that wish to provide custom plugins on the basis of a realtime
+network loading capability. In that regard the MyJSQLView project has added to
+its own public repository a free open source plugin that contains a graphical
+SQL query builder.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to profile and plot data for analysis.
