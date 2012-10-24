@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor
-// Version 4.5 05/07/2012
+// Version 4.8 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,6 +76,14 @@
 //         4.4 Conditional Check of tableFieldClusterAnalysisPanel for NULL in Method
 //             setDBTables().
 //         4.5 Changed in Constructor Argument tableNames from Vector to ArrayList.
+//         4.6 Updated Imports in Order Properly Load MyJSQLView Classes
+//             Which Changed Packaging for v3.35++. Change to Creation of MyJSQLView
+//             ResourceBundle Instantiation in Constructor Along With the Removal
+//             fileSeparator Instance.
+//         4.7 Added Class Method getTabIcon(), Class Instance tabIcon & Changed
+//             imagesDirectory to iconsDirectory in Constructor. Updated Version.
+//         4.8 Removed Class Instances path, Created Class Instance imagesDirectory.
+//             Passed as Argument in Creation of Main Tab Panel for Analysis.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,14 +93,15 @@ package com.dandymadeproductions.tablefieldprofiler;
 
 import java.awt.CardLayout;
 import java.util.ArrayList;
+
+import javax.swing.ImageIcon;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 
 /**
  *    The TableFieldProfiler class provides the main access point for setting up
@@ -100,14 +109,15 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
  * application.
  * 
  * @author Dana M. Proctor
- * @version 4.5 05/07/2012
+ * @version 4.8 09/17/2012
  */
 
 class TableFieldProfiler
 {
    // Class Instances
    private MyJSQLView_Frame parent;
-   private String path;
+   private String imagesDirectory;
+   private ImageIcon tabIcon;
    private Profiler_MenuBar menuBar;
    private Profiler_ToolBar toolBar;
    private JPanel dataProfilerMainPanel;
@@ -122,7 +132,7 @@ class TableFieldProfiler
    protected static final String NUMBER_ANALYSIS_CARD = "Number Analysis";
    protected static final String CLUSTER_ANALYSIS_CARD = "Cluster Analysis";
    
-   private final static String version = "Version 4.5";
+   private final static String version = "Version 4.8";
    
    //==============================================================
    // TableFieldProfiler Constructor
@@ -131,10 +141,9 @@ class TableFieldProfiler
    TableFieldProfiler(MyJSQLView_Frame parent, String path, ArrayList<String> tableNames)
    {
       this.parent = parent;
-      this.path = path;
       
       // Constructor Instances.
-      String fileSeparator, localeDirectory;
+      String pathDirectory, localeDirectory;
       MenuActionListener pluginMenuListener;
 
       // Setup the Main panel and the plugin's components.
@@ -142,21 +151,34 @@ class TableFieldProfiler
       profilerCardLayout = new CardLayout();
       dataProfilerMainPanel = new JPanel(profilerCardLayout);
       
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      localeDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "locale";
-      resourceBundle = new MyJSQLView_ResourceBundle(localeDirectory, "TableFieldProfiler",
-                                                     MyJSQLView.getLocaleString());
+      // file & http, locale resource not in jar
+      pathDirectory = path + "/" + "TableFieldProfiler" + "/";
+      localeDirectory = "locale/";
+      imagesDirectory = "images/icons/";
+      
+      // file & http, locale resource in jar
+      //pathDirectory = path + "/" + "TableFieldProfiler.jar";
+      //localeDirectory = "lib/plugins/TableFieldProfiler/locale/";
+      //imagesDirectory = "lib/plugins/TableFieldProfiler/images/icons/";
+      
+      resourceBundle = new MyJSQLView_ResourceBundle(pathDirectory);
+      resourceBundle.setLocaleResource(localeDirectory, "TableFieldProfiler", MyJSQLView.getLocaleString());
+      
+      tabIcon = resourceBundle.getResourceImage(imagesDirectory + "informationIcon.png");
 
       // Table Field Information Panel.
-      tableFieldInformationPanel = new TableFieldChartsPanel(path, resourceBundle, tableNames);
+      tableFieldInformationPanel = new TableFieldChartsPanel(resourceBundle, imagesDirectory,
+                                                             tableNames);
       dataProfilerMainPanel.add(INFORMATION_CARD, tableFieldInformationPanel);
 
       // Table Field Analysis Panel.
-      tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, path, resourceBundle, tableNames);
+      tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, resourceBundle, imagesDirectory,
+                                                            tableNames);
       dataProfilerMainPanel.add(NUMBER_ANALYSIS_CARD, tableFieldAnalysisPanel);
          
       // Table Field Cluster Analysis Panel.
-      tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(path, resourceBundle, tableNames);
+      tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(resourceBundle, imagesDirectory,
+                                                                          tableNames);
       dataProfilerMainPanel.add(CLUSTER_ANALYSIS_CARD, tableFieldClusterAnalysisPanel);
 
       // Setup the MenuBar and ToolBar to be used by the plugin.
@@ -165,8 +187,8 @@ class TableFieldProfiler
                                                   tableFieldAnalysisPanel, tableFieldClusterAnalysisPanel,
                                                   dataProfilerMainPanel, profilerCardLayout);
       menuBar = new Profiler_MenuBar(parent, resourceBundle, pluginMenuListener);
-      toolBar = new Profiler_ToolBar("Table Field Profiler ToolBar", parent, path, resourceBundle,
-                                     pluginMenuListener);
+      toolBar = new Profiler_ToolBar("Table Field Profiler ToolBar", parent, resourceBundle,
+                                     imagesDirectory, pluginMenuListener);
    }
 
    //==============================================================
@@ -204,6 +226,16 @@ class TableFieldProfiler
    {
       return version;
    }
+   
+   //==============================================================
+   // Class method to get the icon that will be used in the 
+   // MyJSQLView tab.
+   //==============================================================
+
+   protected ImageIcon getTabIcon()
+   {
+      return tabIcon;
+   }
 
    //==============================================================
    // Class method to set the database tables.
@@ -216,13 +248,15 @@ class TableFieldProfiler
       if (tableFieldInformationPanel == null || tableFieldAnalysisPanel == null
             || tableFieldClusterAnalysisPanel == null)
       {
-         tableFieldInformationPanel = new TableFieldChartsPanel(path, resourceBundle, tableNames);
+         tableFieldInformationPanel = new TableFieldChartsPanel(resourceBundle, imagesDirectory, tableNames);
          dataProfilerMainPanel.add("Information", tableFieldInformationPanel);
 
-         tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, path, resourceBundle, tableNames);
+         tableFieldAnalysisPanel = new TableFieldAnalysisPanel(parent, resourceBundle, imagesDirectory,
+                                                               tableNames);
          dataProfilerMainPanel.add("Analysis", tableFieldAnalysisPanel);
          
-         tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(path, resourceBundle, tableNames);
+         tableFieldClusterAnalysisPanel = new TableFieldClusterAnalysisPanel(resourceBundle, imagesDirectory,
+                                                                             tableNames);
          dataProfilerMainPanel.add(CLUSTER_ANALYSIS_CARD, tableFieldClusterAnalysisPanel); 
       }
       else

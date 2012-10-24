@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2010-2012 Dana M. Proctor.
-// Version 2.1 01/28/2012
+// Version 2.4 09/17/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,7 +45,12 @@
 //         1.9 Added Constructor Instance dataClusterIcon. With New Icon Created
 //             Field Cluster Analysis Menu Item in Toolbar.
 //         2.0 Commented Out the Tools Cluster Analysis for Version Release 4.0.
-//         2.1 Uncomment the Tools Cluster Analysis Button Items. 
+//         2.1 Uncomment the Tools Cluster Analysis Button Items.
+//         2.3 Updated Imports in Order Properly Load MyJSQLView Classes
+//             Which Changed Packaging for v3.35++. Update in Constructor
+//             for Collection of String Resources.
+//         2.3 Collection of ImageIcons Through the resourceBundle Instance.
+//         2.4 Removed Argument path and Replaced With iconsDirectory in Constructor.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,17 +65,16 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JToolBar;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Frame;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_ResourceBundle;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_MenuActionCommands;
-import com.dandymadeproductions.myjsqlview.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MenuActionCommands;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 
 /**
  *    The Profiler_TooBar class is used to construct the toolbar to be used
  * in the Table Field Profiler plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.1 01/28/2012
+ * @version 2.4 09/17/2012
  */
 
 class Profiler_ToolBar extends JToolBar
@@ -85,15 +89,17 @@ class Profiler_ToolBar extends JToolBar
    // Profiler_ToolBar Constructor.
    //==============================================================
 
-   protected Profiler_ToolBar(String title, MyJSQLView_Frame parent, String path,
-                              MyJSQLView_ResourceBundle resourceBundle, MenuActionListener plugin)
+   protected Profiler_ToolBar(String title, MyJSQLView_Frame parent,
+                              MyJSQLView_ResourceBundle resourceBundle,
+                              String iconsDirectory,
+                              MenuActionListener plugin)
    {
       super(title);
       mainFrame = parent;
       menuListener = plugin;
 
       // Constructor Instances
-      String fileSeparator, iconsDirectory, resource;
+      String resource;
       ImageIcon openIcon, exitIcon;
       ImageIcon sqlQueryBucketIcon, dataInformationIcon, dataAnalysisIcon; 
       ImageIcon dataClusterIcon;
@@ -102,9 +108,6 @@ class Profiler_ToolBar extends JToolBar
       // Setting up icons directory and other instances.
 
       buttonItem = null;
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      iconsDirectory = path + fileSeparator + "TableFieldProfiler" + fileSeparator + "images"
-                       + fileSeparator + "icons" + fileSeparator;
 
       // Tool Bar Configuration.
       setBorder(BorderFactory.createLoweredBevelBorder());
@@ -113,17 +116,15 @@ class Profiler_ToolBar extends JToolBar
       // ===============
       // File Menu
       
-      openIcon = new ImageIcon(iconsDirectory + "openIcon.png");
+      openIcon = resourceBundle.getResourceImage(iconsDirectory + "openIcon.png");
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Open");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Open", openIcon, Profiler_MenuBar.ACTION_FILE_OPEN);
-      else
-         buttonItem = buttonItem(resource, openIcon, Profiler_MenuBar.ACTION_FILE_OPEN);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Open",
+                                                  "Open");
+      buttonItem = buttonItem(resource, openIcon, Profiler_MenuBar.ACTION_FILE_OPEN);
       add(buttonItem);
       
       // Exit
-      exitIcon = new ImageIcon(iconsDirectory + "exitIcon.png");
+      exitIcon = resourceBundle.getResourceImage(iconsDirectory + "exitIcon.png");
       
       buttonItem = new JButton(exitIcon);
       buttonItem.setFocusable(false);
@@ -131,11 +132,9 @@ class Profiler_ToolBar extends JToolBar
       buttonItem.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_EXIT);
       buttonItem.addActionListener(mainFrame);
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.Exit");
-      if (resource.equals(""))
-         buttonItem.setToolTipText("Exit");
-      else
-         buttonItem.setToolTipText(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Exit",
+                                                  "Exit");
+      buttonItem.setToolTipText(resource);
       add(buttonItem);
       
       addSeparator();
@@ -144,7 +143,7 @@ class Profiler_ToolBar extends JToolBar
       // Tool Menu
       
       // SQL Query Bucket
-      sqlQueryBucketIcon = new ImageIcon(iconsDirectory + "sqlQueryBucketIcon.png");
+      sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlQueryBucketIcon.png");
       
       buttonItem = new JButton(sqlQueryBucketIcon);
       buttonItem.setFocusable(false);
@@ -152,46 +151,35 @@ class Profiler_ToolBar extends JToolBar
       buttonItem.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_SQL_QUERY_BUCKET);
       buttonItem.addActionListener(mainFrame);
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.SQLQueryBucket");
-      if (resource.equals(""))
-         buttonItem.setToolTipText("SQL Query Bucket");
-      else
-         buttonItem.setToolTipText(resource);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.SQLQueryBucket",
+                                                  "SQL Query Bucket");
+      buttonItem.setToolTipText(resource);
       add(buttonItem);
       
       addSeparator();
 
       // Information
-      dataInformationIcon = new ImageIcon(iconsDirectory + "informationIcon.png");
+      dataInformationIcon = resourceBundle.getResourceImage(iconsDirectory + "informationIcon.png");
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.FieldInformation");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Field Information", dataInformationIcon,
-                                 Profiler_MenuBar.ACTION_FIELD_INFORMATION);
-      else
-         buttonItem = buttonItem(resource, dataInformationIcon, Profiler_MenuBar.ACTION_FIELD_INFORMATION);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.Information",
+                                                  "Field Information");
+      buttonItem = buttonItem(resource, dataInformationIcon, Profiler_MenuBar.ACTION_FIELD_INFORMATION);
       add(buttonItem);
 
       // Analysis
-      dataAnalysisIcon = new ImageIcon(iconsDirectory + "analysisIcon.png");
+      dataAnalysisIcon = resourceBundle.getResourceImage(iconsDirectory + "analysisIcon.png");
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.FieldNumberAnalysis");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Field Number Analysis", dataAnalysisIcon,
-            Profiler_MenuBar.ACTION_FIELD_NUMBER_ANALYSIS);
-      else
-         buttonItem = buttonItem(resource, dataAnalysisIcon, Profiler_MenuBar.ACTION_FIELD_NUMBER_ANALYSIS);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.NumberAnalysis",
+                                                  "Field Number Analysis");
+      buttonItem = buttonItem(resource, dataAnalysisIcon, Profiler_MenuBar.ACTION_FIELD_NUMBER_ANALYSIS);
       add(buttonItem);
       
       // Cluster
-      dataClusterIcon = new ImageIcon(iconsDirectory + "clusterIcon.png");
+      dataClusterIcon = resourceBundle.getResourceImage(iconsDirectory + "clusterIcon.png");
       
-      resource = resourceBundle.getResource("Profiler_MenuBar.menu.FieldClusterAnalysis");
-      if (resource.equals(""))
-         buttonItem = buttonItem("Field Cluster Analysis", dataClusterIcon,
-            Profiler_MenuBar.ACTION_FIELD_CLUSTER_ANALYSIS);
-      else
-         buttonItem = buttonItem(resource, dataClusterIcon, Profiler_MenuBar.ACTION_FIELD_CLUSTER_ANALYSIS);
+      resource = resourceBundle.getResourceString("Profiler_MenuBar.menu.ClusterAnalysis",
+                                                  "Field Cluster Analysis");
+      buttonItem = buttonItem(resource, dataClusterIcon, Profiler_MenuBar.ACTION_FIELD_CLUSTER_ANALYSIS);
       add(buttonItem);
    }
 
