@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 5.5 09/10/2012
+// Version 5.6 10/29/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -127,6 +127,8 @@
 //         5.5 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Constructor, start/stopStatusTimer(), Getter/Setter Methods
 //             Public.
+//         5.6 Changed Class Instance statusLabel from a JTextField to a JLabel. Set
+//             Its PreferredSize in Constructor.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -136,6 +138,7 @@ package com.dandymadeproductions.myjsqlview.gui.panels;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -153,7 +156,6 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
@@ -171,7 +173,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.5 09/10/2012
+ * @version 5.6 10/29/2012
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -185,7 +187,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static JPanel tablesPanel = new JPanel(tablesCardLayout);
    
    private static JLabel statusIndicator = new JLabel("", JLabel.LEFT);
-   private static JTextField statusLabel = new JTextField("Idle", 8);
+   private static JLabel statusLabel = new JLabel("Idle");
    private JButton sqlQueryBucketButton;
    private static JComboBox tableSelectionComboBox = new JComboBox();
    private static HashMap<String, TableTabPanel> tableTabHashMap = new HashMap <String, TableTabPanel>();
@@ -246,7 +248,8 @@ public class DBTablesPanel extends JPanel implements ActionListener
       statusPanel.add(statusIndicator);
       
       statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-      statusLabel.setEditable(false);
+      statusLabel.setPreferredSize(new Dimension(getFontMetrics(getFont()).stringWidth("1000.00 Seconds"),
+    		                                     statusLabel.getPreferredSize().height));
       
       buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
       constraints.fill = GridBagConstraints.HORIZONTAL;
