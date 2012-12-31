@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2012 Dana M. Proctor
-// Version 3.40 10/21/2012
+// Version 3.41 12/31/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,8 @@
 //                         myJSQLView_Version.
 //         3.40 10/21/2012 Class Instance myJSQLView_Version Update for Release
 //                         3.40.
+//         3.41 12/31/2013 Class Instance myJSQLView_Version Update for Release
+//                         3.41.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -255,7 +257,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.40 10/21/2012
+ * @version 3.41 12/31/2012
  */
 
 public class MyJSQLView implements ActionListener
@@ -277,7 +279,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.40", "Build ID: 20121021"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.41", "Build ID: 20121231"};
    private String webSiteString = "http://myjsqlview.org";
 
    //==============================================================
