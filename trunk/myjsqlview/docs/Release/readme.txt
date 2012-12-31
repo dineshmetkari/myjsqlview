@@ -1,6 +1,6 @@
-MyJSQLView Version 3.40
+MyJSQLView Version 3.401
 
-Copyright 2005-2012
+Copyright 2005-2013
 by Dana Proctor
 http://dandymadeproductions.com 
 
@@ -208,6 +208,7 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 3.41 Initial Plugin Inclusion of the visual SQL tool QueryBuilder. 
    * Version 3.40 Code reorganization to have sub-packages to myjsqlview. Rebuild
                   of resource bundler to handle network assets. Complete rebuild
                   of plugin framework to handle network located plugins.
