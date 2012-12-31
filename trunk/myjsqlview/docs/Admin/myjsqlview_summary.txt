@@ -1,0 +1,1 @@
+MyJSQLView is a Java based GUI frontend for accessing data in several mainstream databases.
