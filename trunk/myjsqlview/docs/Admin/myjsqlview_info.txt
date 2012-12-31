@@ -1,4 +1,0 @@
-MyJSQLView is an easy to use Java GUI frontend DML tool for the HSQL, MSAccess, MySQL,
-Oracle, PostgreSQL, & SQLite, databases. A query tool allows the building & executing
-of complex SQL statements. Easy data sorting & searching, import/export either
-in CSV or DDL.
