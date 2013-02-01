@@ -8,7 +8,7 @@
 //                 << MyJSQLView_Utils.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2012 Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 8.2 10/21/2012
 //
 // This program is free software; you can redistribute it and/or

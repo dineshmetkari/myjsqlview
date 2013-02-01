@@ -8,7 +8,7 @@
 //
 //=================================================================
 // 
-// Copyright (c) 2007-2012, Sun Microsystems, Inc., Chet, Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // All rights reserved.
 // Version 1.7 09/11/2012
 //

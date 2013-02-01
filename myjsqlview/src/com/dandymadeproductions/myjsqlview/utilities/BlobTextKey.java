@@ -7,7 +7,7 @@
 //                   << BlobTextKey.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2012 Dana Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 1.9 09/11/2012
 //
 // This program is free software; you can redistribute it and/or
