@@ -8,7 +8,7 @@
 //                  << XMLTranslator.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2012 Nil_lin, Dana Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 5.2 09/19/2012
 // 
 // This program is free software; you can redistribute it and/or
