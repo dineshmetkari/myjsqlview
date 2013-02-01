@@ -10,7 +10,7 @@
 //                   << PluginListHandler.java >>
 //
 //=================================================================
-// Copyright (C) 2001-2012 Slava Pestov, Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 1.3 10/15/2012
 //
 // This program is free software; you can redistribute it and/or

@@ -9,7 +9,7 @@
 //                 << FILE_PluginRepository.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2012 Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 1.2 10/11/2012
 //
 // This program is free software; you can redistribute it and/or
