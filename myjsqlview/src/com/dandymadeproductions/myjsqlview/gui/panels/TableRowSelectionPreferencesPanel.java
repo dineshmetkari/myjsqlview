@@ -9,7 +9,7 @@
 //        << TableRowSelectionPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2007-2012 Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 3.7 09/11/2012
 //
 // This program is free software; you can redistribute it and/or
