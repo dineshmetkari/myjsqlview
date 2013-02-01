@@ -10,7 +10,7 @@
 //             << PluginRepositoryPanel.java >>
 //
 //================================================================
-// Copyright (C) 2005-2012 Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 1.7 10/19/2012
 //
 // This program is free software; you can redistribute it and/or

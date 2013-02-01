@@ -9,7 +9,7 @@
 //                   << CreditsPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2012 Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 4.0 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
