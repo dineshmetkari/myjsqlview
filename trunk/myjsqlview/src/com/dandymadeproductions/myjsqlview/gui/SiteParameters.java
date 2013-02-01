@@ -7,7 +7,7 @@
 //                  << SiteParameter.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2012 Nil_lin, Dana Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 2.4 09/19/2012
 //
 // This program is free software; you can redistribute it and/or
