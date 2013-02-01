@@ -9,7 +9,7 @@
 //                   << SQLDataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2012 Borislav Gizdov, Dana M. Proctor
+// Copyright (C) 2005-2013 Dana M. Proctor
 // Version 7.05 09/20/2012
 //
 // This program is free software; you can redistribute it and/or
