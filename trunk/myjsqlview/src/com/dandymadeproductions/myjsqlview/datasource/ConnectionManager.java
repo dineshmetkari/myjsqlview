@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.8 09/10/2012
+// Version 2.9 02/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,11 @@
 //             setter Methods.
 //         2.8 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.
 //             Changed Constructor & All Methods to Public.
+//         2.9 Added static Class Instance DERBY. Changes in Method getConnection()
+//             to Generalize Connections to Use getConnection(URL, Properties). Allows
+//             the Ability to Address Adding Connection Properties to the connectionString.
+//             Method loadDBParameters() to Include Derby Parameters. Class Method
+//             getDataSourceType() Added Derby.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,6 +92,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Properties;
 
 import javax.sound.sampled.Clip;
 import javax.swing.JOptionPane;
@@ -100,7 +106,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.8 09/10/2012
+ * @version 2.9 02/02/2012
  */
 
 public class ConnectionManager
@@ -129,6 +135,7 @@ public class ConnectionManager
    public static final String ORACLE = "oracle";
    public static final String SQLITE = "sqlite";
    public static final String MSACCESS = "odbc";
+   public static final String DERBY = "derby";
    
    // private static final String TABLE_CAT = "TABLE_CAT";
    private static final String TABLE_SCHEM = "TABLE_SCHEM";
@@ -140,7 +147,6 @@ public class ConnectionManager
    // private static final String TYPE_NAME = "TYPE_NAME";
    // private static final String SELF_REFERENCING_COL_NAME = "SELF_REFERENCING_COL_NAME";
    // private static final String REF_GENERATION = "REF_GENERATION";
-   
    
    //==============================================================
    // ConnectionManager Constructor
@@ -168,18 +174,29 @@ public class ConnectionManager
    public static Connection getConnection(String description)
    {
       // Method Instances.
+      Properties connectProperties;
       String connectionString;
-      String db, subProtocol, user, passwordString;
+      String db, subProtocol;
       
       // Setup.
+      connectProperties = new Properties();
+      
       connectionString = connectionProperties.getConnectionString();
       db = connectionProperties.getProperty(ConnectionProperties.DB);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
-      user = connectionProperties.getProperty(ConnectionProperties.USER);
-      passwordString = connectionProperties.getPassword();
       
+      connectProperties.setProperty("user", connectionProperties.getProperty(ConnectionProperties.USER));
+      connectProperties.setProperty("password", connectionProperties.getPassword());
+      
+      // Handle SSL
+      if (subProtocol.equals(ConnectionManager.HSQL) || subProtocol.equals(ConnectionManager.MYSQL)
+          || subProtocol.equals(ConnectionManager.POSTGRESQL))
+      {
+           connectProperties.setProperty("useSSL",
+              connectionProperties.getProperty(ConnectionProperties.SSH));  
+      }
       // System.out.println(connectionString);
-      
+            
       // Select and try to return an appropriate connection
       // type.
       
@@ -190,21 +207,16 @@ public class ConnectionManager
          
          // Create the appropriate connection as needed.
          
-         // Oracle, MS Access, & HSQL File or Resource
-         if (subProtocol.indexOf(ORACLE) != -1 || subProtocol.equals(MSACCESS)
-               || (subProtocol.indexOf(HSQL) != -1 && (db.toLowerCase().indexOf("file:") != -1
-                                                       || db.toLowerCase().indexOf("res:") != -1)))
-            return DriverManager.getConnection(connectionString, user, passwordString);
-         
          // HSQL & SQLite Memory Connections
-         else if ((memoryConnection != null)
-                   && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
-                       || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
+         if ((memoryConnection != null)
+              && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
+                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
             return memoryConnection;
-         
-         // All Others
+         // All others
          else
-            return DriverManager.getConnection(connectionString);
+         {
+            return DriverManager.getConnection(connectionString, connectProperties);
+         }
       }
       catch (SQLException e)
       {
@@ -349,6 +361,15 @@ public class ConnectionManager
          dbType = "sqlite";
          //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
          
+      }
+      // Derby
+      else if (subProtocol.equals(DERBY))
+      {
+         catalog = db;
+         schemaPattern = null;
+         tableNamePattern = "%";
+         dbType = "derby";
+         //db_resultSet = dbMetaData.getTables(null, null, null, tableTypes);
       }
       // Unknown
       else
@@ -699,6 +720,8 @@ public class ConnectionManager
          return SQLITE;
       else if (subProtocol.equals(MSACCESS))
          return MSACCESS;
+      else if (subProtocol.equals(DERBY))
+         return DERBY;
       else
          return "other"; 
    }
