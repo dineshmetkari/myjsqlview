@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.6 10/29/2012
+// Version 5.7 02/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -129,6 +129,7 @@
 //             Public.
 //         5.6 Changed Class Instance statusLabel from a JTextField to a JLabel. Set
 //             Its PreferredSize in Constructor.
+//         5.7 Added Derby TableTabPanel Type for Instantiation in loadTable().
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -173,7 +174,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.6 10/29/2012
+ * @version 5.7 02/02/2013
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -428,6 +429,9 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // MS Access
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          tableTabPanel = new TableTabPanel_MSAccess(tableName, dbConnection, false);
+      // Apache Derby
+      else if (dataSourceType.equals(ConnectionManager.DERBY))
+         tableTabPanel = new TableTabPanel_Derby(tableName, dbConnection, false);
       // Generic
       else
          tableTabPanel = new TableTabPanel_Generic(tableName, dbConnection, false);
