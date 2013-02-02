@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.94 10/20/2012
+// Version 6.95 02/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -285,6 +285,10 @@
 //             Starting the splashPanel Animation.
 //        6.94 Correction in accessCheck() for dbMetaData.getDatabaseProductName/
 //             Version() Conditional Checks for Negation of Empty String.
+//        6.95 Changes in accessCheck() to Generalize getConnection(URL, Properties)
+//             to Allow Connection Properties to be Passed via the db TextField in
+//             the StandardParametersPanel. Additional Output Info for Testing &
+//             Default dbProductionNameVersion for Derby in Same Method.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -307,6 +311,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.TreeSet;
 
 import javax.swing.BorderFactory;
@@ -341,7 +346,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.94 10/20/2012
+ * @version 6.95 02/02/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -993,8 +998,9 @@ public class LoginFrame extends JFrame implements ActionListener
    {
       Connection dbConnection;
       
-      String connectionString;
+      Properties connectProperties;
       String driver, protocol, subProtocol, host, port, db, user, passwordString, ssh;
+      String connectionString;
       char[] passwordCharacters;
       String dbProductNameVersion;
       String catalogSeparator;
@@ -1067,17 +1073,22 @@ public class LoginFrame extends JFrame implements ActionListener
          // Obtaining the connection parameters & password.
          // ================================================
 
+         connectProperties = new Properties();
+         
          protocol = advancedParametersPanel.getProtocol();
          subProtocol = advancedParametersPanel.getSubProtocol().toLowerCase();
          host = standardParametersPanel.getHost();
          port = advancedParametersPanel.getPort();
          db = standardParametersPanel.getDataBase();
+         
          user = standardParametersPanel.getUser();
+         connectProperties.setProperty("user", user);
+      
          if (sshCheckBox.isSelected())
             ssh = "true";
          else
             ssh = "false";
-
+         
          passwordString = "";
          passwordCharacters = standardParametersPanel.getPassword();
 
@@ -1107,34 +1118,25 @@ public class LoginFrame extends JFrame implements ActionListener
                   connectionString += subProtocol + ":@//" + host + ":" + port + "/" + db;
                else
                   connectionString += subProtocol + ":@" + db;
-
-               // System.out.println(connectionString);
-               dbConnection = DriverManager.getConnection(connectionString, user, passwordString);
             }
             // SQLite
             else if (subProtocol.equals(ConnectionManager.SQLITE))
             {
                connectionString += subProtocol + ":" + db.replace("\\", "/");
-               // System.out.println(connectionString);
-               dbConnection = DriverManager.getConnection(connectionString);
             }
             // HSQL Memory, File, & Resource
             else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 &&
                       (db.indexOf("mem:") != -1) || db.indexOf("file:") != -1 || db.indexOf("res:") != -1)
             {
-               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
                connectionString += "hsqldb:" + db;
-               // System.out.println(connectionString);
-               dbConnection = DriverManager.getConnection(connectionString, user, passwordString);
+               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
             }
             // MS Access
             else if (subProtocol.equals(ConnectionManager.MSACCESS))
             {
                connectionString += subProtocol + ":" + db;
-               // System.out.println(connectionString);
-               dbConnection = DriverManager.getConnection(connectionString, user, passwordString);
             }
-            // MySQL, PostgreSQL, & HSQL
+            // MySQL, PostgreSQL, HSQL, & Derby
             else
             {
                // The % character is interpreted as the start of a special escaped sequence,
@@ -1142,12 +1144,13 @@ public class LoginFrame extends JFrame implements ActionListener
                // character with that characters hexadecimal value as sequence, %37. Java
                // API URLDecoder.
                
+               connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
-               connectionString += subProtocol + "://" + host + ":" + port + "/" + db + "?user=" + user
-                                       + "&password=" + passwordString + "&useSSL=" + ssh;
-               // System.out.println(connectionString);
-               dbConnection = DriverManager.getConnection(connectionString);
             }
+            
+            // System.out.println(connectionString);
+            connectProperties.setProperty("password", passwordString);
+            dbConnection = DriverManager.getConnection(connectionString, connectProperties);
             
             // The Connection is valid if it does not throw a SQL Exception.
             // So save the connection properties and collect the associated
@@ -1192,6 +1195,8 @@ public class LoginFrame extends JFrame implements ActionListener
                   dbProductNameVersion = "SQLite ";
                else if (subProtocol.equals(ConnectionManager.MSACCESS))
                   dbProductNameVersion = "MS Access ";
+               else if (subProtocol.equals(ConnectionManager.DERBY))
+                  dbProductNameVersion = "Apache Derby ";
                else
                   dbProductNameVersion = "Unknown Data Source ";
             }
@@ -1207,17 +1212,17 @@ public class LoginFrame extends JFrame implements ActionListener
             // =======================
             // SQL Key Words
             
-            // System.out.println(dbMetaData.getSQLKeywords());
+            // System.out.println("SQL key Words:\n" + dbMetaData.getSQLKeywords());
             
             // =======================
             // Database Functions
             /*
-            System.out.println(dbMetaData.getNumericFunctions());
-            System.out.println(dbMetaData.getStringFunctions());
-            System.out.println(dbMetaData.getSystemFunctions());
-            System.out.println(dbMetaData.getTimeDateFunctions());
+            System.out.println("Numeric Functions:\n" + dbMetaData.getNumericFunctions());
+            System.out.println("String Functions:\n" + dbMetaData.getStringFunctions());
+            System.out.println("System Functions:\n" + dbMetaData.getSystemFunctions());
+            System.out.println("Time/Date Functions:\n" + dbMetaData.getTimeDateFunctions());
             */
-
+            
             // =======================
             // Catalogs
             /*
