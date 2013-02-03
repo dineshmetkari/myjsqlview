@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.9 02/02/2013
+// Version 3.0 02/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,8 @@
 //             the Ability to Address Adding Connection Properties to the connectionString.
 //             Method loadDBParameters() to Include Derby Parameters. Class Method
 //             getDataSourceType() Added Derby.
+//         3.0 Method loadDBTables() Returned schemaPattern of Empty String for PostreSQL
+//             Database getTablePrivileges() Since pgJDBC Bug for ACL Fixed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -106,7 +108,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 2.9 02/02/2012
+ * @version 3.0 02/03/2012
  */
 
 public class ConnectionManager
@@ -623,22 +625,20 @@ public class ConnectionManager
          
          if (subProtocol.equals(POSTGRESQL))
          {
-            // The PostgreSQL JDBC Driver for 9.0-801 Has a bug in it that
-            // will cause getTablePrivileges() with a "" for schemaPattern
-            // so for 3.25 release place a space, for now. Null throw error
-            // also.
+            db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
             
-            //db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
-            db_resultSet = dbMetaData.getTablePrivileges(db, " ", "%");
             while (db_resultSet.next())
             {
                tableName = db_resultSet.getString(TABLE_NAME);
+               
                if (tables.contains(tableName))
                {
                   grantee = db_resultSet.getString("GRANTEE");
                   user = connectionProperties.getProperty(ConnectionProperties.USER);
-                  System.out.println(tableName + " " + grantee + " " +
-                  user);
+                  
+                  if (MyJSQLView.getDebug())
+                     System.out.println("Unauthorized Tabel Access: " + tableName + " : "
+                        + grantee + " : " + user);
 
                   if (tables.contains(tableName) && !grantee.equals(user))
                      tables.remove(tableName);
