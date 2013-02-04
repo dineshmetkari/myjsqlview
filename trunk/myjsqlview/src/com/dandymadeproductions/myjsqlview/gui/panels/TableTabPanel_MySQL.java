@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.56 09/18/2012
+// Version 11.57 02/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -499,6 +499,7 @@
 //       11.55 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //       11.56 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//       11.57 Minor Format Changes.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -529,7 +530,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.56 09/18/2012
+ * @version 11.57 02/04/2013
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -1633,7 +1634,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
    //==============================================================
 
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
-                                throws SQLException
+                               throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1650,9 +1651,10 @@ public class TableTabPanel_MySQL extends TableTabPanel
       TableEntryForm editForm = new TableEntryForm("Edit Table Entry: ", false, schemaTableName,
                                                    rowToEdit, this, primaryKeys,
                                                    autoIncrementHashMap, id,
-                                                   formFields, tableViewForm,
-                                                   columnNamesHashMap, columnClassHashMap, columnTypeHashMap,
-                                                   columnSizeHashMap, columnEnumHashMap, columnSetHashMap);
+                                                   formFields, tableViewForm, columnNamesHashMap,
+                                                   columnClassHashMap, columnTypeHashMap,
+                                                   columnSizeHashMap, columnEnumHashMap,
+                                                   columnSetHashMap);
 
       if ((((formFields.size() / 2) + 1) * 35) > 400)
       {
@@ -1723,7 +1725,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                             + identifierQuoteString + "='"
                                             + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                               currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                               currentContentData + "",
+                                               DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                             + "' AND ");
                }
                else
@@ -1778,8 +1781,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                if (currentContentData != null)
                {
                   currentContentData = db_resultSet.getDate(currentDB_ColumnName);
-                  editForm.setFormField(currentColumnName, (Object) displayMyDateString(currentContentData
-                                                                                        + ""));
+                  editForm.setFormField(currentColumnName,
+                                        (Object) displayMyDateString(currentContentData + ""));
                }
                else
                   editForm.setFormField(currentColumnName,
