@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.8 09/18/2012
+// Version 2.9 02/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -71,6 +71,7 @@
 //         2.7 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //         2.8 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//         2.9 Minor Format Changes.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -102,7 +103,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.8 09/18/2012
+ * @version 2.9 02/04/2012
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -1113,8 +1114,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
 
       // Showing the Table Entry Form
       TableEntryForm addForm = new TableEntryForm("Add Table Entry: ", true, schemaTableName,
-                                                  -1, null, primaryKeys,
-                                                  autoIncrementHashMap, null,
+                                                  -1, null, primaryKeys, autoIncrementHashMap, null,
                                                   formFields, tableViewForm, columnNamesHashMap,
                                                   columnClassHashMap, columnTypeHashMap,
                                                   columnSizeHashMap, columnEnumHashMap,
