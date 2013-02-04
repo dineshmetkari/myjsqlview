@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.5 09/18/2012
+// Version 11.6 02/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -254,6 +254,10 @@
 //        11.4 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //        11.5 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//        11.6 Class Method viewSelectedItem() Correction to Assign currentContent
+//             from ResultSet of Date Type. Removal of Quoting for Numeric Types for
+//             Normal Keys in Both viewSelectedItem() & editSelectedItem(). Minor
+//             Format Changes.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -285,7 +289,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.5 09/18/2012
+ * @version 11.6 02/04/2013
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -997,9 +1001,16 @@ public class TableTabPanel_Generic extends TableTabPanel
                                                   + "' AND ");
                      }
                      else
-                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                     { // Character data gets single quotes, not numbers though.
+                        if (currentColumnClass.toLowerCase().indexOf("string") != -1)
+                           sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "='"
                                                   + currentContentData + "' AND ");
+                        else
+                           sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                  + identifierQuoteString + "="
+                                                  + currentContentData + " AND ");
+                     }
                   }
                }
             }
@@ -1117,7 +1128,7 @@ public class TableTabPanel_Generic extends TableTabPanel
                // DATE Type Field
                if (currentColumnType.equals("DATE"))
                {
-                  db_resultSet.getDate(currentDB_ColumnName);
+                  currentContentData = db_resultSet.getDate(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
                      (Object) displayMyDateString(currentContentData + ""));
                }
@@ -1262,8 +1273,7 @@ public class TableTabPanel_Generic extends TableTabPanel
 
       // Showing the Table Entry Form
       TableEntryForm addForm = new TableEntryForm("Add Table Entry: ", true, schemaTableName,
-                                                  -1, null, primaryKeys,
-                                                  autoIncrementHashMap, null,
+                                                  -1, null, primaryKeys, autoIncrementHashMap, null,
                                                   formFields, tableViewForm, columnNamesHashMap,
                                                   columnClassHashMap, columnTypeHashMap,
                                                   columnSizeHashMap, columnEnumHashMap,
@@ -1488,14 +1498,23 @@ public class TableTabPanel_Generic extends TableTabPanel
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "='"
-                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentContentData + "",
+                                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
+                                                  currentContentData + "",
                                                   DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
-                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                               + identifierQuoteString + "='" + currentContentData
-                                               + "' AND ");
+                  {
+                     // Character data gets single quotes, not numbers though.
+                     if (currentColumnClass.toLowerCase().indexOf("string") != -1)
+                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "='"
+                                               + currentContentData + "' AND ");
+                     else
+                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "="
+                                               + currentContentData + " AND ");
+                  }
                }
             }
          }
