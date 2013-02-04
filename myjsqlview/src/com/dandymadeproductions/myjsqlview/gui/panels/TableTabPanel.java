@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.13 09/18/2012
+// Version 5.14 02/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -245,6 +245,8 @@
 //             Instance updateFormFindButton Related to UpdateForm Through
 //             getFindButton(); Same Except Just Assign ActionListener for the
 //             Form's disposeButton Through getDisposeButton().
+//        5.14 Class Method deleteSelectedItem() Inclution of Both Derby & HSQL
+//             Databases to Removing Quotes in Normal Keys for Numeric Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -323,7 +325,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.13 09/18/2012
+ * @version 5.14 02/04/2012
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2071,7 +2073,6 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
                            // Reformat date keys.
                            
-                           
                            if (currentColumnType.equals("DATE"))
                            {
                               // MySQL & Oracle Require Special Handling.
@@ -2130,7 +2131,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                               // Character data gets single quotes for some databases,
                               // not numbers though.
                               
-                              if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                              if ((dataSourceType.equals(ConnectionManager.MSACCESS)
+                                    || dataSourceType.equals(ConnectionManager.DERBY)
+                                    || dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
                                   && currentColumnClass.toLowerCase().indexOf("string") == -1)
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
