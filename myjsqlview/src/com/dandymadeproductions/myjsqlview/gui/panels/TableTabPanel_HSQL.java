@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 12.7 09/18/2012
+// Version 12.8 02/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -281,6 +281,8 @@
 //        12.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //        12.7 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//        12.8 Removal of Quoting for Numeric Types for Normal Keys in Both
+//             viewSelectedItem() & editSelectedItem(). Minor Format Changes.
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -312,7 +314,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.7 09/18/2012
+ * @version 12.8 02/04/2012
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -386,7 +388,9 @@ public class TableTabPanel_HSQL extends TableTabPanel
             if (catalogName.equals(""))
                catalogName = null;
 
-         rs = dbMetaData.getPrimaryKeys(catalogName, tableMetaData.getSchemaName(1), tableMetaData.getTableName(1));
+         rs = dbMetaData.getPrimaryKeys(catalogName,
+                                        tableMetaData.getSchemaName(1),
+                                        tableMetaData.getTableName(1));
 
          while (rs.next())
          {
@@ -400,7 +404,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          // Additional Indexes
 
-         rs = dbMetaData.getIndexInfo(catalogName, tableMetaData.getSchemaName(1),
+         rs = dbMetaData.getIndexInfo(catalogName,
+                                      tableMetaData.getSchemaName(1),
                                       tableMetaData.getTableName(1), false, false);
          while (rs.next())
          {
@@ -462,10 +467,11 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
             // Collect LOBs.
             if (((columnType.toUpperCase().indexOf("BINARY") != -1)
-                 || (columnType.toUpperCase().indexOf("BLOB") != -1)
-                 || (columnType.toUpperCase().indexOf("CLOB") != -1)
-                 || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
-                     && columnSize.intValue() > 65536)) && !primaryKeys.contains(colNameString))
+                  || (columnType.toUpperCase().indexOf("BLOB") != -1)
+                  || (columnType.toUpperCase().indexOf("CLOB") != -1)
+                  || (columnClass.indexOf("String") != -1 && !columnType.toUpperCase().equals("CHAR")
+                      && columnSize.intValue() > 65536))
+                && !primaryKeys.contains(colNameString))
             {
                lobDataTypesHashMap.put(comboBoxNameString, colNameString);
                lob_sqlTableFieldsString += identifierQuoteString + colNameString + identifierQuoteString + " ";
@@ -484,7 +490,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
             if (primaryKeys.contains(colNameString))
             {
                if (columnSize == null || columnSize.intValue() > 255)
-                   columnSize = new Integer("255");
+                  columnSize = new Integer("255");
                keyLengthHashMap.put(colNameString, columnSize);
             }
 
@@ -497,7 +503,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
 
          // Make a final check for possible foreign keys.
 
-         rs = dbMetaData.getImportedKeys(catalogName, tableMetaData.getSchemaName(1),
+         rs = dbMetaData.getImportedKeys(catalogName,
+                                         tableMetaData.getSchemaName(1),
                                          tableMetaData.getTableName(1));
          while (rs.next())
          {
@@ -505,14 +512,13 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   && columnNamesHashMap.containsValue(rs.getString("FKCOLUMN_NAME"))
                   && !primaryKeys.contains(rs.getString("FKCOLUMN_NAME")))
             {
-                  primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+               primaryKeys.add(rs.getString("FKCOLUMN_NAME"));
+               columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
                   
-                  columnSize = columnSizeHashMap.get(parseColumnNameField(rs.getString("FKCOLUMN_NAME")));
+               if (columnSize == null || columnSize.intValue() > 255)
+                   columnSize = new Integer("255");
                   
-                  if (columnSize == null || columnSize.intValue() > 255)
-                     columnSize = new Integer("255");
-                  
-                  keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
+               keyLengthHashMap.put(rs.getString("FKCOLUMN_NAME"), columnSize);
             }
          }
 
@@ -662,8 +668,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
                                      + " LIKE '%" + searchTextString + "%'");
          }
-         // System.out.println(searchTextString);
       }
+      // System.out.println(searchTextString);
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
@@ -705,7 +711,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
             // Complete With All Fields.
             sqlTableStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(sqlTableFieldsString,
                                              tableRowStart, tableRowLimit));
-
             // Summary Table Without LOBs
             lobLessSQLStatement.append(advancedSortSearchFrame.getAdvancedSortSearchSQL(lobLessFieldsString,
                                                     tableRowStart, tableRowLimit));
@@ -834,7 +839,6 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   else if (columnClass.indexOf("Boolean") != -1)
                   {
                      tableData[i][j++] = rs.getString(columnName);
-                     ;
                   }
 
                   // =============================================
@@ -905,8 +909,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   if (preferredColumnSize > maxPreferredColumnSize)
                      preferredColumnSize = maxPreferredColumnSize;
                }
-               preferredColumnSizeHashMap.put(currentHeading,
-                                              Integer.valueOf(preferredColumnSize));
+               preferredColumnSizeHashMap.put(currentHeading, Integer.valueOf(preferredColumnSize));
             }
             j = 0;
             i++;
@@ -1031,9 +1034,17 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                                   + "' AND ");
                      }
                      else
-                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                                  + identifierQuoteString + "='" + currentContentData
-                                                  + "' AND ");
+                     {
+                        // Character data gets single quotes, not numbers though.
+                        if (currentColumnClass.toLowerCase().indexOf("string") != -1)
+                           sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                  + identifierQuoteString + "='"
+                                                  + currentContentData + "' AND ");
+                        else
+                           sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                                  + identifierQuoteString + "="
+                                                  + currentContentData + " AND ");
+                     }
                   }
                }
             }
@@ -1183,9 +1194,9 @@ public class TableTabPanel_HSQL extends TableTabPanel
                else if (currentColumnType.equals("TIMESTAMP"))
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
-                  tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat(
-                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
-                     + " HH:mm:ss").format(currentContentData)));
+                  tableViewForm.setFormField(currentColumnName,
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData)));
                }
                
                else if (currentColumnType.equals("TIMESTAMP WITH TIME ZONE"))
@@ -1223,7 +1234,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                // Text, Char, & Clob Fields
                else if ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
                          && (columnSizeHashMap.get(currentColumnName)).intValue() > 255)
-                        || (currentColumnType.equals("CLOB")))
+                        || currentColumnType.equals("CLOB"))
                {
                   String stringName;
                   
@@ -1404,7 +1415,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
    //==============================================================
 
    public void editSelectedItem(Connection dbConnection, int rowToEdit, Object columnName, Object id)
-                                throws SQLException
+                               throws SQLException
    {
       // Method Instances
       StringBuffer sqlStatementString;
@@ -1421,9 +1432,10 @@ public class TableTabPanel_HSQL extends TableTabPanel
       TableEntryForm editForm = new TableEntryForm("Edit Table Entry: ", false, schemaTableName,
                                                    rowToEdit, this, primaryKeys,
                                                    autoIncrementHashMap, id,
-                                                   formFields, tableViewForm,
-                                                   columnNamesHashMap, columnClassHashMap, columnTypeHashMap,
-                                                   columnSizeHashMap, columnEnumHashMap, columnSetHashMap);
+                                                   formFields, tableViewForm, columnNamesHashMap,
+                                                   columnClassHashMap, columnTypeHashMap,
+                                                   columnSizeHashMap, columnEnumHashMap,
+                                                   columnSetHashMap);
 
       if ((((formFields.size() / 2) + 1) * 35) > 400)
       {
@@ -1486,8 +1498,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
                {
                   currentContentData = "IS NULL";
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                            + identifierQuoteString + " "
-                                            + currentContentData + " AND ");
+                                            + identifierQuoteString + " " + currentContentData
+                                            + " AND ");
                }
                else
                {
@@ -1504,13 +1516,22 @@ public class TableTabPanel_HSQL extends TableTabPanel
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "='"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  currentContentData + "",
+                                                  DBTablesPanel.getGeneralProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
-                     sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                  {
+                     // Character data gets single quotes, not numbers though.
+                     if (currentColumnClass.toLowerCase().indexOf("string") != -1)
+                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "='"
                                                + currentContentData + "' AND ");
+                     else
+                        sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                               + identifierQuoteString + "="
+                                               + currentContentData + " AND ");
+                  }
                }
             }
          }
@@ -1566,8 +1587,8 @@ public class TableTabPanel_HSQL extends TableTabPanel
                if (currentContentData != null)
                {
                   currentContentData = db_resultSet.getDate(currentDB_ColumnName);
-                  editForm.setFormField(currentColumnName, (Object) displayMyDateString(currentContentData
-                                                                                        + ""));
+                  editForm.setFormField(currentColumnName,
+                                        (Object) displayMyDateString(currentContentData + ""));
                }
                else
                   editForm.setFormField(currentColumnName,
@@ -1601,11 +1622,12 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
                      (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
-                        + " HH:mm:ss").format(currentContentData)));
+                                                    + " HH:mm:ss").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                        + " HH:MM:SS");
             }
             
             else if (currentColumnType.equals("TIMESTAMP WITH TIME ZONE"))
