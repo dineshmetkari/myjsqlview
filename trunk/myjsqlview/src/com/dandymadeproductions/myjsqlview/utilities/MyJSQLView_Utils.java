@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.2 10/21/2012
+// Version 8.3 02/09/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,8 @@
 //             processLocaleLanguage().
 //         8.2 Class Method getCacheDirectory() Implemented the Attempt to Try & Create
 //             the Cache Directory on the File System if Does not Exist.
+//         8.3 Correction in Method convertViewDateString() to Check for Two Occurrences
+//             of the Dash Character to Insure a Valid Date Format.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -215,7 +217,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.2 10/21/2012
+ * @version 8.3 02/09/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -464,10 +466,11 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (view_DateString.indexOf("/") != -1)
          view_DateString = view_DateString.replaceAll("/", "-");
       
+      if (view_DateString.indexOf("-") != 2)
+         return "";
+      
       firstDashIndex = view_DateString.indexOf("-");
       lastDashIndex = view_DateString.lastIndexOf("-");
-      if (firstDashIndex == -1 || lastDashIndex == -1)
-         return "";
       
       // Convert the input date string to the appropriate format.
       
