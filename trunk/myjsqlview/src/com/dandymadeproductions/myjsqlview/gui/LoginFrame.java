@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.95 02/02/2013
+// Version 6.96 02/15/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -289,7 +289,9 @@
 //             to Allow Connection Properties to be Passed via the db TextField in
 //             the StandardParametersPanel. Additional Output Info for Testing &
 //             Default dbProductionNameVersion for Derby in Same Method.
-//             
+//        6.96 Class Method Additions to Handle Both Derby Memory & Embedded Database
+//             Connections. Also the Inclusion of Debug Output for connectionString.
+//
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
 //=================================================================
@@ -346,7 +348,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.95 02/02/2013
+ * @version 6.96 02/15/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1131,6 +1133,20 @@ public class LoginFrame extends JFrame implements ActionListener
                connectionString += "hsqldb:" + db;
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
             }
+            // Derby Memory
+            else if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
+                     db.indexOf("memory:") != -1)
+            {
+               if (db.toLowerCase().indexOf(";create=true") == -1)
+                  db += ";create=true";
+               
+               if (driver.indexOf("EmbeddedDriver") != -1)
+                  connectionString += subProtocol + ":" + db;
+               else
+                  connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
+               
+               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
+            }
             // MS Access
             else if (subProtocol.equals(ConnectionManager.MSACCESS))
             {
@@ -1144,11 +1160,17 @@ public class LoginFrame extends JFrame implements ActionListener
                // character with that characters hexadecimal value as sequence, %37. Java
                // API URLDecoder.
                
-               connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
+               if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
+                     driver.indexOf("EmbeddedDriver") != -1)
+                  connectionString += subProtocol + ":" + db;
+               else
+                  connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
                passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
             }
             
-            // System.out.println(connectionString);
+            if (MyJSQLView.getDebug())
+               System.out.println("LoginFrame accessCheck() " + connectionString);
+            
             connectProperties.setProperty("password", passwordString);
             dbConnection = DriverManager.getConnection(connectionString, connectProperties);
             
