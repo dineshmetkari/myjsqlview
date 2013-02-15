@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.96 02/15/2013
+// Version 6.97 02/15/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -291,6 +291,8 @@
 //             Default dbProductionNameVersion for Derby in Same Method.
 //        6.96 Class Method Additions to Handle Both Derby Memory & Embedded Database
 //             Connections. Also the Inclusion of Debug Output for connectionString.
+//        6.97 Correction to Insure Memory Connection is Passed On to ConnectionManager
+//             for Derby Memory Databases.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -348,7 +350,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.96 02/15/2013
+ * @version 6.97 02/15/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1297,7 +1299,9 @@ public class LoginFrame extends JFrame implements ActionListener
             
             if ((subProtocol.equals(ConnectionManager.SQLITE) && db.toLowerCase().equals(":memory:"))
                  || (subProtocol.indexOf(ConnectionManager.HSQL) != -1
-                     && db.toLowerCase().indexOf("mem:") != -1))
+                     && db.toLowerCase().indexOf("mem:") != -1)    
+                 || (subProtocol.equals(ConnectionManager.DERBY)
+                     && db.toLowerCase().indexOf("memory:") != -1))
             {
                ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionString));
             }
