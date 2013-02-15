@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.0 02/03/2013
+// Version 3.1 02/15/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,8 @@
 //             getDataSourceType() Added Derby.
 //         3.0 Method loadDBTables() Returned schemaPattern of Empty String for PostreSQL
 //             Database getTablePrivileges() Since pgJDBC Bug for ACL Fixed.
+//         3.1 Methods get/closeConnection() Check for Derby Memory Connections to
+//             Insure memoryConnection is Returned & Not Closed.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -108,7 +110,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.0 02/03/2012
+ * @version 3.1 02/15/2012
  */
 
 public class ConnectionManager
@@ -209,10 +211,12 @@ public class ConnectionManager
          
          // Create the appropriate connection as needed.
          
-         // HSQL & SQLite Memory Connections
+         // HSQL, SQLite, & Derby Memory Connections
          if ((memoryConnection != null)
               && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
-                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
+                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1)
+                  || (subProtocol.equals(ConnectionManager.DERBY)
+                      && db.toLowerCase().indexOf("memory:") != -1))
             return memoryConnection;
          // All others
          else
@@ -250,7 +254,9 @@ public class ConnectionManager
          // Close connection as needed.
          if ((memoryConnection != null)
               && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
-                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1))
+                  || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1)
+                  || (subProtocol.equals(ConnectionManager.DERBY)
+                      && db.toLowerCase().indexOf("memory:") != -1))
             return;
          else
             dbConnection.close();
