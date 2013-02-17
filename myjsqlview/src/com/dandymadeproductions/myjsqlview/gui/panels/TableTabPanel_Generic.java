@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.6 02/04/2013
+// Version 11.7 02/17/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -258,6 +258,8 @@
 //             from ResultSet of Date Type. Removal of Quoting for Numeric Types for
 //             Normal Keys in Both viewSelectedItem() & editSelectedItem(). Minor
 //             Format Changes.
+//        11.7 Formatting Changes to Sync. TableTabPanels. Updates to loadTable(), addItem(),
+//             viewSelectedItem() & editSelectedItem() to Reflect Derby Options.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -289,7 +291,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.6 02/04/2013
+ * @version 11.7 02/17/2013
  */
 
 public class TableTabPanel_Generic extends TableTabPanel
@@ -561,8 +563,8 @@ public class TableTabPanel_Generic extends TableTabPanel
       String columnSearchString, searchTextString;
       String lobLessFieldsString;
       String columnName, columnClass, columnType;
-      int columnSize, preferredColumnSize;
       Integer keyLength;
+      int columnSize, preferredColumnSize;
       Object currentContentData;
 
       // Obtain search parameters column names as needed and
@@ -635,10 +637,10 @@ public class TableTabPanel_Generic extends TableTabPanel
             }
             
             searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                + " LIKE '%" + searchTextString + "%'");
+                                     + " LIKE '%" + searchTextString + "%'");
          }
-         // System.out.println(searchTextString);
       }
+      // System.out.println(searchTextString);
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
@@ -688,11 +690,12 @@ public class TableTabPanel_Generic extends TableTabPanel
          {
             // Complete With All Fields.
             sqlTableStatement.append("SELECT " + sqlTableFieldsString + " FROM " + schemaTableName + " "
-                                 + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
-                                 + identifierQuoteString
-                                 + columnNamesHashMap.get(sortComboBox.getSelectedItem())
-                                 + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
-                                 + tableRowLimit + " " + "OFFSET " + tableRowStart);
+                                      + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+                                      + identifierQuoteString
+                                      + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                      + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
+                                      + tableRowLimit + " " + "OFFSET " + tableRowStart);
+            
             // Summary Table Without LOBs.
             lobLessSQLStatement.append("SELECT " + lobLessFieldsString + " FROM " + schemaTableName + " "
                                         + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
@@ -784,11 +787,12 @@ public class TableTabPanel_Generic extends TableTabPanel
                   }
                   
                   // =============================================
-                  // BLOB, BINARY, BYTEA, RAW, LONG, RAW, CLOB,
-                  // LONG VARCHARS, & TEXT
+                  // BLOB, BINARY, BYTEA, BIT DATA, RAW, LONG, RAW,
+                  // CLOB, LONG VARCHARS, & TEXT
                   else if ((columnType.equals("BLOB")) || (columnType.equals("BINARY"))
+                        || (columnType.indexOf("BIT DATA") != -1) || (columnType.equals("BYTEA"))
                         || (columnType.equals("RAW")) || (columnType.equals("LONG"))
-                        || (columnType.equals("CLOB")) || (columnType.equals("BYTEA"))
+                        || (columnType.equals("CLOB"))
                         || ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                              && columnSize > 65535))
                         || (columnClass.indexOf("String") != -1 && columnType.toUpperCase().equals("TEXT")))
@@ -818,7 +822,6 @@ public class TableTabPanel_Generic extends TableTabPanel
                   else if (columnClass.indexOf("Boolean") != -1)
                   {
                      tableData[i][j++] = rs.getString(columnName);
-                     ;
                   }
 
                   // =============================================
@@ -969,8 +972,8 @@ public class TableTabPanel_Generic extends TableTabPanel
 
                   // select * from t1 where a like "hello%";
                   sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
-                                            + identifierQuoteString
-                                            + " LIKE '" + keyString + "%' AND ");
+                                            + identifierQuoteString + " LIKE '"
+                                            + keyString + "%' AND ");
                }
                // Normal keys
                else
@@ -987,6 +990,7 @@ public class TableTabPanel_Generic extends TableTabPanel
                   {
                      // Escape single quotes.
                      currentColumnClass = columnClassHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                     
                      if (currentColumnClass.indexOf("String") != -1)
                         currentContentData = ((String) currentContentData).replaceAll("'", "''");
                      
@@ -1001,7 +1005,8 @@ public class TableTabPanel_Generic extends TableTabPanel
                                                   + "' AND ");
                      }
                      else
-                     { // Character data gets single quotes, not numbers though.
+                     {
+                        // Character data gets single quotes, not numbers though.
                         if (currentColumnClass.toLowerCase().indexOf("string") != -1)
                            sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "='"
@@ -1033,12 +1038,14 @@ public class TableTabPanel_Generic extends TableTabPanel
                //                    + " type:" + currentColumnType + " value:" + currentContentData);
                
                // Skip Blob, Text, & Float Unless NULL.
-               if (((currentColumnClass.indexOf("String") == -1 && currentColumnType.indexOf("BLOB") != -1) ||
-                     (currentColumnType.indexOf("BYTEA") != -1) ||
-                     (currentColumnType.indexOf("BINARY") != -1))
-                     || ((currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
+               if ((currentColumnClass.indexOf("String") == -1 && currentColumnType.indexOf("BLOB") != -1)
+                     || (currentColumnType.indexOf("BYTEA") != -1)
+                     || (currentColumnType.indexOf("BINARY") != -1)
+                     || (currentColumnClass.indexOf("byte") != -1
+                         && currentColumnType.indexOf("BIT DATA") != -1)
+                     || (currentColumnClass.indexOf("String") != -1 && !currentColumnType.equals("CHAR")
                           && columnSize > 255)
-                         || currentColumnType.indexOf("CLOB") != -1)
+                     || (currentColumnType.indexOf("CLOB") != -1)
                      || (currentColumnType.indexOf("FLOAT") != -1))
                {
                   if (currentContentData.toString().toUpperCase().equals("NULL"))
@@ -1173,41 +1180,33 @@ public class TableTabPanel_Generic extends TableTabPanel
 
                // Blob/Bytea/Binary Type Field
                else if ((currentColumnClass.indexOf("String") == -1 &&
-                         currentColumnType.indexOf("BLOB") != -1) ||
-                        (currentColumnType.indexOf("BYTEA") != -1) ||
-                        (currentColumnType.indexOf("BINARY") != -1))
+                         currentColumnType.indexOf("BLOB") != -1)
+                        || (currentColumnType.indexOf("BYTEA") != -1)
+                        || (currentColumnType.indexOf("BINARY") != -1)
+                        || (currentColumnClass.indexOf("byte") != -1
+                            && currentColumnType.indexOf("BIT DATA") != -1))
                {
+                  String typeName;
+                  
+                  if (currentColumnType.equals("BLOB"))
+                     typeName = "BLOB";
+                  else if (currentColumnType.equals("BYTEA"))
+                     typeName = "BYTEA";
+                  else if (currentColumnType.indexOf("BINARY") != -1)
+                     typeName = "BINARY";
+                  else
+                     typeName = "BIT DATA";
+                  
                   if (((String) currentContentData).getBytes().length != 0)
                   {
                      currentContentData = db_resultSet.getBytes(currentDB_ColumnName);
-
                      int size = ((byte[]) currentContentData).length;
-                     if (currentColumnType.equals("BLOB"))
-                     {
-                        tableViewForm.setFormField(currentColumnName, (Object) ("BLOB " + size + " Bytes"));
-                        tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
-                     }
-                     else if (currentColumnType.equals("BYTEA"))
-                     {
-                        tableViewForm.setFormField(currentColumnName, (Object) ("BYTEA " + size + " Bytes"));
-                        tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
-                     }
-                     else
-                     {
-                        tableViewForm.setFormField(currentColumnName, (Object) ("BINARY " + size + " Bytes"));
-                        tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
-                     }
+                     
+                     tableViewForm.setFormField(currentColumnName, (Object) (typeName + " " + size + " Bytes"));
+                     tableViewForm.setFormFieldBlob(currentColumnName, (byte[]) currentContentData);
                   }
                   else
-                  {
-                     if (currentColumnType.equals("BLOB"))
-                        tableViewForm.setFormField(currentColumnName, (Object) "BLOB 0 Bytes");
-                     else if (currentColumnType.equals("BYTEA"))
-                        tableViewForm.setFormField(currentColumnName, (Object) "BYTEA 0 Bytes");
-                     else
-                        tableViewForm.setFormField(currentColumnName, (Object) "BINARY 0 Bytes");
-
-                  }
+                     tableViewForm.setFormField(currentColumnName, (Object) (typeName + " 0 Bytes"));
                }
 
                // Text, & Clob Fields
@@ -1251,7 +1250,7 @@ public class TableTabPanel_Generic extends TableTabPanel
          }
          catch (SQLException sqle)
          {
-            ConnectionManager.displaySQLErrors(sqle, "QueryTabPanel viewSelectedItem()");
+            ConnectionManager.displaySQLErrors(sqle, "TableTabPanel_Genric viewSelectedItem()");
          }
          finally
          {
@@ -1354,14 +1353,17 @@ public class TableTabPanel_Generic extends TableTabPanel
 
          // BLOB/BYTEA/BINARY Type Field
          if ((currentColumnClass.indexOf("String") == -1 && currentColumnType.indexOf("BLOB") != -1)
-             || currentColumnType.indexOf("BYTEA") != -1 || currentColumnType.indexOf("BINARY") != -1)
+             || currentColumnType.indexOf("BYTEA") != -1 || currentColumnType.indexOf("BINARY") != -1
+             || (currentColumnType.indexOf("BIT DATA") != -1))
          {
             if (currentColumnType.equals("BLOB"))
                addForm.setFormField(currentColumnName, (Object) ("BLOB Browse"));
             else if (currentColumnType.equals("BYTEA"))
                addForm.setFormField(currentColumnName, (Object) ("BYTEA Browse"));
-            else
+            else if (currentColumnType.indexOf("BINARY") != -1)
                addForm.setFormField(currentColumnName, (Object) ("BINARY Browse"));
+            else
+               addForm.setFormField(currentColumnName, (Object) ("BIT DATA Browse"));
          }
 
          // Geometric Type Fields
@@ -1620,18 +1622,21 @@ public class TableTabPanel_Generic extends TableTabPanel
             }
 
             // Blob/Bytea Type Field
-            else if ((currentColumnClass.indexOf("String") == -1 &&
-                      currentColumnType.indexOf("BLOB") != -1) ||
-                      currentColumnType.indexOf("BYTEA") != -1 ||
-                      currentColumnType.indexOf("BINARY") != -1)
+            else if ((currentColumnClass.indexOf("String") == -1 && currentColumnType.indexOf("BLOB") != -1)
+                     || currentColumnType.indexOf("BYTEA") != -1
+                     || currentColumnType.indexOf("BINARY") != -1
+                     || (currentColumnClass.indexOf("byte") != -1
+                         && currentColumnType.indexOf("BIT DATA") != -1))
             {
                String binaryType;
                if (currentColumnType.indexOf("BLOB") != -1)
                   binaryType = "BLOB";
                else if (currentColumnType.indexOf("BYTEA") != -1)
                   binaryType = "BYTEA";
-               else
+               else if (currentColumnType.indexOf("BINARY") != -1)
                   binaryType = "BINARY";
+               else
+                  binaryType = "BIT DATA";
 
                if (currentContentData != null)
                {
