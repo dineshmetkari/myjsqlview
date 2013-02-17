@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.14 02/04/2013
+// Version 5.15 02/17/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -247,6 +247,7 @@
 //             Form's disposeButton Through getDisposeButton().
 //        5.14 Class Method deleteSelectedItem() Inclution of Both Derby & HSQL
 //             Databases to Removing Quotes in Normal Keys for Numeric Types.
+//        5.15 Class Method getTableSQLStatement() Returns a New String().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -325,7 +326,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.14 02/04/2012
+ * @version 5.15 02/17/2013
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2501,7 +2502,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    
    public String getTableSQLStatement()
    {
-      return sqlTableStatement.toString();
+      return new String(sqlTableStatement);
    }
 
    //==============================================================
