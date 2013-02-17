@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.57 02/04/2013
+// Version 11.58 02/17/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -500,6 +500,7 @@
 //       11.56 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
 //       11.57 Minor Format Changes.
+//       11.58 Formatting Changes to Sync. TableTabPanels.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -530,7 +531,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.57 02/04/2013
+ * @version 11.58 02/17/2013
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -824,7 +825,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                                      + " LIKE '%" + searchTextString + "%'");
          }
       }
-      //System.out.println(searchQueryString);
+      // System.out.println(searchQueryString);
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
@@ -858,8 +859,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                lobLessFieldsString = lobLessFieldsString.substring(0, lobLessFieldsString.length() - 2);
          }
          
-         lobLessSQLStatement = new StringBuffer();
          sqlTableStatement = new StringBuffer();
+         lobLessSQLStatement = new StringBuffer();
          
          if (advancedSortSearch)
          {
@@ -874,11 +875,11 @@ public class TableTabPanel_MySQL extends TableTabPanel
          {
             // Complete With All Fields.
             sqlTableStatement.append("SELECT " + sqlTableFieldsString + " FROM " + schemaTableName
-                                 + " " + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
-                                 + identifierQuoteString
-                                 + columnNamesHashMap.get(sortComboBox.getSelectedItem())
-                                 + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
-                                 + tableRowLimit + " " + "OFFSET " + tableRowStart);
+                                      + " " + "WHERE " + searchQueryString.toString() + " " + "ORDER BY "
+                                      + identifierQuoteString
+                                      + columnNamesHashMap.get(sortComboBox.getSelectedItem())
+                                      + identifierQuoteString + " " + ascDescString + " " + "LIMIT "
+                                      + tableRowLimit + " " + "OFFSET " + tableRowStart);
             
             // Summary Table Without LOBs
             lobLessSQLStatement.append("SELECT " + lobLessFieldsString + " FROM " + schemaTableName
@@ -1218,8 +1219,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   keyString = keyString.replaceAll("'", "''");
 
                   // select * from t1 where a like "hello%";
-                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName + identifierQuoteString
-                                            + " LIKE '" + keyString + "%' AND ");
+                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
+                                            + identifierQuoteString + " LIKE '"
+                                            + keyString + "%' AND ");
                }
                // Normal keys
                else
@@ -1233,6 +1235,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
 
                   // Reformat date keys.
                   currentColumnType = columnTypeHashMap.get(parseColumnNameField(currentDB_ColumnName));
+                  
                   if (currentColumnType.equals("DATE"))
                   {
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
