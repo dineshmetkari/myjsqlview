@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.8 09/11/2012
+// Version 6.9 02/17/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -157,6 +157,8 @@
 //         6.7 08/19/2012 Organized Imports.
 //         6.8 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.forms.
 //                        Made Class, Constructor, & Getter/Setter Methods Public.
+//         6.9 02/17/2013 Handling of Derby Bit Data in Constructor & Class Methods
+//                        actionPerformed(), saveBlobTextField() & setFormField().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -203,7 +205,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.8 09/11/2012
+ * @version 6.9 02/17/2013
  */
 
 public class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -289,16 +291,16 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
          formPanel.add(currentLabel);
 
          // =====================================
-         // Blob/Bytea/Binary/CLOB/Text/Array
+         // Blob/Bytea/Binary/Bit Data/CLOB/Text/Array
          // Buttons & TextFields
          // =====================================
 
-         if ((columnClass.indexOf("String") == -1 &&
-              columnType.indexOf("BLOB") != -1) ||
-             (columnType.indexOf("BYTEA") != -1) ||
-             (columnType.indexOf("BINARY") != -1) ||
-             (columnType.indexOf("RAW") != -1) ||
-             (columnType.indexOf("CLOB") != -1))
+         if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
+             || (columnType.indexOf("BYTEA") != -1)
+             || (columnType.indexOf("BINARY") != -1)
+             || (columnType.indexOf("BIT DATA") != -1)
+             || (columnType.indexOf("RAW") != -1)
+             || (columnType.indexOf("CLOB") != -1))
          {
             currentField = new JButton();
             ((JButton) currentField).addActionListener(this);
@@ -387,10 +389,11 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
          if (blobBytesHashMap.get((JButton) panelSource) != null)
          {
             // Save Binary/Clob Directly.
-            if (((JButton) evt.getSource()).getText().indexOf("BLOB") != -1 ||
-                ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1 ||
-                ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1 ||
-                ((JButton) evt.getSource()).getText().indexOf("RAW") != -1)
+            if (((JButton) evt.getSource()).getText().indexOf("BLOB") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("BIT DATA") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("RAW") != -1)
                saveBlobTextField(panelSource);
 
             // View Text/Array and Allow Saving if Desired.
@@ -499,10 +502,11 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
       // Don't Convert the Binary Data to a String
-      if (((JButton) panelSource).getText().indexOf("BLOB") != -1 ||
-          ((JButton) panelSource).getText().indexOf("BYTEA") != -1 ||
-          ((JButton) panelSource).getText().indexOf("BINARY") != -1 ||
-          ((JButton) panelSource).getText().indexOf("RAW") != -1)
+      if (((JButton) panelSource).getText().indexOf("BLOB") != -1
+          || ((JButton) panelSource).getText().indexOf("BYTEA") != -1
+          || ((JButton) panelSource).getText().indexOf("BINARY") != -1
+          || ((JButton) panelSource).getText().indexOf("BIT DATA") != -1
+          || ((JButton) panelSource).getText().indexOf("RAW") != -1)
 
          buf = (byte[]) blobBytesHashMap.get((JButton) panelSource);
       else
@@ -587,10 +591,12 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
 
       // Binary Button, Note all data with buttons processed
       // the same just grouping for clarity.
-      if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
-          (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
-          (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-          (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1))
+      if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
+          || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
+          || (columnType.indexOf("BYTEA") != -1)
+          || (columnType.indexOf("BINARY") != -1)
+          || (columnType.indexOf("BIT DATA") != -1)
+          || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1))
 
          ((JButton) fieldHashMap.get(itemName)).setText((String) content);
 
