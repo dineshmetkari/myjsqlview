@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.96 10/19/2012
+// Version 4.97 02/17/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -197,6 +197,8 @@
 //                        setKeyComponents(), getAdvancedSortSearchSQL() Public.
 //        4.95 09/18/2012 Made Class Instance applyButton Private and Added getApplyButton().
 //        4.96 10/19/2012 Dressed All JComboBoxes & JTextFields in Form With New Borders.
+//        4.97 02/17/2013 Added derbyWhereOperators in Method createSortSearchInterface() & Implemented
+//                        Proper LIMIT Construct for Derby in getAdvancedSortSearchSQL().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -244,7 +246,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.96 10/19/2012
+ * @version 4.97 02/17/2013
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -626,6 +628,8 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       Object[] sqliteWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IS NOT", "IN", "NOT IN",
                                        "OR", "|", "AND", "&", "||", "BETWEEN", "GLOB", "REGEXP", "MATCH",  
                                        "=", "<", "<<", "<=", ">", ">>", ">=", "<>", "!=", "==", };
+      Object[] derbyWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IN", "NOT IN", "BETWEEN",
+                                      "NOT BETWEEN", "EXISTS", "OR", "AND", "=", "<", "<=", ">", ">=", "<>"};
 
       // Assigning the appropriate string array WHERE operators.
       
@@ -637,6 +641,8 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          whereOperators = oracleWhereOperators;
       else if (dataSourceType.equals(ConnectionManager.SQLITE))
          whereOperators = sqliteWhereOperators;
+      else if (dataSourceType.equals(ConnectionManager.DERBY))
+         whereOperators = derbyWhereOperators;
       // Make HSQL Default
       else
          whereOperators = hsqlWhereOperators;
@@ -1006,7 +1012,9 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
                      // Character data gets single quotes for some databases,
                      // not numbers though.
                           
-                     if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                     if ((dataSourceType.equals(ConnectionManager.MSACCESS)
+                          || dataSourceType.indexOf(ConnectionManager.HSQL) != -1
+                          || dataSourceType.equals(ConnectionManager.DERBY))
                          && columnClassString.toLowerCase().indexOf("string") == -1)
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString + " "
@@ -1103,7 +1111,14 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       // Adding the LIMIT option.
 
       if (!dataSourceType.equals(ConnectionManager.MSACCESS))
-         sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
+      {
+         if (dataSourceType.equals(ConnectionManager.DERBY))
+            sqlStatementString.append("OFFSET " + tableRowStart + " ROWS FETCH NEXT " + tableRowLimit
+                                      + " ROWS ONLY");
+         else
+            sqlStatementString.append("LIMIT " + tableRowLimit + " OFFSET " + tableRowStart);
+            
+      }
 
       // Return the resultant query.
 
