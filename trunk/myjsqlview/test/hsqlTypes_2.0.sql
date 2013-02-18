@@ -14,8 +14,8 @@
 -- danap@dandymadeproductions.com
 -- =============================================================
 
-   DROP TABLE IF EXISTS hsqltypes;
-   CREATE TABLE hsqltypes (
+DROP TABLE IF EXISTS hsqltypes;
+CREATE TABLE hsqltypes (
 
 --  Table id and creation data entries.
 
