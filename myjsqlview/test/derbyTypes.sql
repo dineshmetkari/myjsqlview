@@ -4,6 +4,7 @@
 -- =============================================================
 -- Dana Proctor 
 -- Version 02/02/2013 Original Test Data Type Table.
+--         02/18/2013 Update data_type_id Type to BigInt.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -16,7 +17,7 @@ DROP TABLE "derbytypes";
 CREATE TABLE "derbytypes" (
 
 --  Table id and creation data entries.
-    "data_type_id" INT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
+    "data_type_id" BIGINT NOT NULL GENERATED ALWAYS AS IDENTITY (START WITH 1, INCREMENT BY 1),
 
 --  Character, text, and blob type fields.
 
