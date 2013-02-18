@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.97 02/03/2013
+// Version 8.98 02/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -365,6 +365,8 @@
 //        8.96 09/18/2012 Made Class Instance disposeButton Private and Added getDisposeButton().
 //        8.97 02/03/2013 Trim of value in addUpdateTableEntry() Before Numeric Conversion
 //                        Attempt.
+//        8.98 02/18/2013 Methods addUpdateTableEntry(), setFormFields(), & selectFunctionOperators()
+//                        for Derby Functionality.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -436,7 +438,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.97 02/03/2013
+ * @version 8.98 02/18/2013
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -589,9 +591,9 @@ public class TableEntryForm extends JFrame implements ActionListener
          columnClass = (String) columnClassHashMap.get(columnName);
          columnType = (String) columnTypeHashMap.get(columnName);
          // System.out.println(columnNamesHashMap.get(columnName) + " " +
-         // columnClassHashMap.get(columnName) + " " +
-         // columnTypeHashMap.get(columnName) + " " +
-         // columnSizeHashMap.get(columnName));
+         //                    columnClassHashMap.get(columnName) + " " +
+         //                    columnTypeHashMap.get(columnName) + " " +
+         //                    columnSizeHashMap.get(columnName));
 
          // BFile types not supported.
          if (columnType.equals("BFILE") && !addItem)
@@ -655,7 +657,8 @@ public class TableEntryForm extends JFrame implements ActionListener
          }
 
          // TINYINT, SMALLINT, MEDIUMINT, INT, & BIGINT Type Fields
-         else if (columnClass.indexOf("Byte") != -1 || columnClass.indexOf("Short") != -1
+         else if ((columnClass.indexOf("Byte") != -1 && columnType.indexOf("BIT DATA") == -1)
+                  || columnClass.indexOf("Short") != -1
                   || columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1)
          {
             currentField = new JTextField();
@@ -678,12 +681,12 @@ public class TableEntryForm extends JFrame implements ActionListener
             formPanel.add((JTextField) currentField);
          }
 
-         // BLOB, BYTEA, BINARY, RAW, CLOB, IMAGE Type Fields
+         // BLOB, BYTEA, BINARY, RAW, CLOB, IMAGE, & BIT DATA Type Fields
          else if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                   || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                   || (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1)
                   || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1)
-                  || (columnType.indexOf("IMAGE") != -1))
+                  || (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("BIT DATA") != -1))
          {
             // Place the remove checkbox for eliminating
             // existing data as desired during edit.
@@ -917,7 +920,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                 || ((columnTypeHashMap.get(columnName)).indexOf("BYTEA") != -1)
                 || ((columnTypeHashMap.get(columnName)).indexOf("BINARY") != -1)
                 || ((columnTypeHashMap.get(columnName)).indexOf("RAW") != -1)
-                || ((columnTypeHashMap.get(columnName)).indexOf("IMAGE") != -1))
+                || ((columnTypeHashMap.get(columnName)).indexOf("IMAGE") != -1)
+                || ((columnTypeHashMap.get(columnName)).indexOf("BIT DATA") != -1))
             {
                String message;
 
@@ -937,7 +941,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                 || ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("RAW") != -1
-                || ((JButton) evt.getSource()).getText().indexOf("IMAGE") != -1)
+                || ((JButton) evt.getSource()).getText().indexOf("IMAGE") != -1
+                || ((JButton) evt.getSource()).getText().indexOf("BIT DATA") != -1)
                openBlobTextField(formSource);
 
             // Open Text entry or open file if desired.
@@ -1104,7 +1109,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                    || ((JButton) formSource).getText().indexOf("BYTEA") != -1
                    || ((JButton) formSource).getText().indexOf("BINARY") != -1
                    || ((JButton) formSource).getText().indexOf("RAW") != -1
-                   || ((JButton) formSource).getText().indexOf("IMAGE") != -1)
+                   || ((JButton) formSource).getText().indexOf("IMAGE") != -1
+                   || ((JButton) formSource).getText().indexOf("BIT DATA") != -1)
                {
                   // Setting up InputStreams
                   FileInputStream fileStream = new FileInputStream(fileName);
@@ -1124,8 +1130,10 @@ public class TableEntryForm extends JFrame implements ActionListener
                      ((JButton) formSource).setText("BINARY " + inBytes.length + " Bytes");
                   else if (((JButton) formSource).getText().indexOf("RAW") != -1)
                      ((JButton) formSource).setText("RAW " + inBytes.length + " Bytes");
-                  else
+                  else if (((JButton) formSource).getText().indexOf("IMAGE") != -1)
                      ((JButton) formSource).setText("IMAGE " + inBytes.length + " Bytes");
+                  else
+                     ((JButton) formSource).setText("BIT DATA " + inBytes.length + " Bytes");
                   // Closing up.
                   filebuff.close();
                   fileStream.close();
@@ -1244,7 +1252,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                              || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
+                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1
+                             || (columnClass.indexOf("byte[]") != -1 && columnType.indexOf("BIT DATA") != -1);
                isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                               && columnType.indexOf("_") != -1;
 
@@ -1252,12 +1261,13 @@ public class TableEntryForm extends JFrame implements ActionListener
                // consideration
                // for certain types of entries/fields.
 
-               // Empty entry field, or MS Access Autoincrement field.
+               // Empty entry field, or MS Access/Derby Autoincrement field.
 
                if ((!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName))
                    && ((getFormField(columnName).equals(""))
-                        || (dataSourceType.equals(ConnectionManager.MSACCESS) && 
-                            getFormField(columnName).toLowerCase().equals("auto"))))
+                        || ((dataSourceType.equals(ConnectionManager.MSACCESS)
+                             || dataSourceType.equals(ConnectionManager.DERBY))
+                            && getFormField(columnName).toLowerCase().equals("auto"))))
                {
                   // Do Nothing, Field Takes Default.
                }
@@ -1324,6 +1334,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                   {
                      if (dataSourceType.equals(ConnectionManager.ORACLE))
                         sqlValuesString += "SYSTIMESTAMP, ";
+                     else if (dataSourceType.equals(ConnectionManager.DERBY))
+                        sqlValuesString += "CURRENT_TIMESTAMP, ";
                      else
                         sqlValuesString += "NOW(), ";
                   }
@@ -1452,7 +1464,6 @@ public class TableEntryForm extends JFrame implements ActionListener
                sqlValuesString += ")";
 
             sqlStatementString.append(sqlFieldNamesString + " " + sqlValuesString);
-            // System.out.println(sqlStatementString);
          }
 
          // =====================
@@ -1480,7 +1491,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                              || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
+                             || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1
+                             || (columnClass.indexOf("byte[]") != -1 && columnType.indexOf("BIT DATA") != -1);
                isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                               && columnType.indexOf("_") != -1;
 
@@ -1741,17 +1753,18 @@ public class TableEntryForm extends JFrame implements ActionListener
                         // Character data gets single quotes for some databases,
                         // not numbers though.
                         
-                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                            || dataSourceType.equals(ConnectionManager.DERBY)
+                            || dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
                         {
-                           if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
+                           if (columnClass.toLowerCase().indexOf("string") != -1)
                               sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
-                                                        + identifierQuoteString + "='"
-                                                        + currentContentData + "' AND ");
+                                                     + identifierQuoteString + "='"
+                                                     + currentContentData + "' AND ");
                            else
                               sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
-                                 + identifierQuoteString + "="
-                                 + currentContentData + " AND ");
-                              
+                                                     + identifierQuoteString + "="
+                                                     + currentContentData + " AND ");   
                         }
                         else
                            sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
@@ -1822,7 +1835,8 @@ public class TableEntryForm extends JFrame implements ActionListener
             isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                           || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
                           || columnType.indexOf("BYTEA") != -1 || columnType.indexOf("BINARY") != -1
-                          || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1;
+                          || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1
+                          || (columnClass.indexOf("byte[]") != -1 && columnType.indexOf("BIT DATA") != -1);
             isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
                            && columnType.indexOf("_") != -1;
             // System.out.println(i + " " + columnName + " " + columnClass + " "
@@ -1837,7 +1851,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                     || getFormField(columnName).toLowerCase().equals("null")
                     || getFormField(columnName).toLowerCase().equals("default")
                     || (autoIncrementHashMap.containsKey(columnName)
-                        && dataSourceType.equals(ConnectionManager.MSACCESS))))
+                        && (dataSourceType.equals(ConnectionManager.MSACCESS)
+                            || dataSourceType.equals(ConnectionManager.DERBY)))))
             {
                // Do Nothing, Field Already Set.
             }
@@ -1885,7 +1900,8 @@ public class TableEntryForm extends JFrame implements ActionListener
             }
 
             // Numeric Type Fields
-            else if (columnClass.indexOf("Byte") != -1 || columnClass.indexOf("Short") != -1
+            else if ((columnClass.indexOf("Byte") != -1 && columnType.indexOf("CHAR") == -1)
+                     || columnClass.indexOf("Short") != -1
                      || columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1
                      || columnClass.indexOf("Float") != -1 || columnClass.indexOf("Double") != -1
                      || columnClass.indexOf("BigDecimal") != -1)
@@ -2139,6 +2155,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                      // Finally check to see if its an update and if so then is
                      // data to be updated or removed.
                      JCheckBox currentRemoveBlobCheckBox = blobRemoveCheckBoxesHashMap.get(columnName);
+                     
                      if (currentRemoveBlobCheckBox != null)
                      {
                         if (currentRemoveBlobCheckBox.isSelected())
@@ -2358,6 +2375,8 @@ public class TableEntryForm extends JFrame implements ActionListener
          functionsFileName = "sqlite_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          functionsFileName = "msaccess_" + functionsFileName;
+      else if (dataSourceType.equals(ConnectionManager.DERBY))
+         functionsFileName = "derby_" + functionsFileName;
       else
          functionsFileName = "mysql_" + functionsFileName;
 
@@ -2621,7 +2640,7 @@ public class TableEntryForm extends JFrame implements ActionListener
              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
              || (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1)
              || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1)
-             || (columnType.indexOf("IMAGE") != -1))
+             || (columnType.indexOf("IMAGE") != -1) || (columnType.indexOf("BIT DATA") != -1))
             ((JButton) fieldHashMap.get(columnName)).setText((String) content);
 
          // Text Button
