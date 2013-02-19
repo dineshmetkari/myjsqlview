@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.14 09/21/2012
+// Version 6.15 02/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -137,6 +137,8 @@
 //        6.13 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, & Constructor Public.
 //        6.14 Removal of Starting the Class's Runnable Thread in the Constructor.
+//        6.15 Changes in run() to Handle Derby LIMIT Implementation & Exclusion for
+//             Same BIT DATA Types.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -170,7 +172,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.14 09/21/2012
+ * @version 6.15 02/18/2013
  */
 
 public class DataDumpThread implements Runnable
@@ -364,6 +366,11 @@ public class DataDumpThread implements Runnable
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + schemaTableName;
+            // Derby
+            else if (dataSourceType.equals(ConnectionManager.DERBY))
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
+                                    + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
             else
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                     + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
@@ -388,12 +395,12 @@ public class DataDumpThread implements Runnable
                   columnType = tableColumnTypeHashMap.get(currentHeading);
                   columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
 
-                  // Blob/Bytea data.
+                  // Blob/Bytea/Binary/Bit Data/Raw data.
                   
                   if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnClass.toUpperCase().indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                       (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("RAW") != -1))
+                      (columnType.indexOf("BIT DATA") != -1) || (columnType.indexOf("RAW") != -1))
                   {
                      Object binaryContent = dbResultSet.getBytes(i);
                      
