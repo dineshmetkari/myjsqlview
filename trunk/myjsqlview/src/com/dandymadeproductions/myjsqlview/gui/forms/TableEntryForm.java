@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.98 02/18/2013
+// Version 8.99 02/19/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -367,6 +367,8 @@
 //                        Attempt.
 //        8.98 02/18/2013 Methods addUpdateTableEntry(), setFormFields(), & selectFunctionOperators()
 //                        for Derby Functionality.
+//        8.99 02/19/2013 Change in Method addUpdateTableEntry() Add for Derby AutoIncrement to
+//                        DEFAULT Rather Then Exclusion.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -438,7 +440,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.98 02/18/2013
+ * @version 8.99 02/18/2013
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -1261,13 +1263,12 @@ public class TableEntryForm extends JFrame implements ActionListener
                // consideration
                // for certain types of entries/fields.
 
-               // Empty entry field, or MS Access/Derby Autoincrement field.
-
+               // Empty entry field, or MS Access Autoincrement field.
+               
                if ((!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName))
-                   && ((getFormField(columnName).equals(""))
-                        || ((dataSourceType.equals(ConnectionManager.MSACCESS)
-                             || dataSourceType.equals(ConnectionManager.DERBY))
-                            && getFormField(columnName).toLowerCase().equals("auto"))))
+                     && ((getFormField(columnName).equals(""))
+                          || (dataSourceType.equals(ConnectionManager.MSACCESS) && 
+                              getFormField(columnName).toLowerCase().equals("auto"))))
                {
                   // Do Nothing, Field Takes Default.
                }
@@ -1321,6 +1322,10 @@ public class TableEntryForm extends JFrame implements ActionListener
                                         identifierQuoteString, "");
 
                            sqlValuesString += autoIncrementHashMap.get(columnName) + ".NEXTVAL, ";
+                        }
+                        else if (dataSourceType.equals(ConnectionManager.DERBY))
+                        {
+                           sqlValuesString += "DEFAULT, ";
                         }
                         else
                            sqlValuesString += "null, ";
@@ -1851,8 +1856,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                     || getFormField(columnName).toLowerCase().equals("null")
                     || getFormField(columnName).toLowerCase().equals("default")
                     || (autoIncrementHashMap.containsKey(columnName)
-                        && (dataSourceType.equals(ConnectionManager.MSACCESS)
-                            || dataSourceType.equals(ConnectionManager.DERBY)))))
+                        && dataSourceType.equals(ConnectionManager.MSACCESS))))
             {
                // Do Nothing, Field Already Set.
             }
