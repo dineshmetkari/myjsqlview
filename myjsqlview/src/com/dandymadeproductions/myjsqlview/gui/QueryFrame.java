@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.7 10/18/2012
+// Version 8.8 02/20/2012
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -214,6 +214,8 @@
 //         8.6 09/21/2012 Creation of tableClearingThread in actionPerformed() & Used to Start
 //                        Said Thread to Process Activity.
 //         8.7 10/18/2012 Class Method setRowPreferences() Dressed Up JTextField.
+//         8.8 02/20/2013 Added a JSplitPane Format Between the Query Text Entry Area & The Resultant
+//                        Summary Table Data in Constructor.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -266,6 +268,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -300,7 +303,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.7 10/18/2012
+ * @version 8.8 02/20/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -375,6 +378,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JToolBar queryFrameToolBar;
       
       JPanel framePanel, mainPanel;
+      JSplitPane querySplitPane;
       JPanel queryPanel, centerPanel, queryResultPanel;
       JPanel statusControlPanel, controlPanel, statusPanel, buttonPanel;
       
@@ -487,6 +491,10 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+      
+      querySplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
+      querySplitPane.setBorder(BorderFactory.createEmptyBorder());
+      querySplitPane.setOneTouchExpandable(true);
 
       // =====================================
       // QueryFrame SQL Entry Text Area
@@ -549,7 +557,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       statusPanel = new JPanel(gridbag);
       statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
-                                                               BorderFactory.createEmptyBorder(0, 2, 0, 1)));
+                                                               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
       
       statusIndicator = new JLabel("", JLabel.LEFT);
       statusIndicator.setIcon(statusIdleIcon);
@@ -574,8 +582,8 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       statusPanel.add(statusLabel);
       
       buildConstraints(constraints, 0, 1, 1, 1, 100, 50);
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.anchor = GridBagConstraints.CENTER;
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.NORTH;
       gridbag.setConstraints(statusPanel, constraints);
       statusControlPanel.add(statusPanel);
       
@@ -600,14 +608,18 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       queryPanel.add(queryScrollPane);
       
       buttonPanel = new JPanel();
-      buttonPanel.setLayout(new GridLayout(2, 1, 4, 8));
-      buttonPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createRaisedBevelBorder(),
-                                                               BorderFactory.createEmptyBorder(4, 4, 4, 4)));
+      buttonPanel.setLayout(gridbag);
+      buttonPanel.setBorder(BorderFactory.createEtchedBorder());
 
       resource = resourceBundle.getResourceString("QueryFrame.button.Execute", "Execute");
       executeButton = new JButton(resource);
       executeButton.setMnemonic(KeyEvent.VK_ENTER);
       executeButton.addActionListener(this);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(executeButton, constraints);
       buttonPanel.add(executeButton);
 
       resource = resourceBundle.getResourceString("QueryFrame.checkbox.NewTab", "New Tab");
@@ -619,6 +631,10 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       newTabCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
       newTabCheckBox.setFocusPainted(false);
       
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 50);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.NORTH;
+      gridbag.setConstraints(newTabCheckBox, constraints);
       buttonPanel.add(newTabCheckBox);
       
       buildConstraints(constraints, 2, 0, 1, 1, 20, 100);
@@ -627,7 +643,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       gridbag.setConstraints(buttonPanel, constraints);
       queryPanel.add(buttonPanel);
 
-      mainPanel.add(queryPanel, BorderLayout.NORTH);
+      querySplitPane.setTopComponent(queryPanel);
 
       // =====================================
       // QueryFrame Resultant Data Set Panel
@@ -640,7 +656,8 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       queryTabsPane.addChangeListener(this);
       centerPanel.add(queryTabsPane);
 
-      mainPanel.add(centerPanel, BorderLayout.CENTER);
+      querySplitPane.setBottomComponent(centerPanel);
+      mainPanel.add(querySplitPane, BorderLayout.CENTER);
 
       // =====================================
       // QueryFrame SQL Feedback TextArea.
