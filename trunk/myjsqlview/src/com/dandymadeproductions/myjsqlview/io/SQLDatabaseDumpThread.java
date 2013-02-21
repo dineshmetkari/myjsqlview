@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.0 09/20/2012
+// Version 9.1 02/21/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -229,6 +229,11 @@
 //             Public.
 //         9.0 Created Clone of Argument myJSQLView_Version in Constructor for Local
 //             Same Class Instance. Removed the Starting of Thread From Constructor.
+//         9.1 Method dumpData() Change for SELECT to Properly Format LIMIT Aspect of SQL
+//             Statement for Apache Derby. Class Methods insertReplace/explicitStatementData()
+//             Changes to Properly Implement Derby BIT DATA, BLOB, AutoIncrement, & Current
+//             TimeStamps Features. Added Argument boolean derbyBit to Method dumpBinaryData()
+//             & Use Therein to Handle Derby BIT DATA & BLOB Types.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -276,7 +281,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.0 09/20/2012
+ * @version 9.1 02/13/2013
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -487,6 +492,9 @@ public class SQLDatabaseDumpThread implements Runnable
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " WHERE ROWNUM=1");
                else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t");
+               else if (dataSourceType.equals(ConnectionManager.DERBY))
+                  rs = sqlStatement.executeQuery("SELECT * FROM " + schemaTableName 
+                                                 + " AS t FETCH FIRST ROW ONLY");
                else
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t LIMIT 1");
 
@@ -681,7 +689,7 @@ public class SQLDatabaseDumpThread implements Runnable
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1), tableColumnNames.get(field));
          }
 
-         // Save the index of blob/bytea/binary entries.
+         // Save the index of blob/bytea/binary/image/raw entries.
          if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
              (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
              (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
@@ -738,8 +746,8 @@ public class SQLDatabaseDumpThread implements Runnable
          // Save the index of numeric entries.
          if (columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1
              || columnClass.indexOf("Float") != -1 || columnClass.indexOf("Double") != -1
-             || columnClass.indexOf("Byte") != -1 || columnClass.indexOf("BigDecimal") != -1
-             || columnClass.indexOf("Short") != -1)
+             || (columnClass.indexOf("Byte") != -1 && columnType.indexOf("CHAR") == -1)
+             || columnClass.indexOf("BigDecimal") != -1 || columnClass.indexOf("Short") != -1)
          {
             numericIndexes.add(Integer.valueOf(columnsCount + 1));
          }
@@ -824,6 +832,11 @@ public class SQLDatabaseDumpThread implements Runnable
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + dbSchemaTableName;
+            // Derby
+            else if (dataSourceType.equals(ConnectionManager.DERBY))
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
+                                    + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
             else
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
@@ -867,6 +880,8 @@ public class SQLDatabaseDumpThread implements Runnable
                            dumpData = dumpData + "HEXTORAW('";
                         else if (dataSourceType.equals(ConnectionManager.SQLITE))
                            dumpData = dumpData + "x'";
+                        else if (dataSourceType.equals(ConnectionManager.DERBY))
+                           dumpData = dumpData + "CAST(X'";
                         else
                         {
                            if (theBytes.length != 0)
@@ -877,7 +892,7 @@ public class SQLDatabaseDumpThread implements Runnable
 
                         // Go convert to hexadecimal/octal values
                         // and dump data as we go for blob/bytea.
-                        dumpBinaryData(theBytes);
+                        dumpBinaryData(theBytes, false);
                      }
                      else
                         dumpData = dumpData + "NULL, ";
@@ -904,6 +919,8 @@ public class SQLDatabaseDumpThread implements Runnable
                                       + autoIncrementFieldIndexes.get(Integer.valueOf(i)) 
                                       + identifierQuoteString + ".NEXTVAL, ";
                         }
+                        else if (dataSourceType.equals(ConnectionManager.DERBY))
+                           dumpData = dumpData + "DEFAULT, ";
                         else
                            dumpData = dumpData + "NULL, ";
                      }
@@ -918,6 +935,8 @@ public class SQLDatabaseDumpThread implements Runnable
                            {
                               if (dataSourceType.equals(ConnectionManager.ORACLE))
                                  dumpData = dumpData + "SYSTIMESTAMP, ";
+                              else if (dataSourceType.equals(ConnectionManager.DERBY))
+                                 dumpData = dumpData + "CURRENT_TIMESTAMP, ";
                               else
                                  dumpData = dumpData + "NOW(), ";
                            }
@@ -994,6 +1013,11 @@ public class SQLDatabaseDumpThread implements Runnable
                                     dumpData = dumpData + "'" + bitValue + "', ";
                                  else
                                     dumpData = dumpData + "B'" + bitValue + "', ";
+                              }
+                              else if (dataSourceType.equals(ConnectionManager.DERBY))
+                              {
+                                 dumpData = dumpData + "X'";
+                                 dumpBinaryData(rs.getBytes(i), true);
                               }
                               else
                               {
@@ -1238,6 +1262,11 @@ public class SQLDatabaseDumpThread implements Runnable
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + dbSchemaTableName;
+            // Derby
+            else if (dataSourceType.equals(ConnectionManager.DERBY))
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
+                                    + "FETCH NEXT " + limitIncrement + " ROWS ONLY"; 
             else
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                     + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
@@ -1276,7 +1305,8 @@ public class SQLDatabaseDumpThread implements Runnable
                         // Character data gets single quotes for some databases,
                         // not numbers though.
                         
-                        if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                        if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                            || dataSourceType.equals(ConnectionManager.DERBY))
                         {
                            if (columnType.indexOf("CHAR") != -1 || columnType.indexOf("TEXT") != -1)
                               keyStringStatement.append("'" + keyValue + "' AND ");
@@ -1318,6 +1348,8 @@ public class SQLDatabaseDumpThread implements Runnable
                               dumpData = dumpData + "HEXTORAW('";
                            else if (dataSourceType.equals(ConnectionManager.SQLITE) && updateDump)
                               dumpData = dumpData + "x'";
+                           else if (dataSourceType.equals(ConnectionManager.DERBY) && updateDump)
+                              dumpData = dumpData + "CAST(X'";
                            else
                            {
                               if (theBytes.length != 0)
@@ -1328,7 +1360,7 @@ public class SQLDatabaseDumpThread implements Runnable
 
                            // Go convert to hexadecimal/octal values
                            // and dump data as we go for blob/bytea.
-                           dumpBinaryData(theBytes);
+                           dumpBinaryData(theBytes, false);
                         }
                         else
                            dumpData = dumpData + "NULL, ";
@@ -1357,6 +1389,8 @@ public class SQLDatabaseDumpThread implements Runnable
                                          + currentTableTabPanel.getAutoIncrementHashMap().get(field)
                                          + identifierQuoteString + ".NEXTVAL, ";
                            }
+                           else if (dataSourceType.equals(ConnectionManager.DERBY))
+                              dumpData = "DEFAULT, ";
                            else
                               dumpData = dumpData + "NULL, ";
                         }
@@ -1370,6 +1404,8 @@ public class SQLDatabaseDumpThread implements Runnable
                            {
                               if (dataSourceType.equals(ConnectionManager.ORACLE))
                                  dumpData = dumpData + "SYSTIMESTAMP, ";
+                              else if (dataSourceType.equals(ConnectionManager.DERBY))
+                                 dumpData = dumpData + "CURRENT_TIMESTAMP, ";
                               else
                                  dumpData = dumpData + "NOW(), ";
                            }
@@ -1446,6 +1482,11 @@ public class SQLDatabaseDumpThread implements Runnable
                                  else
                                     dumpData = dumpData + "B'" + bitValue + "', ";
                               }
+                              else if (dataSourceType.equals(ConnectionManager.DERBY))
+                              {
+                                 dumpData = dumpData + "X'";
+                                 dumpBinaryData(rs.getBytes(tableColumnNames.get(field)), true);
+                              }
                               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                               {
                                  dumpData = dumpData + "'" + bitValue + "', ";
@@ -1486,8 +1527,8 @@ public class SQLDatabaseDumpThread implements Runnable
                                             + "', 'YYYY-MM-DD HH24:MI:SS TZH:TZM'), ";
                               else if (columnClass.indexOf("Integer") != -1 || columnClass.indexOf("Long") != -1
                                        || columnClass.indexOf("Float") != -1 || columnClass.indexOf("Double") != -1
-                                       || columnClass.indexOf("Byte") != -1 || columnClass.indexOf("BigDecimal") != -1
-                                       || columnClass.indexOf("Short") != -1)
+                                       || (columnClass.indexOf("Byte") != -1 && columnType.indexOf("CHAR") == -1)
+                                       || columnClass.indexOf("BigDecimal") != -1 || columnClass.indexOf("Short") != -1)
                                  dumpData = dumpData + contentString + ", ";
                               else
                                  dumpData = dumpData + "'" + addEscapes(contentString + "") + "', ";
@@ -1615,7 +1656,7 @@ public class SQLDatabaseDumpThread implements Runnable
    // Class method to get the table data row count
    //==============================================================
 
-   private void dumpBinaryData(byte[] theBytes)
+   private void dumpBinaryData(byte[] theBytes, boolean derbyBit)
    {
       // Class Method Instances
       int b;
@@ -1661,6 +1702,13 @@ public class SQLDatabaseDumpThread implements Runnable
                 dataSourceType.indexOf(ConnectionManager.HSQL) != -1 ||
                 dataSourceType.equals(ConnectionManager.SQLITE))
                dumpData = dumpData + "', ";
+            else if (dataSourceType.equals(ConnectionManager.DERBY))
+            {
+               if (!derbyBit)
+                  dumpData = dumpData + "' AS BLOB), ";
+               else
+                  dumpData = dumpData + "', ";
+            }
             else if (dataSourceType.equals(ConnectionManager.ORACLE) &&
                      (updateDump || insertReplaceDump))
                dumpData = dumpData + "'), ";
