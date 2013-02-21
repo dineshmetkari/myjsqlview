@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.2 10/19/2012
+// Version 5.3 02/21/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +135,9 @@
 //         5.1 09/18/2012 Made Class Instances disposeButton & findButton Private and Added
 //                        Methods getDisposeButton() & getFindButton().
 //         5.2 10/19/2012 Dressed All JComboBoxes & JTextFields in Form With New Borders.
+//         5.3 02/21/2013 Added derbyWhereOperators in createUpdateWhereInterface(). Class Method
+//                        getWhereSQLExpression() Insure to Not Quote HSQL & Derby Non-String
+//                        Data Types.
 //                        
 //=================================================================
 
@@ -190,7 +193,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.2 10/19/2012
+ * @version 5.3 02/21/2013
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -611,6 +614,8 @@ public class UpdateForm extends JFrame implements ActionListener
       Object[] sqliteWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IS NOT", "IN", "NOT IN",
                                        "OR", "|", "AND", "&", "||", "BETWEEN", "GLOB", "REGEXP", "MATCH",  
                                        "=", "<", "<<", "<=", ">", ">>", ">=", "<>", "!=", "==", };
+      Object[] derbyWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IN", "NOT IN", "BETWEEN",
+                                      "NOT BETWEEN", "EXISTS", "OR", "AND", "=", "<", "<=", ">", ">=", "<>"};
 
       // Assigning the appropriate string array WHERE operators.
 
@@ -622,6 +627,8 @@ public class UpdateForm extends JFrame implements ActionListener
          whereOperators = oracleWhereOperators;
       else if (dataSourceType.equals(ConnectionManager.SQLITE))
          whereOperators = sqliteWhereOperators;
+      else if (dataSourceType.equals(ConnectionManager.DERBY))
+         whereOperators = derbyWhereOperators;
       // Make HSQL Default
       else
          whereOperators = hsqlWhereOperators;
@@ -1252,7 +1259,9 @@ public class UpdateForm extends JFrame implements ActionListener
                      // Character data gets single quotes for some databases,
                      // not numbers though.
                           
-                     if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                     if ((dataSourceType.equals(ConnectionManager.MSACCESS)
+                          || dataSourceType.indexOf(ConnectionManager.HSQL) != -1
+                          || dataSourceType.equals(ConnectionManager.DERBY))
                          && columnClassString.toLowerCase().indexOf("string") == -1)
                         sqlStatementString.append(whereString + identifierQuoteString + columnNameString
                                                   + identifierQuoteString + " " + operatorString + " "
