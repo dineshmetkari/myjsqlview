@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.8 02/20/2012
+// Version 8.9 02/22/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -216,6 +216,8 @@
 //         8.7 10/18/2012 Class Method setRowPreferences() Dressed Up JTextField.
 //         8.8 02/20/2013 Added a JSplitPane Format Between the Query Text Entry Area & The Resultant
 //                        Summary Table Data in Constructor.
+//         8.9 02/22/2013 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
+//                        for Apache Derby.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -303,7 +305,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.8 02/20/2013
+ * @version 8.9 02/22/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -536,7 +538,8 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       statementTypeComboBox.addItem(resource + " : ");
       
       // QUERY_STATEMENT_TYPE:1
-      if (!dataSourceType.equals(ConnectionManager.MSACCESS))
+      if (!dataSourceType.equals(ConnectionManager.MSACCESS) &&
+          !dataSourceType.equals(ConnectionManager.DERBY))
       {
          resource = resourceBundle.getResourceString("QueryFrame.combobox.QueryStatement",
                                                      "Query Statement");
