@@ -1,5 +1,5 @@
 //=============================================================
-//          MyJSQLView Table TabPanel_Derby
+//             MyJSQLView TableTabPanel_Derby
 //=============================================================
 //
 //    This class provides the means to create a default table
@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 02/01/2013
+// Version 1.1 02/23/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,7 +34,11 @@
 // in the present version number. Author information should
 // also be included with the original copyright author.
 //=================================================================
-// Version 1.0 Original TableTabPanel_Derby Class.
+// Version 1.0 02/01/2013 Original TableTabPanel_Derby Class.
+//         1.1 02/23/2013 Commented System.out.println()s. Introduced the Removal
+//                        of BLOB & BIT DATA Types for All Field WHERE Clause Creation
+//                        in loadTable() Along With Creation of Same in New Method
+//                        createWhereClause().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -66,7 +70,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.0 02/01/2013
+ * @version 1.1 02/23/2013
  */
 
 public class TableTabPanel_Derby extends TableTabPanel
@@ -142,7 +146,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                 && rs.getString("TABLE_NAME").equals(tableName))
             {
                primaryKeys.add(rs.getString("COLUMN_NAME"));
-               System.out.println(rs.getString("COLUMN_NAME"));
+               // System.out.println(rs.getString("COLUMN_NAME"));
             }
          }
 
@@ -158,7 +162,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                if (!primaryKeys.contains(rs.getString("COLUMN_NAME")))
                {
                   primaryKeys.add(rs.getString("COLUMN_NAME"));
-                  System.out.println(rs.getString("COLUMN_NAME"));
+                  // System.out.println(rs.getString("COLUMN_NAME"));
                }
             }
          }
@@ -358,7 +362,12 @@ public class TableTabPanel_Derby extends TableTabPanel
             for (int i = 0; i < tableColumns.length; i++)
             {
                columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
+               columnClass = columnClassHashMap.get(parseColumnNameField(columnName.trim()));
                columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
+               
+               // Skip byte types and handle temporals.
+               if (columnType.equals("BLOB") || columnType.indexOf("BIT DATA") != -1)
+                  continue;
                
                String searchString = searchTextString;
                
@@ -380,15 +389,16 @@ public class TableTabPanel_Derby extends TableTabPanel
                      searchString = MyJSQLView_Utils.processDateFormatSearch(searchString);
                }
                
-               if (i < tableColumns.length - 1)
-                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchString + "%' OR");
-               else
-                  searchQueryString.append(tableColumns[i] + " LIKE '%" + searchString + "%'");
+               searchQueryString.append(createWhereClause(tableColumns[i], columnClass, columnType,
+                                                          searchString) + " OR ");
             }
+            if (tableColumns.length != 0)
+               searchQueryString.delete(searchQueryString.length() - 4, searchQueryString.length());
          }
          // Field specified.
          else
          {
+            columnClass = columnClassHashMap.get(searchComboBox.getSelectedItem());
             columnType = columnTypeHashMap.get(searchComboBox.getSelectedItem());
             
             if (columnType.equals("DATE"))
@@ -403,8 +413,9 @@ public class TableTabPanel_Derby extends TableTabPanel
                   searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
             }
             
-            searchQueryString.append(identifierQuoteString + columnSearchString + identifierQuoteString
-                                     + " LIKE '%" + searchTextString + "%'");
+            searchQueryString.append(createWhereClause(
+               (identifierQuoteString + columnSearchString + identifierQuoteString),
+               columnClass, columnType, searchTextString));
          }
       }
       // System.out.println(searchTextString);
@@ -472,8 +483,8 @@ public class TableTabPanel_Derby extends TableTabPanel
                                         + tableRowStart + " ROWS FETCH NEXT " + tableRowLimit
                                         + " ROWS ONLY");  
          }
-         System.out.println(sqlTableStatement);
-         System.out.println(lobLessSQLStatement.toString());
+         // System.out.println(sqlTableStatement);
+         // System.out.println(lobLessSQLStatement.toString());
          rs = sqlStatement.executeQuery(lobLessSQLStatement.toString());
 
          // Placing the results columns desired into the table that
@@ -677,6 +688,21 @@ public class TableTabPanel_Derby extends TableTabPanel
             }
          }
       }
+   }
+   
+   //==============================================================
+   // Class method to create the proper WHERE SQL Statement based
+   // on the Derby Data Type.
+   //==============================================================
+
+   private String createWhereClause(String columnName, String columnClass, String columnType, String searchString)
+   {
+      if (columnClass.indexOf("String") != -1)
+         return new String(columnName.trim() + " LIKE \'%" + searchString + "%\'"); 
+      else if (columnType.equals("DOUBLE") || columnType.equals("REAL"))
+         return new String(columnName.trim() + "=" + searchString);
+      else
+         return new String("CAST(" + columnName.trim() + " AS CHAR(254)) LIKE \'%" + searchString + "%\'");
    }
    
    //==============================================================
