@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.9 09/20/2012
+// Version 4.0 02/23/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,9 @@
 //         3.8 Class Method getResultData() Return a Clone of resultData.
 //         3.9 Constructor Argument selectedTables Cloned. Removed Starting of Thread
 //             in Constructor.
+//         4.0 Output in run() for SQLExceptions if Debug Mode. Method createColumnsSQLQuery()
+//             to Properly Format LIMIT, & WHERE SQL Statements for Derby. Added to
+//             Same columnClass & Excluded BIT DATA Types.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -111,6 +114,7 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JProgressBar;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 
 /**
@@ -118,7 +122,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 3.9 09/20/2012
+ * @version 4.0 02/23/2013
  */
 
 public class SearchDatabaseThread implements Runnable
@@ -263,7 +267,8 @@ public class SearchDatabaseThread implements Runnable
                }
                catch (SQLException e)
                {
-                  // System.out.println(e);
+                  if (MyJSQLView.getDebug())
+                     System.out.println("SearchDatabaseThread run() " + e.toString());
                   
                   resultsCount++;
                }
@@ -381,6 +386,9 @@ public class SearchDatabaseThread implements Runnable
          // MS Access
          else if (dataSourceType.equals(ConnectionManager.MSACCESS))
             sqlColumnSelectString = "SELECT * FROM " + tableName;
+         // Derby
+         else if (dataSourceType.equals(ConnectionManager.DERBY))
+            sqlColumnSelectString = "SELECT * FROM " + tableName + " FETCH FIRST ROW ONLY";
          // MySQL, PostgreSQL, & Others
          else
             sqlColumnSelectString = "SELECT * FROM " + tableName + " LIMIT 1";
@@ -396,6 +404,7 @@ public class SearchDatabaseThread implements Runnable
          for (int k = 1; k < tableMetaData.getColumnCount() + 1; k++)
          {
             // Collect Information on Column.
+            String columnClass = tableMetaData.getColumnClassName(k).toUpperCase();
             String columnType = tableMetaData.getColumnTypeName(k).toUpperCase();
             String columnName = tableMetaData.getColumnName(k);
             // System.out.println(columnName + " " + columnType);
@@ -405,7 +414,8 @@ public class SearchDatabaseThread implements Runnable
             // Exclude binary & file column types.
             if (columnType.indexOf("BLOB") == -1 && columnType.indexOf("BYTEA") == -1
                 && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
-                && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1)
+                && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1
+                && columnType.indexOf("BIT DATA") == -1)
             {
                // Convert date, datetime, timestamp search string
                // to proper format.
@@ -447,6 +457,19 @@ public class SearchDatabaseThread implements Runnable
                if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
                                      + "::TEXT LIKE \'%" + searchString + "%\' OR ");
+               else if (dataSourceType.equals(ConnectionManager.DERBY))
+               {
+                  if (columnClass.indexOf("STRING") != -1)
+                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                        + " LIKE \'%" + searchString + "%\' OR "); 
+                  else if (columnType.equals("DOUBLE") || columnType.equals("REAL"))
+                     columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
+                        + "=" + searchString + " OR ");
+                  else
+                     columnsSQLQuery.append("CAST(" + identifierQuoteString + columnName
+                                            + identifierQuoteString + " AS CHAR(254)) LIKE \'%"
+                                            + searchString + "%\' OR ");
+               }
                else if (dataSourceType.equals(ConnectionManager.ORACLE))
                {
                   if (columnType.equals("DATE"))
@@ -459,7 +482,7 @@ public class SearchDatabaseThread implements Runnable
                }
                else
                   columnsSQLQuery.append(identifierQuoteString + columnName + identifierQuoteString
-                     + " LIKE \'%" + searchString + "%\' OR ");   
+                     + " LIKE \'%" + searchString + "%\' OR ");
             }
          }
          
