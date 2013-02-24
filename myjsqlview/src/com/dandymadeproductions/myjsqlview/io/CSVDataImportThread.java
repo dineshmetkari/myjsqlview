@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.0 09/21/2012
+// Version 7.1 02/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -157,6 +157,8 @@
 //         6.9 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, & Constructor, Public.
 //         7.0 Removal of Starting the Class's Runnable Thread in the Constructor.
+//         7.1 Method importCSVFile() Check DBTablesPanel.getSelectedTableTabPanel()
+//             Being NULL.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -190,7 +192,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.0 09/21/2012
+ * @version 7.1 02/24/2013
  */
 
 public class CSVDataImportThread implements Runnable
@@ -295,7 +297,7 @@ public class CSVDataImportThread implements Runnable
 
       dbConnection = ConnectionManager.getConnection("CSVDataImportThread importCSVFile()");
 
-      if (dbConnection == null)
+      if (dbConnection == null || DBTablesPanel.getSelectedTableTabPanel() == null)
       {
          validImport = false;
          return;
