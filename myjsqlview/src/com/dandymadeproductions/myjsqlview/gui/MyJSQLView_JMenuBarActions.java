@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.48 10/19/2012
+// Version 7.49 02/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -280,6 +280,8 @@
 //        7.47 Method actionSelection() Change in managePluginPreferences Size to
 //             750x475.
 //        7.48 Method actionSelection() Plugin Frame startAnimation().
+//        7.49 Method dataExportAction() Check for DBTablesPanel.getSelectedTableTabPanel()
+//             Not NULL.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -344,7 +346,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.48 10/19/2012
+ * @version 7.49 02/24/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1097,6 +1099,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       database = ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB);
       if (database.indexOf(";") != -1)
          database = database.replaceAll(";", "");
+      
+      if (DBTablesPanel.getSelectedTableTabPanel() == null)
+         return;
+      
       exportedTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
 
       if (actionCommand.equals(ACTION_EXPORT_SQL_DATABASE))
