@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.97 02/15/2013
+// Version 6.98 02/25/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -293,6 +293,7 @@
 //             Connections. Also the Inclusion of Debug Output for connectionString.
 //        6.97 Correction to Insure Memory Connection is Passed On to ConnectionManager
 //             for Derby Memory Databases.
+//        6.98 Method accessCheck() Debug Output for Driver & When Its Loaded.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -350,7 +351,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.97 02/15/2013
+ * @version 6.98 02/25/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1038,7 +1039,8 @@ public class LoginFrame extends JFrame implements ActionListener
          try
          {
             driver = advancedParametersPanel.getDriver();
-            // System.out.println("driver: " + driver);
+            if (MyJSQLView.getDebug())
+               System.out.println("LoginFrame accessCheck() driver: " + driver);
             
             // Run SQLite in pure Java mode to maintain compatibility,
             // slower, but works with older versions of JVM. Revisit
@@ -1048,7 +1050,8 @@ public class LoginFrame extends JFrame implements ActionListener
                System.setProperty("sqlite.purejava", "true");
                
             Class.forName(driver);
-            // System.out.println("Driver Loaded");
+            if (MyJSQLView.getDebug())
+               System.out.println("LoginFrame accessCheck() Driver Loaded");
          }
          catch (Exception e)
          {
