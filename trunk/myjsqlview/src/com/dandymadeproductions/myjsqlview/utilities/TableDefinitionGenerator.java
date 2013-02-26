@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.4 10/20/2012
+// Version 5.5 02/26/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -144,6 +144,9 @@
 //             Made Class, Constructor & Method getTableDefinition() Public.
 //         5.4 Method createHSQLTableDefinition() Added Instance timeStampTMZFieldsHashMap
 //             to Collect DATETIME_PRECISION for Timestamp With TimeZone Fields.
+//         5.5 Methods createHSQL/PostgreSQL/OracleTableDefinition() Returned After
+//             Creating VIEW Type Table. Addition of Support for Apache Derby. Added
+//             Method createDerbyTableDefinition().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -173,7 +176,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.4 10/20/2012
+ * @version 5.5 02/26/2013
  */
 
 public class TableDefinitionGenerator
@@ -364,6 +367,7 @@ public class TableDefinitionGenerator
                                       + " AS " + resultSet.getString(1) + "\n");
             }
             resultSet.close();
+            return;
          }
          // TABLE
          else
@@ -770,6 +774,8 @@ public class TableDefinitionGenerator
                tableDefinition.append("CREATE " + tableType + " " + schemaTableName
                                        + " AS " + resultSet.getString(1) + ";\n");
             }
+            resultSet.close();
+            return;
          }
          // TABLE
          else
@@ -1207,6 +1213,7 @@ public class TableDefinitionGenerator
                                       + " AS " + resultSet.getString(1) + ";\n");
             }
             resultSet.close();
+            return;
          }
          // TABLE
          else
@@ -1613,6 +1620,371 @@ public class TableDefinitionGenerator
       
       tableDefinition.append("-- MSAccess Table Definition, DDL, Not Supported At This Time.\n");
    }
+   
+   //==============================================================
+   // Class method for creating a given Derby TABLE definition.
+   //==============================================================
+
+   private void createDerbyTableDefinition() throws SQLException
+   {
+      // Class Method Instances.
+      String schema_id, table_id, tableType;
+      String columnName, columnType;
+      int columnSize, columnPrecision, columnDecimalDigits;
+      String columnDefault, columnIsNullable;
+      HashMap<String, Integer> columnAutoIncrementStartHashMap;
+      HashMap<String, Integer> columnAutoIncrementIncHashMap;
+      HashMap<String, Integer> columnPrecisionHashMap;
+      StringBuffer uniqueKeys;
+      String primaryKeys, foreignKeys;
+      String referenceTableName, referenceColumnName;
+      String onDeleteRule;
+
+      DatabaseMetaData dbMetaData;
+      ResultSetMetaData tableMetaData;
+
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet resultSet, resultSet2;
+      
+      // Setup then beginning the creation of the string
+      // description of the table Structure.
+      
+      schema_id = "";
+      table_id = "";
+      tableType = "";
+      columnPrecisionHashMap = new HashMap<String, Integer>();
+      columnAutoIncrementStartHashMap = new HashMap<String, Integer>();
+      columnAutoIncrementIncHashMap = new HashMap<String, Integer>();
+      sqlStatement = null;
+      resultSet = null;
+      
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+         dbMetaData = dbConnection.getMetaData();
+         
+         // Collect the table type for the table.
+         
+         sqlStatementString = "SELECT SCHEMAID FROM SYS.SYSSCHEMAS WHERE SCHEMANAME='" + schemaName + "'";
+         // System.out.println(sqlStatementString);
+         
+         resultSet = sqlStatement.executeQuery(sqlStatementString);
+         
+         if (resultSet.next())
+         {
+            schema_id = resultSet.getString(1);
+            resultSet.close();
+         }
+         else
+            return;
+         
+         sqlStatementString = "SELECT TABLEID, TABLETYPE FROM SYS.SYSTABLES WHERE TABLENAME='"
+                              + tableName + "' AND SCHEMAID='" + schema_id + "'";
+         // System.out.println(sqlStatementString);
+         
+         resultSet = sqlStatement.executeQuery(sqlStatementString);
+         
+         if (resultSet.next())
+         {
+            table_id = resultSet.getString(1);
+            tableType = resultSet.getString(2);
+            resultSet.close();
+         }
+         else
+            return;
+         
+         if (tableType.equals("T"))
+            tableType = "TABLE";
+         else if (tableType.equals("V"))
+            tableType = "VIEW";
+         else
+            tableType = "SYSTEM";
+         
+         // Drop Table Statements As Needed.
+         if (DBTablesPanel.getDataExportProperties().getTableStructure())
+         {
+            tableDefinition.append("DROP " + tableType + " " + schemaTableName + ";\n");
+         }
+         
+         // Table Creation Statement.
+         if (tableType.equals("VIEW"))
+         {
+            sqlStatementString = "SELECT VIEWDEFINITION FROM SYS.SYSVIEWS WHERE "
+                                 + "COMPILATIONSCHEMAID='" + schema_id + "' AND "
+                                 + "TABLEID='" + table_id + "'";
+            // System.out.println(sqlStatementString);
+            
+            resultSet = sqlStatement.executeQuery(sqlStatementString);
+
+            if (resultSet.next())
+            {
+               tableDefinition.append("CREATE " + tableType + " " + schemaTableName
+                                      + " AS " + resultSet.getString(1) + ";\n");
+            }
+            resultSet.close();
+            return;
+         }
+         // TABLE
+         else
+            tableDefinition.append("CREATE " + tableType + " " + schemaTableName + " (\n    ");
+
+         // Begin by creating the individual column field definitions.
+         // Column name, data type, default, and isNullable.
+         
+         sqlStatementString = "SELECT * FROM " + schemaTableName + " FETCH FIRST ROW ONLY";
+         // System.out.println(sqlStatementString);
+
+         resultSet = sqlStatement.executeQuery(sqlStatementString);
+         tableMetaData = resultSet.getMetaData();
+         resultSet.close();
+         
+         resultSet = dbMetaData.getColumns(tableMetaData.getCatalogName(1), tableMetaData.getSchemaName(1),
+                                           tableMetaData.getTableName(1), "%");
+
+         // Obtain IDENTITY column if there is one and at
+         // the same time increment and precision information.
+         
+         for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
+         {
+            columnName = tableMetaData.getColumnName(i);
+            
+            if (tableMetaData.isAutoIncrement(i))
+            {
+               // System.out.println("AutoIncrement: " + columnName);
+               
+               sqlStatementString = "SELECT AUTOINCREMENTSTART, AUTOINCREMENTINC FROM SYS.SYSCOLUMNS "
+                                    + "WHERE REFERENCEID='" + table_id + "' AND  COLUMNNAME='"
+                                    + columnName + "'";
+               // System.out.println(sqlStatementString);
+               
+               resultSet2 = sqlStatement.executeQuery(sqlStatementString);
+               
+               if (resultSet2.next())
+               {
+                  columnAutoIncrementStartHashMap.put(columnName, resultSet2.getInt(1));
+                  columnAutoIncrementIncHashMap.put(columnName, resultSet2.getInt(2));
+               }
+               resultSet2.close(); 
+            }
+            columnPrecisionHashMap.put(columnName, Integer.valueOf(tableMetaData.getPrecision(i)));
+         }
+
+         // Now proceed with rest of structure.
+         while (resultSet.next())
+         {
+            columnName = resultSet.getString("COLUMN_NAME");
+            columnType = resultSet.getString("TYPE_NAME");
+            columnSize = resultSet.getInt("COLUMN_SIZE");
+            columnDecimalDigits = resultSet.getInt("DECIMAL_DIGITS");
+            columnDefault = resultSet.getString("COLUMN_DEF");
+            columnIsNullable = resultSet.getString("IS_NULLABLE");
+            // System.out.println(columnName + " " + columnClass + " " + columnType + " " + columnSize + " "
+            //                    + columnDecimalDigits + " " + columnDefault + " " + columnIsNullable);
+             
+            if (columnPrecisionHashMap.get(columnName) != null)
+               columnPrecision = (columnPrecisionHashMap.get(columnName)).intValue();
+            else
+               columnPrecision = 0;
+            
+            // =============
+            // Column name.
+
+            tableDefinition.append(identifierQuoteString + columnName
+                                   + identifierQuoteString + " ");
+
+            // =============
+            // Column type.
+
+            // Character Types
+            if (columnType.indexOf("CHAR") != -1)
+            {
+               if (columnType.equals("CHAR"))
+                  tableDefinition.append("CHAR(" + columnSize + ")");
+               else if (columnType.equals("CHAR () FOR BIT DATA"))
+                  tableDefinition.append("CHAR(" + columnSize + ") FOR BIT DATA");
+               else if (columnType.equals("VARCHAR"))
+                  tableDefinition.append("VARCHAR(" + columnSize + ")");
+               else if (columnType.equals("VARCHAR () FOR BIT DATA"))
+                  tableDefinition.append("VARCHAR(" + columnSize + ") FOR BIT DATA");
+               else
+                  tableDefinition.append(columnType);
+            }
+            
+            // Blob Types
+            else if (columnType.equals("BLOB"))
+            {
+               tableDefinition.append(columnType + "(" + columnSize + ")");
+            }
+            // Clob Types
+            else if (columnType.equals("CLOB"))
+            {
+               tableDefinition.append(columnType + "(" + columnSize + ")");
+            }
+            // Decimal & Numeric Types
+            else if (columnType.equals("DECIMAL"))
+            {
+               tableDefinition.append(columnType + "(" + columnPrecision
+                                      + "," + columnDecimalDigits + ")");
+            }
+            // All Others.
+            else
+            {
+               tableDefinition.append(columnType);
+            }
+            
+            // ==========================
+            // Column Default & NOT NULL
+            
+            if (columnDefault != null && columnDefault.equals("NULL"))
+               columnDefault = null;
+
+            if (columnDefault != null)
+            {
+               columnDefault = columnDefault.trim();
+               
+               if (columnDefault.indexOf("::") != -1)
+                  tableDefinition.append(" WITH DEFAULT " 
+                                         + (columnDefault.substring(0, columnDefault.indexOf(":"))).trim());
+               else if (columnDefault.indexOf("AUTOINCREMENT") != -1)
+               {
+                  
+                  tableDefinition.append(" GENERATED ALWAYS AS IDENTITY (START WITH "
+                                         + columnAutoIncrementStartHashMap.get(columnName)
+                                         + ", INCREMENT BY " + columnAutoIncrementIncHashMap.get(columnName)
+                                         + ")");
+               }
+               else if (columnDefault.indexOf("GENERATED") != -1)
+               {
+                  tableDefinition.append(" GENERATED BY DEFAULT AS IDENTITY (START WITH "
+                                         + columnAutoIncrementStartHashMap.get(columnName)
+                                         + ", INCREMENT BY " + columnAutoIncrementIncHashMap.get(columnName)
+                                         + ")");;
+               }
+               else
+                  tableDefinition.append(" WITH DEFAULT " + columnDefault.trim());
+
+               if (columnIsNullable.equals("NO"))
+                  tableDefinition.append(" NOT NULL,\n    ");
+               else
+                  tableDefinition.append(",\n    ");
+            }
+            else
+            {
+               if (columnIsNullable.equals("YES"))
+                  tableDefinition.append(" WITH DEFAULT NULL,\n    ");
+               else
+               {
+                  if (columnIsNullable.equals("NO"))
+                     tableDefinition.append(" NOT NULL,\n    ");
+                  else
+                     tableDefinition.append(",\n    ");
+               }
+            } 
+         }
+         resultSet.close();
+
+         // Create the keys for the table.
+         columnName = "";
+         primaryKeys = "";
+         uniqueKeys = new StringBuffer();
+         foreignKeys = "";
+         referenceTableName = "";
+         referenceColumnName = "";
+         // onUpdateRule = "";
+         onDeleteRule = "";
+
+         // Primary Keys
+         resultSet = dbMetaData.getPrimaryKeys(tableMetaData.getCatalogName(1),
+                                               tableMetaData.getSchemaName(1),
+                                               tableMetaData.getTableName(1));
+         while (resultSet.next())
+         {
+            columnName = resultSet.getString("COLUMN_NAME");
+            primaryKeys += identifierQuoteString + columnName + identifierQuoteString + ",";
+         }
+         resultSet.close();
+
+         // Unique Keys
+         resultSet = dbMetaData.getIndexInfo(tableMetaData.getCatalogName(1),
+                                             tableMetaData.getSchemaName(1),
+                                             tableMetaData.getTableName(1), true, false);
+         while (resultSet.next())
+         {
+            columnName = resultSet.getString("COLUMN_NAME");
+
+            // Only place unidentitied keys in uniqe string.
+            if (primaryKeys.indexOf(columnName) == -1)
+               uniqueKeys.append(identifierQuoteString + columnName + identifierQuoteString + ",");
+         }
+
+         // Add Unique & Primary Keys.
+         if (!(uniqueKeys.toString()).equals(""))
+            tableDefinition.append("UNIQUE ("
+                                   + uniqueKeys.delete((uniqueKeys.length() - 1), uniqueKeys.length())
+                                   + "),\n    ");
+
+         if (!primaryKeys.equals(""))
+            tableDefinition.append("PRIMARY KEY (" 
+                                   + primaryKeys.substring(0, primaryKeys.length() - 1)
+                                   + "),\n    ");
+
+         // Foreign Keys
+         resultSet.close();
+         resultSet = dbMetaData.getImportedKeys(tableMetaData.getCatalogName(1),
+                                                tableMetaData.getSchemaName(1),
+                                                tableMetaData.getTableName(1));
+         
+         while (resultSet.next())
+         {
+            columnName = resultSet.getString("FKCOLUMN_NAME");
+            referenceTableName = resultSet.getString("PKTABLE_NAME");
+            referenceColumnName = resultSet.getString("PKCOLUMN_NAME");
+
+            // These rules return integer values that can not
+            // be correlated to a specific rule. Default to
+            // DELETE ON CASCADE.
+            // onUpdateRule = resultSet.getString("UPDATE_RULE");
+            // onDeleteRule = resultSet.getString("DELETE_RULE");
+            onDeleteRule = "CASCADE";
+
+            foreignKeys = identifierQuoteString + columnName + identifierQuoteString;
+
+            tableDefinition.append("FOREIGN KEY (" + foreignKeys + ") REFERENCES "
+                                   + identifierQuoteString + referenceTableName 
+                                   + identifierQuoteString + "(" + identifierQuoteString
+                                   + referenceColumnName + identifierQuoteString 
+                                   + ") ON DELETE " + onDeleteRule);
+            
+            tableDefinition.append(",\n    ");
+         }
+         tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
+         tableDefinition.append("\n);\n");  
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e,
+            "TableDefinitionGenerator createDerbyTableDefinition()");
+      }
+      finally
+      {
+         try
+         {
+            if (resultSet != null)
+               resultSet.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle,
+               "TableDefinitionGenerator createDerbyTableDefinition()");
+         }
+         finally
+         {
+            if (sqlStatement != null)
+               sqlStatement.close();
+         }
+      }
+   }
 
    //==============================================================
    // Class method for getting CREATE TABLE definition.
@@ -1666,6 +2038,12 @@ public class TableDefinitionGenerator
          else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          {
             createMSAccessTableDefinition();
+         }
+         
+         // Apache Derby
+         else if (dataSourceType.equals(ConnectionManager.DERBY))
+         {
+            createDerbyTableDefinition();
          }
 
          // Default
