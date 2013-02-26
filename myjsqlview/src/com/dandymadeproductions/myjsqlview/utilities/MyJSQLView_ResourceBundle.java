@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.2 10/19/2012
+// Version 3.3 02/19/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,9 @@
 //                        Type Resource to Handle WinOS Network Paths.
 //         3.2 10/19/2012 Class Method getResourceFile() Catch Output Resource URL from
 //                        resourceURL.
+//         3.3 02/26/2013 Added Three Argument Constructor & Changed Two Argument to Instance
+//                        debugMode. Removed Collect of Same Class Instance Name to Assignment
+//                        to Argument.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +123,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 3.2 10/19/2012
+ * @version 3.3 10/26/2013
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -160,15 +163,20 @@ public class MyJSQLView_ResourceBundle implements Serializable
    
    public MyJSQLView_ResourceBundle(String resourceURLString)
    {
-      this(resourceURLString, true);
+      this(resourceURLString, false, true);
    }
    
-   public MyJSQLView_ResourceBundle(String resourceURLString, boolean cache)
+   public MyJSQLView_ResourceBundle(String resourceURLString, boolean debugMode)
+   {
+      this(resourceURLString, debugMode, true);
+   }
+   
+   public MyJSQLView_ResourceBundle(String resourceURLString, boolean debugMode, boolean cache)
    {
       // Setup to process.
 
       cacheDirectory = MyJSQLView_Utils.getCacheDirectory();
-      debugMode = MyJSQLView.getDebug();
+      this.debugMode = debugMode;
       cacheJar = cache;
 
       // Yea, nothing here move on.
