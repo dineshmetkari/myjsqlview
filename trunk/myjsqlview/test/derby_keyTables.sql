@@ -4,7 +4,9 @@
 -- =============================================================
 -- Version 02/02/2013 Original key_tables Database tables.
 --         02/19/2013 Changed key_table6 Column image_id to Generated
---                    BY DEFAULT AS IDENTITY. 
+--                    BY DEFAULT AS IDENTITY.
+--         02/26/2013 Commented Out key_table3 & key_table7 Because
+--                    Blob & Long Varchar Not Indexable.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -39,10 +41,10 @@ CREATE TABLE "keY_tAble2" (
 -- Blob Keys Not Supported.
 
 -- DROP TABLE "key_table3";
-CREATE TABLE "key_table3" (
-  "blob_col" blob(200K),
-  PRIMARY KEY ("blob_col")
-);
+-- CREATE TABLE "key_table3" (
+--   "blob_col" blob(200K),
+--   PRIMARY KEY ("blob_col")
+-- );
 
 --
 -- Table structure for table 'key_table4'
@@ -87,12 +89,12 @@ CREATE TABLE "key_table6" (
 -- Long Varchar or Clob Can not be indexed.
 
 -- DROP TABLE "key_table7";
-CREATE TABLE "key_table7" (
-  "text_id" long varchar NOT NULL,
-  "name" varchar(30) WITH DEFAULT NULL,
-  "blob_field2" blob(1M),
-  PRIMARY KEY ("text_id")
-);
+-- CREATE TABLE "key_table7" (
+--   "text_id" long varchar NOT NULL,
+--   "name" varchar(30) WITH DEFAULT NULL,
+--   "blob_field2" blob(1M),
+--   PRIMARY KEY ("text_id")
+-- );
 
 --
 -- Table structure for table 'key_table8'
