@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.49 02/24/2013
+// Version 7.50 02/27/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -282,6 +282,8 @@
 //        7.48 Method actionSelection() Plugin Frame startAnimation().
 //        7.49 Method dataExportAction() Check for DBTablesPanel.getSelectedTableTabPanel()
 //             Not NULL.
+//        7.50 Method actionSelection() Call to ConnectionManager.shutdown() Upon Action
+//             EXIT
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -346,7 +348,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.49 02/24/2013
+ * @version 7.50 02/27/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -444,6 +446,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       if (actionCommand.equals(ACTION_EXIT))
       {
          sqlQueryBucketFrame.saveLastUsedList();
+         ConnectionManager.shutdown("MyJSQLView_JMenuBarActions ACTION_EXIT");
          MyJSQLView_Utils.clearCache();
          System.exit(0);
       }
