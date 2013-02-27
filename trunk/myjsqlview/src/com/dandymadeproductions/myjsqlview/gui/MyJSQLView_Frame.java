@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.0 10/24/2012
+// Version 8.1 02/27/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -195,6 +195,8 @@
 //                        Method.
 //         8.0 10/24/2012 Class Method removeTab() Check to Insure the loadedPluginModules ToolBar
 //                        Exists, Not NULL.
+//         8.1 02/27/2013 Inner Class myjsqlviewFrameListener Call to ConnectionManager.shutdown()
+//                        Upon Frame Closing.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -241,7 +243,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.0 09/24/2012
+ * @version 8.1 02/27/2013
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -292,6 +294,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          public void windowClosing(WindowEvent e)
          {
             sqlQueryBucketFrame.saveLastUsedList();
+            ConnectionManager.shutdown("MyJSQLView_Frame WINDOW_CLOSING");
             MyJSQLView_Utils.clearCache();
             System.exit(0);
          }
