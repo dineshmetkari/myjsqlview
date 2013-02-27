@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.1 02/15/2013
+// Version 3.2 02/27/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,8 @@
 //             Database getTablePrivileges() Since pgJDBC Bug for ACL Fixed.
 //         3.1 Methods get/closeConnection() Check for Derby Memory Connections to
 //             Insure memoryConnection is Returned & Not Closed.
+//         3.2 Minor Format & Comment Changes in getConnection(). Added Class Methods
+//             shutdown(), closeMemoryConnection(), & shutdownDatabase().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -110,7 +112,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.1 02/15/2012
+ * @version 3.2 02/27/2012
  */
 
 public class ConnectionManager
@@ -215,8 +217,7 @@ public class ConnectionManager
          if ((memoryConnection != null)
               && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
                   || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1)
-                  || (subProtocol.equals(ConnectionManager.DERBY)
-                      && db.toLowerCase().indexOf("memory:") != -1))
+                  || (subProtocol.equals(DERBY) && db.toLowerCase().indexOf("memory:") != -1))
             return memoryConnection;
          // All others
          else
@@ -226,7 +227,7 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManager getConnection");
+         displaySQLErrors(e, "ConnectionManager getConnection()");
          return null;
       }
    }
@@ -263,7 +264,104 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManager closeConnection");
+         displaySQLErrors(e, "ConnectionManager closeConnection()");
+      }
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to attempt to shutdown
+   // database activity appropriately.
+   //==============================================================
+
+   public static void shutdown(String description)
+   {
+      closeMemoryConnection(description);
+      shutdownDatabase(description);
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to close the memory
+   // connection upon termination of the application
+   //==============================================================
+
+   private static void closeMemoryConnection(String description)
+   {  
+      try
+      {
+         // Close connection as needed.
+         if (memoryConnection != null)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println(description + " Memory Connection Closed");
+            
+            memoryConnection.close();  
+         }
+      }
+      catch (SQLException e)
+      {
+         displaySQLErrors(e, "ConnectionManager closeMemoryConnection()");
+      }
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to shutdown Databases
+   // that advocate such, file & embedded types.
+   //==============================================================
+
+   private static void shutdownDatabase(String description)
+   {
+      // Method Instances.
+      String connectionString, driver, subProtocol;
+      String databaseShutdownString;
+      
+      // Setup.
+      connectionString = connectionProperties.getConnectionString();
+      driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      
+      if (connectionString.indexOf(";") != -1)
+         databaseShutdownString = connectionString.substring(0, connectionString.indexOf(";"));
+      else
+         databaseShutdownString = connectionString;
+      
+      try
+      {
+         // Try to shutdown Derby database properly.
+         if (subProtocol.equals(DERBY))
+         {
+            // Drop Memory Databases
+            if (databaseShutdownString.toLowerCase().indexOf("memory:") != -1)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println(description + " Dropping Derby Memory Database");
+               
+               DriverManager.getConnection(databaseShutdownString + ";drop=true");
+               return;
+            }
+            
+            // Shutdown Embedded Only
+            if (driver.indexOf("EmbeddedDriver") != -1)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println(description + " Shutting Down Derby Embedded Database");
+               
+               DriverManager.getConnection("jdbc:derby:;shutdown=true");
+            }
+         }    
+      }
+      catch (SQLException e)
+      {
+         if (subProtocol.equals(DERBY) &&
+               (e.getSQLState().equals("08006") || e.getSQLState().equals("XJ015")))
+         {
+            if (MyJSQLView.getDebug())
+            {
+               System.out.println("SQLException: " + e.getMessage());
+               System.out.println("SQLState: " + e.getSQLState());
+            }
+         }
+         else
+            displaySQLErrors(e, "ConnectionManager shutdownDatabase()");
       }
    }
    
