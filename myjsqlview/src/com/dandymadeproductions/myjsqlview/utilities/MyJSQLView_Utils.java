@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.3 02/09/2013
+// Version 8.4 02/28/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,8 @@
 //             the Cache Directory on the File System if Does not Exist.
 //         8.3 Correction in Method convertViewDateString() to Check for Two Occurrences
 //             of the Dash Character to Insure a Valid Date Format.
+//         8.4 Method getUnlimitedSQLStatementString() Addition of Derby Processing and
+//             Instance unLimitedSQLStatementString.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -217,7 +219,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.3 02/09/2013
+ * @version 8.4 02/28/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -932,19 +934,25 @@ public class MyJSQLView_Utils extends MyJSQLView
    {
       // Method Instances
       String dataSourceType;
+      StringBuffer unLimitedSQLStatementString;
       int index1, index2, index3, index4, index5;
       
-      // Collect the database protocol.
+      // Collect the database protocol & setup.
       
       dataSourceType = ConnectionManager.getDataSourceType();
+      unLimitedSQLStatementString = new StringBuffer();
       
       // Check if process can be performed.
       
-      if (((!dataSourceType.equals(ConnectionManager.ORACLE))
+      if ((!dataSourceType.equals(ConnectionManager.ORACLE)
+            && !dataSourceType.equals(ConnectionManager.DERBY)
             && (sqlStatementString.indexOf("LIMIT") == -1))
           ||
            ((dataSourceType.equals(ConnectionManager.ORACLE))
-             && (sqlStatementString.indexOf("BETWEEN") == -1)))
+             && (sqlStatementString.indexOf("BETWEEN") == -1))
+          ||
+           ((dataSourceType.equals(ConnectionManager.DERBY))
+             && (sqlStatementString.indexOf("OFFSET") == -1)))
          return sqlStatementString;
       
       // Parsing
@@ -965,9 +973,9 @@ public class MyJSQLView_Utils extends MyJSQLView
          
          if (index1 != -1 && index2 != -1 && index3 != -1 && index4 != -1 && index5 != -1)
          {
-            sqlStatementString = sqlStatementString.substring(0, (index1 - 1))
-                                 + sqlStatementString.substring((index2 + 4), index3)
-                                 + " " + sqlStatementString.substring(index4, (index5 - 2));
+            unLimitedSQLStatementString.append(sqlStatementString.substring(0, (index1 - 1))
+                                               + sqlStatementString.substring((index2 + 4), index3)
+                                               + " " + sqlStatementString.substring(index4, (index5 - 2)));
          }
       }
       // HSQL, & HSQL2
@@ -987,12 +995,23 @@ public class MyJSQLView_Utils extends MyJSQLView
             // HSQL LIMIT Problem.
             
             if (index1 < index2)
-               sqlStatementString = sqlStatementString.substring(0, index1)
-                                    + sqlStatementString.substring(index2);
+               unLimitedSQLStatementString.append(sqlStatementString.substring(0, index1)
+                                                  + sqlStatementString.substring(index2));
             // Same as MySQL, Postgresql, & SQLite.
             else
-               sqlStatementString = sqlStatementString.substring(0, index1);
+               unLimitedSQLStatementString.append(sqlStatementString.substring(0, index1));
          }
+      }
+      // Derby
+      else if (dataSourceType.equals(ConnectionManager.DERBY))
+      {
+         // Sample
+         // SELECT `parent_id`, `name` FROM `child` WHERE '1' LIKE '%' ORDER BY `parent_id` ASC
+         // OFFSET 0 ROWS FETCH NEXT 50
+         
+         if (sqlStatementString.indexOf("OFFSET") != -1)
+            unLimitedSQLStatementString.append(sqlStatementString.substring(
+               0, sqlStatementString.lastIndexOf("OFFSET")));
       }
       // MySQL, PostgreSQL, & SQLite.
       else
@@ -1002,12 +1021,12 @@ public class MyJSQLView_Utils extends MyJSQLView
          // LIMIT 50 OFFSET 0
          
          if (sqlStatementString.indexOf("LIMIT") != -1)
-            sqlStatementString = sqlStatementString.substring(0, sqlStatementString.lastIndexOf("LIMIT"));
+            unLimitedSQLStatementString.append(sqlStatementString.substring(
+               0, sqlStatementString.lastIndexOf("LIMIT")));
       }
-      sqlStatementString = sqlStatementString.trim();
       // System.out.println(sqlStatementString);
       
-      return sqlStatementString;
+      return new String(unLimitedSQLStatementString.toString().trim());
    }
    
    //==============================================================
