@@ -2,13 +2,15 @@
 //                   ConnectionManagerHSQL
 //=================================================================
 //    This class provides a specific instance to manage connections
-// to a HSQL database.
+// to a HSQL database. Note the connection is assumed to reside on
+// the same local host as the MyJSQLView's connection and current
+// user.
 //
 //               << ConnectionManagerHSQL.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 09/10/2012
+// Version 1.7 02/28/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,7 +43,8 @@
 //             setter Methods.
 //         1.5 Constructor Change of Conditional Check for null to Empty String
 //             for dbMetaData.getDatabaseProductName/Version().
-//         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.           
+//         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.
+//         1.7 Added Methods shutdownDatabase(), closeMemoryConnection(), & shutdown().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,12 +61,16 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+
 /**
  *    The ConnectionManagerHSQL class provides a specific instance to
- * manage connections to a HSQL database.
+ * manage connections to a HSQL database. Note the connection is assumed
+ * to reside on the same local host as the MyJSQLView's connection and
+ * current user.
  * 
  * @author Dana M. Proctor
- * @version 1.6 09/10/2012
+ * @version 1.7 02/28/2013
  */
 
 public class ConnectionManagerHSQL
@@ -317,6 +324,78 @@ public class ConnectionManagerHSQL
       catch (SQLException e)
       {
          displaySQLErrors(e, "ConnectionManagerHSQL closeConnection");
+      }
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to attempt to shutdown
+   // database activity appropriately.
+   //==============================================================
+
+   public static void shutdown(String description)
+   {
+      closeMemoryConnection(description);
+      shutdownDatabase(description);
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to close the memory
+   // connection upon termination of the application
+   //==============================================================
+
+   private static void closeMemoryConnection(String description)
+   {  
+      try
+      {
+         // Close connection as needed.
+         if (memoryConnection != null)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println(description + " Memory Connection Closed");
+            
+            memoryConnection.close();  
+         }
+      }
+      catch (SQLException e)
+      {
+         displaySQLErrors(e, "ConnectionManagerHSQL closeMemoryConnection()");
+      }
+   }
+   
+   //==============================================================
+   // Class method that provides the ability to shutdown Databases
+   // that advocate such, file & memory types.
+   //==============================================================
+
+   private static void shutdownDatabase(String description)
+   {
+      // Method Instances.
+      String connectionString;
+      String databaseShutdownString;
+      
+      // Setup.
+      connectionString = connectionProperties.getConnectionString();
+      
+      if (connectionString.indexOf(";") != -1)
+         databaseShutdownString = connectionString.substring(0, connectionString.indexOf(";"));
+      else
+         databaseShutdownString = connectionString;
+      
+      try
+      {  
+         if (databaseShutdownString.toLowerCase().indexOf("file:") != -1
+             || databaseShutdownString.toLowerCase().indexOf("mem:") != -1)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println(description + " Shutting Down HSQL File/Memory Database");
+               
+            DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+         }
+         return; 
+      }
+      catch (SQLException e)
+      {
+         displaySQLErrors(e, "ConnectionManagerHSQL shutdownDatabase()");
       }
    }
 
