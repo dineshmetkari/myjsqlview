@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.2 02/27/2013
+// Version 3.3 02/28/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -79,6 +79,8 @@
 //             Insure memoryConnection is Returned & Not Closed.
 //         3.2 Minor Format & Comment Changes in getConnection(). Added Class Methods
 //             shutdown(), closeMemoryConnection(), & shutdownDatabase().
+//         3.3 Method shutdownDatabase() Added HSQL File & Memory Database Shutdown
+//             Code.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -112,7 +114,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.2 02/27/2012
+ * @version 3.3 02/28/2012
  */
 
 public class ConnectionManager
@@ -326,7 +328,7 @@ public class ConnectionManager
       
       try
       {
-         // Try to shutdown Derby database properly.
+         // Try to shutdown Derby & HSQL database properly.
          if (subProtocol.equals(DERBY))
          {
             // Drop Memory Databases
@@ -336,7 +338,6 @@ public class ConnectionManager
                   System.out.println(description + " Dropping Derby Memory Database");
                
                DriverManager.getConnection(databaseShutdownString + ";drop=true");
-               return;
             }
             
             // Shutdown Embedded Only
@@ -347,7 +348,21 @@ public class ConnectionManager
                
                DriverManager.getConnection("jdbc:derby:;shutdown=true");
             }
-         }    
+            return;
+         }
+         
+         if (subProtocol.indexOf(HSQL) != -1)
+         {
+            if (databaseShutdownString.toLowerCase().indexOf("file:") != -1
+                || databaseShutdownString.toLowerCase().indexOf("mem:") != -1)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println(description + " Shutting Down HSQL File/Memory Database");
+               
+               DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+            }
+            return;
+         }
       }
       catch (SQLException e)
       {
