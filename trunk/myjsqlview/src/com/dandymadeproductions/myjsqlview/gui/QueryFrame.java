@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.9 02/22/2013
+// Version 9.0 03/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -218,6 +218,7 @@
 //                        Summary Table Data in Constructor.
 //         8.9 02/22/2013 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
 //                        for Apache Derby.
+//         9.0 03/01/2013 Renamed in exportData() DataTableDumpThread to CSVTableDumpThread.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -287,7 +288,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.QueryTabPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.SQLTabPanel;
 import com.dandymadeproductions.myjsqlview.io.DataDumpThread;
-import com.dandymadeproductions.myjsqlview.io.DataTableDumpThread;
+import com.dandymadeproductions.myjsqlview.io.CSVDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.PDFDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
@@ -305,7 +306,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 8.9 02/22/2013
+ * @version 9.0 03/01/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -1258,12 +1259,12 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
                if (summaryListTable != null)
                {
                   if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
-                     new DataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
-                                             tableColumnTypeHashMap, exportedTable,
-                                             fileName);
+                     new CSVDataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
+                                                tableColumnTypeHashMap, exportedTable,
+                                                fileName);
                   else
                      new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
-                        exportedTable, fileName); 
+                                                exportedTable, fileName); 
                }
             }
             
