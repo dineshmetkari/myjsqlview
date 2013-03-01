@@ -1,5 +1,5 @@
 //=================================================================
-//               MyJSQLView DataTableDumpThread
+//               MyJSQLView CSVDataTableDumpThread
 //=================================================================
 //
 //    This class provides a thread to safely dump a TableTabPanel
@@ -7,11 +7,11 @@
 // is provided to allow the ability to prematurely terminate the
 // dump.
 //
-//                << DataTableDumpThread.java >>
+//                << CSVDataTableDumpThread.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 09/21/2012
+// Version 3.4 03/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -75,6 +75,8 @@
 //         3.2 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class, & Constructor Public.
 //         3.3 Removal of Starting the Panel's Runnable Thread in the Constructor.
+//         3.4 Renamed From DataTableDumpThread to CSVDataTableDumpThread. Updated
+//             Comments.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -91,16 +93,16 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
- *    The DataTableDumpThread class provides a thread to safely
+ *    The CSVDataTableDumpThread class provides a thread to safely
  * dump a TableTabPanel summary table data to a local file. A
  * status dialog with cancel is provided to allow the ability to
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 3.3 09/21/2012
+ * @version 3.4 02/01/2013
  */
 
-public class DataTableDumpThread implements Runnable
+public class CSVDataTableDumpThread implements Runnable
 {
    // Class Instances
    private JTable summaryListTable;
@@ -112,7 +114,7 @@ public class DataTableDumpThread implements Runnable
    // DataDumpThread Constructor.
    //==============================================================
 
-   public DataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnNamesHashMap,
+   public CSVDataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnNamesHashMap,
                               HashMap<String, String> tableColumnTypeHashMap, String exportedTable,
                               String fileName)
    {
