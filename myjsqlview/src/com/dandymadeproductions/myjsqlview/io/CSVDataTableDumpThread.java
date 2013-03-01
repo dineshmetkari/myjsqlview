@@ -111,7 +111,7 @@ public class CSVDataTableDumpThread implements Runnable
    private String exportedTable, fileName;
 
    //==============================================================
-   // DataDumpThread Constructor.
+   // CSVDataDumpThread Constructor.
    //==============================================================
 
    public CSVDataTableDumpThread(JTable summaryListTable, HashMap<String, String> tableColumnNamesHashMap,
