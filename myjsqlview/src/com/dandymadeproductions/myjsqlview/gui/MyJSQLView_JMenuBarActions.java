@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.51 03/01/2013
+// Version 7.52 03/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -284,7 +284,8 @@
 //             Not NULL.
 //        7.50 Method actionSelection() Call to ConnectionManager.shutdown() Upon Action
 //             EXIT
-//        7.51 Renamed in dataExportAction() DataTableDumpThread to CSVTableDumpThread.
+//        7.51 Renamed in dataExportAction() DataTableDumpThread to CSVDataTableDumpThread.
+//        7.52 Renamed in dataExportAction() DataDumpThread to CSVDataDumpThread.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -328,7 +329,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.io.CSVDataImportThread;
-import com.dandymadeproductions.myjsqlview.io.DataDumpThread;
+import com.dandymadeproductions.myjsqlview.io.CSVDataDumpThread;
 import com.dandymadeproductions.myjsqlview.io.CSVDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.LoadTableStateThread;
 import com.dandymadeproductions.myjsqlview.io.PDFDataTableDumpThread;
@@ -349,7 +350,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.51 03/01/2013
+ * @version 7.52 03/01/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1172,14 +1173,14 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
             {
                summaryListTable = null;
-               Thread dataDumpThread = new Thread(new DataDumpThread(tableHeadings,
-                                                                     tableColumnNamesHashMap,
-                                                                     tableColumnClassHashMap,
-                                                                     tableColumnTypeHashMap,
-                                                                     tableColumnSizeHashMap,
-                                                                     exportedTable, fileName),
-                                                  "DataDumpThread");
-               dataDumpThread.start();
+               Thread csvDataDumpThread = new Thread(new CSVDataDumpThread(tableHeadings,
+                                                                           tableColumnNamesHashMap,
+                                                                           tableColumnClassHashMap,
+                                                                           tableColumnTypeHashMap,
+                                                                           tableColumnSizeHashMap,
+                                                                           exportedTable, fileName),
+                                                     "CSVDataDumpThread");
+               csvDataDumpThread.start();
             }
 
             // Data Export CSV Summary Table
