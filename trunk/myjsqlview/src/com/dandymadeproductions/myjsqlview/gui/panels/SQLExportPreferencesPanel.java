@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.9 09/10/2012
+// Version 5.0 03/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,8 @@
 //         4.9 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, Getter/Setter Methods Along With static
 //                        final Class Instances Public.
+//         5.0 03/01/2013 ComboBox insertReplaceUpdateComboBox Exclusion of TYPE_REPLACE for
+//                        Apache Derby Database.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -158,7 +160,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 4.9 09/10/2012
+ * @version 5.0 03/01/2013
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -334,7 +336,8 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       insertReplaceUpdateComboBox = new JComboBox();
       insertReplaceUpdateComboBox.addItem(TYPE_INSERT);
       if (!dataSourceType.equals(ConnectionManager.POSTGRESQL)
-            && !dataSourceType.equals(ConnectionManager.MSACCESS))
+            && !dataSourceType.equals(ConnectionManager.MSACCESS)
+            && !dataSourceType.equals(ConnectionManager.DERBY))
          insertReplaceUpdateComboBox.addItem(TYPE_REPLACE);
       insertReplaceUpdateComboBox.addItem(TYPE_UPDATE);
       insertReplaceUpdateComboBox.addActionListener(this);
