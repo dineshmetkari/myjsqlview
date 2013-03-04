@@ -13,7 +13,7 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.41<br></u></b>
+			<b><u>MyJSQLView Version 3.44<br></u></b>
 		</p>
 		<p align="center">
 			Copyright 2005-2013<br>
@@ -24,8 +24,8 @@
 		<p><u><b>What is MyJSQLView?</b></u></p>
 		<p>
 			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing,
-			adding, editing, or deleting entries in the HSQL, MSAccess, MySQL, Oracle, PostgreSQL,
-			and SQLite databases. All tables and fields are available for access in
+			adding, editing, or deleting entries in the Derby, HSQL, MSAccess, MySQL, Oracle,
+			PostgreSQL, and SQLite databases. All tables and fields are available for access in
 			the selected database.<br><br>
 
 			&nbsp;&nbsp;&nbsp;MyJSQLView is the result of a condensed version of a larger project
@@ -43,14 +43,14 @@
 			Connectivity, driver. The JDBC provides the driver interface between the
 			Java SQL, structured query language, statements, and the database. As of
 			the release of this version of MyJSQLView the application has been tested
-			with the HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases. The
-			application once installed can provide a much quicker access/update to
+			with the Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases.
+			The application once installed can provide a much quicker access/update to
 			a database than a web based interface frontend and MyJSQLView supports
 			transaction locking. If your small business, scientific community, government
-			agency, or educational institute wants to quickly access either a HSQL, MSAccess,
-			MySQL, Oracle, PostgreSQL, or SQLite database for viewing, adding, editing,
-			searching, and analyzing data MyJSQLView provides an alternative that is simple
-			and easy to use.<br><br>
+			agency, or educational institute wants to quickly access either a Apache
+			Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database for
+			viewing, adding, editing, searching, and analyzing data MyJSQLView provides
+			an alternative that is simple and easy to use.<br><br>
 
    			Dana M. Proctor<br>
    			Project Manager
@@ -91,6 +91,7 @@
 		<ul>
   			<li> Microsoft<sup>&reg;</sup> Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, &amp; X-Window Environment.</li>
                     	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.5</font> or Newer.</li>
+			<li>Apache Derby <font color="#ff0000">10.9.1.0</font></li>
 			<li>HSQL <font color="#ff0000">2.2.5 - 2.2.9</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 			<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge, Control Panel Data Sources.</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
@@ -120,7 +121,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.40</b> does not, will have an example configuration
+			additional database, release <b>v3.44</b> does, will have an example configuration
 			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -137,26 +138,29 @@
 		</p>
 		<p><font size="+1"><strong>General Setup Instructions</strong></font><br></p>
 		<p>
-			&nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and
-			does require the JRE, to be installed. The minimum runtime environment needs
-			to be JRE-1.5. In addition to the JRE an extension, JDBC, needs to be installed
-			that allows Java to communicate to the HSQL, MySQL, Oracle, PostgreSQL, or SQLite
+			&nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does
+			require the JRE, to be installed. The minimum runtime environment needs to be
+			JRE-1.5. In addition to the JRE an extension, JDBC, needs to be installed that
+			allows Java to communicate to the Derby, MySQL, Oracle, PostgreSQL, or SQLite
 			database. The programs are available on the Internet free of charge. Check with
 			the sites
+			<a href="http://db.apache.org/derby/" target="_blank">Apache Derby</a>,
 			<a href="http://dev.mysql.com" target="_blank">dev.mysql.com</a>,
 			<a href="http://oracle.com" target="_blank">oracle.com</a>,
 			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>, and
-			<a href="http://www.xerial.org/trac/Xerial" target="_blank">www.xerial.org</a>. The
-			jar file for these extensions needs to be installed to the JRE /lib/ext directory.
-			On a Windows system this JRE directory in normally under C:/Windows/java. On a
-			Linux/Unix system the directory is normally under the /usr/lib directory, and is most
-			easily found by typing the command "which java" in a console. Please consult with
-			each vendor for specific installation instructions for these JDBC pieces of code.
-			Similarly if other databases are to be accessed via the application then again
-			installed the recommended  driver(s) to the Java Runtime /lib/ext directory. The
-                        exception JDBC installation is for the HSQL database which uses an integrated JDBC
-			built into the application. MyJSQLView as of v3.33 includes this database so no
-			additional installation need take place.<br><br>
+			<a href="http://www.xerial.org/trac/Xerial" target="_blank">www.xerial.org</a>.
+			The jar file for these extensions needs to be installed to the JRE /lib/ext
+			directory. On a Windows system this JRE directory in normally under C:/Windows/java.
+			On a Linux/Unix system the directory is normally under the /usr/lib directory,
+			and is most easily found by typing the command "which java" in a console.
+			Please consult with each vendor for specific installation instructions for these
+			JDBC pieces of code. Similarly if other databases are to be accessed via the
+			application then again installed the recommended driver(s) to the Java Runtime
+			/lib/ext directory. The two exception JDBC installations are for the Derby and
+			HSQL databases. Derby requires the file derby.jar, derbynet.jar, and derbyclient.jar
+			files to placed in the Java Extension directory. HSQL uses an integrated JDBC
+			built into the application. MyJSQLView as of v3.33 includes this database so
+			no additional installation need take place.<br><br>
 			
 			&nbsp;&nbsp;&nbsp;&nbsp;The new login interface and Connection Manager use
 			a XML configuration file for saving user preferences. Upon first running
@@ -232,6 +236,12 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.44</td>
+      				<td width="80%">Apache Derby Database Support. Additional Connection Properties
+						Input Via Database Entry Login Form. Query Frame UI Changes.
+						HeatMapper Plugin Enhancements. </td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.41</td>
       				<td width="80%">Initial Plugin Inclusion of the visual SQL tool QueryBuilder.</td>
