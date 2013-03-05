@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 02/28/2013
+// Version 3.4 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -81,6 +81,8 @@
 //             shutdown(), closeMemoryConnection(), & shutdownDatabase().
 //         3.3 Method shutdownDatabase() Added HSQL File & Memory Database Shutdown
 //             Code.
+//         3.4 Updated Example dbMetaData.getTables() Parameter Arguments for SQLite &
+//             Derby in loadDBParameters.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -114,7 +116,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.3 02/28/2012
+ * @version 3.4 03/05/2013
  */
 
 public class ConnectionManager
@@ -480,7 +482,7 @@ public class ConnectionManager
          schemaPattern = null;
          tableNamePattern = null;
          dbType = "sqlite";
-         //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
+         //db_resultSet = dbMetaData.getTables(db, null, null, tableTypes);
          
       }
       // Derby
@@ -490,7 +492,7 @@ public class ConnectionManager
          schemaPattern = null;
          tableNamePattern = "%";
          dbType = "derby";
-         //db_resultSet = dbMetaData.getTables(null, null, null, tableTypes);
+         //db_resultSet = dbMetaData.getTables(db, null, "%", tableTypes);
       }
       // Unknown
       else
@@ -777,10 +779,13 @@ public class ConnectionManager
             if (tableName.indexOf(".") != -1)
             {
                String schemasName = tableName.substring(0, tableName.indexOf("."));
+               
                if (!schemas.contains(schemasName))
                {
-                  schemas.add(tableName.substring(0, tableName.indexOf(".")));
-                  // System.out.println(tableName.substring(0, tableName.indexOf(".")));
+                  //schemas.add(tableName.substring(0, tableName.indexOf(".")));
+                  schemas.add(schemasName);
+                  System.out.println(schemasName);
+                  //System.out.println(tableName.substring(0, tableName.indexOf(".")));
                }
             }
          }
