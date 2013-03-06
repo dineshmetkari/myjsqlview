@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 02/23/2013
+// Version 1.2 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //                        of BLOB & BIT DATA Types for All Field WHERE Clause Creation
 //                        in loadTable() Along With Creation of Same in New Method
 //                        createWhereClause().
+//         1.2 03/06/2013 Used a StringBuffer, whereClauseString, in createWhereClause(). 
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.1 02/23/2013
+ * @version 1.2 03/06/2013
  */
 
 public class TableTabPanel_Derby extends TableTabPanel
@@ -697,12 +698,19 @@ public class TableTabPanel_Derby extends TableTabPanel
 
    private String createWhereClause(String columnName, String columnClass, String columnType, String searchString)
    {
+      // Method Instances
+      StringBuffer whereClauseString;
+      
+      whereClauseString = new StringBuffer();
+      
       if (columnClass.indexOf("String") != -1)
-         return new String(columnName.trim() + " LIKE \'%" + searchString + "%\'"); 
+         whereClauseString.append(columnName.trim() + " LIKE \'%" + searchString + "%\'"); 
       else if (columnType.equals("DOUBLE") || columnType.equals("REAL"))
-         return new String(columnName.trim() + "=" + searchString);
+         whereClauseString.append(columnName.trim() + "=" + searchString);
       else
-         return new String("CAST(" + columnName.trim() + " AS CHAR(254)) LIKE \'%" + searchString + "%\'");
+         whereClauseString.append("CAST(" + columnName.trim() + " AS CHAR(254)) LIKE \'%" + searchString + "%\'");
+      
+      return new String(whereClauseString);
    }
    
    //==============================================================
