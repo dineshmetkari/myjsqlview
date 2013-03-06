@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.52 03/01/2013
+// Version 7.53 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -286,6 +286,11 @@
 //             EXIT
 //        7.51 Renamed in dataExportAction() DataTableDumpThread to CSVDataTableDumpThread.
 //        7.52 Renamed in dataExportAction() DataDumpThread to CSVDataDumpThread.
+//        7.53 Method actionSelection() Action ACTION_RELOAD_DATABASE Collection of
+//             All Tables Schemas Pattern & Reloading MyJSQLView_JMenuBar Schemas Menu.
+//             Generalize Schemas Pattern Collection in Action Schemas from ConnectionManager.
+//             Changes in dataExportAction Use of tableHeadings & summaryListTable
+//             Initialization & Assignment.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -350,7 +355,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.52 03/01/2013
+ * @version 7.53 03/05/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -532,7 +537,15 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          {
             public void run()
             {
+               // Make sure and load all available schemas
+               // in case filtering is off in configuration
+               // file.
+               
+               ConnectionManager.setSchemaPattern(ConnectionManager.getAllSchemasPattern());
+               
+               // Reload
                MyJSQLView_Frame.reloadDBTables();
+               MyJSQLView_JMenuBar.reloadSchemasMenu();
                DBTablesPanel.stopStatusTimer();
             }
          }, "MyJSQLView_JMenuBarActions.reloadDatabaseThread");
@@ -575,20 +588,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       if (actionCommand.equals("Schemas"))
       {
          actionCommand = ((JRadioButtonMenuItem) item).getActionCommand();
+         
          if (actionCommand.equals("All"))
          {
-            String dataSourceType = ConnectionManager.getDataSourceType();
-            
-            //String subProtocol = ConnectionManager.getConnectionProperties()
-            //                     .getProperty(ConnectionProperties.SUBPROTOCOL);
-            if (dataSourceType.equals(ConnectionManager.HSQL)
-                || dataSourceType.equals(ConnectionManager.ORACLE))
-               actionCommand = "%";
-            else if (dataSourceType.equals(ConnectionManager.MYSQL)
-                     || dataSourceType.equals(ConnectionManager.POSTGRESQL))
-               actionCommand = "";
-            else
-               actionCommand = null;
+            actionCommand = ConnectionManager.getAllSchemasPattern();
          }
          ConnectionManager.setSchemaPattern(actionCommand);
          
@@ -1080,6 +1083,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       JFileChooser dataFileChooser;
       String fileName;
       String exportedTable, database;
+      
+      ArrayList<String> tableHeadings;
       HashMap<String, String> tableColumnNamesHashMap;
       HashMap<String, String> tableColumnClassHashMap;
       HashMap<String, String> tableColumnTypeHashMap;
@@ -1087,10 +1092,13 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       JTable summaryListTable;
 
       // Initializing
+      
+      tableHeadings = new ArrayList <String>();
       tableColumnNamesHashMap = new HashMap <String, String>();
       tableColumnClassHashMap = new HashMap <String, String>();
       tableColumnTypeHashMap = new HashMap <String, String>();
       tableColumnSizeHashMap = new HashMap <String, Integer>();
+      summaryListTable = null;
 
       // Setting up a default file name based on the selected
       // database, or table and date.
@@ -1153,16 +1161,12 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // then outputting the data via the appropriate
             // approach.
             
-            ArrayList<String> tableHeadings = new ArrayList <String>();
-            
             if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_PDF_SUMMARY_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_TABLE)
                 || actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
-               tableHeadings = new ArrayList <String>();
-               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
                tableColumnNamesHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnNamesHashMap();
                tableColumnClassHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnClassHashMap();
                tableColumnTypeHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnTypeHashMap();
@@ -1172,7 +1176,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // Data Export CSV Table
             if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
             {
-               summaryListTable = null;
+               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
                Thread csvDataDumpThread = new Thread(new CSVDataDumpThread(tableHeadings,
                                                                            tableColumnNamesHashMap,
                                                                            tableColumnClassHashMap,
@@ -1189,11 +1193,10 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                summaryListTable = (DBTablesPanel.getSelectedTableTabPanel()).getListTable();
                if (summaryListTable != null)
                {
-                  Thread csvDataTableDumpThread = new Thread(new CSVDataTableDumpThread(summaryListTable,
-                                                                                  tableColumnNamesHashMap,
-                                                                                  tableColumnTypeHashMap,
-                                                                                  exportedTable, fileName),
-                                                             "CSVDataTableDumpThread");
+                  Thread csvDataTableDumpThread = new Thread(
+                     new CSVDataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
+                                                tableColumnTypeHashMap, exportedTable, fileName),
+                                                "CSVDataTableDumpThread");
                   csvDataTableDumpThread.start();
                }
             }
@@ -1216,6 +1219,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // Data Export SQL Table
             else if (actionCommand.equals(ACTION_EXPORT_SQL_TABLE))
             {
+               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
                Thread sqlDataDumpThread = new Thread(new SQLDataDumpThread(tableHeadings,
                                                                            tableColumnNamesHashMap, false,
                                                                            tableColumnClassHashMap,
@@ -1229,9 +1233,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             // Data Export SQL Summary Table
             else if (actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
-               tableHeadings = new ArrayList <String>();
                tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
-
                Thread sqlDataDumpThread = new Thread(new SQLDataDumpThread(tableHeadings,
                                                                            tableColumnNamesHashMap, true,
                                                                            tableColumnClassHashMap,
