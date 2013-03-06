@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.3 02/21/2013
+// Version 5.4 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -138,6 +138,8 @@
 //         5.3 02/21/2013 Added derbyWhereOperators in createUpdateWhereInterface(). Class Method
 //                        getWhereSQLExpression() Insure to Not Quote HSQL & Derby Non-String
 //                        Data Types.
+//         5.4 03/06/2013 Cleanup of sqlStatement & db_resultSet in updateTable() After Initial
+//                        First Use Before Using Again.
 //                        
 //=================================================================
 
@@ -193,7 +195,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.3 02/21/2013
+ * @version 5.4 03/06/2013
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -837,6 +839,9 @@ public class UpdateForm extends JFrame implements ActionListener
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
          db_resultSet.next();
          updateRowCount = db_resultSet.getInt(1);
+         
+         db_resultSet.close();
+         sqlStatement.close();
 
          // Show dialog as needed.
          if (updateRowCount != 0)
