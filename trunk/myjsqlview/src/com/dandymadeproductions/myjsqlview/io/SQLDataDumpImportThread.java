@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.6 09/21/2012
+// Version 5.7 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -124,6 +124,8 @@
 //         5.5 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
 //         5.6 Removal of Starting the Class's Runnable Thread in the Constructor.
+//         5.7 In run() on validImport & reloadDatabase Update to Insure All the
+//             Schemas Pattern Menu is Updated. 
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -145,6 +147,7 @@ import javax.swing.JOptionPane;
 
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_JMenuBar;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
@@ -156,7 +159,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.6 09/21/2012
+ * @version 5.7 03/05/2013
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -210,7 +213,18 @@ public class SQLDataDumpImportThread implements Runnable
          if (validImport)
          {
             if (reloadDatabase)
+            {
+               // Make sure and load all available schemas
+               // in case filtering is off in configuration
+               // file.
+               
+               ConnectionManager.setSchemaPattern(ConnectionManager.getAllSchemasPattern());
+               
+               // Reload
                MyJSQLView_Frame.reloadDBTables();
+               MyJSQLView_JMenuBar.reloadSchemasMenu();
+               MyJSQLView_Frame.reloadDBTables();
+            }
             else
                refreshTableTabPanel();
          }
