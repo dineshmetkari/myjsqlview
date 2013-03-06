@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.53 03/05/2013
+// Version 7.54 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -291,6 +291,7 @@
 //             Generalize Schemas Pattern Collection in Action Schemas from ConnectionManager.
 //             Changes in dataExportAction Use of tableHeadings & summaryListTable
 //             Initialization & Assignment.
+//        7.54 Passed parent to QueryFrame Constructor.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -355,7 +356,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.53 03/05/2013
+ * @version 7.54 03/06/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -520,7 +521,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       // Query Frame
       if (actionCommand.equals(ACTION_QUERY_FRAME) && !queryFrameVisible)
       {
-         QueryFrame queryFrame = new QueryFrame();
+         QueryFrame queryFrame = new QueryFrame(parent);
          queryFrame.setSize(800, 600);
          queryFrame.center();
          queryFrame.setVisible(true);
