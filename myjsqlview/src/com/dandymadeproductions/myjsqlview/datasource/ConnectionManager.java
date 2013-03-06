@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 03/05/2013
+// Version 3.5 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -83,6 +83,7 @@
 //             Code.
 //         3.4 Updated Example dbMetaData.getTables() Parameter Arguments for SQLite &
 //             Derby in loadDBParameters.
+//         3.5 Added Class Method getAllSchemasPattern().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -116,7 +117,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.4 03/05/2013
+ * @version 3.5 03/05/2013
  */
 
 public class ConnectionManager
@@ -894,6 +895,24 @@ public class ConnectionManager
          schemasList.add(schemasIterator.next());
       
       return schemasList;
+   }
+   
+   //==============================================================
+   // Class method to return the schemas pattern that will derive
+   // no restriction on tables collect with a DatabaseMetaData
+   // getTables().
+   //==============================================================
+
+   public static String getAllSchemasPattern()
+   {
+      if (getDataSourceType().equals(HSQL)
+          || getDataSourceType().equals(ORACLE))
+         return "%";
+      else if (getDataSourceType().equals(MYSQL)
+               || getDataSourceType().equals(POSTGRESQL))
+         return "";
+      else
+         return null;
    }
    
    //==============================================================
