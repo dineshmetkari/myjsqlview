@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.8 03/05/2013
+// Version 1.9 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.
 //         1.7 Added Methods shutdownDatabase(), closeMemoryConnection(), & shutdown().
 //         1.8 Added Class Instance ALL_TABLE_SCHEMAS_PATTERN & Method getAllSchemasPattern().
+//         1.9 Class Method shutdownDatabase() Insertion of finally to Handle Connection
+//             That was Created.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,7 +73,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * current user.
  * 
  * @author Dana M. Proctor
- * @version 1.8 03/05/2013
+ * @version 1.9 03/06/2013
  */
 
 public class ConnectionManagerHSQL
@@ -372,6 +374,7 @@ public class ConnectionManagerHSQL
    private static void shutdownDatabase(String description)
    {
       // Method Instances.
+      Connection dbConnection;
       String connectionString;
       String databaseShutdownString;
       
@@ -383,6 +386,8 @@ public class ConnectionManagerHSQL
       else
          databaseShutdownString = connectionString;
       
+      dbConnection = null;
+      
       try
       {  
          if (databaseShutdownString.toLowerCase().indexOf("file:") != -1
@@ -391,13 +396,26 @@ public class ConnectionManagerHSQL
             if (MyJSQLView.getDebug())
                System.out.println(description + " Shutting Down HSQL File/Memory Database");
                
-            DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+            dbConnection = DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+            dbConnection.close();
          }
          return; 
       }
       catch (SQLException e)
       {
          displaySQLErrors(e, "ConnectionManagerHSQL shutdownDatabase()");
+      }
+      finally
+      {
+         try
+         {
+            if (dbConnection != null)
+               dbConnection.close();
+         }
+         catch (SQLException sqle)
+         {
+            displaySQLErrors(sqle, "ConnectionManagerHSQL shutdownDatabase()");
+         }
       }
    }
 

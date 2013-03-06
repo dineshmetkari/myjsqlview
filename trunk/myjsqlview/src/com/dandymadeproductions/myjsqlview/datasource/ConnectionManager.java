@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.6 03/05/2013
+// Version 3.7 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -85,6 +85,8 @@
 //             Derby in loadDBParameters.
 //         3.5 Added Class Method getAllSchemasPattern().
 //         3.6 Commented schemasName Output in loadDBTables().
+//         3.7 Class Method shutdownDatabase() Insertion of finally to Handle Connection
+//             That was Created.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +120,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.6 03/05/2013
+ * @version 3.7 03/06/2013
  */
 
 public class ConnectionManager
@@ -317,6 +319,7 @@ public class ConnectionManager
    private static void shutdownDatabase(String description)
    {
       // Method Instances.
+      Connection dbConnection;
       String connectionString, driver, subProtocol;
       String databaseShutdownString;
       
@@ -330,6 +333,8 @@ public class ConnectionManager
       else
          databaseShutdownString = connectionString;
       
+      dbConnection = null;
+      
       try
       {
          // Try to shutdown Derby & HSQL database properly.
@@ -341,7 +346,8 @@ public class ConnectionManager
                if (MyJSQLView.getDebug())
                   System.out.println(description + " Dropping Derby Memory Database");
                
-               DriverManager.getConnection(databaseShutdownString + ";drop=true");
+               dbConnection = DriverManager.getConnection(databaseShutdownString + ";drop=true");
+               dbConnection.close();
             }
             
             // Shutdown Embedded Only
@@ -350,7 +356,8 @@ public class ConnectionManager
                if (MyJSQLView.getDebug())
                   System.out.println(description + " Shutting Down Derby Embedded Database");
                
-               DriverManager.getConnection("jdbc:derby:;shutdown=true");
+               dbConnection = DriverManager.getConnection("jdbc:derby:;shutdown=true");
+               dbConnection.close();
             }
             return;
          }
@@ -363,7 +370,8 @@ public class ConnectionManager
                if (MyJSQLView.getDebug())
                   System.out.println(description + " Shutting Down HSQL File/Memory Database");
                
-               DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+               dbConnection = DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
+               dbConnection.close();
             }
             return;
          }
@@ -381,6 +389,18 @@ public class ConnectionManager
          }
          else
             displaySQLErrors(e, "ConnectionManager shutdownDatabase()");
+      }
+      finally
+      {
+         try
+         {
+            if (dbConnection != null)
+               dbConnection.close();
+         }
+         catch (SQLException sqle)
+         {
+            displaySQLErrors(sqle, "ConnectionManager shutdownDatabase()");
+         }
       }
    }
    
