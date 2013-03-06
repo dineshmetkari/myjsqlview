@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.1 02/27/2013
+// Version 8.2 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -197,6 +197,7 @@
 //                        Exists, Not NULL.
 //         8.1 02/27/2013 Inner Class myjsqlviewFrameListener Call to ConnectionManager.shutdown()
 //                        Upon Frame Closing.
+//         8.2 03/05/2013 Correction in reloadDBTables() for Connection Identification.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -243,7 +244,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.1 02/27/2013
+ * @version 8.2 03/05/2013
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -542,7 +543,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       // Create a connection, load the database tables again
       // then resetup the DBTablesPanel.
       
-      dbConnection = ConnectionManager.getConnection("TableTabPanel_Frame reloadDBTables()");
+      dbConnection = ConnectionManager.getConnection("MyJSQLView_Frame reloadDBTables()");
       
       if (dbConnection == null)
          return;
@@ -583,7 +584,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          ConnectionManager.displaySQLErrors(e, "MyJSQLView_Frame reloadDBTables()");
       }
       
-      ConnectionManager.closeConnection(dbConnection, "TableTabPanel_Frame reloadDBTables()");
+      ConnectionManager.closeConnection(dbConnection, "MyJSQLView_Frame reloadDBTables()");
    }
    
    //==============================================================
