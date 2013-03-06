@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.4 02/28/2013
+// Version 8.5 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,6 +158,7 @@
 //             of the Dash Character to Insure a Valid Date Format.
 //         8.4 Method getUnlimitedSQLStatementString() Addition of Derby Processing and
 //             Instance unLimitedSQLStatementString.
+//         8.5 Alternate StringBuffer Manipulation in getUnLimitdSQLStatementString().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -219,7 +220,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.4 02/28/2013
+ * @version 8.5 03/06/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -933,7 +934,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    public static String getUnlimitedSQLStatementString(String sqlStatementString)
    {
       // Method Instances
-      String dataSourceType;
+      String dataSourceType, trimmedString;
       StringBuffer unLimitedSQLStatementString;
       int index1, index2, index3, index4, index5;
       
@@ -1024,9 +1025,13 @@ public class MyJSQLView_Utils extends MyJSQLView
             unLimitedSQLStatementString.append(sqlStatementString.substring(
                0, sqlStatementString.lastIndexOf("LIMIT")));
       }
-      // System.out.println(sqlStatementString);
       
-      return new String(unLimitedSQLStatementString.toString().trim());
+      trimmedString = (unLimitedSQLStatementString.toString()).trim();
+      unLimitedSQLStatementString.delete(0, unLimitedSQLStatementString.length());
+      unLimitedSQLStatementString.append(trimmedString);
+      // System.out.println(unLimitedSQLStatementString);
+      
+      return new String(unLimitedSQLStatementString);
    }
    
    //==============================================================
