@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.7 02/28/2013
+// Version 1.8 03/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@
 //             for dbMetaData.getDatabaseProductName/Version().
 //         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.
 //         1.7 Added Methods shutdownDatabase(), closeMemoryConnection(), & shutdown().
+//         1.8 Added Class Instance ALL_TABLE_SCHEMAS_PATTERN & Method getAllSchemasPattern().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * current user.
  * 
  * @author Dana M. Proctor
- * @version 1.7 02/28/2013
+ * @version 1.8 03/05/2013
  */
 
 public class ConnectionManagerHSQL
@@ -99,6 +100,7 @@ public class ConnectionManagerHSQL
    private static final String TABLE_SCHEM = "TABLE_SCHEM";
    private static final String TABLE_NAME = "TABLE_NAME";
    private static final String TABLE_TYPE = "TABLE_TYPE";
+   private static final String ALL_TABLE_SCHEMAS_PATTERN = "%";
 
    private static final String DRIVER = "org.hsqldb.jdbcDriver";
    private static final String PROTOCOL = "jdbc";
@@ -658,6 +660,17 @@ public class ConnectionManagerHSQL
          schemasVector.add(schemasIterator.next());
 
       return schemasVector;
+   }
+   
+   //==============================================================
+   // Class method to return the schemas pattern that will derive
+   // no restriction on tables collect with a DatabaseMetaData
+   // getTables().
+   //==============================================================
+
+   public static String getAllSchemasPattern()
+   {
+      return ALL_TABLE_SCHEMAS_PATTERN;
    }
 
    //==============================================================
