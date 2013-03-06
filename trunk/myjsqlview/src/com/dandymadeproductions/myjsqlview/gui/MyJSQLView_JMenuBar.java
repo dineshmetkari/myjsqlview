@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.0 09/11/2012
+// Version 8.1 05/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,9 @@
 //             to getResourceBundle().
 //         7.9 Collection of All Image Resources Through resourceBundle.
 //         8.0 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         8.1 Made Class & Constructor Public. Created Class Instance schemasMenu,
+//             Removed from createSchemasMenu(). Made mainFrame static. Added
+//             Class Method reloadSchemasMenu().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,22 +167,23 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 8.0 09/11/2012
+ * @version 8.1 03/05/2013
  */
 
-class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
+public class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
 {
    // Instance & Class Fields.
    private static final long serialVersionUID = 949237817664557715L;
    
-   private MyJSQLView_Frame mainFrame;
+   private static JMenu schemasMenu = new JMenu();
+   private static MyJSQLView_Frame mainFrame;
    private MyJSQLView_ResourceBundle resourceBundle;
 
    //==============================================================
    // MyJSQLView_JMenuBar JMenuBar Constructor.
    //==============================================================
 
-   protected MyJSQLView_JMenuBar(MyJSQLView_Frame parent)
+   public MyJSQLView_JMenuBar(MyJSQLView_Frame parent)
    {
       mainFrame = parent;
 
@@ -459,7 +463,6 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
    private void createSchemasMenu(ArrayList<String> schemas)
    {
       // Method Instances.
-      JMenu schemasMenu;
       JRadioButtonMenuItem radioButtonMenuItem;
       ButtonGroup schemasButtonGroup;
       String resource;
@@ -468,7 +471,7 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       // Schemas Menu
       
       resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Schemas", "Schemas");
-      schemasMenu = new JMenu(resource);
+      schemasMenu.setText(resource);
       schemasMenu.setFont(schemasMenu.getFont().deriveFont(Font.BOLD));
       
       // Create a drop down radio button selecter.
@@ -507,6 +510,68 @@ class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionComma
       }
       
       add(schemasMenu);
+   }
+   
+   //==============================================================
+   // Method to reload the schemas menu item.
+   //==============================================================
+
+   public static void reloadSchemasMenu()
+   {
+      if (!schemasMenu.getText().isEmpty())
+      {
+         // Method Instances.
+         ArrayList<String> schemas;
+         
+         JRadioButtonMenuItem radioButtonMenuItem;
+         ButtonGroup schemasButtonGroup;
+         String schemasName, resource;
+         
+         // Collect the schemas
+         
+         schemas = ConnectionManager.getSchemas();
+         Iterator<String> schemasIterator1 = schemas.iterator();
+         
+         while (schemasIterator1.hasNext())
+            schemasName = schemasIterator1.next();
+          
+         // Clear & reset the menu.
+         
+         schemasMenu.removeAll();
+         schemasButtonGroup = new ButtonGroup();
+         
+         int radioButtonCount = 0;
+         
+         // Add an All schemas item as needed.
+         if (schemas.size() != 1)
+         {
+            resource = MyJSQLView.getResourceBundle().getResourceString("MyJSQLView_JMenuBar.radioButton.All", "All");
+            radioButtonMenuItem = new JRadioButtonMenuItem(resource, true);
+            radioButtonMenuItem.setActionCommand("All");
+            radioButtonMenuItem.addActionListener(mainFrame);
+            schemasButtonGroup.add(radioButtonMenuItem);
+            schemasMenu.add(radioButtonMenuItem);
+            radioButtonCount = 1;
+         }
+         
+         // Create elements of schemas menu items.
+         Iterator<String> schemasIterator = schemas.iterator();
+         
+         while (schemasIterator.hasNext())
+         {
+            schemasName = schemasIterator.next();
+            
+            if (radioButtonCount == 0)
+               radioButtonMenuItem = new JRadioButtonMenuItem(schemasName, true);
+            else
+               radioButtonMenuItem = new JRadioButtonMenuItem(schemasName);
+            radioButtonMenuItem.setActionCommand(schemasName);
+            radioButtonMenuItem.addActionListener(mainFrame);
+            schemasButtonGroup.add(radioButtonMenuItem);
+            schemasMenu.add(radioButtonMenuItem);
+            radioButtonCount++;
+         }   
+      }
    }
    
    //==============================================================
