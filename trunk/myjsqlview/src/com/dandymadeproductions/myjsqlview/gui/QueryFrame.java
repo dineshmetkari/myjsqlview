@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.0 03/01/2013
+// Version 9.2 03/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -220,6 +220,8 @@
 //                        for Apache Derby.
 //         9.0 03/01/2013 Renamed in exportData() DataTableDumpThread to CSVDataTableDumpThread.
 //         9.1 03/01/2013 Renamed in exportData() DataDumpThread to CSVDataDumpThread.
+//         9.2 03/06/2013 Added MyJSQLView_Frame as Argument in Constructor. Added SQL Query
+//                        Bucket to MenuBar & ToolBar.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -307,7 +309,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.1 03/01/2013
+ * @version 9.2 03/06/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -375,7 +377,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    // QueryFrame Constructor
    //==============================================================
 
-   public QueryFrame()
+   public QueryFrame(MyJSQLView_Frame parent)
    {
       // Constructor Instances.
       JMenuBar queryFrameMenuBar;
@@ -474,7 +476,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       queryFrameMenuBar = new JMenuBar();
       queryFrameMenuBar.setBorder(BorderFactory.createEtchedBorder());
-      createMenuBar(queryFrameMenuBar);
+      createMenuBar(parent, queryFrameMenuBar);
       this.setJMenuBar(queryFrameMenuBar);
       
       // ===============================================
@@ -483,7 +485,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       queryFrameToolBar = new JToolBar("MyJSQLView QueryFrame ToolBar");
       queryFrameToolBar.setBorder(BorderFactory.createLoweredBevelBorder());
-      createToolBar(queryFrameToolBar);
+      createToolBar(parent, queryFrameToolBar);
 
       // ===============================================
       // Setting up the various panels that are used in
@@ -1308,7 +1310,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    // used with the frame.
    //==============================================================
 
-   private void createMenuBar(JMenuBar queryFrameMenuBar)
+   private void createMenuBar(MyJSQLView_Frame mainFrame, JMenuBar queryFrameMenuBar)
    {
       // Method Instances
       String resource;
@@ -1316,7 +1318,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JButton logoIconItem;
       
       JMenuItem menuItem = null;
-      JMenu fileMenu, editMenu, dataMenu;
+      JMenu fileMenu, editMenu, dataMenu, toolsMenu;
       JMenu preferencesMenu, exportMenu, exportCVSMenu;
 
       // ===============
@@ -1427,6 +1429,21 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
       dataMenu.add(exportMenu);
       queryFrameMenuBar.add(dataMenu);
+      
+      // ===============
+      // Tools Menu
+      
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Tools", "Tools");
+      toolsMenu = new JMenu(resource);
+      toolsMenu.setFont(fileMenu.getFont().deriveFont(Font.BOLD));
+      
+      resource = resourceBundle.getResourceString("QueryFrame.menu.SQLQueryBucket", "SQL Query Bucket");
+      menuItem = new JMenuItem(resource);
+      menuItem.addActionListener(mainFrame);
+      menuItem.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_SQL_QUERY_BUCKET);
+      toolsMenu.add(menuItem);
+
+      queryFrameMenuBar.add(toolsMenu);
       queryFrameMenuBar.add(Box.createHorizontalGlue());
       
       // ===============
@@ -1445,7 +1462,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    // used with the frame.
    //==============================================================
 
-   private void createToolBar(JToolBar queryFrameToolBar)
+   private void createToolBar(MyJSQLView_Frame mainFrame, JToolBar queryFrameToolBar)
    {
       // Method Instances
       String resource;
@@ -1453,6 +1470,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       ImageIcon printIcon, pageFormatIcon, exitIcon;
       ImageIcon openScriptIcon, saveScriptIcon, tableRowsIcon;
       ImageIcon csvExportTabSummaryTableIcon, pdfExportTabSummaryTableIcon;
+      ImageIcon sqlQueryBucketIcon;
       JButton buttonItem;
       
       // ===============
@@ -1518,6 +1536,24 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportPDFSummaryTable",
                                                   "Export PDF Tab Summary Table");
       buttonItem = buttonItem(resource, pdfExportTabSummaryTableIcon, DATAEXPORT_PDF_SUMMARY_TABLE);
+      queryFrameToolBar.add(buttonItem);
+      
+      queryFrameToolBar.addSeparator();
+      
+      // ===============
+      // Tools Menu
+      
+      // SQL Query Bucket
+      sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlQueryBucketIcon_20x20.png");
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.SQLQueryBucket",
+                                                  "SQL Query Bucket");
+      
+      buttonItem = new JButton(sqlQueryBucketIcon);
+      buttonItem.setFocusable(false);
+      buttonItem.setMargin(new Insets(0, 0, 0, 0));
+      buttonItem.setToolTipText(resource);
+      buttonItem.setActionCommand(MyJSQLView_MenuActionCommands.ACTION_SQL_QUERY_BUCKET);
+      buttonItem.addActionListener(mainFrame);
       
       queryFrameToolBar.add(buttonItem);
    }
