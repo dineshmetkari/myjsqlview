@@ -260,7 +260,7 @@ class MyJSQLView_JToolBar extends JToolBar implements MyJSQLView_MenuActionComma
       sqlQueryBucketIcon = resourceBundle.getResourceImage(iconsDirectory + "sqlQueryBucketIcon_20x20.png");
       resource = resourceBundle.getResourceString("MyJSQLView_JToolBar.tooltip.SQLQueryBucket",
                                                   "SQL Query Bucket");
-     buttonItem = buttonItem(resource, sqlQueryBucketIcon, ACTION_SQL_QUERY_BUCKET);
+      buttonItem = buttonItem(resource, sqlQueryBucketIcon, ACTION_SQL_QUERY_BUCKET);
       add(buttonItem);
       
       // Query Frame
