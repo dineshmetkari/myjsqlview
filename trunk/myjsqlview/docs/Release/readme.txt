@@ -128,7 +128,7 @@ java" in a console. Please consult with each vendor for specific installation
 instructions for these JDBC pieces of code. Similarly if other databases are
 to be accessed via the application then again installed the recommended driver(s)
 to the Java Runtime /lib/ext directory. The two exception JDBC installations
-are for the Derby and HSQL databases. Derby requires the file derby.jar, derbynet.jar,
+are for the Derby and HSQL databases. Derby requires the derby.jar, derbynet.jar,
 and derbyclient.jar files to placed in the Java Extension directory. HSQL uses
 an integrated JDBC built into the application. MyJSQLView as of v3.33 includes
 this database so no additional installation need take place.
