@@ -1,0 +1,20 @@
+MyJSQLView Version 3.44 Released
+
+The MyJSQLView project is pleased to release v3.44 to the public. The
+release includes now the support for the Apache Derby database. Derby
+fit nicely into the application's framework because of its ease of use
+and compliance with the SQL standard. Also included with this release
+comes changes to the Query Frame UI, and enhancements to the HeatMapper
+plugin.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to visual build queries, profile and
+plot data for analysis.
