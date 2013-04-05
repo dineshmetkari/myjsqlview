@@ -16,5 +16,5 @@ viewing, adding, editing, or deleting entries in several mainstream
 databases. A query frame allows the building of complex SQL statements
 and a SQL Query Bucket for saving such. The application allows easy
 sorting, searching, and import/export of table data. A plug-in framework
-has allowed the inclusion of tools to visual build queries, profile and
+has allowed the inclusion of tools to visually build queries, profile and
 plot data for analysis.
