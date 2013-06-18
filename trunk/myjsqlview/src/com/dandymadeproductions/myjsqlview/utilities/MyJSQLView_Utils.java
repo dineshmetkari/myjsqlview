@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.5 03/06/2013
+// Version 8.6 06/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -159,6 +159,8 @@
 //         8.4 Method getUnlimitedSQLStatementString() Addition of Derby Processing and
 //             Instance unLimitedSQLStatementString.
 //         8.5 Alternate StringBuffer Manipulation in getUnLimitdSQLStatementString().
+//         8.6 Changed in convertViewDateString() to Properly Check for Dashes in the
+//             Date String, 2, NOT IndexOf 2.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -220,7 +222,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.5 03/06/2013
+ * @version 8.6 06/18/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -469,11 +471,11 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (view_DateString.indexOf("/") != -1)
          view_DateString = view_DateString.replaceAll("/", "-");
       
-      if (view_DateString.indexOf("-") != 2)
-         return "";
-      
       firstDashIndex = view_DateString.indexOf("-");
       lastDashIndex = view_DateString.lastIndexOf("-");
+      
+      if (firstDashIndex == -1 || lastDashIndex == -1)
+         return "";
       
       // Convert the input date string to the appropriate format.
       
@@ -509,7 +511,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          day = view_DateString.substring(firstDashIndex + 1, lastDashIndex); 
       }
       
-      // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
+      System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
       return year + "-" + month + "-" + day; 
    }
    
@@ -838,7 +840,7 @@ public class MyJSQLView_Utils extends MyJSQLView
    
    //==============================================================
    // Class method to return a copy of the Date Format options that
-   // MyJSQLView recognizes as value dates, example MM/dd/YYYY.
+   // MyJSQLView recognizes as valid dates, example MM/dd/YYYY.
    //==============================================================
    
    public static Object[] getDateFormatOption()
