@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.54 03/06/2013
+// Version 7.55 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -292,6 +292,9 @@
 //             Changes in dataExportAction Use of tableHeadings & summaryListTable
 //             Initialization & Assignment.
 //        7.54 Passed parent to QueryFrame Constructor.
+//        7.55 Grouped The Top MenuBar New Edit/Preferences & Plugins Items Together.
+//             Added Methods buildConstraints(), setGeneralPreferences(), getLocaleList(),
+//             & setLocalizationString() to Support Edit/Preferences.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -299,13 +302,20 @@
 
 package com.dandymadeproductions.myjsqlview.gui;
 
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterException;
 import java.awt.print.PrinterJob;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -316,26 +326,32 @@ import java.util.Date;
 import java.util.HashMap;
 
 import javax.sound.sampled.Clip;
+import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.SpinnerNumberModel;
+import javax.swing.UIManager;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
-import com.dandymadeproductions.myjsqlview.io.CSVDataImportThread;
 import com.dandymadeproductions.myjsqlview.io.CSVDataDumpThread;
+import com.dandymadeproductions.myjsqlview.io.CSVDataImportThread;
 import com.dandymadeproductions.myjsqlview.io.CSVDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.LoadTableStateThread;
 import com.dandymadeproductions.myjsqlview.io.PDFDataTableDumpThread;
@@ -356,7 +372,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.54 03/06/2013
+ * @version 7.55 07/01/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -415,7 +431,30 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          actionCommand = "";
       
       //System.out.println(actionCommand);
-
+      
+      // ==================================
+      // Top Frame Item Selection Routing
+      // ==================================
+      
+      // Edit General Preferences
+      if (actionCommand.equals(ACTION_GENERAL_PROPERTIES))
+      {
+         setGeneralPreferences(parent);
+      }
+      
+      // Plugin Management
+      if (actionCommand.equals(ACTION_PLUGIN_MANAGEMENT) && !pluginFrameVisible)
+      {
+         // Showing the Edit Preferences Frame.
+         PluginFrame managePluginPreferences = new PluginFrame(parent);
+         managePluginPreferences.setSize(750, 475);
+         managePluginPreferences.center();
+         managePluginPreferences.setVisible(true);
+         managePluginPreferences.startAnimation();
+         pluginFrameVisible = true;
+         return;
+      }
+      
       // ==================================
       // File Menu Item Selection Routing
       // ==================================
@@ -565,19 +604,6 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             searchFrame.setVisible(true);
             searchFrameVisible = true;
          }
-         return;
-      }
-      
-      // Plugin Management
-      if (actionCommand.equals(ACTION_PLUGIN_MANAGEMENT) && !pluginFrameVisible)
-      {
-         // Showing the Edit Preferences Frame.
-         PluginFrame managePluginPreferences = new PluginFrame(parent);
-         managePluginPreferences.setSize(750, 475);
-         managePluginPreferences.center();
-         managePluginPreferences.setVisible(true);
-         managePluginPreferences.startAnimation();
-         pluginFrameVisible = true;
          return;
       }
       
@@ -737,6 +763,194 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             flushSoundThread.start();
          }
          return;
+      }
+   }
+   
+   //================================================================
+   // Class Method for helping the parameters in gridbag.
+   //================================================================
+
+   private static void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw,
+                                 int gh, double wx, double wy)
+   {
+      gbc.gridx = gx;
+      gbc.gridy = gy;
+      gbc.gridwidth = gw;
+      gbc.gridheight = gh;
+      gbc.weightx = wx;
+      gbc.weighty = wy;
+   }
+   
+   //==============================================================
+   // Class method used all the general properties for MyJSQLView
+   // to be set. These would be language and font size.
+   //==============================================================
+
+   private static void setGeneralPreferences(MyJSQLView_Frame parent)
+   {
+      // Method Instances.
+      MyJSQLView_ResourceBundle resourceBundle;
+      JPanel mainPanel, localizationPanel, fontSizePanel, fontSpinnerPanel;
+      
+      ImageIcon localeIcon, fontSizeIcon;
+      JLabel localizationLabel, fontSizeLabel;
+      JComboBox localizationComboBox;
+      JSpinner fontSizeSpinner;
+      
+      int currentFontSize;
+      String fileSeparator, iconsDirectory;
+      String resource, resourceLanguage, resourceOK, resourceCancel;
+      
+      // Setup
+      
+      resourceBundle = MyJSQLView.getResourceBundle();
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
+      
+      GridBagLayout gridbag = new GridBagLayout();
+      GridBagConstraints constraints = new GridBagConstraints();
+      
+      mainPanel = new JPanel(new GridLayout(2, 1, 2, 2));
+      mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0),
+                          BorderFactory.createLoweredBevelBorder()));
+      
+      Object uiObject = UIManager.get("Label.font");
+      
+      if (uiObject instanceof Font && uiObject != null)
+      {
+         Font uiManagerFont = (Font) uiObject;
+         currentFontSize = uiManagerFont.getSize();
+      }
+      else
+         currentFontSize = 12;
+      
+      // Create the components for the preferences selector
+      // dialog.
+      
+      SpinnerNumberModel fontSizeSpinnerModel;
+      final int minimumFontSize = 8;
+      final int maxLimitFontSize = 24;
+      final int spinnerFontSizeStep = 1;
+
+      // =====================================================
+      // Localization Selector Panel & Components
+      
+      localizationPanel = new JPanel(gridbag);
+      localizationPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(3, 3, 3, 3), BorderFactory.createEtchedBorder()));
+      
+      localeIcon = resourceBundle.getResourceImage(iconsDirectory + "localeIcon.gif");
+      JLabel localeIconLabel = new JLabel(localeIcon);
+      localeIconLabel.setBorder(BorderFactory.createEmptyBorder(4, 5, 4, 5));
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 34, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(localeIconLabel, constraints);
+      localizationPanel.add(localeIconLabel);
+      
+      resourceLanguage = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.label.Language",
+                                                          "Language");
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.label.RestartRequired",
+                                                  "Restart Required");
+      
+      localizationLabel = new JLabel(resourceLanguage + " ( " + resource + " ) ");
+      localizationLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 33, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(localizationLabel, constraints);
+      localizationPanel.add(localizationLabel);
+
+      localizationComboBox = new JComboBox(getLocaleList().toArray());
+      localizationComboBox.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
+      localizationComboBox.setSelectedItem(MyJSQLView.getLocaleString());
+
+      buildConstraints(constraints, 2, 0, 1, 1, 33, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(localizationComboBox, constraints);
+      localizationPanel.add(localizationComboBox);
+
+      mainPanel.add(localizationPanel);
+      
+      // =====================================================
+      // Font Size Selector Panel & Components
+      
+      fontSizePanel = new JPanel(gridbag);
+      fontSizePanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(3, 3, 3, 3), BorderFactory.createEtchedBorder()));
+      
+      fontSizeIcon = resourceBundle.getResourceImage(iconsDirectory + "fontSizeIcon.gif");
+      JLabel fontSizeIconLabel = new JLabel(fontSizeIcon);
+      fontSizeIconLabel.setBorder(BorderFactory.createEmptyBorder(2, 4, 2, 5));
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 20, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(fontSizeIconLabel, constraints);
+      fontSizePanel.add(fontSizeIconLabel);
+      
+      fontSpinnerPanel = new JPanel();
+      
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.label.FontSize",
+                                                          "Font Size");
+      fontSizeLabel = new JLabel(resource);
+      fontSizeLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+      
+      fontSpinnerPanel.add(fontSizeLabel);
+      
+      fontSizeSpinnerModel = new SpinnerNumberModel(currentFontSize, minimumFontSize,
+                                                    maxLimitFontSize, spinnerFontSizeStep);
+      fontSizeSpinner = new JSpinner(fontSizeSpinnerModel);
+      
+      fontSpinnerPanel.add(fontSizeSpinner);
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(fontSpinnerPanel, constraints);
+      fontSizePanel.add(fontSpinnerPanel);
+
+      mainPanel.add(fontSizePanel);
+      
+      // Create a dialog of the components.
+      
+      Object content[] = {mainPanel};
+
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.label.GeneralPreferences",
+                                                  "General Preferences");
+      resourceOK = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("MyJSQLView_JMenuBarActions.button.Cancel",
+                                                        "Cancel");
+      
+      InputDialog generalPreferencesDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
+                                                  content, null);
+      generalPreferencesDialog.pack();
+      generalPreferencesDialog.setResizable(false);
+      generalPreferencesDialog.center();
+      generalPreferencesDialog.setVisible(true);
+
+      // Collect the changes and updating as needed.
+
+      if (generalPreferencesDialog.isActionResult())
+      {
+         System.out.println("Action Taken");
+         parent.setFontSize(Integer.parseInt(fontSizeSpinner.getValue().toString()));
+         
+         if (!localizationComboBox.getSelectedItem().equals(MyJSQLView.getLocaleString()))
+         {
+            try
+            {
+               setLocalization((String) localizationComboBox.getSelectedItem());
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("MyJSQLView_JMenuBar setGeneralPreferences() " + ioe);
+            }
+         } 
       }
    }
    
@@ -1354,6 +1568,110 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                                    "File NOT Found");
       
       JOptionPane.showMessageDialog(null, resourceMessage, resourceTitle, JOptionPane.ERROR_MESSAGE);
+   }
+   
+   //===============================================================
+   // Class method to collect the localization languages supported.
+   //===============================================================
+
+   private static ArrayList<String> getLocaleList()
+   {
+      // Method Instances
+      File localeFileDirectory;
+      String[] localeFileNames;
+      ArrayList<String> localesData;
+      int lastIndexOfDot;
+
+      // Setup the instances and required data to start.
+      
+      localeFileDirectory = new File(System.getProperty("user.dir") + MyJSQLView_Utils.getFileSeparator()
+                                     + "locale" + MyJSQLView_Utils.getFileSeparator());
+      localesData = new ArrayList <String>();
+
+      try
+      {
+         if (localeFileDirectory.exists() && localeFileDirectory.isDirectory())
+         {
+            // Collect the locale file names from the
+            // locale directory.
+            localeFileNames = localeFileDirectory.list();
+
+            if (localeFileNames != null)
+            {
+               for (int i = 0; i < localeFileNames.length; i++)
+               {
+                  lastIndexOfDot = localeFileNames[i].lastIndexOf(".");
+                  // System.out.println(localeFileNames[i]);
+
+                  if (lastIndexOfDot > 0
+                      && (localeFileNames[i].substring(lastIndexOfDot + 1).equals("properties")))
+                     localesData.add(localeFileNames[i].substring((lastIndexOfDot - 5), lastIndexOfDot));
+               }
+            }
+         }
+      }
+      catch (SecurityException se)
+      {
+         if (MyJSQLView.getDebug())
+            System.out.println("GeneralPreferencesPanel getLocaleList() " + se);
+      }
+      return localesData;
+   }
+   
+   //===============================================================
+   // Class method to collect the localization languages supported.
+   //===============================================================
+
+   private static void setLocalization(String localizationString) throws IOException
+   {
+      // Method Instances
+      String fileSeparator;
+      String localeFileName, localeFileString;
+      File localeFile;
+      FileWriter fileWriter;
+      BufferedWriter bufferedWriter;
+      
+      
+      fileSeparator = MyJSQLView_Utils.getFileSeparator();
+      localeFileName = "myjsqlview_locale.txt";
+      localeFileString = MyJSQLView_Utils.getMyJSQLViewDirectory() + fileSeparator
+                         + localeFileName;
+      fileWriter = null;
+      bufferedWriter = null;
+      
+      try
+      {
+         localeFile = new File(localeFileString);
+         fileWriter = new FileWriter(localeFile);
+         bufferedWriter = new BufferedWriter(fileWriter);
+         
+         bufferedWriter.write(localizationString);
+         bufferedWriter.flush();
+         fileWriter.flush();
+      }
+      catch (IOException ioe)
+      {
+         if (MyJSQLView.getDebug())
+            System.out.println("GeneralPreferencesPanel setLocalization() " + ioe);
+      }
+      finally
+      {
+         try
+         {
+            if (bufferedWriter != null)
+               bufferedWriter.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("GeneralPreferencesPanel setLocalization() " + ioe);
+         }
+         finally
+         {
+            if (fileWriter != null)
+               fileWriter.close();
+         }  
+      }
    }
 
    //==============================================================
