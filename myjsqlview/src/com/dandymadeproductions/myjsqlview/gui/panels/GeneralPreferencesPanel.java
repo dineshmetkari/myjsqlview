@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.1 09/10/2012
+// Version 2.2 07/07/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,6 +59,9 @@
 //                        Made Class, Constructor, & get/setGeneralProperties() Methods
 //                        Along With static final Class Instances & generalOptionsPanelFiller
 //                        Public.
+//         2.2 07/01/2013 Removed Localization Selector and Its Components. Moved to the Top
+//                        Main MyJSQLView_Frame MenuBar. Removed Methods getLocaleList() &
+//                        setLocalization().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -72,11 +75,6 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -90,7 +88,6 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
@@ -101,7 +98,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 2.1 09/10/2012
+ * @version 2.2 07/01/2013
  */
 
 public class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -110,7 +107,6 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    private static final long serialVersionUID = 4715186260795158107L;
    
    public GeneralOptionsPreferencesFiller generalOptionsPanelFiller;
-   private JComboBox localizationComboBox;
    private JComboBox dateFormatComboBox;
    private JSpinner limitIncrementSpinner;
    private JSpinner batchSizeSpinner;
@@ -129,10 +125,9 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    {
       // Class Instances
       JPanel mainPanel;
-      JPanel localizationPanel, dateFormatPanel, limitIncrementPanel, batchPanel;
+      JPanel dateFormatPanel, limitIncrementPanel, batchPanel;
       JPanel fillerPanel;
       JPanel buttonPanel;
-      JLabel localizationLabel;
       JLabel dateFormatLabel, limitIncrementLabel;
       JLabel batchSizeLabel;
       
@@ -154,39 +149,9 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
 
-      mainPanel = new JPanel(new GridLayout(4, 1, 2, 2));
+      mainPanel = new JPanel(new GridLayout(3, 1, 2, 2));
       mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0),
                           BorderFactory.createLoweredBevelBorder()));
-      
-      // =====================================================
-      // Localization Selector Panel & Components
-      
-      localizationPanel = new JPanel(gridbag);
-      localizationPanel.setBorder(BorderFactory.createCompoundBorder(
-         BorderFactory.createEmptyBorder(3, 3, 3, 3), BorderFactory.createEtchedBorder()));
-      
-      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.LanguageRestartRequired",
-                                                  "Language (Restart Required)");
-      localizationLabel = new JLabel(resource);
-      localizationLabel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
-
-      buildConstraints(constraints, 0, 0, 1, 1, 50, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(localizationLabel, constraints);
-      localizationPanel.add(localizationLabel);
-
-      localizationComboBox = new JComboBox(getLocaleList().toArray());
-      localizationComboBox.setSelectedItem(MyJSQLView.getLocaleString());
-      localizationComboBox.addActionListener(this);
-
-      buildConstraints(constraints, 1, 0, 1, 1, 50, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(localizationComboBox, constraints);
-      localizationPanel.add(localizationComboBox);
-
-      mainPanel.add(localizationPanel);
       
       // =====================================================
       // Date Format Panel & Components
@@ -340,7 +305,6 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
          // Restore Defaults Button Action
          if (formSource == restoreDefaultsButton)
          {
-            localizationComboBox.setSelectedItem(MyJSQLView.getLocaleString());
             dateFormatComboBox.setSelectedIndex(0);
             limitIncrementSpinner.setValue(Integer.valueOf(DEFAULT_LIMIT_INCREMENT));
             batchEnabledCheckBox.setSelected(DEFAULT_BATCH_SIZE_ENABLED);
@@ -352,18 +316,6 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
          else if (formSource == applyButton)
          {
             DBTablesPanel.setGeneralProperties(getGeneralOptions());
-            if (!localizationComboBox.getSelectedItem().equals(MyJSQLView.getLocaleString()))
-            {
-               try
-               {
-                  setLocalization();
-               }
-               catch (IOException ioe)
-               {
-                  if (MyJSQLView.getDebug())
-                     System.out.println("GeneralPreferencesPanel actionPerformed() " + ioe);
-               }
-            }
             applyButton.setEnabled(false);
          }
       }
@@ -405,110 +357,6 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       gbc.gridheight = gh;
       gbc.weightx = wx;
       gbc.weighty = wy;
-   }
-   
-   //===============================================================
-   // Class method to collect the localization languages supported.
-   //===============================================================
-
-   private ArrayList<String> getLocaleList()
-   {
-      // Method Instances
-      File localeFileDirectory;
-      String[] localeFileNames;
-      ArrayList<String> localesData;
-      int lastIndexOfDot;
-
-      // Setup the instances and required data to start.
-      
-      localeFileDirectory = new File(System.getProperty("user.dir") + MyJSQLView_Utils.getFileSeparator()
-                                     + "locale" + MyJSQLView_Utils.getFileSeparator());
-      localesData = new ArrayList <String>();
-
-      try
-      {
-         if (localeFileDirectory.exists() && localeFileDirectory.isDirectory())
-         {
-            // Collect the locale file names from the
-            // locale directory.
-            localeFileNames = localeFileDirectory.list();
-
-            if (localeFileNames != null)
-            {
-               for (int i = 0; i < localeFileNames.length; i++)
-               {
-                  lastIndexOfDot = localeFileNames[i].lastIndexOf(".");
-                  // System.out.println(localeFileNames[i]);
-
-                  if (lastIndexOfDot > 0
-                      && (localeFileNames[i].substring(lastIndexOfDot + 1).equals("properties")))
-                     localesData.add(localeFileNames[i].substring((lastIndexOfDot - 5), lastIndexOfDot));
-               }
-            }
-         }
-      }
-      catch (SecurityException se)
-      {
-         if (MyJSQLView.getDebug())
-            System.out.println("GeneralPreferencesPanel getLocaleList() " + se);
-      }
-      return localesData;
-   }
-   
-   //===============================================================
-   // Class method to collect the localization languages supported.
-   //===============================================================
-
-   private void setLocalization() throws IOException
-   {
-      // Method Instances
-      String fileSeparator;
-      String localeFileName, localeFileString;
-      File localeFile;
-      FileWriter fileWriter;
-      BufferedWriter bufferedWriter;
-      
-      
-      fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      localeFileName = "myjsqlview_locale.txt";
-      localeFileString = MyJSQLView_Utils.getMyJSQLViewDirectory() + fileSeparator
-                         + localeFileName;
-      fileWriter = null;
-      bufferedWriter = null;
-      
-      try
-      {
-         localeFile = new File(localeFileString);
-         fileWriter = new FileWriter(localeFile);
-         bufferedWriter = new BufferedWriter(fileWriter);
-         
-         bufferedWriter.write((String) localizationComboBox.getSelectedItem());
-         bufferedWriter.flush();
-         fileWriter.flush();
-      }
-      catch (IOException ioe)
-      {
-         if (MyJSQLView.getDebug())
-            System.out.println("GeneralPreferencesPanel setLocalization() " + ioe);
-      }
-      finally
-      {
-         try
-         {
-            if (bufferedWriter != null)
-               bufferedWriter.close();
-         }
-         catch (IOException ioe)
-         {
-            if (MyJSQLView.getDebug())
-               System.out.println("GeneralPreferencesPanel setLocalization() " + ioe);
-         }
-         finally
-         {
-            if (fileWriter != null)
-               fileWriter.close();
-         }  
-      }
    }
    
    //===============================================================
