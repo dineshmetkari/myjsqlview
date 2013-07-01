@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 09/11/2012
+// Version 1.7 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 //         1.4 Added Interface Instance ACTION_SQL_QUERY_BUCKET.
 //         1.5 Copyright Update.
 //         1.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         1.7 Added Instance ACTION_GENERAL_PROPERTIES, and Grouped Top
+//             Menu Commands Together.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -50,11 +52,20 @@ package com.dandymadeproductions.myjsqlview.gui;
  * menu system.  
  * 
  * @author Dana M. Proctor
- * @version 1.6 09/11/2012
+ * @version 1.7 07/01/2013
  */
 
 public interface MyJSQLView_MenuActionCommands
 {
+   // ===========
+   // MyJSQLView Top Menu
+   
+   // General Preferences
+   public static final String ACTION_GENERAL_PROPERTIES = "EGP";
+
+   // Plugin Management
+   public static final String ACTION_PLUGIN_MANAGEMENT = "TPM";
+   
    // ===========
    // File Menu
    
@@ -106,9 +117,6 @@ public interface MyJSQLView_MenuActionCommands
    
    // Search Database
    public static final String ACTION_SEARCH_DATABASE = "TSD";
-   
-   // Plugin Management
-   public static final String ACTION_PLUGIN_MANAGEMENT = "TPM";
    
    // ===========
    // Help Menu
