@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.7 09/11/2012
+// Version 1.8 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,7 @@
 //             to getResourceBundle().
 //         1.6 Collection of All Image Resources Through resourceBundle.
 //         1.7 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         1.8 Added Edit Menu.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +68,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * contains the MyJSQLView File|Exit, Plugin Management, & Logo.  
  * 
  * @author Dana M. Proctor
- * @version 1.7 09/11/2012
+ * @version 1.8 07/01/2013
  */
 
 class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -102,6 +103,7 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
 
       // Creating your menu items here, see MyJSQLView_JMenuBar.
       createFileMenu();
+      createEditMenu();
       createToolsMenu();
       createHelpMenu();
       
@@ -139,6 +141,29 @@ class MyJSQLView_Top_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionC
       fileMenu.add(menuItem(resource, ACTION_EXIT));
       
       add(fileMenu);
+   }
+   
+   //==============================================================
+   // Helper Method to create the Edit Menu.
+   //==============================================================
+
+   private void createEditMenu()
+   {
+      // Method Instances.
+      JMenu editMenu;
+      String resource;
+      
+      //===========
+      // Edit Menu
+      
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Edit", "Edit");
+      editMenu = new JMenu(resource);
+      editMenu.setFont(editMenu.getFont().deriveFont(Font.BOLD));
+      
+      resource = resourceBundle.getResourceString("MyJSQLView_JMenuBar.menu.Preferences", "Preferences");
+      editMenu.add(menuItem(resource, ACTION_GENERAL_PROPERTIES));
+      
+      add(editMenu);
    }
    
    //==============================================================
