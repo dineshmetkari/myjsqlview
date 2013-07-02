@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.3 09/21/2012
+// Version 9.4 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -190,6 +190,7 @@
 //             CSVImportPanelFillerThread.
 //         9.3 Created preferencesTopPanelThread in Constructor to Be used to Start the
 //             preferencesTopPanel Thread.
+//         9.4 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -258,7 +259,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.3 09/21/2012
+ * @version 9.4 07/02/2013
  */
 
 //=================================================================
@@ -652,7 +653,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             while (cardsIterator.hasNext())
                (tableRowPanelsHashMap.get(cardsIterator.next())).updatePreferences();
 
-            DBTablesPanel.setGeneralProperties(generalPreferencesPanel.getGeneralOptions());
+            DBTablesPanel.setGeneralDBProperties(generalPreferencesPanel.getGeneralOptions());
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
             DBTablesPanel.setDataExportProperties(pdfExportPanel.getPDFExportOptions());
