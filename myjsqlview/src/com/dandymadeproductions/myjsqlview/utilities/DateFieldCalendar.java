@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 09/11/2012
+// Version 3.4 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,6 +72,8 @@
 //         3.2 08/19/2012 Collection of All Image Resources Through resourceBundle.
 //         3.3 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //                        Made Class, Constructor, & center() Method Public.
+//         3.4 07/02/2013 Change in actionPerformed() & createInitialCalendarDate() to
+//                        Use DBTablePanel.getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -117,7 +119,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 3.3 09/11/2012
+ * @version 3.4 07/02/2013
  */
 
 public class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -414,7 +416,7 @@ public class DateFieldCalendar extends JFrame implements ActionListener, KeyList
             formattedDateSelection = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                dateSelectionLabel.getText(), "MM-dd-yyyy");
             formattedDateSelection = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-               formattedDateSelection + "", DBTablesPanel.getGeneralProperties().getViewDateFormat());
+               formattedDateSelection + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             formattedDateSelection = formattedDateSelection + timeString;
             
             callingForm.setFormField(columnName, formattedDateSelection);
@@ -610,7 +612,7 @@ public class DateFieldCalendar extends JFrame implements ActionListener, KeyList
             else
             {
                dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(formFieldEntry,
-                  DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                dateValue = java.sql.Date.valueOf(dateString);
                
                dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString, "MM-dd-yyyy");
@@ -629,7 +631,7 @@ public class DateFieldCalendar extends JFrame implements ActionListener, KeyList
             {
                dateString = formFieldEntry.substring(0, formFieldEntry.indexOf(" "));
                dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(dateString,
-                  DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                timeString = formFieldEntry.substring(formFieldEntry.indexOf(" "));
                timeString = timeString.trim();
                if (timeString.length() > 8)
