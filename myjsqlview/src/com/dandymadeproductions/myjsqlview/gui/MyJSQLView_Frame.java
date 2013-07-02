@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.2 03/05/2013
+// Version 8.3 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -198,6 +198,7 @@
 //         8.1 02/27/2013 Inner Class myjsqlviewFrameListener Call to ConnectionManager.shutdown()
 //                        Upon Frame Closing.
 //         8.2 03/05/2013 Correction in reloadDBTables() for Connection Identification.
+//         8.3 07/02/2013 Added Class Method setFontSize().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -223,6 +224,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -244,7 +246,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.2 03/05/2013
+ * @version 8.3 07/02/2013
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -625,5 +627,27 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    public static SQLQueryBucketFrame getSQLBucket()
    {
       return sqlQueryBucketFrame;
+   }
+   
+   //==============================================================
+   // Class Method to set the Frame and its children's font size.
+   // Generally will propagate through, but should restart for full
+   // changes to take place.
+   //==============================================================
+   
+   protected void setFontSize(int fontSize)
+   {
+      MyJSQLView.getGeneralProperties().setFontSize(fontSize);
+      MyJSQLView_Utils.setUIManagerFont(fontSize);
+      
+      try
+      {
+         SwingUtilities.updateComponentTreeUI(this);
+         SwingUtilities.updateComponentTreeUI(myJSQLViewMenuBar);
+      }
+      catch (Exception e)
+      {
+         System.err.println("Failed to update UI Tree.");
+      }
    }
 }
