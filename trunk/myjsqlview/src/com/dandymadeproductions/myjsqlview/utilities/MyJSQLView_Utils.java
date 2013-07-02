@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.8 07/02/2013
+// Version 8.9 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -163,6 +163,8 @@
 //             Date String, 2, NOT IndexOf 2.
 //         8.7 Added Class Method setUIManagerFont().
 //         8.8 Change in processDateFormatSearch() to Use DBTablePanel.getGeneralDBProperties().
+//         8.9 Improved the Efficiency Method setUIManagerFont() By Not Assigning of
+//             Given Argument if Equal to the System Setting.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -229,7 +231,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.8 07/02/2013
+ * @version 8.9 07/02/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1513,6 +1515,9 @@ public class MyJSQLView_Utils extends MyJSQLView
       if (uiObject instanceof Font && uiObject != null)
          uiManagerFont = (Font) uiObject;
       else
+         return;
+      
+      if (uiManagerFont.getSize() == fontSize)
          return;
       
       // Collect the UI Manager keys that are fonts
