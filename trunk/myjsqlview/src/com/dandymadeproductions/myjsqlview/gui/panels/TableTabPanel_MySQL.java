@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.58 02/17/2013
+// Version 11.59 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -501,6 +501,8 @@
 //             Collected via getDisposeButton().
 //       11.57 Minor Format Changes.
 //       11.58 Formatting Changes to Sync. TableTabPanels.
+//       11.59 Change in loadTable(), viewSelectedItem(), addItem(), &
+//             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -531,7 +533,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.58 02/17/2013
+ * @version 11.59 07/01/2013
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -952,7 +954,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      // System.out.println(currentContentData);
                      
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
 
@@ -980,7 +982,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      // All current coloumnSizes for MySQL > 5.0 Should be 19.
                      else
                         tableData[i][j++] = (new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                            + " HH:mm:ss").format(currentContentData));
                   }
 
@@ -1241,7 +1243,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "='"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
@@ -1381,7 +1383,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   
                   tableViewForm.setFormField(currentColumnName,
                                              (new SimpleDateFormat(
-                                                DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                                DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                                 + " HH:mm:ss").format(currentContentData)));
                }
 
@@ -1411,7 +1413,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   // All current coloumnSizes for MySQL > 5.0 Should be 19.
                   else
                      tableViewForm.setFormField(currentColumnName,
-                        (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                            + " HH:mm:ss").format(currentContentData)));
                }
 
@@ -1582,7 +1584,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1596,7 +1598,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
          // DATETIME Type Field
          if (currentColumnType.equals("DATETIME"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat() + " hh:mm:ss";
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " hh:mm:ss";
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1729,7 +1731,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                                             + identifierQuoteString + "='"
                                             + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                currentContentData + "",
-                                               DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                               DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                             + "' AND ");
                }
                else
@@ -1789,7 +1791,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
 
             // DATETIME Type Field
@@ -1801,13 +1803,13 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   // System.out.println(currentContentData);
                   
                   currentContentData = new SimpleDateFormat(
-                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                      + " HH:mm:ss").format(currentContentData);
                   editForm.setFormField(currentColumnName, currentContentData);
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // TIMESTAMP Type Field
@@ -1882,13 +1884,13 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   if (currentContentData != null)
                   {
                      currentContentData = new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData);
                      editForm.setFormField(currentColumnName, currentContentData);
                   }
                   else
                      editForm.setFormField(currentColumnName,
-                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS");
                }
             }
 

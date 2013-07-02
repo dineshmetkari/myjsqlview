@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 12.3 09/18/2012
+// Version 12.4 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -290,6 +290,8 @@
 //        12.2 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //        12.3 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//        12.4 Change in loadTable(), viewSelectedItem(), addItem(), &
+//             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -331,7 +333,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.3 09/18/2012
+ * @version 12.4 07/01/2013
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -939,7 +941,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
 
@@ -951,7 +953,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                      currentContentData = rs.getTimestamp(columnName);
                      
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss Z").format(currentContentData));
                   }
                   
@@ -1190,7 +1192,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                         sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "=TO_DATE('"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                     currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                     currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                   + "', 'YYYY-MM-dd') AND ");
                      }
                      else
@@ -1322,7 +1324,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
                                              (new SimpleDateFormat(
-                                                DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                                DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                                 + " HH:mm:ss").format(currentContentData)));
                }
 
@@ -1331,7 +1333,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss Z").format(currentContentData)));
                }
 
@@ -1508,7 +1510,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1651,7 +1653,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "=TO_DATE('"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                + "', 'YYYY-MM-dd') AND ");
                   }
                   else
@@ -1710,7 +1712,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
 
             // Timestamps Type Field
@@ -1721,12 +1723,12 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
-                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
+                     (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Timestamps With Time Zone Type Fields
@@ -1740,7 +1742,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                      currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                      // System.out.println(currentContentData);
                      editForm.setFormField(currentColumnName,
-                        (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                            + " HH:mm:ss Z").format(currentContentData)));
                   }
                   else
@@ -1757,7 +1759,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
+                     (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Blob & Raw Type Field

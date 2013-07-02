@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.9 02/04/2013
+// Version 3.0 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -72,6 +72,8 @@
 //         2.8 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
 //         2.9 Minor Format Changes.
+//         3.0 Change in loadTable(), viewSelectedItem(), addItem(), &
+//             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -103,7 +105,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 2.9 02/04/2012
+ * @version 3.0 07/01/2013
  */
 
 public class TableTabPanel_MSAccess extends TableTabPanel
@@ -628,7 +630,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                   else
                   {
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
                }
@@ -1175,7 +1177,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1392,7 +1394,7 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName, 
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
             
             // DATETIME Type Field
@@ -1404,13 +1406,13 @@ public class TableTabPanel_MSAccess extends TableTabPanel
                {
                   // System.out.println(currentContentData);
                   currentContentData = new SimpleDateFormat(
-                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                      + " HH:mm:ss").format(currentContentData);
                   editForm.setFormField(currentColumnName, currentContentData);
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) (DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS"));
+                     (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS"));
             }
 
             // Binary/Image Type Field
