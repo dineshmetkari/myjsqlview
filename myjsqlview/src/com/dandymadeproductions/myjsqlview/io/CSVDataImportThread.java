@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.1 02/24/2013
+// Version 7.2 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -159,6 +159,7 @@
 //         7.0 Removal of Starting the Class's Runnable Thread in the Constructor.
 //         7.1 Method importCSVFile() Check DBTablesPanel.getSelectedTableTabPanel()
 //             Being NULL.
+//         7.2 Change in importCSVFile() to Use DBTablePanel.getGeneralDBProperties().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -192,7 +193,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.1 02/24/2013
+ * @version 7.2 07/02/2013
  */
 
 public class CSVDataImportThread implements Runnable
@@ -317,8 +318,8 @@ public class CSVDataImportThread implements Runnable
       columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
 
       dateFormat = DBTablesPanel.getDataImportProperties().getDateFormat();
-      batchSize = DBTablesPanel.getGeneralProperties().getBatchSize();
-      batchSizeEnabled = DBTablesPanel.getGeneralProperties().getBatchSizeEnabled();
+      batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
+      batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
 
       fileReader = null;
       bufferedReader = null;
