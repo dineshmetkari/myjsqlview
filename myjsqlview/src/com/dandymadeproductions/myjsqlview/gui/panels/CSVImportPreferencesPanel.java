@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.8 09/20/2012
+// Version 3.9 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,7 @@
 //         3.7 09/20/2012 Creation of csvImportPanelFillerThread in Constructor and Starting
 //                        There for the CSVImportPreferencesFiller.
 //         3.8 09/20/2012 Backed Out 3.7.
+//         3.9 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +119,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 3.8 09/20/2012
+ * @version 3.9 07/01/2013
  */
 
 public class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -253,7 +254,7 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
          {
             commaRadioButton.setSelected(true);
             otherTextField.setEnabled(false);
-            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             applyButton.setEnabled(true);
          }
 
