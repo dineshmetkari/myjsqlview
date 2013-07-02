@@ -13,7 +13,7 @@
 //
 //==============================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 14.4 09/18/2012
+// Version 14.5 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -326,6 +326,8 @@
 //        14.3 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //        14.4 Class Method addItem() & deleteItem() TableEntryForm's disposeButton
 //             Collected via getDisposeButton().
+//        14.5 Change in loadTable(), viewSelectedItem(), addItem(), &
+//             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -357,7 +359,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 14.4 09/18/2012
+ * @version 14.5 07/01/2013
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -830,7 +832,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
 
@@ -838,7 +840,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss z").format(currentContentData));
                   }
 
@@ -1062,7 +1064,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                         sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "='"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                     currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                     currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                   + "' AND ");
                      }
                      else
@@ -1219,7 +1221,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
                                              (new SimpleDateFormat(
-                                                DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                                DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                                 + " HH:mm:ss").format(currentContentData)));
                }
 
@@ -1227,7 +1229,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss z").format(currentContentData)));
                }
 
@@ -1436,7 +1438,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1607,7 +1609,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                      sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                + identifierQuoteString + "='"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                  currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
@@ -1669,7 +1671,7 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
 
             // TIME With Time Zone
@@ -1694,12 +1696,12 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
                                         (Object) (new SimpleDateFormat(
-                                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                            + " HH:mm:ss").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             else if (currentColumnType.equals("TIMESTAMPTZ"))
@@ -1710,12 +1712,12 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
                                         (Object) (new SimpleDateFormat(
-                                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                            + " HH:mm:ss z").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // Blob/Bytea Type Field

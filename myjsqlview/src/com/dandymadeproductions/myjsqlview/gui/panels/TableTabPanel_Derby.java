@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 03/06/2013
+// Version 1.3 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,9 @@
 //                        of BLOB & BIT DATA Types for All Field WHERE Clause Creation
 //                        in loadTable() Along With Creation of Same in New Method
 //                        createWhereClause().
-//         1.2 03/06/2013 Used a StringBuffer, whereClauseString, in createWhereClause(). 
+//         1.2 03/06/2013 Used a StringBuffer, whereClauseString, in createWhereClause().
+//         1.3 07/01/2013 Change in loadTable(), viewSelectedItem(), addItem(), &
+//                        editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -71,7 +73,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.2 03/06/2013
+ * @version 1.3 07/01/2013
  */
 
 public class TableTabPanel_Derby extends TableTabPanel
@@ -545,7 +547,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                            + " HH:mm:ss").format(currentContentData));
                   }
                   
@@ -797,7 +799,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                         sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "='"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentContentData + "",
-                                                     DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                   + "' AND ");
                      }
                      else
@@ -934,7 +936,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData)));
                }
 
@@ -1100,7 +1102,7 @@ public class TableTabPanel_Derby extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1247,7 +1249,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                                                + identifierQuoteString + "='"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                   currentContentData + "",
-                                                  DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
@@ -1317,7 +1319,7 @@ public class TableTabPanel_Derby extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName, 
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
 
             // Timestamps Type Field
@@ -1328,12 +1330,12 @@ public class TableTabPanel_Derby extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
-                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                                     + " HH:mm:ss").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                         + " HH:MM:SS");
             }
 

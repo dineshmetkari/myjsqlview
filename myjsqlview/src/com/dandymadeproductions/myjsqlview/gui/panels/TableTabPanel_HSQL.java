@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 12.8 02/04/2013
+// Version 12.9 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -283,6 +283,8 @@
 //             Collected via getDisposeButton().
 //        12.8 Removal of Quoting for Numeric Types for Normal Keys in Both
 //             viewSelectedItem() & editSelectedItem(). Minor Format Changes.
+//        12.9 Change in loadTable(), viewSelectedItem(), addItem(), &
+//             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -314,7 +316,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.8 02/04/2012
+ * @version 12.9 07/01/2013
  */
 
 public class TableTabPanel_HSQL extends TableTabPanel
@@ -794,7 +796,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData));
                   }
                   
@@ -802,7 +804,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss z").format(currentContentData));
                   }
 
@@ -1030,7 +1032,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                         sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                   + identifierQuoteString + "='"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                                                     currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                   + "' AND ");
                      }
                      else
@@ -1195,7 +1197,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss").format(currentContentData)));
                }
                
@@ -1203,7 +1205,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
-                     (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                         + " HH:mm:ss z").format(currentContentData)));
                }
 
@@ -1363,7 +1365,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
          // DATE Type Field
          if (currentColumnType.equals("DATE"))
          {
-            currentContentData = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1517,7 +1519,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                                                + identifierQuoteString + "='"
                                                + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                   currentContentData + "",
-                                                  DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                + "' AND ");
                   }
                   else
@@ -1592,7 +1594,7 @@ public class TableTabPanel_HSQL extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
 
             // TIME type Field
@@ -1621,12 +1623,12 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
-                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                                     + " HH:mm:ss").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                         + " HH:MM:SS");
             }
             
@@ -1638,12 +1640,12 @@ public class TableTabPanel_HSQL extends TableTabPanel
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
                                         (Object) (new SimpleDateFormat(
-                                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                            + " HH:mm:ss z").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
-                     (Object) DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:MM:SS");
+                     (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:MM:SS");
             }
 
             // Blob/Bytea/Binary Type Field
