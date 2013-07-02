@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 07/02/2013
+// Version 1.1 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial GeneralProperties Class for Overall Application.
+//         1.1 Changed the Default fontSize Generation.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -37,14 +38,17 @@
 
 package com.dandymadeproductions.myjsqlview.structures;
 
+import java.awt.Font;
 import java.util.prefs.Preferences;
+
+import javax.swing.UIManager;
 
 /**
  *    The GeneralProperties class provides the structure for the
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.0 07/02/2013
+ * @version 1.1 07/02/2013
  */
 
 public class GeneralProperties
@@ -64,7 +68,17 @@ public class GeneralProperties
    {
       // Set Default State.
       
-      fontSize = 12;
+      // Font Size
+      Object uiObject = null;
+      uiObject = UIManager.get("Label.font");
+      
+      if (uiObject instanceof Font && uiObject != null)
+      {
+         Font uiManagerFont = (Font) uiObject;
+         fontSize = uiManagerFont.getSize();
+      }
+      else
+         fontSize = 12;
       
       // Try to retrieve state from Preferences.
       try
