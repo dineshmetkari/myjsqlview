@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.8 07/01/2013
+// Version 1.9 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //             Made Class, Constructor, & Getter/Setter Methods Along With static
 //             final Class Instances Public.
 //         1.8 Changed Class Name From GeneralProperties to GeneralDBProperties.
+//         1.9 Changed Class Instance generalPreferences to generalDBPreferences.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.GeneralPreferencesPanel;
  * MyJSQLView general database parameters properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.8 07/01/2013
+ * @version 1.9 07/02/2013
  */
 
 public class GeneralDBProperties
@@ -71,7 +72,7 @@ public class GeneralDBProperties
    private boolean batchSizeEnabled;
    private int batchSize;
    
-   private Preferences generalPreferences;
+   private Preferences generalDBPreferences;
 
    public static final String VIEWDATEFORMAT = "ViewDateFormat";
    public static final String LIMITINCREMENT = "LimitIncrement";
@@ -94,16 +95,16 @@ public class GeneralDBProperties
       // Try to retrieve state from Preferences.
       try
       {
-         generalPreferences = Preferences.userNodeForPackage(GeneralDBProperties.class);
+         generalDBPreferences = Preferences.userNodeForPackage(GeneralDBProperties.class);
       }
       catch (SecurityException se){return;}
       
       try
       {
-         viewDateFormat = generalPreferences.get(VIEWDATEFORMAT, "MM-DD-YYYY");
-         limitIncrement = generalPreferences.getInt(LIMITINCREMENT, limitIncrement);
-         batchSizeEnabled = generalPreferences.getBoolean(BATCHSIZEENABLED, batchSizeEnabled);
-         batchSize = generalPreferences.getInt(BATCHSIZE, batchSize);
+         viewDateFormat = generalDBPreferences.get(VIEWDATEFORMAT, "MM-DD-YYYY");
+         limitIncrement = generalDBPreferences.getInt(LIMITINCREMENT, limitIncrement);
+         batchSizeEnabled = generalDBPreferences.getBoolean(BATCHSIZEENABLED, batchSizeEnabled);
+         batchSize = generalDBPreferences.getInt(BATCHSIZE, batchSize);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -171,8 +172,8 @@ public class GeneralDBProperties
    {
       try
       {
-         if (generalPreferences != null)
-            generalPreferences.putBoolean(key, value);
+         if (generalDBPreferences != null)
+            generalDBPreferences.putBoolean(key, value);
       }
       catch (IllegalArgumentException iae){}
       catch (IllegalStateException ise){}
@@ -182,8 +183,8 @@ public class GeneralDBProperties
    {
       try
       {
-         if (generalPreferences != null)
-            generalPreferences.put(key, content);
+         if (generalDBPreferences != null)
+            generalDBPreferences.put(key, content);
       }
       catch (IllegalArgumentException iae){}
       catch (IllegalStateException ise){}
@@ -193,8 +194,8 @@ public class GeneralDBProperties
    {
       try
       {
-         if (generalPreferences != null)
-            generalPreferences.putInt(key, value);
+         if (generalDBPreferences != null)
+            generalDBPreferences.putInt(key, value);
       }
       catch (IllegalArgumentException iae){}
       catch (IllegalStateException ise){}
@@ -207,7 +208,7 @@ public class GeneralDBProperties
 
    public String toString()
    {
-      StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
+      StringBuffer parameters = new StringBuffer("[GeneralDBProperties: ");
       
       parameters.append("[viewDataFormat = " + viewDateFormat + "]");
       parameters.append("[limitIncrement = " + limitIncrement + "]");
