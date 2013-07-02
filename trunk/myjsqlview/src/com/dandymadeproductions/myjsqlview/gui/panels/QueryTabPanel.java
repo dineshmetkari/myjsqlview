@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 10.0 09/18/2012
+// Version 10.1 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,8 @@
 //             Made Class, Constructor, & Getter/Setter Methods Public.
 //        10.0 advSortSearchApplyButton Instance Related to Form advancedSort
 //             SearchFrame.getApplyButton().
+//        10.1 Change in loadTable() & viewSelectedItem() to Use DBTablePanel.
+//             getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -304,7 +306,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 1.0.0 09/18/2012
+ * @version 10.1 07/01/2013
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1570,13 +1572,13 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   // Date
                   else if (columnType.equals("DATE"))
                      tableData[i][j++] = new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()).format(currentContentData);
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()).format(currentContentData);
 
                   // =============================================
                   // Datetime
                   else if (columnType.equals("DATETIME"))
                      tableData[i][j++] = new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                            .format(currentContentData);
 
                   // =============================================
@@ -1614,12 +1616,12 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                         // All current coloumnSizes for MySQL > 5.0 Should be 19.
                         else
                            tableData[i][j++] = (new SimpleDateFormat(
-                              DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                              DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                                  .format(currentContentData));
                      }
                      else
                         tableData[i][j++] = (new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                               .format(currentContentData));  
                   }
 
@@ -1627,7 +1629,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z")
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss z")
                            .format(currentContentData));
                   }
 
@@ -1997,7 +1999,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                {
                   tableViewForm.setFormField(currentColumnName,
                      (Object) MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentContentData + "",
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat()));
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()));
                }
 
                // DATETIME Type Field
@@ -2006,7 +2008,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   String dateString = currentContentData + "";
                   dateString = dateString.substring(0, (dateString.indexOf(" ")));
                   dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString + "",
-                     DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
 
                   String timeString = currentContentData + "";
                   timeString = timeString.substring(timeString.indexOf(" "));
@@ -2053,13 +2055,13 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                      else
                         tableViewForm.setFormField(currentColumnName,
                            (new SimpleDateFormat(
-                              DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                              DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                               + " HH:mm:ss").format(currentContentData)));
                   }
                   else
                      tableViewForm.setFormField(currentColumnName,
                         (new SimpleDateFormat(
-                           DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                            + " HH:mm:ss").format(currentContentData)));        
                }
 
@@ -2067,7 +2069,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat(
-                     DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                      + " HH:mm:ss z").format(currentContentData)));
                }
 
