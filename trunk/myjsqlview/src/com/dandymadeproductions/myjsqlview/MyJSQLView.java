@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.44 03/08/2013
+// Version 3.45 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -220,6 +220,10 @@
 //         3.43 02/26/2013 Passed Instance debug to resourceBundle Creation in Constructor.
 //         3.44 03/08/2013 Class Instance myJSQLView_Version Update for Release
 //                         3.44.
+//         3.45 07/02/2013 Added Class Instance generalProperties & Added Getter/Setter
+//                         Methods for Same. Standard Updates to Version. Implemented
+//                         in Constructor the Setting of Stored Properties Font Size
+//                         for the Application.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -243,6 +247,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.LoginFrame;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MouseAdapter;
+import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -261,7 +266,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.44 03/08/2013
+ * @version 3.45 07/02/2013
  */
 
 public class MyJSQLView implements ActionListener
@@ -283,8 +288,10 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.44", "Build ID: 20130308"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.45", "Build ID: 20130702"};
    private String webSiteString = "http://myjsqlview.org";
+   
+   private static GeneralProperties generalProperties = new GeneralProperties();
 
    //==============================================================
    // MyJSQLView Constructor
@@ -304,6 +311,7 @@ public class MyJSQLView implements ActionListener
       try
       {
          UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+         MyJSQLView_Utils.setUIManagerFont(generalProperties.getFontSize());
          // System.out.println("UIManager Look & Feel Set");
       }
       catch (Exception e)
@@ -467,13 +475,12 @@ public class MyJSQLView implements ActionListener
    }
    
    //==============================================================
-   // Class Method to return the resource bundle requred for program
-   // internationlization.
+   // Class Method to return the current GeneralProperties.
    //==============================================================
 
-   public static MyJSQLView_ResourceBundle getResourceBundle()
+   public static GeneralProperties getGeneralProperties()
    {
-      return resourceBundle;
+      return generalProperties;
    }
    
    //==============================================================
@@ -496,6 +503,16 @@ public class MyJSQLView implements ActionListener
    }
    
    //==============================================================
+   // Class Method to return the resource bundle requred for program
+   // internationlization.
+   //==============================================================
+
+   public static MyJSQLView_ResourceBundle getResourceBundle()
+   {
+      return resourceBundle;
+   }
+   
+   //==============================================================
    // Class Method to return to the MyJSQLView version.
    //==============================================================
 
@@ -507,5 +524,14 @@ public class MyJSQLView implements ActionListener
          versionCopy[i] = myJSQLView_Version[i];
       
       return versionCopy;
+   }
+   
+   //==============================================================
+   // Class Method to set the GeneralProperties.
+   //==============================================================
+
+   public static void setGeneralProperties(GeneralProperties newGeneralProperties)
+   {
+      generalProperties = newGeneralProperties;
    }
 }
