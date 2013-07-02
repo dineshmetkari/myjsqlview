@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.3 09/11/2012
+// Version 2.4 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,6 +62,7 @@
 //         2.2 Class Method Instance columnSize Change from Integer to int.
 //         2.3 Change Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class, Constructor, & Getter Methods Public.
+//         2.4 Change in executeSQL() to Use DBTablePanel.getGeneralDBProperties().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -117,7 +118,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.3 09/11/2012
+ * @version 2.4 07/01/2013
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -449,7 +450,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      if (currentContentData == null)
                         rowData[j++] = "NULL";
                      else
-                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties()
                            .getViewDateFormat()).format(currentContentData);
                   }
 
@@ -461,7 +462,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      if (currentContentData == null)
                         rowData[j++] = "NULL";
                      else
-                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                        rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties()
                            .getViewDateFormat() + " HH:mm:ss").format(currentContentData);
                   }
 
@@ -507,12 +508,12 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                            // All current coloumnSizes for MySQL > 5.0 Should be 19.
                            else
                               rowData[j++] = (new SimpleDateFormat(
-                                 DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                                 DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                                     .format(currentContentData));
                         }
                         else
                            rowData[j++] = (new SimpleDateFormat(
-                              DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss")
+                              DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                                  .format(currentContentData));  
                      }
                   }
@@ -523,7 +524,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      if (currentContentData == null)
                         rowData[j++] = "NULL";
                      else
-                        rowData[j++] = (new SimpleDateFormat(DBTablesPanel.getGeneralProperties()
+                        rowData[j++] = (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties()
                            .getViewDateFormat() + " HH:mm:ss z").format(currentContentData));
                   }
 
