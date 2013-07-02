@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.2 09/21/2012
+// Version 2.3 07/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -59,7 +59,8 @@
 //         2.1 Changed Package Name to com.dandymadeproductions.myjsqlview.io.
 //             Made Class & Constructor Public.
 //         2.2 Removal of Starting the Class's Runnable Thread in the Constructor.
-//             
+//         2.3 Change in run() to Use DBTablePanel.getGeneralDBProperties().
+//
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
 //=================================================================
@@ -99,7 +100,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * dump a TableTabPanel summary table data to a local pdf file.
  * 
  * @author Dana M. Proctor
- * @version 2.2 09/21/2012
+ * @version 2.3 07/02/2013
  */
 
 public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
@@ -268,7 +269,7 @@ public class PDFDataTableDumpThread implements PdfPageEvent, Runnable
                         time = "";
                         
                      currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                      currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
                         pdfDataExportOptions.getPDFDateFormat()) + time;
                   }
