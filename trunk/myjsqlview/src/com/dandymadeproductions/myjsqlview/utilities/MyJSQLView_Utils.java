@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.7 07/01/2013
+// Version 8.8 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -162,6 +162,7 @@
 //         8.6 Changed in convertViewDateString() to Properly Check for Dashes in the
 //             Date String, 2, NOT IndexOf 2.
 //         8.7 Added Class Method setUIManagerFont().
+//         8.8 Change in processDateFormatSearch() to Use DBTablePanel.getGeneralDBProperties().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -228,7 +229,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.7 07/01/2013
+ * @version 8.8 07/02/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1071,7 +1072,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          
          if (searchString.length() >= 10 && searchString.length() < 12)
             return convertViewDateString_To_DBDateString(searchString,
-               DBTablesPanel.getGeneralProperties().getViewDateFormat());
+               DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
          
          // Either (day and month) or (month and year) or some other
          // combination.
@@ -1094,7 +1095,7 @@ public class MyJSQLView_Utils extends MyJSQLView
                return searchString;
             }
             
-            dateFormat = DBTablesPanel.getGeneralProperties().getViewDateFormat();
+            dateFormat = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
             
             // yyyy-MM-dd
             if (dateFormat.equals(yyyyMMdd_DASH) || dateFormat.equals(yyyyMMdd_SLASH)
