@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.16 03/01/2013
+// Version 6.17 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,6 +140,7 @@
 //        6.15 Changes in run() to Handle Derby LIMIT Implementation & Exclusion for
 //             Same BIT DATA Types.
 //        6.16 Renamed From DataDumpThread to CSVDataDumpThread. Updated Comments.
+//        6.17 Change in run() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -173,7 +174,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.16 03/01/2013
+ * @version 6.17 07/02/2013
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -234,7 +235,7 @@ public class CSVDataDumpThread implements Runnable
       // Setting up
       rowsCount = 0;
       dataDelimiter = DBTablesPanel.getDataExportProperties().getDataDelimiter();
-      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
+      limitIncrement = DBTablesPanel.getGeneralDBProperties().getLimitIncrement();
       identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       dataSourceType = ConnectionManager.getDataSourceType();
       schemaTableName = MyJSQLView_Utils.getSchemaTableName(exportedTable);
