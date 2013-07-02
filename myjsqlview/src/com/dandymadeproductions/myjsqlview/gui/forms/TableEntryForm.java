@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.99 02/19/2013
+// Version 9.00 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -369,6 +369,7 @@
 //                        for Derby Functionality.
 //        8.99 02/19/2013 Change in Method addUpdateTableEntry() Add for Derby AutoIncrement to
 //                        DEFAULT Rather Then Exclusion.
+//        9.00 07/02/2013 Change in addUpdateTableEntry() to Use DBTablePanel.getGeneralDBProperties().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -440,7 +441,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 8.99 02/18/2013
+ * @version 9.00 07/02/2013
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -1741,12 +1742,12 @@ public class TableEntryForm extends JFrame implements ActionListener
                            currentContentData = "TO_DATE('"
                               + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                  currentContentData + "",
-                                 DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                 DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                  + "', 'YYYY-MM-dd')";
                         }
                         else
                            currentContentData = "'" + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                              currentContentData + "", DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                              currentContentData + "", DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                               + "'";
                         
                         sqlStatementString.append(identifierQuoteString + currentKey_ColumnName
@@ -1991,7 +1992,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                         java.sql.Date.valueOf("error");
 
                      dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                        dateTimeFormString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                        dateTimeFormString, DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                      dateValue = java.sql.Date.valueOf(dateString);
                      prepared_sqlStatement.setDate(i++, dateValue);
                   }
@@ -2027,7 +2028,7 @@ public class TableEntryForm extends JFrame implements ActionListener
 
                      dateString = dateTimeFormString.substring(0, dateTimeFormString.indexOf(" "));
                      dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(dateString,
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                      timeString = getFormField(columnName).substring(dateTimeFormString.indexOf(" "));
                      dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
                      prepared_sqlStatement.setTimestamp(i++, dateTimeValue);
@@ -2073,23 +2074,23 @@ public class TableEntryForm extends JFrame implements ActionListener
                                  // All current coloumnSizes for MySQL > 5.0 Should be 19.
                                  else
                                     timeStampFormat = new SimpleDateFormat(
-                                       DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                       DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                        + " HH:mm:ss");
                               }
                               else
                                  timeStampFormat = new SimpleDateFormat(
-                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                     + " HH:mm:ss");
                            }
                            else
                            {
                               if (columnType.equals("TIMESTAMPLTZ"))
                                  timeStampFormat = new SimpleDateFormat(
-                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                     + " HH:mm:ss Z");
                               else
                                  timeStampFormat = new SimpleDateFormat(
-                                    DBTablesPanel.getGeneralProperties().getViewDateFormat()
+                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                     + " HH:mm:ss z");
                            }
 
