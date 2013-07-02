@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.06 02/21/2013
+// Version 7.07 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -315,6 +315,7 @@
 //             Changes to Properly Implement Derby BIT DATA, BLOB, AutoIncrement, & Current
 //             TimeStamps Features. Added Argument boolean derbyBit to Method dumpBinaryData()
 //             & Use Therein to Handle Derby BIT DATA & BLOB Types.
+//        7.07 Change in Constructor to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -355,7 +356,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.06 02/21/2013
+ * @version 7.07 07/02/2013
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -427,7 +428,7 @@ public class SQLDataDumpThread implements Runnable
          pluralValueLimit = sqlDataExportOptions.getInsertPluralSize();
       else
          pluralValueLimit = sqlDataExportOptions.getReplacePluralSize();
-      limitIncrement = DBTablesPanel.getGeneralProperties().getLimitIncrement();
+      limitIncrement = DBTablesPanel.getGeneralDBProperties().getLimitIncrement();
 
       // Create the appropriate SQL table name qualifier.
       if (exportedTable.indexOf(".") != -1)
