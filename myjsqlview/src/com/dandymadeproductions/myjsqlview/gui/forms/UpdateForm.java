@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.4 03/06/2013
+// Version 5.5 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -140,6 +140,8 @@
 //                        Data Types.
 //         5.4 03/06/2013 Cleanup of sqlStatement & db_resultSet in updateTable() After Initial
 //                        First Use Before Using Again.
+//         5.5 07/02/2013 Change in updateTable() & getWhereSQLExpression() to Use DBTablePanel.
+//                        getGeneralDBProperties().
 //                        
 //=================================================================
 
@@ -195,7 +197,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.4 03/06/2013
+ * @version 5.5 07/02/2013
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -929,7 +931,7 @@ public class UpdateForm extends JFrame implements ActionListener
                            // Process
                            dateString = updateTextString.trim();
                            dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                              dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                              dateString, DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                            
                            if (dataSourceType.equals(ConnectionManager.ORACLE))
                            {
@@ -971,7 +973,7 @@ public class UpdateForm extends JFrame implements ActionListener
                            // Process
                            dateString = updateTextString.substring(0, updateTextString.indexOf(" "));
                            dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(
-                              dateString, DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                              dateString, DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                            
                            timeString = updateTextString.substring(updateTextString.indexOf(" "));
                            dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
@@ -1011,16 +1013,16 @@ public class UpdateForm extends JFrame implements ActionListener
                                  // All current coloumnSizes for MySQL > 5.0 Should be 19.
                                  else
                                     timeStampFormat = new SimpleDateFormat(
-                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss");
+                                       DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss");
                               }
                               else
                               {
                                  if (columnType.equals("TIMESTAMPLTZ"))
                                     timeStampFormat = new SimpleDateFormat(
-                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss Z");
+                                       DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss Z");
                                  else
                                     timeStampFormat = new SimpleDateFormat(
-                                       DBTablesPanel.getGeneralProperties().getViewDateFormat() + " HH:mm:ss z");
+                                       DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss z");
                               }
 
                               // Parse the TimeStamp Format.
@@ -1219,7 +1221,7 @@ public class UpdateForm extends JFrame implements ActionListener
                                                   + " TO_DATE('"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                     tempSearchString,
-                                                    DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                     + "', 'YYYY-MM-dd') ");
                      }
                      else
