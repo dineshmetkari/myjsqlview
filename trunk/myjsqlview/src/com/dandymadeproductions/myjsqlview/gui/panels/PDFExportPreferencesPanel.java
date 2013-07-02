@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.4 09/10/2012
+// Version 2.5 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //         2.4 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, Getter/Setter Methods Along With static
 //                        final Class Instances Public.
+//         2.5 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -104,7 +105,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 2.4 09/10/2012
+ * @version 2.5 07/01/2013
  */
 
 public class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -343,7 +344,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
             headerBorderSizeSpinner.setValue(DEFAULT_BORDER_SIZE);
             headerBorderColorButton.setBackground(Color.BLACK);
             numberAlignmentComboBox.setSelectedIndex(ALIGNMENT_RIGHT);
-            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             dateAlignmentComboBox.setSelectedIndex(ALIGNMENT_CENTER);
             fontComboBox.setSelectedItem(DEFAULT_FONT);
             pageLayoutComboBox.setSelectedIndex(LAYOUT_PORTRAIT);
