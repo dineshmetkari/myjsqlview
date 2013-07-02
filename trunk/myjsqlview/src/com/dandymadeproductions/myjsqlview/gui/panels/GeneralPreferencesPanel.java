@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.2 07/07/2013
+// Version 2.3 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -62,6 +62,8 @@
 //         2.2 07/01/2013 Removed Localization Selector and Its Components. Moved to the Top
 //                        Main MyJSQLView_Frame MenuBar. Removed Methods getLocaleList() &
 //                        setLocalization().
+//         2.3 07/01/2013 Changed All References of GeneralProperties to GeneralDBProperties.
+//                        Removed Localization Selection Components.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -88,7 +90,7 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
+import com.dandymadeproductions.myjsqlview.structures.GeneralDBProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -287,7 +289,7 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       add(buttonPanel, BorderLayout.SOUTH);
       
       // Retrieve existing state and set accordingly.
-      setGeneralProperties(DBTablesPanel.getGeneralProperties());
+      setGeneralDBProperties(DBTablesPanel.getGeneralDBProperties());
       applyButton.setEnabled(false);
    }
 
@@ -315,7 +317,7 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
          // Apply Button Action
          else if (formSource == applyButton)
          {
-            DBTablesPanel.setGeneralProperties(getGeneralOptions());
+            DBTablesPanel.setGeneralDBProperties(getGeneralOptions());
             applyButton.setEnabled(false);
          }
       }
@@ -363,29 +365,29 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    // Class method to get the panels options.
    //===============================================================
 
-   public GeneralProperties getGeneralOptions()
+   public GeneralDBProperties getGeneralOptions()
    {
-      GeneralProperties newGeneralProperties = DBTablesPanel.getGeneralProperties();
+      GeneralDBProperties newGeneralDBProperties = DBTablesPanel.getGeneralDBProperties();
       
       // Date Format & Limit Increment
-      newGeneralProperties.setViewDateFormat((String)dateFormatComboBox.getSelectedItem());
-      newGeneralProperties.setLimitIncrement(Integer.parseInt(limitIncrementSpinner.getValue().toString()));
-      newGeneralProperties.setBatchSizeEnabled(batchEnabledCheckBox.isSelected());
-      newGeneralProperties.setBatchSize(Integer.parseInt(batchSizeSpinner.getValue().toString()));
+      newGeneralDBProperties.setViewDateFormat((String)dateFormatComboBox.getSelectedItem());
+      newGeneralDBProperties.setLimitIncrement(Integer.parseInt(limitIncrementSpinner.getValue().toString()));
+      newGeneralDBProperties.setBatchSizeEnabled(batchEnabledCheckBox.isSelected());
+      newGeneralDBProperties.setBatchSize(Integer.parseInt(batchSizeSpinner.getValue().toString()));
 
-      return newGeneralProperties;
+      return newGeneralDBProperties;
    }
    
    //========================================================
    // Class method to set the panel options.
    //========================================================
 
-   public void setGeneralProperties(GeneralProperties generalProperties)
+   public void setGeneralDBProperties(GeneralDBProperties generalDBProperties)
    {
       // Date Format & Limit Increment
-      dateFormatComboBox.setSelectedItem(generalProperties.getViewDateFormat());
-      limitIncrementSpinner.setValue(Integer.valueOf(generalProperties.getLimitIncrement()));
-      batchEnabledCheckBox.setSelected(generalProperties.getBatchSizeEnabled());
-      batchSizeSpinner.setValue(Integer.valueOf(generalProperties.getBatchSize()));
+      dateFormatComboBox.setSelectedItem(generalDBProperties.getViewDateFormat());
+      limitIncrementSpinner.setValue(Integer.valueOf(generalDBProperties.getLimitIncrement()));
+      batchEnabledCheckBox.setSelected(generalDBProperties.getBatchSizeEnabled());
+      batchSizeSpinner.setValue(Integer.valueOf(generalDBProperties.getBatchSize()));
    }
 }
