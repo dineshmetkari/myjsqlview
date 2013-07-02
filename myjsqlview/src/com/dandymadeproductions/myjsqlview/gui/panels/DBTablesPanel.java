@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.7 02/02/2013
+// Version 5.8 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,8 @@
 //         5.6 Changed Class Instance statusLabel from a JTextField to a JLabel. Set
 //             Its PreferredSize in Constructor.
 //         5.7 Added Derby TableTabPanel Type for Instantiation in loadTable().
+//         5.8 Changed GeneralProperties Class to GeneralDBProperties. Changed All
+//             Instances, Comments, & Methods to Reflect.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -163,7 +165,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
 import com.dandymadeproductions.myjsqlview.structures.DataImportProperties;
-import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
+import com.dandymadeproductions.myjsqlview.structures.GeneralDBProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -174,7 +176,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.7 02/02/2013
+ * @version 5.8 07/01/2013
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -196,7 +198,7 @@ public class DBTablesPanel extends JPanel implements ActionListener
    private static long statusTimer;
    private volatile static boolean stopStatusDelayThread;
    
-   private static GeneralProperties generalProperties = new GeneralProperties();
+   private static GeneralDBProperties generalDBProperties = new GeneralDBProperties();
    private static DataImportProperties dataImportProperties = new DataImportProperties();
    private static DataExportProperties dataExportProperties = new DataExportProperties();
 
@@ -678,12 +680,12 @@ public class DBTablesPanel extends JPanel implements ActionListener
    }
    
    //==============================================================
-   // Class Method to return the current GeneralProperties.
+   // Class Method to return the current GeneralDBProperties.
    //==============================================================
 
-   public static GeneralProperties getGeneralProperties()
+   public static GeneralDBProperties getGeneralDBProperties()
    {
-      return generalProperties;
+      return generalDBProperties;
    }
    
    //==============================================================
@@ -705,16 +707,16 @@ public class DBTablesPanel extends JPanel implements ActionListener
    }
    
    //==============================================================
-   // Class Method to set the GeneralProperties.
+   // Class Method to set the GeneralDBProperties.
    //==============================================================
 
-   public static void setGeneralProperties(GeneralProperties newGeneralProperties)
+   public static void setGeneralDBProperties(GeneralDBProperties newGeneralDBProperties)
    {
       // Method Instances
       TableTabPanel currentTableTabPanel;
       
       // Set the properties
-      generalProperties = newGeneralProperties;
+      generalDBProperties = newGeneralDBProperties;
       
       // Refresh the table panel(s) to reflect the changes.
       
