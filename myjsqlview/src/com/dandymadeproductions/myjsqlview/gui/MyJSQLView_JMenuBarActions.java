@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.55 07/01/2013
+// Version 7.56 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -295,6 +295,7 @@
 //        7.55 Grouped The Top MenuBar New Edit/Preferences & Plugins Items Together.
 //             Added Methods buildConstraints(), setGeneralPreferences(), getLocaleList(),
 //             & setLocalizationString() to Support Edit/Preferences.
+//        7.56 Removed System.out in Method setGeneralPreferences().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -372,7 +373,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.55 07/01/2013
+ * @version 7.56 07/02/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -936,7 +937,6 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
       if (generalPreferencesDialog.isActionResult())
       {
-         System.out.println("Action Taken");
          parent.setFontSize(Integer.parseInt(fontSizeSpinner.getValue().toString()));
          
          if (!localizationComboBox.getSelectedItem().equals(MyJSQLView.getLocaleString()))
