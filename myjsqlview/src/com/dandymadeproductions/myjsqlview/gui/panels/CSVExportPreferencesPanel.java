@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.8 09/10/2012
+// Version 5.9 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,7 @@
 //         5.8 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, Constructor, Getter/Setter Methods Along With static final
 //                        Class Instances Public.
+//         5.9 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -158,7 +159,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.8 09/10/2012
+ * @version 5.9 07/01/2013
  */
 
 public class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -289,7 +290,7 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
             textMaxCharsSpinner.setEnabled(false);
             commaRadioButton.setSelected(true);
             otherTextField.setEnabled(false);
-            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralProperties().getViewDateFormat());
+            dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             applyButton.setEnabled(true);
          }
 
