@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.8 07/01/2013
+// Version 5.9 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,7 @@
 //         5.7 Added Derby TableTabPanel Type for Instantiation in loadTable().
 //         5.8 Changed GeneralProperties Class to GeneralDBProperties. Changed All
 //             Instances, Comments, & Methods to Reflect.
+//         5.9 Reorganized Getter/Setter Methods.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -176,7 +177,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.8 07/01/2013
+ * @version 5.9 07/02/2013
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -584,6 +585,52 @@ public class DBTablesPanel extends JPanel implements ActionListener
    }
    
    //==============================================================
+   // Class Method to return the current DataImportProperties.
+   //==============================================================
+
+   public static DataImportProperties getDataImportProperties()
+   {
+      return dataImportProperties;
+   }
+
+   //==============================================================
+   // Class Method to return the current DataExportProperties.
+   //==============================================================
+
+   public static DataExportProperties getDataExportProperties()
+   {
+      return dataExportProperties;
+   }
+   
+   //==============================================================
+   // Class Method to return the current GeneralDBProperties.
+   //==============================================================
+
+   public static GeneralDBProperties getGeneralDBProperties()
+   {
+      return generalDBProperties;
+   }
+   
+   //==============================================================
+   // Class Method to return the current selected visible
+   // TableTabPanel in the panel.
+   //==============================================================
+
+   public static TableTabPanel getSelectedTableTabPanel()
+   {  
+      TableTabPanel selectedTableTabPanel;
+      
+      // Insure the DB Panel is not empty or null selection.
+      
+      selectedTableTabPanel = tableTabHashMap.get(tableSelectionComboBox.getSelectedItem());
+      
+      if (tableSelectionComboBox.getItemCount() != 0  && selectedTableTabPanel != null)
+         return selectedTableTabPanel;
+      else
+         return null;
+   }
+   
+   //==============================================================
    // Class Method to return the current number of tables in the
    // database that the user has access to.
    //==============================================================
@@ -620,24 +667,41 @@ public class DBTablesPanel extends JPanel implements ActionListener
       else
          return tableTabHashMap.get(tableName);
    }
+   
+   //==============================================================
+   // Class Method to set the DataImportProperties.
+   //==============================================================
+
+   public static void setDataImportProperties(DataImportProperties newDataProperties)
+   {
+      dataImportProperties = newDataProperties;
+   }
 
    //==============================================================
-   // Class Method to return the current selected visible
-   // TableTabPanel in the panel.
+   // Class Method to set the DataExportProperties.
    //==============================================================
 
-   public static TableTabPanel getSelectedTableTabPanel()
-   {  
-      TableTabPanel selectedTableTabPanel;
+   public static void setDataExportProperties(DataExportProperties newDataProperties)
+   {
+      dataExportProperties = newDataProperties;
+   }
+   
+   //==============================================================
+   // Class Method to set the GeneralDBProperties.
+   //==============================================================
+
+   public static void setGeneralDBProperties(GeneralDBProperties newGeneralDBProperties)
+   {
+      // Method Instances
+      TableTabPanel currentTableTabPanel;
       
-	   // Insure the DB Panel is not empty or null selection.
+      // Set the properties
+      generalDBProperties = newGeneralDBProperties;
       
-      selectedTableTabPanel = tableTabHashMap.get(tableSelectionComboBox.getSelectedItem());
+      // Refresh the table panel(s) to reflect the changes.
       
-      if (tableSelectionComboBox.getItemCount() != 0  && selectedTableTabPanel != null)
-         return selectedTableTabPanel;
-      else
-         return null;
+      currentTableTabPanel = getSelectedTableTabPanel();
+      currentTableTabPanel.refreshButton.doClick();
    }
    
    //==============================================================
@@ -677,68 +741,5 @@ public class DBTablesPanel extends JPanel implements ActionListener
          else
             tableSelectionComboBox.setSelectedItem(tableName);
       }
-   }
-   
-   //==============================================================
-   // Class Method to return the current GeneralDBProperties.
-   //==============================================================
-
-   public static GeneralDBProperties getGeneralDBProperties()
-   {
-      return generalDBProperties;
-   }
-   
-   //==============================================================
-   // Class Method to return the current DataImportProperties.
-   //==============================================================
-
-   public static DataImportProperties getDataImportProperties()
-   {
-      return dataImportProperties;
-   }
-
-   //==============================================================
-   // Class Method to return the current DataExportProperties.
-   //==============================================================
-
-   public static DataExportProperties getDataExportProperties()
-   {
-      return dataExportProperties;
-   }
-   
-   //==============================================================
-   // Class Method to set the GeneralDBProperties.
-   //==============================================================
-
-   public static void setGeneralDBProperties(GeneralDBProperties newGeneralDBProperties)
-   {
-      // Method Instances
-      TableTabPanel currentTableTabPanel;
-      
-      // Set the properties
-      generalDBProperties = newGeneralDBProperties;
-      
-      // Refresh the table panel(s) to reflect the changes.
-      
-      currentTableTabPanel = getSelectedTableTabPanel();
-      currentTableTabPanel.refreshButton.doClick();
-   }
-   
-   //==============================================================
-   // Class Method to set the DataImportProperties.
-   //==============================================================
-
-   public static void setDataImportProperties(DataImportProperties newDataProperties)
-   {
-      dataImportProperties = newDataProperties;
-   }
-
-   //==============================================================
-   // Class Method to set the DataExportProperties.
-   //==============================================================
-
-   public static void setDataExportProperties(DataExportProperties newDataProperties)
-   {
-      dataExportProperties = newDataProperties;
    }
 }
