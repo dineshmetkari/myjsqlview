@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 03/01/2013
+// Version 3.5 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -77,6 +77,7 @@
 //         3.3 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //         3.4 Renamed From DataTableDumpThread to CSVDataTableDumpThread. Updated
 //             Comments.
+//         3.5 Change in run() to Use DBTablePanel.getGeneralDBProperties().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -99,7 +100,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 3.4 02/01/2013
+ * @version 3.5 07/02/2013
  */
 
 public class CSVDataTableDumpThread implements Runnable
@@ -210,7 +211,7 @@ public class CSVDataTableDumpThread implements Runnable
                         time = "";
 
                      currentString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(currentString,
-                        DBTablesPanel.getGeneralProperties().getViewDateFormat());
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                      currentString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(currentString,
                         DBTablesPanel.getDataExportProperties().getCSVDateFormat()) + time;
                   }
