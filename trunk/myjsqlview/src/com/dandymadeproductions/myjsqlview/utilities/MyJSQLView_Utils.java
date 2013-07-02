@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.6 06/18/2013
+// Version 8.7 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -161,6 +161,7 @@
 //         8.5 Alternate StringBuffer Manipulation in getUnLimitdSQLStatementString().
 //         8.6 Changed in convertViewDateString() to Properly Check for Dashes in the
 //             Date String, 2, NOT IndexOf 2.
+//         8.7 Added Class Method setUIManagerFont().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -184,6 +185,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -209,6 +212,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 import javax.swing.text.DefaultEditorKit;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
@@ -222,7 +228,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.6 06/18/2013
+ * @version 8.7 07/01/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1485,6 +1491,47 @@ public class MyJSQLView_Utils extends MyJSQLView
       {
          ConnectionManager.displaySQLErrors(e, "MyJSQLView_Utils setLocalTimeZone()");
          return;
+      }
+   }
+   
+   //==============================================================
+   // Class method to set update the UIManager font size.
+   //==============================================================
+
+   public static void setUIManagerFont(int fontSize)
+   {
+      // Method Instances
+      Object uiObject;
+      Font uiManagerFont;
+      UIDefaults uiDefaults;
+      
+      // Setup
+      uiObject = null;
+      uiObject = UIManager.get("Label.font");
+      
+      if (uiObject instanceof Font && uiObject != null)
+         uiManagerFont = (Font) uiObject;
+      else
+         return;
+      
+      // Collect the UI Manager keys that are fonts
+      // and update them to the new font size.
+      
+      uiDefaults = UIManager.getLookAndFeelDefaults();
+      Set<Object> hash = uiDefaults.keySet();
+      Iterator<Object> iterator = hash.iterator();
+      
+      while (iterator.hasNext())
+      {
+         Object curObj = iterator.next();
+         // System.out.println(curObj.toString());
+         
+         if (curObj.toString().indexOf("font") != -1)
+         {
+            // System.out.println(curObj);
+            UIManager.put(curObj, new FontUIResource(uiManagerFont.getFontName(),
+                                                     uiManagerFont.getStyle(), fontSize));
+         }
       }
    }
    
