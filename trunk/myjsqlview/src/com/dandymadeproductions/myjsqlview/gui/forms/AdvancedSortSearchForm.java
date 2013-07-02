@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.97 02/17/2013
+// Version 4.98 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,6 +199,8 @@
 //        4.96 10/19/2012 Dressed All JComboBoxes & JTextFields in Form With New Borders.
 //        4.97 02/17/2013 Added derbyWhereOperators in Method createSortSearchInterface() & Implemented
 //                        Proper LIMIT Construct for Derby in getAdvancedSortSearchSQL().
+//        4.98 07/02/2013 Change in getAdvancedSortSearchSQL() to Use DBTablePanel.
+//                        getGeneralDBProperties().
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -246,7 +248,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.97 02/17/2013
+ * @version 4.98 07/02/2013
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -967,7 +969,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
                                                   + " TO_DATE('"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                     searchString,
-                                                    DBTablesPanel.getGeneralProperties().getViewDateFormat())
+                                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat())
                                                     + "', 'YYYY-MM-dd') ");
                      }
                      else
