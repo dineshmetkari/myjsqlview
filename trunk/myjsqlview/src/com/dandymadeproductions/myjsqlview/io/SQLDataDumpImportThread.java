@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.7 03/05/2013
+// Version 5.8 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -125,7 +125,8 @@
 //             Made Class & Constructor Public.
 //         5.6 Removal of Starting the Class's Runnable Thread in the Constructor.
 //         5.7 In run() on validImport & reloadDatabase Update to Insure All the
-//             Schemas Pattern Menu is Updated. 
+//             Schemas Pattern Menu is Updated.
+//         5.8 Change in importSQLFile() to Use DBTablePanel.getGeneralDBProperties().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -159,7 +160,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.7 03/05/2013
+ * @version 5.8 07/02/2013
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -272,8 +273,8 @@ public class SQLDataDumpImportThread implements Runnable
       failedQuery = "";
       fileLineLength = 0;
       line = 0;
-      batchSize = DBTablesPanel.getGeneralProperties().getBatchSize();
-      batchSizeEnabled = DBTablesPanel.getGeneralProperties().getBatchSizeEnabled();
+      batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
+      batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
       
       // Begin the processing of the input SQL file by reading
       // each line and checking before insert if it is valid
