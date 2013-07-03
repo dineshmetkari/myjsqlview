@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.0 03/01/2013
+// Version 5.1 07/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -122,6 +122,9 @@
 //                        final Class Instances Public.
 //         5.0 03/01/2013 ComboBox insertReplaceUpdateComboBox Exclusion of TYPE_REPLACE for
 //                        Apache Derby Database.
+//         5.1 07/03/2013 Implemented Summary Table Use LIMIT. Added Class Instance
+//                        summaryTableLimitCheckBox. Used in Setup Instances and Restoring
+//                        Defaults in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -160,7 +163,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.0 03/01/2013
+ * @version 5.5 07/03/2013
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -181,6 +184,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    private JComboBox insertReplaceUpdateComboBox;
    private JComboBox insertTypeComboBox, replaceTypeComboBox, updateTypeComboBox;
    private JTextField identifierQuoteTextField;
+   private JCheckBox summaryTableLimitCheckBox;
 
    private JButton restoreDefaultsButton, applyButton;
    private String dataSourceType;
@@ -213,6 +217,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    public static final String PRIORITY_IGNORE = "Ignore";
    
    public static final int DEFAULT_PLURAL_SIZE = 250;
+   public static final boolean DEFAULT_SUMMARY_TABLE_USE_LIMIT = true; 
 
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -295,7 +300,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       tableDataCheckBox.setFocusPainted(false);
       tableDataCheckBox.addActionListener(this);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 35, 18);
+      buildConstraints(constraints, 0, 0, 1, 1, 35, 10);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(tableDataCheckBox, constraints);
@@ -388,15 +393,30 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
 
       dataContentPanel.add(dataContentOptionsPanel);
 
-      buildConstraints(constraints, 0, 1, 2, 1, 0, 82);
+      buildConstraints(constraints, 0, 1, 2, 1, 0, 80);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(dataContentPanel, constraints);
       dataPanel.add(dataContentPanel);
+      
+      // =====================================================
+      // Summary Table Limit panel and components.
+      
+      resource = resourceBundle.getResourceString("SQLExportPreferencesPanel.checkbox.SummaryTableUseLimit",
+                                                  "Summary Table Use LIMIT");
+      summaryTableLimitCheckBox = new JCheckBox(resource, DEFAULT_SUMMARY_TABLE_USE_LIMIT);
+      summaryTableLimitCheckBox.setFocusPainted(false);
+      summaryTableLimitCheckBox.addActionListener(this);
+      
+      buildConstraints(constraints, 0, 2, 2, 1, 100, 10);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(summaryTableLimitCheckBox, constraints);
+      dataPanel.add(summaryTableLimitCheckBox);
 
       sqlExportPanel.add(dataPanel, BorderLayout.CENTER);
       add(sqlExportPanel, BorderLayout.CENTER);
-
+      
       // Retrieve existing state and set accordingly.
       setSQLExportOptions(DBTablesPanel.getDataExportProperties());
 
@@ -473,6 +493,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
             replaceTypeComboBox.setEnabled(false);
             updateTypeComboBox.setSelectedItem(PRIORITY_LOW);
             updateTypeComboBox.setEnabled(false);
+            summaryTableLimitCheckBox.setSelected(DEFAULT_SUMMARY_TABLE_USE_LIMIT);
 
             applyButton.setEnabled(true);
          }
@@ -910,6 +931,8 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       newDataProperties.setInsertTypeSetting((String) insertTypeComboBox.getSelectedItem());
       newDataProperties.setReplaceTypeSetting((String) replaceTypeComboBox.getSelectedItem());
       newDataProperties.setUpdateTypeSetting((String) updateTypeComboBox.getSelectedItem());
+      
+      newDataProperties.setSummaryTableUseLimit(summaryTableLimitCheckBox.isSelected());
 
       return newDataProperties;
    }
@@ -963,7 +986,6 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       updateTypeComboBox.setSelectedItem(dataProperties.getUpdateTypeSetting());
       updateTypeComboBox.setEnabled(updateTypeCheckBox.isSelected());
       
-      
-      
+      summaryTableLimitCheckBox.setSelected(dataProperties.getSummaryTableUseLimit()); 
    }
 }
