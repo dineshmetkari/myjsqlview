@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.4 09/10/2012
+// Version 4.5 07/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,8 @@
 //             get/setter Methods.
 //         4.4 Changed Package Name to com.dandymadeproductions.myjsqlview.structures.
 //             Made Class, Constructor, & Getter/Setter Methods Public.
+//         4.5 Added Class Instance summaryTableUseLimit and Corresponding get/setter
+//             Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -127,7 +129,7 @@ import com.itextpdf.text.pdf.BaseFont;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 4.4 09/10/2012
+ * @version 4.5 07/03/2013
  */
 
 public class DataExportProperties
@@ -137,6 +139,7 @@ public class DataExportProperties
    // SQL
    private boolean tableStructure;
    private boolean tableData;
+   private String identifierQuoteString;
    private int insertPluralSize;
    private int replacePluralSize;
    private boolean insertLock;
@@ -153,9 +156,8 @@ public class DataExportProperties
    private String insertTypeSetting;
    private String replaceTypeSetting;
    private String updateTypeSetting;
-   private String identifierQuoteString;
+   private boolean summaryTableUseLimit;
    
-
    // CSV
    private boolean textInclusion;
    private int textCharsNumber;
@@ -200,6 +202,7 @@ public class DataExportProperties
    private static final String INSERTTYPESETTING = "InsertTypeSetting";
    private static final String REPLACETYPESETTING = "ReplaceTypeSetting";
    private static final String UPDATETYPESETTING = "UpdateTypeSetting";
+   private static final String SUMMARYTABLEUSELIMIT = "SummaryTableUseLimit";
 
    // CSV
    private static final String TEXTINCLUSION = "TextInclusion";
@@ -232,6 +235,7 @@ public class DataExportProperties
       // SQL
       tableStructure = SQLExportPreferencesPanel.DEFAULT_TABLE_STRUCTURE;
       tableData = SQLExportPreferencesPanel.DEFAULT_TABLE_DATA;
+      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       insertPluralSize = SQLExportPreferencesPanel.DEFAULT_PLURAL_SIZE;
       replacePluralSize = SQLExportPreferencesPanel.DEFAULT_PLURAL_SIZE;
       insertLock = SQLExportPreferencesPanel.DEFAULT_INSERT_LOCK;
@@ -248,7 +252,7 @@ public class DataExportProperties
       insertTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       replaceTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       updateTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
-      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
+      summaryTableUseLimit = SQLExportPreferencesPanel.DEFAULT_SUMMARY_TABLE_USE_LIMIT;
 
       // CSV
       textInclusion = CSVExportPreferencesPanel.DEFAULT_CHAR_INCLUSION;
@@ -298,6 +302,7 @@ public class DataExportProperties
          insertTypeSetting = dataExportPreferences.get(INSERTTYPESETTING, insertTypeSetting);
          replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, replaceTypeSetting);
          updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, updateTypeSetting);
+         summaryTableUseLimit = dataExportPreferences.getBoolean(SUMMARYTABLEUSELIMIT, summaryTableUseLimit);
          
          // CSV
          textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, textInclusion);
@@ -464,6 +469,11 @@ public class DataExportProperties
       return tableData;
    }
    
+   public String getIdentifierQuoteString()
+   {
+      return identifierQuoteString;
+   }
+   
    public int getInsertPluralSize()
    {
       return insertPluralSize;
@@ -597,9 +607,9 @@ public class DataExportProperties
       }
    }
 
-   public String getIdentifierQuoteString()
+   public boolean getSummaryTableUseLimit()
    {
-      return identifierQuoteString;
+      return summaryTableUseLimit;
    }
    
    //==========
@@ -721,6 +731,11 @@ public class DataExportProperties
       savePreference(TABLEDATA, value);
    }
    
+   public void setIdentifierQuoteString(String content)
+   {
+      identifierQuoteString = content;
+   }
+   
    public void setInsertPluralSize(int value)
    {
       insertPluralSize = value;
@@ -817,9 +832,10 @@ public class DataExportProperties
       savePreference(UPDATETYPESETTING, content);
    }
 
-   public void setIdentifierQuoteString(String content)
+   public void setSummaryTableUseLimit(boolean value)
    {
-      identifierQuoteString = content;
+      summaryTableUseLimit = value;
+      savePreference(SUMMARYTABLEUSELIMIT, value);
    }
    
    //===========
@@ -974,6 +990,7 @@ public class DataExportProperties
       
       parameters.append("[tableStructure = " + tableStructure + "]");
       parameters.append("[tableData = " + tableData + "]");
+      parameters.append("[identifierQuoteString = " + identifierQuoteString + "]");
       parameters.append("[insertPluralSize " + insertPluralSize + "]");
       parameters.append("[replacePluralSize " + replacePluralSize + "]");
       parameters.append("[insertLock = " + insertLock + "]");
@@ -990,6 +1007,7 @@ public class DataExportProperties
       parameters.append("[insertTypeSetting = " + insertTypeSetting + "]");
       parameters.append("[replaceTypeSetting = " + replaceTypeSetting + "]");
       parameters.append("[updateTypeSetting = " + updateTypeSetting + "]");
+      parameters.append("[summaryTableUseLimit = " + summaryTableUseLimit + "]");
       
       // CSV
       
