@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.17 07/02/2013
+// Version 6.18 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -141,6 +141,9 @@
 //             Same BIT DATA Types.
 //        6.16 Renamed From DataDumpThread to CSVDataDumpThread. Updated Comments.
 //        6.17 Change in run() to Use DBTablePanel.getGeneralDBProperties().
+//        6.18 Added Class Instance limits and Argument of Such in Constructor.
+//             Implemented With the Use of limits in run() the Control of SQL
+//             Statement of Either Exporting Complete Table or Summary Table. 
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -174,33 +177,37 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.17 07/02/2013
+ * @version 6.18 07/04/2013
  */
 
 public class CSVDataDumpThread implements Runnable
 {
    // Class Instances
+   private String exportedTable, fileName;
+   private boolean limits;
+   
    private ArrayList<String> columnNameFields;
    private HashMap<String, String> tableColumnNamesHashMap;
    private HashMap<String, String> tableColumnClassHashMap;
    private HashMap<String, String> tableColumnTypeHashMap;
    private HashMap<String, Integer> tableColumnSizeHashMap;
-   private String exportedTable, fileName;
+   
    private BufferedOutputStream filebuff;
 
    //==============================================================
    // CSVDataDumpThread Constructor.
    //==============================================================
 
-   public CSVDataDumpThread(ArrayList<String> columnNameFields,
-                         HashMap<String, String> tableColumnNamesHashMap,
-                         HashMap<String, String> tableColumnClassHashMap,
-                         HashMap<String, String> tableColumnTypeHashMap,
-                         HashMap<String, Integer> tableColumnSizeHashMap,
-                         String exportedTable, String fileName)
+   public CSVDataDumpThread(ArrayList<String> columnNameFields, HashMap<String,
+                            String> tableColumnNamesHashMap, boolean limits,
+                            HashMap<String, String> tableColumnClassHashMap,
+                            HashMap<String, String> tableColumnTypeHashMap,
+                            HashMap<String, Integer> tableColumnSizeHashMap,
+                            String exportedTable, String fileName)
    {
       this.columnNameFields = columnNameFields;
       this.tableColumnNamesHashMap = tableColumnNamesHashMap;
+      this.limits = limits;
       this.tableColumnClassHashMap = tableColumnClassHashMap;
       this.tableColumnTypeHashMap = tableColumnTypeHashMap;
       this.tableColumnSizeHashMap = tableColumnSizeHashMap;
@@ -319,13 +326,17 @@ public class CSVDataDumpThread implements Runnable
          // Collect the row count of the table and setting
          // up a progress bar for tracking/canceling.
          
-         sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
-         // System.out.println(sqlStatementString);
+         if (limits)
+            rowsCount = DBTablesPanel.getSelectedTableTabPanel().getValidDataRowCount();
+         {
+            sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
+            // System.out.println(sqlStatementString);
 
-         dbResultSet = sqlStatement.executeQuery(sqlStatementString);
+            dbResultSet = sqlStatement.executeQuery(sqlStatementString);
 
-         if (dbResultSet.next())
-            rowsCount = dbResultSet.getInt(1);
+            if (dbResultSet.next())
+               rowsCount = dbResultSet.getInt(1);
+         }
 
          dumpProgressBar.setTaskLength(rowsCount);
          dumpProgressBar.pack();
@@ -354,30 +365,35 @@ public class CSVDataDumpThread implements Runnable
          
          do
          {
-            // Creating the Select statement to retrieve data. Oracle
-            // needs special handling for Timestamps with Time Zone.
+            // Creating the Select statement to retrieve data. If not using
+            // limit then Oracle needs special handling for Timestamps with
+            // Time Zone.
             
-            if (dataSourceType.equals(ConnectionManager.ORACLE))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
-                                    + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
-                                    + "FROM " + schemaTableName + ") " + "WHERE dmprownumber BETWEEN "
-                                    + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
-                                    + limitIncrement);
-            // MSAccess
-            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                     + schemaTableName;
-            // Derby
-            else if (dataSourceType.equals(ConnectionManager.DERBY))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
-                                    + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
+            if (limits)
+               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
             else
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
-                                    + currentTableIncrement;
-            
+            {
+               if (dataSourceType.equals(ConnectionManager.ORACLE))
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                       + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
+                                       + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
+                                       + "FROM " + schemaTableName + ") " + "WHERE dmprownumber BETWEEN "
+                                       + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                       + limitIncrement);
+               // MSAccess
+               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                        + schemaTableName;
+               // Derby
+               else if (dataSourceType.equals(ConnectionManager.DERBY))
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                       + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
+                                       + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
+               else
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                       + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
+                                       + currentTableIncrement;
+            }
             // System.out.println(sqlStatementString);
 
             dbResultSet = sqlStatement.executeQuery(sqlStatementString);
@@ -389,6 +405,7 @@ public class CSVDataDumpThread implements Runnable
                dumpProgressBar.setCurrentValue(currentRow++);
 
                columnNamesIterator = columnNameFields.iterator();
+               
                while (columnNamesIterator.hasNext())
                {
                   // Filtering out blob & text data as needed.
@@ -566,7 +583,7 @@ public class CSVDataDumpThread implements Runnable
             }
             currentTableIncrement += limitIncrement;
          }
-         while (currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
+         while (!limits && currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
          
          dumpProgressBar.dispose();
          ConnectionManager.closeConnection(db_Connection, "CSVDataDumpThread run()");
