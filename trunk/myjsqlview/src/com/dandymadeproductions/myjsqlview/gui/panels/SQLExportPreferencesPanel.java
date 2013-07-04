@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.1 07/03/2013
+// Version 5.2 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -125,6 +125,7 @@
 //         5.1 07/03/2013 Implemented Summary Table Use LIMIT. Added Class Instance
 //                        summaryTableLimitCheckBox. Used in Setup Instances and Restoring
 //                        Defaults in actionPerformed().
+//         5.2 07/04/2013 Minor Organizational/Format Changes.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -163,7 +164,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.5 07/03/2013
+ * @version 5.2 07/04/2013
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -193,6 +194,8 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    private static final int maxPlural = 50000;
    private static int spinnerPluralStep = 100;
    
+   public static final int DEFAULT_PLURAL_SIZE = 250;
+   
    public static final boolean DEFAULT_TABLE_STRUCTURE = false;
    public static final boolean DEFAULT_TABLE_DATA = true;
    public static final boolean DEFAULT_INSERT_LOCK = true;
@@ -203,6 +206,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    public static final boolean DEFAULT_UPDATE_TYPE = false;
    public static final boolean DEFAULT_AUTO_INCREMENT = false;
    public static final boolean DEFAULT_TIMESTAMP = false;
+   public static final boolean DEFAULT_SUMMARY_TABLE_USE_LIMIT = true; 
    
    public static final String EXPRESSION_SINGULAR = "Singular";
    public static final String EXPRESSION_PLURAL = "Plural";
@@ -216,9 +220,6 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    public static final String PRIORITY_DELAYED = "Delayed";
    public static final String PRIORITY_IGNORE = "Ignore";
    
-   public static final int DEFAULT_PLURAL_SIZE = 250;
-   public static final boolean DEFAULT_SUMMARY_TABLE_USE_LIMIT = true; 
-
    //==============================================================
    // DataPreferencesPreferencesDialog Constructor
    //==============================================================
