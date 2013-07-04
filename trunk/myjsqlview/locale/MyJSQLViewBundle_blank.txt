@@ -439,6 +439,7 @@ SQLExportPreferencesPanel.checkbox.LockTable =
 SQLExportPreferencesPanel.checkbox.Auto-Increment = 
 SQLExportPreferencesPanel.checkbox.Timestamp = 
 SQLExportPreferencesPanel.checkbox.Type = 
+SQLExportPreferencesPanel.checkbox.SummaryTableUseLimit = 
 SQLExportPreferencesPanel.button.RestoreDefaults = 
 SQLExportPreferencesPanel.button.Apply = 
 
