@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.57 07/03/2013
+// Version 7.58 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -296,8 +296,11 @@
 //             Added Methods buildConstraints(), setGeneralPreferences(), getLocaleList(),
 //             & setLocalizationString() to Support Edit/Preferences.
 //        7.56 Removed System.out in Method setGeneralPreferences().
-//        7.57 Added Method useLimit in dataExportAction() to Control LIMIT for Summary
-//             Table Dumps.
+//        7.57 Added Method Instance useLimit in dataExportAction() to Control
+//             LIMIT for Summary Table Dumps.
+//        7.58 Consolidated in Method dataExport() the Use of Instance useLimit to
+//             Control LIMIT for All CSV/SQL Table Dumps. Also Consolidated CSV Exports
+//             to Just the CSVDateDumpThread. Removed Use of CSVDataTableDumpThread.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -355,7 +358,6 @@ import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.io.CSVDataDumpThread;
 import com.dandymadeproductions.myjsqlview.io.CSVDataImportThread;
-import com.dandymadeproductions.myjsqlview.io.CSVDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.LoadTableStateThread;
 import com.dandymadeproductions.myjsqlview.io.PDFDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.SQLDataDumpImportThread;
@@ -375,7 +377,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.57 07/03/2013
+ * @version 7.58 07/04/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1311,7 +1313,15 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
 
       // Initializing
       
-      useLimit = DBTablesPanel.getDataExportProperties().getSummaryTableUseLimit();
+      if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE) || actionCommand.equals(ACTION_EXPORT_SQL_TABLE))
+         useLimit = false;
+      else
+      {
+         if (actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE))
+            useLimit = DBTablesPanel.getDataExportProperties().getCSVSummaryTableUseLimit();
+         else
+            useLimit = DBTablesPanel.getDataExportProperties().getSQLSummaryTableUseLimit();
+      }
       
       tableHeadings = new ArrayList <String>();
       tableColumnNamesHashMap = new HashMap <String, String>();
@@ -1393,12 +1403,20 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                tableColumnSizeHashMap = (DBTablesPanel.getSelectedTableTabPanel()).getColumnSizeHashMap();
             }
 
-            // Data Export CSV Table
-            if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
+            // Data Export CSV Whole Table or Summary Table
+            
+            if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE)
+                || actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE))
             {
-               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
+               // Collect appropriate table columns.
+               if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
+                  tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
+               else
+                  tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
+                  
                Thread csvDataDumpThread = new Thread(new CSVDataDumpThread(tableHeadings,
                                                                            tableColumnNamesHashMap,
+                                                                           useLimit,
                                                                            tableColumnClassHashMap,
                                                                            tableColumnTypeHashMap,
                                                                            tableColumnSizeHashMap,
@@ -1406,22 +1424,9 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                                                      "CSVDataDumpThread");
                csvDataDumpThread.start();
             }
-
-            // Data Export CSV Summary Table
-            else if (actionCommand.equals(ACTION_EXPORT_CSV_SUMMARY_TABLE))
-            {
-               summaryListTable = (DBTablesPanel.getSelectedTableTabPanel()).getListTable();
-               if (summaryListTable != null)
-               {
-                  Thread csvDataTableDumpThread = new Thread(
-                     new CSVDataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
-                                                tableColumnTypeHashMap, exportedTable, fileName),
-                                                "CSVDataTableDumpThread");
-                  csvDataTableDumpThread.start();
-               }
-            }
             
             // Data Export PDF Summary Table
+            
             else if (actionCommand.equals(ACTION_EXPORT_PDF_SUMMARY_TABLE))
             {
                summaryListTable = (DBTablesPanel.getSelectedTableTabPanel()).getListTable();
@@ -1436,27 +1441,19 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                }
             }
 
-            // Data Export SQL Table
-            else if (actionCommand.equals(ACTION_EXPORT_SQL_TABLE))
+            // Data Export SQL Whole Table or Summary Table
+            
+            else if (actionCommand.equals(ACTION_EXPORT_SQL_TABLE)
+                     || actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
             {
-               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
+               // Collect appropriate table columns.
+               if (actionCommand.equals(ACTION_EXPORT_SQL_TABLE))
+                  tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
+               else
+                  tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
+               
                Thread sqlDataDumpThread = new Thread(new SQLDataDumpThread(tableHeadings,
-                                                                           tableColumnNamesHashMap, false,
-                                                                           tableColumnClassHashMap,
-                                                                           tableColumnTypeHashMap,
-                                                                           exportedTable, fileName,
-                                                                           myJSQLView_Version),
-                                                                           "SQLDataDumpThread");
-               sqlDataDumpThread.start();
-            }
-
-            // Data Export SQL Summary Table
-            else if (actionCommand.equals(ACTION_EXPORT_SQL_SUMMARY_TABLE))
-            {
-               tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
-               Thread sqlDataDumpThread = new Thread(new SQLDataDumpThread(tableHeadings,
-                                                                           tableColumnNamesHashMap,
-                                                                           useLimit,
+                                                                           tableColumnNamesHashMap, useLimit,
                                                                            tableColumnClassHashMap,
                                                                            tableColumnTypeHashMap,
                                                                            exportedTable, fileName,
@@ -1466,6 +1463,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             }
 
             // Data Export SQL Database
+            
             else if (actionCommand.equals(ACTION_EXPORT_SQL_DATABASE))
             {
                Thread sqlDatabaseDumpThread = new Thread(new SQLDatabaseDumpThread(
@@ -1474,6 +1472,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             }
 
             // Data Export SQL Database Scheme. Must be "DESQLDS", ACTION_EXPORT_SQL_DATABASE_SCHEME.
+            
             else
             {
                Thread sqlDatabaseSchemeDumpThread = new Thread(
