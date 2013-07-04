@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.2 07/04/2013
+// Version 5.3 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -126,6 +126,8 @@
 //                        summaryTableLimitCheckBox. Used in Setup Instances and Restoring
 //                        Defaults in actionPerformed().
 //         5.2 07/04/2013 Minor Organizational/Format Changes.
+//         5.3 07/04/2013 Methods get/setSQLExportOptions() Change to dataProperties.
+//                        get/setSQLSummaryTableUseLimit() Instead of get/setSummaryTableUseLimit(). 
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,7 +166,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.2 07/04/2013
+ * @version 5.3 07/04/2013
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -933,7 +935,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       newDataProperties.setReplaceTypeSetting((String) replaceTypeComboBox.getSelectedItem());
       newDataProperties.setUpdateTypeSetting((String) updateTypeComboBox.getSelectedItem());
       
-      newDataProperties.setSummaryTableUseLimit(summaryTableLimitCheckBox.isSelected());
+      newDataProperties.setSQLSummaryTableUseLimit(summaryTableLimitCheckBox.isSelected());
 
       return newDataProperties;
    }
@@ -987,6 +989,6 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       updateTypeComboBox.setSelectedItem(dataProperties.getUpdateTypeSetting());
       updateTypeComboBox.setEnabled(updateTypeCheckBox.isSelected());
       
-      summaryTableLimitCheckBox.setSelected(dataProperties.getSummaryTableUseLimit()); 
+      summaryTableLimitCheckBox.setSelected(dataProperties.getSQLSummaryTableUseLimit()); 
    }
 }
