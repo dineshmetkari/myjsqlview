@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.5 07/03/2013
+// Version 4.6 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,9 @@
 //             Made Class, Constructor, & Getter/Setter Methods Public.
 //         4.5 Added Class Instance summaryTableUseLimit and Corresponding get/setter
 //             Methods.
+//         4.6 Changed summaryTableUseLimit to sqlSummaryTableUseLimit & Added
+//             Class Instance csvSummaryTableUseLimit. Added get/setter Methods
+//             for csvSummaryTableUseLimit.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -129,7 +132,7 @@ import com.itextpdf.text.pdf.BaseFont;
  * data export properties storage.
  * 
  * @author Dana M. Proctor
- * @version 4.5 07/03/2013
+ * @version 4.6 07/04/2013
  */
 
 public class DataExportProperties
@@ -156,13 +159,14 @@ public class DataExportProperties
    private String insertTypeSetting;
    private String replaceTypeSetting;
    private String updateTypeSetting;
-   private boolean summaryTableUseLimit;
+   private boolean sqlSummaryTableUseLimit;
    
    // CSV
    private boolean textInclusion;
    private int textCharsNumber;
    private String dataDelimiter;
    private String csvDateFormat;
+   private boolean csvSummaryTableUseLimit;
    
    // PDF
    private String title;
@@ -202,13 +206,14 @@ public class DataExportProperties
    private static final String INSERTTYPESETTING = "InsertTypeSetting";
    private static final String REPLACETYPESETTING = "ReplaceTypeSetting";
    private static final String UPDATETYPESETTING = "UpdateTypeSetting";
-   private static final String SUMMARYTABLEUSELIMIT = "SummaryTableUseLimit";
+   private static final String SQLSUMMARYTABLEUSELIMIT = "SQLSummaryTableUseLimit";
 
    // CSV
    private static final String TEXTINCLUSION = "TextInclusion";
    private static final String TEXTCHARSNUMBER = "TextCharsNumber";
    private static final String DATADELIMITER = "ExportDataDelimiter";
    private static final String CSVDATEFORMAT = "ExportCSVDateFormat";
+   private static final String CSVSUMMARYTABLEUSELIMIT = "CSVSummaryTableUseLimit";
    
    // PDF
    private static final String TITLE = "Title";
@@ -252,13 +257,14 @@ public class DataExportProperties
       insertTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       replaceTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
       updateTypeSetting = SQLExportPreferencesPanel.PRIORITY_LOW;
-      summaryTableUseLimit = SQLExportPreferencesPanel.DEFAULT_SUMMARY_TABLE_USE_LIMIT;
+      sqlSummaryTableUseLimit = SQLExportPreferencesPanel.DEFAULT_SUMMARY_TABLE_USE_LIMIT;
 
       // CSV
       textInclusion = CSVExportPreferencesPanel.DEFAULT_CHAR_INCLUSION;
       textCharsNumber = CSVExportPreferencesPanel.DEFAULT_CHARS_LENGTH;
       dataDelimiter = CSVExportPreferencesPanel.DEFAULT_DATA_DELIMITER;
       csvDateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
+      csvSummaryTableUseLimit = CSVExportPreferencesPanel.DEFAULT_SUMMARY_TABLE_USE_LIMIT;
       
       // PDF
       title = PDFExportPreferencesPanel.DEFAULT_TITLE;
@@ -302,13 +308,16 @@ public class DataExportProperties
          insertTypeSetting = dataExportPreferences.get(INSERTTYPESETTING, insertTypeSetting);
          replaceTypeSetting = dataExportPreferences.get(REPLACETYPESETTING, replaceTypeSetting);
          updateTypeSetting = dataExportPreferences.get(UPDATETYPESETTING, updateTypeSetting);
-         summaryTableUseLimit = dataExportPreferences.getBoolean(SUMMARYTABLEUSELIMIT, summaryTableUseLimit);
+         sqlSummaryTableUseLimit = dataExportPreferences.getBoolean(SQLSUMMARYTABLEUSELIMIT,
+                                                                    sqlSummaryTableUseLimit);
          
          // CSV
          textInclusion = dataExportPreferences.getBoolean(TEXTINCLUSION, textInclusion);
          textCharsNumber = dataExportPreferences.getInt(TEXTCHARSNUMBER, textCharsNumber);
          dataDelimiter = dataExportPreferences.get(DATADELIMITER, dataDelimiter);
          csvDateFormat = dataExportPreferences.get(CSVDATEFORMAT, csvDateFormat);
+         csvSummaryTableUseLimit = dataExportPreferences.getBoolean(CSVSUMMARYTABLEUSELIMIT,
+                                                                    csvSummaryTableUseLimit);
          
          // PDF
          title = dataExportPreferences.get(TITLE, title);
@@ -607,9 +616,9 @@ public class DataExportProperties
       }
    }
 
-   public boolean getSummaryTableUseLimit()
+   public boolean getSQLSummaryTableUseLimit()
    {
-      return summaryTableUseLimit;
+      return sqlSummaryTableUseLimit;
    }
    
    //==========
@@ -633,6 +642,11 @@ public class DataExportProperties
    public String getCSVDateFormat()
    {
       return csvDateFormat;
+   }
+   
+   public boolean getCSVSummaryTableUseLimit()
+   {
+      return csvSummaryTableUseLimit;
    }
    
    //==========
@@ -832,10 +846,10 @@ public class DataExportProperties
       savePreference(UPDATETYPESETTING, content);
    }
 
-   public void setSummaryTableUseLimit(boolean value)
+   public void setSQLSummaryTableUseLimit(boolean value)
    {
-      summaryTableUseLimit = value;
-      savePreference(SUMMARYTABLEUSELIMIT, value);
+      sqlSummaryTableUseLimit = value;
+      savePreference(SQLSUMMARYTABLEUSELIMIT, value);
    }
    
    //===========
@@ -863,6 +877,12 @@ public class DataExportProperties
    {
       csvDateFormat = content;
       savePreference(CSVDATEFORMAT, content);
+   }
+   
+   public void setCSVSummaryTableUseLimit(boolean value)
+   {
+      csvSummaryTableUseLimit = value;
+      savePreference(CSVSUMMARYTABLEUSELIMIT, value);
    }
    
    //===========
@@ -1007,7 +1027,7 @@ public class DataExportProperties
       parameters.append("[insertTypeSetting = " + insertTypeSetting + "]");
       parameters.append("[replaceTypeSetting = " + replaceTypeSetting + "]");
       parameters.append("[updateTypeSetting = " + updateTypeSetting + "]");
-      parameters.append("[summaryTableUseLimit = " + summaryTableUseLimit + "]");
+      parameters.append("[sqlSummaryTableUseLimit = " + sqlSummaryTableUseLimit + "]");
       
       // CSV
       
@@ -1015,6 +1035,7 @@ public class DataExportProperties
       parameters.append("[textCharsNumber = " + textCharsNumber + "]");
       parameters.append("[dataDelimiter = " + dataDelimiter + "]");
       parameters.append("[csvDataFormat = " + csvDateFormat + "]");
+      parameters.append("[csvSummaryTableUseLimit = " + csvSummaryTableUseLimit + "]");
       
       // PDF
       
