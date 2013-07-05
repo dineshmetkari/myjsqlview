@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.9 07/02/2013
+// Version 9.0 07/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -165,6 +165,8 @@
 //         8.8 Change in processDateFormatSearch() to Use DBTablePanel.getGeneralDBProperties().
 //         8.9 Improved the Efficiency Method setUIManagerFont() By Not Assigning of
 //             Given Argument if Equal to the System Setting.
+//         9.0 Change in Method processTableData_To_PDFOutput() to Correct the Starting
+//             of the Thread to Properly Output.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -231,7 +233,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 8.9 07/02/2013
+ * @version 9.0 07/05/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1464,8 +1466,12 @@ public class MyJSQLView_Utils extends MyJSQLView
                                                     String exportedTable, String fileName)
    {
       if (summaryListTable != null)
-         new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
-                                    exportedTable, fileName); 
+      {  
+         Thread pdfDataTableDumpThread = new Thread(new PDFDataTableDumpThread(summaryListTable,
+            tableColumnTypeHashMap, exportedTable, fileName));
+         
+         pdfDataTableDumpThread.start();
+      }
    }
    
    //==============================================================
