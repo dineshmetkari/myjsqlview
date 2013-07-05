@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.9 07/01/2013
+// Version 6.0 07/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -116,9 +116,12 @@
 //                        of Resource Strings. Change to resource.getResourceString(key,
 //                        default).
 //         5.8 09/10/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
-//                        Made Class, Constructor, Getter/Setter Methods Along With static final
-//                        Class Instances Public.
+//                        Made Class, Constructor, Getter/Setter Methods Along With static
+//                        final Class Instances Public.
 //         5.9 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
+//         6.0 07/04/2013 Implemented Summary Table Use LIMIT. Added Class Instance
+//                        summaryTableLimitCheckBox. Used in Setup Instances and Restoring
+//                        Defaults in actionPerformed().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -159,7 +162,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.9 07/01/2013
+ * @version 6.0 07/04/2013
  */
 
 public class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -173,11 +176,13 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
            otherRadioButton;
    private JTextField otherTextField;
    private JComboBox dateFormatComboBox;
+   private JCheckBox summaryTableLimitCheckBox;
    private JButton restoreDefaultsButton, applyButton;
    
    public static final boolean DEFAULT_CHAR_INCLUSION = false;
    public static final int DEFAULT_CHARS_LENGTH = 50;
    public static final String DEFAULT_DATA_DELIMITER = ",";
+   public static final boolean DEFAULT_SUMMARY_TABLE_USE_LIMIT = true;
 
    //===========================================================
    // DataPreferencesPreferencesDialog Constructor
@@ -186,7 +191,8 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
    public CSVExportPreferencesPanel(MyJSQLView_ResourceBundle resourceBundle)
    {
       // Class Instances
-      JPanel mainPanel, textOptionsPanel, delimiterPanel, dateFormatPanel;
+      JPanel mainPanel, textOptionsPanel, delimiterPanel;
+      JPanel dateLimitPanel, dateFormatPanel, summaryTableLimitPanel; 
       JPanel buttonPanel;
       JLabel dateFormatLabel;
       String resource;
@@ -221,8 +227,11 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       add(mainPanel, BorderLayout.CENTER);
       
       // =====================================================
-      // Date Format Panel & Components
+      // Date/Limit Panel & Components
       
+      dateLimitPanel = new JPanel(new GridLayout(2, 1, 0, 0));
+      
+      // Date Format
       dateFormatPanel = new JPanel(gridbag);
       dateFormatPanel.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
@@ -247,7 +256,33 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(dateFormatComboBox, constraints);
       dateFormatPanel.add(dateFormatComboBox);
       
-      mainPanel.add(dateFormatPanel, BorderLayout.SOUTH);
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 65);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(dateFormatPanel, constraints);
+      dateLimitPanel.add(dateFormatPanel);
+      
+      // Summary Table Use LIMIT
+      summaryTableLimitPanel = new JPanel();
+      summaryTableLimitPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEtchedBorder()));
+      
+      resource = resourceBundle.getResourceString("CSVExportPreferencesPanel.checkbox.SummaryTableUseLimit",
+                                                  "Summary Table Use LIMIT");
+      summaryTableLimitCheckBox = new JCheckBox(resource, DEFAULT_SUMMARY_TABLE_USE_LIMIT);
+      summaryTableLimitCheckBox.setBorder(BorderFactory.createEmptyBorder());
+      summaryTableLimitCheckBox.setFocusPainted(false);
+      summaryTableLimitCheckBox.addActionListener(this);
+      
+      summaryTableLimitPanel.add(summaryTableLimitCheckBox);
+      
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 35);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(summaryTableLimitPanel, constraints);
+      dateLimitPanel.add(summaryTableLimitPanel);
+      
+      mainPanel.add(dateLimitPanel, BorderLayout.SOUTH);
       add(mainPanel, BorderLayout.CENTER);
 
       // Button Action Options Panel
@@ -292,6 +327,7 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
             otherTextField.setEnabled(false);
             dateFormatComboBox.setSelectedItem(DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             applyButton.setEnabled(true);
+            summaryTableLimitCheckBox.setSelected(DEFAULT_SUMMARY_TABLE_USE_LIMIT);
          }
 
          // Apply Button Action
@@ -308,13 +344,12 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       {
          if (formSource == includeTextCheckBox)
          {
-            applyButton.setEnabled(true);
-
             if (includeTextCheckBox.isSelected())
                textMaxCharsSpinner.setEnabled(true);
             else
                textMaxCharsSpinner.setEnabled(false);
          }
+         applyButton.setEnabled(true);
       }
 
       // Triggering the apply button back to enabled
@@ -588,6 +623,9 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       
       // Date Format
       newDataProperties.setCSVDateFormat((String)dateFormatComboBox.getSelectedItem());
+      
+      // Summary Table Use Limit
+      newDataProperties.setCSVSummaryTableUseLimit(summaryTableLimitCheckBox.isSelected());
 
       return newDataProperties;
    }
@@ -623,5 +661,8 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       
       // Date Format
       dateFormatComboBox.setSelectedItem(dataProperties.getCSVDateFormat());
+      
+      // Summary Table Use Limit
+      summaryTableLimitCheckBox.setSelected(dataProperties.getCSVSummaryTableUseLimit());
    }
 }
