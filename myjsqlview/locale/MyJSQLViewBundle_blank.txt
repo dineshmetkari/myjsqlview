@@ -404,6 +404,7 @@ CSVExportPreferencesPanel.radiobutton.Comma =
 CSVExportPreferencesPanel.radiobutton.Space = 
 CSVExportPreferencesPanel.radiobutton.Other = 
 CSVExportPreferencesPanel.label.DateFormat = 
+CSVExportPreferencesPanel.checkbox.SummaryTableUseLimit = 
 CSVExportPreferencesPanel.button.RestoreDefaults = 
 CSVExportPreferencesPanel.button.Apply = 
 
