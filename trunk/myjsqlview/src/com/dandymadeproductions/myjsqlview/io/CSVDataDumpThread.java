@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.18 07/04/2013
+// Version 6.19 07/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,7 +143,8 @@
 //        6.17 Change in run() to Use DBTablePanel.getGeneralDBProperties().
 //        6.18 Added Class Instance limits and Argument of Such in Constructor.
 //             Implemented With the Use of limits in run() the Control of SQL
-//             Statement of Either Exporting Complete Table or Summary Table. 
+//             Statement of Either Exporting Complete Table or Summary Table.
+//        6.19 Closed db_Connection in run() Only After All finallys Completed.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -177,7 +178,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.18 07/04/2013
+ * @version 6.18 07/06/2013
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -586,13 +587,11 @@ public class CSVDataDumpThread implements Runnable
          while (!limits && currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
          
          dumpProgressBar.dispose();
-         ConnectionManager.closeConnection(db_Connection, "CSVDataDumpThread run()");
       }
       catch (SQLException e)
       {
          dumpProgressBar.dispose();
          ConnectionManager.displaySQLErrors(e, "CSVDataDumpThread run()");
-         ConnectionManager.closeConnection(db_Connection, "CSVDataDumpThread run()");
       }
       finally
       {
@@ -620,6 +619,7 @@ public class CSVDataDumpThread implements Runnable
             }
          }
       }
+      ConnectionManager.closeConnection(db_Connection, "CSVDataDumpThread run()");
    }
    
    //==============================================================
