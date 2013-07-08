@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 07/07/2013
+// Version 1.3 07/08/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,8 @@
 // Version 1.0 Original CSVQueryDataDumpThread Class.
 //         1.1 Change in run() to Use DBTablePanel.getGeneralDBProperties().
 //         1.2 Basic Functional Class That Exports With Simple SELECTS.
+//         1.3 Finalized, Though Not Throughly Tested, CSVQueryDataDumpThread
+//             Class.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -69,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 1.2 07/07/2013
+ * @version 1.3 07/09/2013
  */
 
 public class CSVQueryDataDumpThread implements Runnable
@@ -84,17 +86,27 @@ public class CSVQueryDataDumpThread implements Runnable
    
    private String queryString, fileName;
    private String dataSourceType;
+   private boolean useLimitIncrement;
+   
    private BufferedOutputStream filebuff;
    
    //==============================================================
    // CSVQueryDataDumpThread Constructor.
+   //
+   // db_Connection - Optional.
+   // queryString - SQL Query.
+   // fileName - Where to Dump the Data.
+   // useLimitIncrement - Bypass the Limit Increment, Use queryString
+   //                     Directly.
    //==============================================================
 
-   public CSVQueryDataDumpThread(Connection db_Connection, String queryString, String fileName)
+   public CSVQueryDataDumpThread(Connection db_Connection, String queryString, String fileName,
+                                 boolean useLimitIncrement)
    {
       this.db_Connection = db_Connection;
       this.queryString = queryString;
       this.fileName = fileName;
+      this.useLimitIncrement = useLimitIncrement;
       
       columnNameFields = new ArrayList <String>();
       columnClassHashMap = new HashMap <String, String>();
@@ -116,8 +128,7 @@ public class CSVQueryDataDumpThread implements Runnable
       MyJSQLView_ProgressBar dumpProgressBar;
       Iterator<String> columnNamesIterator;
       StringBuffer columnNamesString;
-      StringBuffer oracleColumnNamesString;
-      String field, columnClass, columnType, dataDelimiter;
+      String columnClass, columnType, dataDelimiter;
       String identifierQuoteString;
       String fieldContent;
       int columnSize, rowsCount, currentTableIncrement, currentRow;
@@ -173,40 +184,19 @@ public class CSVQueryDataDumpThread implements Runnable
          return;
       }
       
-      // Modifiy column names?
+      // Compose a the column names into a quoted format.
       columnNamesString = new StringBuffer();
-      oracleColumnNamesString = new StringBuffer();
       columnNamesIterator = columnNameFields.iterator();
       
       while (columnNamesIterator.hasNext())
       {
-         field = columnNamesIterator.next();
-
-         // Oracle TIMESTAMPLTZ handled differently to remove the
-         // need to SET SESSION.
-
-         if (dataSourceType.equals(ConnectionManager.ORACLE)
-             && (columnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
-         {
-            oracleColumnNamesString.append("TO_CHAR(" + identifierQuoteString
-                                           + field + identifierQuoteString
-                                           + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS " 
-                                           + identifierQuoteString
-                                           + field + identifierQuoteString + ", ");
-         }
-         else
-            oracleColumnNamesString.append(identifierQuoteString 
-                                           + field + identifierQuoteString + ", ");
-         
-         // Unmodified Names.
-         columnNamesString.append(identifierQuoteString + field + identifierQuoteString + ", ");
+         columnNamesString.append(identifierQuoteString + columnNamesIterator.next()
+                                  + identifierQuoteString + ", ");
       }
-      oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
-         oracleColumnNamesString.length());
       columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
       
-      // Have a connection, columns, query, & file to write to so begin
-      // dumping data.
+      // Have a connection, columns, query, & file to write to
+      // so begin dumping data.
       
       sqlStatement = null;
       dbResultSet = null;
@@ -218,10 +208,14 @@ public class CSVQueryDataDumpThread implements Runnable
          // Collect the row count of the table and setting
          // up a progress bar for tracking/canceling.
          
-         sqlStatementString = "SELECT COUNT(*) AS " + identifierQuoteString + "rowCount"
-                              + identifierQuoteString + " FROM (" + queryString + ") AS "
-                              + identifierQuoteString + "myRowTable" + identifierQuoteString;
-         System.out.println(sqlStatementString);
+         if (dataSourceType.equals(ConnectionManager.ORACLE))
+            sqlStatementString = "SELECT COUNT(*) FROM (" + queryString + ")";
+         else
+            sqlStatementString = "SELECT COUNT(*) AS " + identifierQuoteString + "rowCount"
+                                 + identifierQuoteString + " FROM (" + queryString + ") AS "
+                                 + identifierQuoteString + "myRowTable" + identifierQuoteString;
+         
+         // System.out.println(sqlStatementString);
 
          dbResultSet = sqlStatement.executeQuery(sqlStatementString);
       
@@ -255,35 +249,44 @@ public class CSVQueryDataDumpThread implements Runnable
       
          do
          {
-            // Creating the Select statement to retrieve data. Oracle
-            // needs special handling for Timestamps with Time Zone.
+            // Creating the Select statement to retrieve data.
             
-            /*
-            if (dataSourceType.equals(ConnectionManager.ORACLE))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
-                                    + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
-                                    + "FROM " + schemaTableName + ") " + "WHERE dmprownumber BETWEEN "
-                                    + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
-                                    + limitIncrement);
-            // MSAccess
-            else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                     + schemaTableName;
-            // Derby
-            else if (dataSourceType.equals(ConnectionManager.DERBY))
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
-                                    + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
+            if (useLimitIncrement)
+            {
+               // Oracle
+               if (dataSourceType.equals(ConnectionManager.ORACLE))
+               {
+                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                       + "(SELECT ROW_NUMBER() OVER (ORDER BY " + identifierQuoteString
+                                       + columnNameFields.get(0) + identifierQuoteString
+                                       + " ASC) " + "AS dmprownumber, " + columnNamesString.toString()
+                                       + " FROM (" + queryString + ")) " + "WHERE "
+                                       + "dmprownumber BETWEEN " + (currentTableIncrement + 1) + " AND "
+                                       + (currentTableIncrement + limitIncrement);
+               }
+               // MSAccess
+               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+               {
+                  sqlStatementString = queryString;
+               }
+               // Derby
+               else if (dataSourceType.equals(ConnectionManager.DERBY))
+               {
+                  sqlStatementString = "SELECT * FROM (" + queryString + ") AS " + identifierQuoteString
+                                       + "myCSVTable" + identifierQuoteString + " OFFSET "
+                                       + currentTableIncrement + " ROWS "
+                                       + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
+               }
+               else
+                  sqlStatementString = "SELECT * FROM (" + queryString + ") AS " + identifierQuoteString
+                                       + "myCSVTable" + identifierQuoteString + " LIMIT " + limitIncrement
+                                       + " OFFSET " + currentTableIncrement;
+            }
             else
-               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                    + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
-                                    + currentTableIncrement;
-            */
-            
-            System.out.println(queryString);
+               sqlStatementString = queryString;
+            // System.out.println(sqlStatementString);
 
-            dbResultSet = sqlStatement.executeQuery(queryString);
+            dbResultSet = sqlStatement.executeQuery(sqlStatementString);
             
             // Actual data dump.
             while (dbResultSet.next() && !dumpProgressBar.isCanceled())
@@ -516,7 +519,6 @@ public class CSVQueryDataDumpThread implements Runnable
    private void getColumnNames(Connection dbConnection, String query) throws SQLException
    {
       // Method Instances
-      String sqlStatementString;
       Statement sqlStatement;
       ResultSet db_resultSet;
       ResultSetMetaData tableMetaData;
@@ -532,55 +534,12 @@ public class CSVQueryDataDumpThread implements Runnable
       try
       {
          sqlStatement = dbConnection.createStatement();
-
-         // Setting Up the Column Names, Form Fields, ComboBox
-         // Text, Hashmaps, Special Fields, & Primary Key(s).
-
-         // *************** HSQL NEEDS FIXED ***********************
-         // This is a lame work around for HSQLDB which does not
-         // properly parse a standard short query with trailing
-         // LIMIT. I hate crap like this.
-         // ********************************************************
-         if (dataSourceType.equals(ConnectionManager.HSQL))
-         {
-            if (query.toUpperCase().indexOf("WHERE") != -1 ||
-                query.toUpperCase().indexOf("GROUP") != -1 ||
-                query.toUpperCase().indexOf("HAVING") != -1 ||
-                query.toUpperCase().indexOf("ORDER") != -1)
-               sqlStatementString = query + " LIMIT 1";
-            else
-               sqlStatementString = query + " AS lame LIMIT 1";
-         }
-         else if (dataSourceType.equals(ConnectionManager.ORACLE))
-         {
-            if (query.toUpperCase().indexOf("WHERE") != -1)
-            {
-               if (query.toUpperCase().indexOf("GROUP BY") != -1)
-               {
-                  sqlStatementString = query.substring(0, query.indexOf("GROUP BY") - 1)
-                                       + " AND ROWNUM=1 " + query.substring(query.indexOf("GROUP BY"));
-               }
-               else
-               {
-                  if (query.toUpperCase().indexOf("ORDER BY") != -1)
-                     sqlStatementString = query.substring(0, query.indexOf("ORDER BY") - 1)
-                                          + " AND ROWNUM=1 " + query.substring(query.indexOf("ORDER BY"));
-                  else
-                     sqlStatementString = query + " AND ROWNUM=1";
-               }
-            }
-            else
-            {
-               sqlStatementString = query + " WHERE ROWNUM=1";
-            }
-         }
-         else
-            sqlStatementString = query + " LIMIT 1";
-         System.out.println(sqlStatementString);
+         sqlStatement.setMaxRows(1);
+         // System.out.println(query);
 
          // ********************************************************
 
-         db_resultSet = sqlStatement.executeQuery(sqlStatementString);
+         db_resultSet = sqlStatement.executeQuery(query);
          tableMetaData = db_resultSet.getMetaData();
 
          // Column Names, class, type, and size collection.
@@ -594,9 +553,9 @@ public class CSVQueryDataDumpThread implements Runnable
             columnType = tableMetaData.getColumnTypeName(i);
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
-            System.out.println(i + " " + colNameString + " " +
-                               columnClass + " " + columnType + " " +
-                               columnSize);
+            // System.out.println(i + " " + colNameString + " " +
+            //                    columnClass + " " + columnType + " " +
+            //                    columnSize);
 
             // This going to be a problem so skip this column.
             // NOT TESTED. This is still problably not going to
@@ -649,14 +608,21 @@ public class CSVQueryDataDumpThread implements Runnable
          }
          catch (SQLException sqle)
          {
-            String errorString = "CSVQueryDataDump.getColumnNames() SQLException: " + sqle.getMessage();
-            JOptionPane.showMessageDialog(null, errorString, "Failed to Close ResultSet",
-                                          JOptionPane.ERROR_MESSAGE);
+            ConnectionManager.displaySQLErrors(sqle,
+               "CSVQueryDataDumpThread getColumnNames() failed closing result set");
          }
          finally
          {
-            if (sqlStatement != null)
-               sqlStatement.close();
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "CSVQueryDataDumpThread getColumnNames() failed closing sql statement");
+            }
          }
       }
    }
