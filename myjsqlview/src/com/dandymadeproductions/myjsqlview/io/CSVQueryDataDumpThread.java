@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 07/08/2013
+// Version 1.4 07/08/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,9 @@
 //         1.2 Basic Functional Class That Exports With Simple SELECTS.
 //         1.3 Finalized, Though Not Throughly Tested, CSVQueryDataDumpThread
 //             Class.
+//         1.4 Added Class Instances useStatusDialog & argConnection to Manage
+//             the Showing of the Progress Bar and Connection Creation. Added
+//             Simplified Two Argument Constructor.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -71,7 +74,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 1.3 07/09/2013
+ * @version 1.4 07/08/2013
  */
 
 public class CSVQueryDataDumpThread implements Runnable
@@ -86,7 +89,7 @@ public class CSVQueryDataDumpThread implements Runnable
    
    private String queryString, fileName;
    private String dataSourceType;
-   private boolean useLimitIncrement;
+   private boolean useStatusDialog, useLimitIncrement, argConnection;
    
    private BufferedOutputStream filebuff;
    
@@ -96,16 +99,23 @@ public class CSVQueryDataDumpThread implements Runnable
    // db_Connection - Optional.
    // queryString - SQL Query.
    // fileName - Where to Dump the Data.
+   // useStatusDialog - Show Progress Bar.
    // useLimitIncrement - Bypass the Limit Increment, Use queryString
    //                     Directly.
    //==============================================================
 
+   public CSVQueryDataDumpThread(String queryString, String fileName)
+   {
+      this(null, queryString, fileName, false, true);
+   }
+   
    public CSVQueryDataDumpThread(Connection db_Connection, String queryString, String fileName,
-                                 boolean useLimitIncrement)
+                                 boolean useStatusDialog, boolean useLimitIncrement)
    {
       this.db_Connection = db_Connection;
       this.queryString = queryString;
       this.fileName = fileName;
+      this.useStatusDialog = useStatusDialog;
       this.useLimitIncrement = useLimitIncrement;
       
       columnNameFields = new ArrayList <String>();
@@ -114,6 +124,7 @@ public class CSVQueryDataDumpThread implements Runnable
       columnSizeHashMap = new HashMap <String, Integer>();
       
       dataSourceType = ConnectionManager.getDataSourceType();
+      argConnection = true;
    }
 
    //==============================================================
@@ -147,7 +158,10 @@ public class CSVQueryDataDumpThread implements Runnable
 
       // Get Connection to Database.
       if (db_Connection == null)
+      {
          db_Connection = ConnectionManager.getConnection("CSVQueryDataDumpThread run()");
+         argConnection = false;
+      }
       
       if (db_Connection == null || queryString.isEmpty())
          return;
@@ -221,11 +235,11 @@ public class CSVQueryDataDumpThread implements Runnable
       
          if (dbResultSet.next())
             rowsCount = dbResultSet.getInt(1);
-
+         
          dumpProgressBar.setTaskLength(rowsCount);
          dumpProgressBar.pack();
          dumpProgressBar.center();
-         dumpProgressBar.setVisible(true);
+         dumpProgressBar.setVisible(useStatusDialog);
          
          // Begin Dumping Data.
          
@@ -507,7 +521,8 @@ public class CSVQueryDataDumpThread implements Runnable
             }
          }
       }
-      ConnectionManager.closeConnection(db_Connection, "CSVQueryDataDumpThread run()");
+      if (!argConnection)
+         ConnectionManager.closeConnection(db_Connection, "CSVQueryDataDumpThread run()");
    }
    
    //==============================================================
