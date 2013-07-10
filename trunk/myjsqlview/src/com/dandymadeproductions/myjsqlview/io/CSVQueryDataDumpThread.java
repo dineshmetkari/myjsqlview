@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 07/08/2013
+// Version 1.5 07/10/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //         1.4 Added Class Instances useStatusDialog & argConnection to Manage
 //             the Showing of the Progress Bar and Connection Creation. Added
 //             Simplified Two Argument Constructor.
+//         1.5 Correction in run() for Use of limitIncrement Option to End do/
+//             while Loop Properly When false.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -74,7 +76,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 1.4 07/08/2013
+ * @version 1.5 07/10/2013
  */
 
 public class CSVQueryDataDumpThread implements Runnable
@@ -484,7 +486,10 @@ public class CSVQueryDataDumpThread implements Runnable
                dumpChunkOfData(dumpData);
                dumpData = "";
             }
-            currentTableIncrement += limitIncrement;
+            if (useLimitIncrement)
+               currentTableIncrement += limitIncrement;
+            else
+               currentTableIncrement = rowsCount;
          }
          while (currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
          
