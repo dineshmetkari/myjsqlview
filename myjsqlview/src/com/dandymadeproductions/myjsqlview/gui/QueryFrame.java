@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.2 03/06/2013
+// Version 9.3 07/10/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -222,6 +222,12 @@
 //         9.1 03/01/2013 Renamed in exportData() DataDumpThread to CSVDataDumpThread.
 //         9.2 03/06/2013 Added MyJSQLView_Frame as Argument in Constructor. Added SQL Query
 //                        Bucket to MenuBar & ToolBar.
+//         9.3 07/10/2013 Changed Class Instance lastDirectory to scriptLastDirectory & Added
+//                        dataLastDirectory. Replaced Class Instance DATAEXPORT_ACTION_TABLE
+//                        to DATAEXPORT_ACTION_QUERY. Minor Other Changes to Action Command
+//                        Instances. Used MyJSQLView_Utils.processFileChooserSelection() For
+//                        Processing Saves. Updated dataExport() to Handle Exporting the Query
+//                        CSV Data in Addition to Summary Table Data.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -254,7 +260,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -290,8 +295,8 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.QueryTabPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.SQLTabPanel;
-import com.dandymadeproductions.myjsqlview.io.CSVDataDumpThread;
 import com.dandymadeproductions.myjsqlview.io.CSVDataTableDumpThread;
+import com.dandymadeproductions.myjsqlview.io.CSVQueryDataDumpThread;
 import com.dandymadeproductions.myjsqlview.io.PDFDataTableDumpThread;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
@@ -309,7 +314,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.2 03/06/2013
+ * @version 9.3 07/10/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -353,7 +358,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourceAlert, resourceFileNOTFound;
    private String dataSourceType, fileSeparator, iconsDirectory;
-   private String lastDirectory;
+   private String scriptLastDirectory, dataLastDirectory;
    
    private static PrinterJob currentPrintJob = PrinterJob.getPrinterJob();
    private static PageFormat mPageFormat = currentPrintJob.defaultPage();
@@ -366,9 +371,9 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    
    private static String EDITPREFERENCES_TABLE_ROWS = "EPTR";
    
-   private static String DATAEXPORT_CSV_TABLE = "DECSVT";
-   private static String DATAEXPORT_CSV_SUMMARY_TABLE = "DECSVTST";
-   private static String DATAEXPORT_PDF_SUMMARY_TABLE = "DEPDFTST";
+   private static String DATAEXPORT_CSV_QUERY = "DECSVQ";
+   private static String DATAEXPORT_CSV_SUMMARY_TABLE = "DECSVST";
+   private static String DATAEXPORT_PDF_SUMMARY_TABLE = "DEPDFST";
    
    private static int SQL_STATEMENT_TYPE = 0;
    // private static int QUERY_STATEMENT_TYPE = 1;
@@ -419,7 +424,8 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
-      lastDirectory = "";
+      scriptLastDirectory = "";
+      dataLastDirectory = "";
       
       statusIdleIcon = resourceBundle.getResourceImage(iconsDirectory + "statusIdleIcon.png");
       statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
@@ -937,17 +943,17 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Choosing the file to import data from.
       
-      if (lastDirectory.equals(""))
+      if (scriptLastDirectory.equals(""))
          openScriptFileChooser = new JFileChooser();
       else
-         openScriptFileChooser = new JFileChooser(new File(lastDirectory));
+         openScriptFileChooser = new JFileChooser(new File(scriptLastDirectory));
       
       fileChooserResult = openScriptFileChooser.showOpenDialog(null);
 
       // Looks like might be good so lets check and write data.
       if (fileChooserResult == JFileChooser.APPROVE_OPTION)
       {
-         lastDirectory = openScriptFileChooser.getCurrentDirectory().toString();
+         scriptLastDirectory = openScriptFileChooser.getCurrentDirectory().toString();
          fileName = openScriptFileChooser.getSelectedFile().getName();
          fileName = openScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
          // System.out.println(fileName);
@@ -1000,17 +1006,18 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // Setup a file chooser and showing.
       
-      if (lastDirectory.equals(""))
+      if (scriptLastDirectory.equals(""))
          saveScriptFileChooser = new JFileChooser();
       else
-         saveScriptFileChooser = new JFileChooser(new File(lastDirectory));
+         saveScriptFileChooser = new JFileChooser(new File(scriptLastDirectory));
          
-      fileChooserResult = saveScriptFileChooser.showSaveDialog(null);
+      fileChooserResult = MyJSQLView_Utils.processFileChooserSelection(this, saveScriptFileChooser);
 
       // Looks like might be good so lets check and then write data.
+      
       if (fileChooserResult == JFileChooser.APPROVE_OPTION)
       {
-         lastDirectory = saveScriptFileChooser.getCurrentDirectory().toString();
+         scriptLastDirectory = saveScriptFileChooser.getCurrentDirectory().toString();
          fileName = saveScriptFileChooser.getSelectedFile().getName();
          fileName = saveScriptFileChooser.getCurrentDirectory() + fileSeparator + fileName;
          // System.out.println(fileName);
@@ -1167,26 +1174,28 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private void exportData(String actionCommand)
    {
       // Method Instances
-      JFileChooser exportData;
+      JFileChooser dataExportFileChooser;
       SimpleDateFormat dateFormat;
       String fileName, exportedTable;
       int fileChooserResult;
       
       HashMap<String, String> tableColumnNamesHashMap = new HashMap <String, String>();
-      HashMap<String, String> tableColumnClassHashMap = new HashMap <String, String>();
       HashMap<String, String> tableColumnTypeHashMap = new HashMap <String, String>();
-      HashMap<String, Integer> tableColumnSizeHashMap = new HashMap <String, Integer>();
 
       // Creating and showing a file chooser based on a default file name
       // derived from the table and date.
 
-      exportData = new JFileChooser();
+      if (dataLastDirectory.equals(""))
+         dataExportFileChooser = new JFileChooser();
+      else
+         dataExportFileChooser = new JFileChooser(new File(dataLastDirectory));
+      
       dateFormat = new SimpleDateFormat("yyyyMMdd");
       
       if (getSelectedTab() instanceof QueryTabPanel)
          exportedTable = ((QueryTabPanel) getSelectedTab()).getTableName();
       else
-         exportedTable = "sqlData";
+         exportedTable = "sqlData" + getSelectedTabTitle();
 
       fileName = exportedTable + "_" + dateFormat.format(new Date());
 
@@ -1197,55 +1206,45 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       else
          fileName += ".sql";
 
-      exportData.setSelectedFile(new File(fileName));
+      dataExportFileChooser.setSelectedFile(new File(fileName));
 
-      fileChooserResult = exportData.showSaveDialog(null);
+      fileChooserResult = MyJSQLView_Utils.processFileChooserSelection(this, dataExportFileChooser);
 
       // Looks like might be good so lets check and then write data.
       if (fileChooserResult == JFileChooser.APPROVE_OPTION)
       {
-         fileName = exportData.getSelectedFile().getName();
-         fileName = exportData.getCurrentDirectory() + fileSeparator + fileName;
+         dataLastDirectory = dataExportFileChooser.getCurrentDirectory().toString();
+         fileName = dataExportFileChooser.getSelectedFile().getName();
+         fileName = dataExportFileChooser.getCurrentDirectory() + fileSeparator + fileName;
          // System.out.println(fileName);
 
          if (!fileName.equals(""))
          {
-            ArrayList<String> columnNameFields = new ArrayList <String>();
+            //ArrayList<String> columnNameFields = new ArrayList <String>();
             
-            if (actionCommand.indexOf("DECSVT") != -1 || actionCommand.indexOf("DESQL") != -1)
+            if (actionCommand.indexOf("DECSV") != -1 || actionCommand.indexOf("DESQL") != -1)
             {
                if (getSelectedTab() instanceof QueryTabPanel)
                {
-                  //columnNameFields = new Vector();
-                  columnNameFields = ((QueryTabPanel) getSelectedTab()).getTableFields();
                   tableColumnNamesHashMap = ((QueryTabPanel) getSelectedTab()).getColumnNamesHashMap();
-                  tableColumnClassHashMap = ((QueryTabPanel) getSelectedTab()).getColumnClassHashMap();
                   tableColumnTypeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnTypeHashMap();
-                  tableColumnSizeHashMap = ((QueryTabPanel) getSelectedTab()).getColumnSizeHashMap();
                   
                }
                else
                {
-                  columnNameFields = ((SQLTabPanel) getSelectedTab()).getTableHeadings();
                   tableColumnNamesHashMap = ((SQLTabPanel) getSelectedTab()).getColumnNamesHashMap();
-                  tableColumnClassHashMap = ((SQLTabPanel) getSelectedTab()).getColumnClassHashMap();
                   tableColumnTypeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnTypeHashMap();
-                  tableColumnSizeHashMap = ((SQLTabPanel) getSelectedTab()).getColumnSizeHashMap();
                }
             }
 
-            // Select the table and fields to export and
-            // then outputting the data via the appropriate
-            // approach. Basic Summary Table CSV Implemented
-            // Only in 2.72, 2.76.
-
-            // Data Export CVS Table
-            if (actionCommand.equals(DATAEXPORT_CSV_TABLE))
+            // Data Export CVS Query
+            if (actionCommand.equals(DATAEXPORT_CSV_QUERY))
             {
-               new CSVDataDumpThread(columnNameFields, tableColumnNamesHashMap,
-                                  tableColumnClassHashMap, tableColumnTypeHashMap,
-                                  tableColumnSizeHashMap, exportedTable,
-                                  fileName);
+               Thread csvQueryDataTableDumpThread = new Thread(
+                  new CSVQueryDataDumpThread(query_dbConnection, queryTextArea.getText(), fileName,
+                                             true, true));
+               
+               csvQueryDataTableDumpThread.start();
             }
 
             // Data Export CVS & PDF Tab Summary Table
@@ -1262,12 +1261,19 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
                if (summaryListTable != null)
                {
                   if (actionCommand.equals(DATAEXPORT_CSV_SUMMARY_TABLE))
-                     new CSVDataTableDumpThread(summaryListTable, tableColumnNamesHashMap,
-                                                tableColumnTypeHashMap, exportedTable,
-                                                fileName);
+                  {
+                     Thread csvDataTableDumpThread = new Thread(new CSVDataTableDumpThread(summaryListTable,
+                        tableColumnNamesHashMap, tableColumnTypeHashMap, exportedTable, fileName));
+                     
+                     csvDataTableDumpThread.start();
+                  }
                   else
-                     new PDFDataTableDumpThread(summaryListTable, tableColumnTypeHashMap,
-                                                exportedTable, fileName); 
+                  {
+                     Thread pdfDataTableDumpThread = new Thread(new PDFDataTableDumpThread(summaryListTable,
+                        tableColumnTypeHashMap, exportedTable, fileName));
+                     
+                     pdfDataTableDumpThread.start();
+                  }
                }
             }
             
@@ -1403,22 +1409,20 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       resource = resourceBundle.getResourceString("QueryFrame.menu.Export", "Export");
       exportMenu = new JMenu(resource);
 
-      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportCSV", "CSV");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.CSV", "CSV");
       exportCVSMenu = new JMenu(resource);
       
-      /*
-      resource = resourceBundle.getResourceString("QueryFrame.menu.CSVTable", "Table);
-      exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_TABLE));
-      */
+      resource = resourceBundle.getResourceString("QueryFrame.menu.Query", "Query");
+      exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_QUERY));
       
-      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportCSVSummaryTable", "Summary Table");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.SummaryTable", "Summary Table");
       exportCVSMenu.add(menuItem(resource, DATAEXPORT_CSV_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
       
-      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportPDF", "PDF");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.PDF", "PDF");
       exportCVSMenu = new JMenu(resource);
       
-      resource = resourceBundle.getResourceString("QueryFrame.menu.ExportPDFSummaryTable", "Summary Table");
+      resource = resourceBundle.getResourceString("QueryFrame.menu.SummaryTable", "Summary Table");
       exportCVSMenu.add(menuItem(resource, DATAEXPORT_PDF_SUMMARY_TABLE));
       exportMenu.add(exportCVSMenu);
 
@@ -1529,6 +1533,16 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
                                                   "Export CSV Tab Summary Table");
       buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_SUMMARY_TABLE);
       queryFrameToolBar.add(buttonItem);
+      
+      // Export CSV Query
+      csvExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
+                                                                   + "csvExportTableIcon_20x20.png");
+      resource = resourceBundle.getResourceString("QueryFrame.tooltip.ExportCSVQuery",
+                                                  "Export CSV Query");
+      buttonItem = buttonItem(resource, csvExportTabSummaryTableIcon, DATAEXPORT_CSV_QUERY);
+      queryFrameToolBar.add(buttonItem);
+      
+      queryFrameToolBar.addSeparator();
       
       // Export PDF Summary Table
       pdfExportTabSummaryTableIcon = resourceBundle.getResourceImage(iconsDirectory
