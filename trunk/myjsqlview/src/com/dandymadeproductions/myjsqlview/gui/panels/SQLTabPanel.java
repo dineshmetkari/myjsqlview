@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.4 07/01/2013
+// Version 2.5 07/09/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,9 @@
 //         2.3 Change Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class, Constructor, & Getter Methods Public.
 //         2.4 Change in executeSQL() to Use DBTablePanel.getGeneralDBProperties().
+//         2.5 Added Class Instances ACTION_SELECT_ALL & ACTION_DESELECT_ALL. Changed
+//             Static Instance maxPreferredColumnSize to All Capitals. Changed
+//             Resource to Reference SQLTablePanel & Added 'Empty'.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -118,7 +121,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.4 07/01/2013
+ * @version 2.5 07/09/2013
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -147,7 +150,9 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
    private JTable listTable;
    private JScrollPane tableScrollPane;
    
-   private static final int maxPreferredColumnSize = 350;
+   private static final String ACTION_SELECT_ALL = "Select All";
+   private static final String ACTION_DESELECT_ALL = "DeSelect All";
+   private static final int MAX_PREFFERED_COLUMN_SIZE = 350;
    
    //==============================================================
    // SQLTabPanel Constructor
@@ -247,9 +252,9 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
             String actionCommand = ((JMenuItem) panelSource).getActionCommand();
             // System.out.println(actionCommand);
 
-            if (actionCommand.equals("Select All"))
+            if (actionCommand.equals(ACTION_SELECT_ALL))
                listTable.selectAll();
-            else if (actionCommand.equals("DeSelect All"))
+            else if (actionCommand.equals(ACTION_DESELECT_ALL))
                listTable.clearSelection();
             // Copy
             else if (actionCommand.equals((String)TransferHandler.getCopyAction().getValue(Action.NAME)))
@@ -345,7 +350,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                
                // Set data.
                rowData = new Object[1];
-               rowData[0] = "(Empty)";
+               rowData[0] = "(" + resourceBundle.getResourceString("SQLTabPanel.label.Empty", "Empty") + ")";
                tableModel.addRow(rowData);  
                
                validQuery = true;
@@ -700,8 +705,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                   if ((rowData[j - 1] + "").length() * 9 > preferredColumnSize)
                   {
                      preferredColumnSize = (rowData[j - 1] + "").length() * 9;
-                     if (preferredColumnSize > maxPreferredColumnSize)
-                        preferredColumnSize = maxPreferredColumnSize;
+                     if (preferredColumnSize > MAX_PREFFERED_COLUMN_SIZE)
+                        preferredColumnSize = MAX_PREFFERED_COLUMN_SIZE;
                   }
                   preferredColumnSizeHashMap.put(colNameString, Integer.valueOf(preferredColumnSize));
                }
@@ -770,15 +775,15 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
       
       // Summary Table select actions.
       
-      resource = resourceBundle.getResourceString("QueryTabPanel.menu.SelectAll", "Select All");
+      resource = resourceBundle.getResourceString("SQLTabPanel.menu.SelectAll", "Select All");
       menuItem = new JMenuItem(resource);
-      menuItem.setActionCommand("Select All");
+      menuItem.setActionCommand(ACTION_SELECT_ALL);
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
 
-      resource = resourceBundle.getResourceString("QueryTabPanel.menu.DeSelectAll", "DeSelect All");
+      resource = resourceBundle.getResourceString("SQLTabPanel.menu.DeSelectAll", "DeSelect All");
       menuItem = new JMenuItem(resource);
-      menuItem.setActionCommand("DeSelect All");
+      menuItem.setActionCommand(ACTION_DESELECT_ALL);
       menuItem.addActionListener(this);
       summaryTablePopupMenu.add(menuItem);
       
@@ -786,7 +791,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
       
       summaryTablePopupMenu.addSeparator();
       
-      resource = resourceBundle.getResourceString("QueryTabPanel.menu.Copy", "Copy");
+      resource = resourceBundle.getResourceString("SQLTabPanel.menu.Copy", "Copy");
       menuItem = new JMenuItem(resource);
       menuItem.setActionCommand((String)TransferHandler.getCopyAction().getValue(Action.NAME));
       menuItem.setMnemonic(KeyEvent.VK_C);
