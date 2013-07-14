@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.0 07/05/2013
+// Version 9.1 07/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -167,6 +167,7 @@
 //             Given Argument if Equal to the System Setting.
 //         9.0 Change in Method processTableData_To_PDFOutput() to Correct the Starting
 //             of the Thread to Properly Output.
+//         9.1 Changed Method buildConst() to buildConstraints().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -233,7 +234,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.0 07/05/2013
+ * @version 9.1 07/14/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -260,8 +261,8 @@ public class MyJSQLView_Utils extends MyJSQLView
    // Most GUI panels call this class method.
    //==============================================================
 
-   public static void buildConst(GridBagConstraints gbc, int gx, int gy, int gw, int gh, double wx,
-                                    double wy)
+   public static void buildConstraints(GridBagConstraints gbc, int gx, int gy, int gw, int gh,
+                                       double wx, double wy)
    {
       gbc.gridx = gx;
       gbc.gridy = gy;
