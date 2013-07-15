@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.2 10/19/2012
+// Version 3.3 07/15/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -95,6 +95,8 @@
 //             Method mouseClicked() for Removal of Repository Tab.
 //         3.2 Added protected Method startAnimation() to Begin the Animation with the
 //             northFillerPanel.
+//         3.3 Correction in addRepository() for Default Resource Strings, Repository Name
+//             & Repository URL.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -174,7 +176,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.2 10/19/2012
+ * @version 3.3 07/15/2013
  */
 
 //=================================================================
@@ -1049,7 +1051,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       // default input for help.
       resourceTitle = resourceBundle.getResourceString("PluginFrame.message.AddRepository", "Add Repository");
       
-      resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryName", "RepositoryName");
+      resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryName", "Repository Name");
       repositoryNameLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryNameTextField = new JTextField();
@@ -1058,7 +1060,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          BorderFactory.createLoweredBevelBorder()));
       repositoryNameTextField.setText(MYJSQLVIEW_REPOSITORY_NAME);
 
-      resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryURL", "RepositoryURL");
+      resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryURL", "Repository URL");
       repositoryURLLabel = new JLabel(resource, JLabel.CENTER);
 
       repositoryURLTextField = new JTextField();
