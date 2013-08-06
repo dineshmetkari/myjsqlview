@@ -1,4 +1,8 @@
 Manifest-Version: 1.2
 Created-By: Dana M. Proctor
+Specification-Title: MyJSQLView
+Specification-Version: 3.46
+Specification-Vender: Dandy Made Productions
+Specification-URL: http://myjsqlview.org
 Main-Class: com.dandymadeproductions.myjsqlview.MyJSQLView
 Class-Path: lib/iText-5.0.6.jar lib/hsqldb.jar
