@@ -9,8 +9,8 @@
 //                  << TableFieldProfiler.java >>
 //
 //=================================================================
-// Copyright (C) 2010-2012 Dana M. Proctor
-// Version 4.8 09/17/2012
+// Copyright (C) 2010-2013 Dana M. Proctor
+// Version 5.0 07/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,10 @@
 //             imagesDirectory to iconsDirectory in Constructor. Updated Version.
 //         4.8 Removed Class Instances path, Created Class Instance imagesDirectory.
 //             Passed as Argument in Creation of Main Tab Panel for Analysis.
+//         4.9 Update to Classes TableFieldChartsPanel & TableFieldAnalysisPanel
+//             to Support Apache Derby Database.
+//         5.0 Update to Reflect Changes in MyJSQLView v3.44++ to Use New
+//             GeneralDBProperties Class.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -109,7 +113,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * application.
  * 
  * @author Dana M. Proctor
- * @version 4.8 09/17/2012
+ * @version 5.0 07/02/2013
  */
 
 class TableFieldProfiler
@@ -132,7 +136,7 @@ class TableFieldProfiler
    protected static final String NUMBER_ANALYSIS_CARD = "Number Analysis";
    protected static final String CLUSTER_ANALYSIS_CARD = "Cluster Analysis";
    
-   private final static String version = "Version 4.8";
+   private final static String version = "Version 5.0";
    
    //==============================================================
    // TableFieldProfiler Constructor
