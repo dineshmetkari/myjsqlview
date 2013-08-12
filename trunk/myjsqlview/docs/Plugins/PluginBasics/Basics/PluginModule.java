@@ -8,8 +8,8 @@
 //                  << PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.6 10/22/2012
+// Copyright (C) 2006-2013 Dana M. Proctor
+// Version 1.7 03/09/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.4 Update to Sync With MyJSQLView v3.34 Release.
 //         1.5 Update to Sync With MyJSQLView v3.35 Release.
 //         1.6 Update to Sync With MyJSQLView v3.40 Release.
+//         1.7 Update to Sync With MyJSQLView v3.44 Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/22/2012
+ * @version 1.7 03/09/2013
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
