@@ -17,7 +17,7 @@
 
 	<div style="font-size:18px; font-weight:bold; padding:0px 10px" >Tutorial</div>
 	<div style="font-size:16px; padding:0px 10px"><h2 style="font-weight:bold; color:#E76F00; margin:0px">MyJSQLView Plugin Basics</h2></div>
-	<div style="font-size:16px"><center><b>October 23, 2012</b></center></div>
+	<div style="font-size:16px"><center><b>Aug 1, 2013</b></center></div>
 
 	<table summary="" border="0" cellpadding="10" cellspacing="0" width="100%">
 	<tbody>
@@ -333,10 +333,11 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 				method should be no larger than 12 x 12 pixels. Two of the other getter methods
 				shown in the listing allows a plugin to create its own Menu and Toolbar that
 				will be used in conjunction with the module. Several other getter methods are
-				also provided that allow plugin to provide various information consumption. The
-				The last method that is included in the MyJSQLView_PluginModule class is the setDBTables()
-				method. This routine allows for your plugin to get an updated reload of the
-				database tables that may occur during the running of the MyJSQLView application.
+				also provided that allow a plugin to provide various other information for
+				consumption. The The last method that is included in the MyJSQLView_PluginModule
+				class is the setDBTables() method. This routine allows for your plugin to
+				get an updated reload of the database tables that may occur during the running
+				of the MyJSQLView application.
 			</p>
 
 			<a name="Plugin_Example"></a>
@@ -356,7 +357,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 
 				&nbsp;&nbsp;&nbsp;&nbsp;Our first basic plugin outlined here is included with
 				the development setup and has only one class that extends the MyJSQLView_PluginModule
-				discussed above. The code is shown below in <b>Listing 2</b>. and is the bare minimum
+				discussed above. The code is shown below in <b>Lisfile:///home/danap/development/Java/MyJSQLView/docs/Plugins/PluginBasics/MyJSQLView_PluginBasics.htmlting 2</b>. and is the bare minimum
 				needed for a new plugin to be added to the MyJSQLView application. The code does
 				nothing more then create an empty panel for a new plugin tab. Notice the PluginModule
 				class extends the MyJSQLView_PluginModule and just provides an empty constructor
@@ -393,8 +394,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //                  &#060; PluginModule.java &#062;
 //
 //=================================================================
-// Copyright (C) 2006-2012 Dana M. Proctor
-// Version 1.6 10/22/2012
+// Copyright (C) 2006-2013 Dana M. Proctor
+// Version 1.7 03/09/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -423,6 +424,7 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
 //         1.4 Update to Sync With MyJSQLView v3.34 Release.
 //         1.5 Update to Sync With MyJSQLView v3.35 Release.
 //         1.6 Update to Sync With MyJSQLView v3.40 Release.
+//         1.7 Update to Sync With MyJSQLView v3.44 Release.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -445,7 +447,7 @@ import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
  * plugin module into the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/22/2012
+ * @version 1.7 03/09/2013
  */
 
 public class PluginModule extends MyJSQLView_PluginModule
