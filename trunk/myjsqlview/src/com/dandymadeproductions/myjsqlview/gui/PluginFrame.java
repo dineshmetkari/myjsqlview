@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 07/15/2013
+// Version 3.4 08/11/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,9 @@
 //             northFillerPanel.
 //         3.3 Correction in addRepository() for Default Resource Strings, Repository Name
 //             & Repository URL.
+//         3.4 Added static Class Instance LOAD_DEFAULT_REPOSITORY to More Closely Control
+//             the Loading of the MyJSQLView, Default, Repository. Methods Effected
+//             removeRepository(), & loadCachedRepository().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -176,7 +179,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.3 07/15/2013
+ * @version 3.4 08/11/2013
  */
 
 //=================================================================
@@ -229,6 +232,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private static final int PATH_COLUMN = 5;
    private static final int DESCRIPTION_COLUMN = 6;
 
+   private static boolean LOAD_DEFAULT_REPOSITORY = false;
    private static final String MYJSQLVIEW_REPOSITORY_NAME = "MyJSQLView";
    private static final String MYJSQLVIEW_REPOSITORY = "http://plugins.myjsqlview.org/";
    private static final String MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE = "myjsqlview_plugin.conf";
@@ -331,7 +335,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
       // Default MyJSQLView repository.
 
-      //createRepository(MYJSQLVIEW_REPOSITORY_NAME, MYJSQLVIEW_REPOSITORY);
+      if (LOAD_DEFAULT_REPOSITORY)
+         createRepository(MYJSQLVIEW_REPOSITORY_NAME, MYJSQLVIEW_REPOSITORY);
 
       // Additional repositories as defined by configuration file?
       
@@ -773,7 +778,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             String optionPaneStringErrors;
 
             optionPaneStringErrors = resourceBundle.getResourceString(
-               "PluginFrame.dialogmessage.FileNOTFile", "File NOT Found");
+               "PluginFrame.dialogmessage.FileNOTFound", "File NOT Found");
 
             JOptionPane.showMessageDialog(null, optionPaneStringErrors, resourceAlert,
                JOptionPane.ERROR_MESSAGE);
@@ -950,8 +955,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       {
          final String repositoryName = centralTabsPane.getTitleAt(currentTabIndex);
 
-         // Remove from cache unless MyJSQLView.
-         if (!repositoryName.equals(MYJSQLVIEW_REPOSITORY_NAME))
+         // Remove from cache unless default MyJSQLView.
+         if (!(repositoryName.equals(MYJSQLVIEW_REPOSITORY_NAME) && LOAD_DEFAULT_REPOSITORY))
          {
             Thread deleteRepositoryCacheThread = new Thread(new Runnable()
             {
@@ -1355,6 +1360,14 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             {
                if (cacheContents[i].isDirectory())
                {
+                  // Don't load the default twice.
+                  if (cacheContents[i].getName().equals(MYJSQLVIEW_REPOSITORY_NAME) &&
+                      LOAD_DEFAULT_REPOSITORY)
+                  {
+                     i++;
+                     continue;
+                  }
+                  
                   pathFile = new File(cacheContents[i].getAbsoluteFile() + fileSeparator
                                       + PluginRepository.REPOSITORY_PATH_FILE);
                   
