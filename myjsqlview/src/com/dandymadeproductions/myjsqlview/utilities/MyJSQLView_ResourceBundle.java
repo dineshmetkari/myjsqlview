@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 02/19/2013
+// Version 3.4 08/12/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -84,6 +84,9 @@
 //         3.3 02/26/2013 Added Three Argument Constructor & Changed Two Argument to Instance
 //                        debugMode. Removed Collect of Same Class Instance Name to Assignment
 //                        to Argument.
+//         3.4 08/12/2013 Class Method getResourceImage/Bytes() Change of IOException Catching
+//                        for JAR Resources to General Exception, Possible Null, When Improperly
+//                        Built Plugin With No Resource in JAR.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -123,7 +126,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 3.3 10/26/2013
+ * @version 3.4 08/12/2013
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -330,12 +333,12 @@ public class MyJSQLView_ResourceBundle implements Serializable
                   else
                      return new ImageIcon(getJAR_Resource(imageFileName, resourceURL));
                }
-               catch (IOException ioe)
+               catch (Exception io_null_exception)
                {
                   if (debugMode)
                      System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
                                         + "Failed to close resources or create cache URL.\n"
-                                        + ioe.toString());
+                                        + io_null_exception.toString());
                   return null;
                }
             }
@@ -536,12 +539,12 @@ public class MyJSQLView_ResourceBundle implements Serializable
                   else
                      return getJAR_Resource(resourceName, resourceURL);
                }
-               catch (IOException ioe)
+               catch (Exception io_null_exception)
                {
                   if (debugMode)
                      System.out.println("MyJSQLView_ResourceBundle getResourceBytes()\n"
                                         + "Failed to close resources or create cache URL.\n"
-                                        + ioe.toString());
+                                        + io_null_exception.toString());
                   return null;
                }
             }
