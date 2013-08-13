@@ -1,4 +1,4 @@
-MyJSQLView Version 3.44
+MyJSQLView Version 3.46
 
 Copyright 2005-2013
 by Dana Proctor
@@ -211,6 +211,10 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 3.46 Bug fix for CSV imports of single digit month fields. Feature
+                  additions of LIMIT Control over CSV Summary Table Exports and
+                  overall interface font sizing. Finnish and Hebrew language
+                  support.
    * Version 3.44 Apache Derby Database Support. Additional Connection Properties
                   Input Via Database Entry Login Form. Query Frame UI Changes.
                   HeatMapper Plugin Enhancements. 
