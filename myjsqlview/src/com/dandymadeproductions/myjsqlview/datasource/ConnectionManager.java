@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.7 03/06/2013
+// Version 3.8 08/22/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,8 @@
 //         3.6 Commented schemasName Output in loadDBTables().
 //         3.7 Class Method shutdownDatabase() Insertion of finally to Handle Connection
 //             That was Created.
+//         3.8 Class Method loadDBTables() Change Temporarily to Use a Space for PostgreSQL
+//             getTablePrivileges(). See Note in Code.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +122,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.7 03/06/2013
+ * @version 3.8 08/22/2013
  */
 
 public class ConnectionManager
@@ -768,8 +770,13 @@ public class ConnectionManager
          
          if (subProtocol.equals(POSTGRESQL))
          {
-            db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
+            // This is temporary fix for ACL SQLException Thrown When
+            // Using jre7. This is a bug in pgjdbc or server. A space
+            // essentially returns no results so this is not used.
             
+            //db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
+            db_resultSet = dbMetaData.getTablePrivileges(db, " ", "%");
+             
             while (db_resultSet.next())
             {
                tableName = db_resultSet.getString(TABLE_NAME);
@@ -780,7 +787,7 @@ public class ConnectionManager
                   user = connectionProperties.getProperty(ConnectionProperties.USER);
                   
                   if (MyJSQLView.getDebug())
-                     System.out.println("Unauthorized Tabel Access: " + tableName + " : "
+                     System.out.println("Unauthorized Table Access: " + tableName + " : "
                         + grantee + " : " + user);
 
                   if (tables.contains(tableName) && !grantee.equals(user))
