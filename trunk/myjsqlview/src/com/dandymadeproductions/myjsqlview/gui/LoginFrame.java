@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.98 02/25/2013
+// Version 6.99 09/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -294,6 +294,10 @@
 //        6.97 Correction to Insure Memory Connection is Passed On to ConnectionManager
 //             for Derby Memory Databases.
 //        6.98 Method accessCheck() Debug Output for Driver & When Its Loaded.
+//        6.99 Class Method fillSiteDefaults() Addition of Derby & H2 Defaults. Method
+//             accessCheck() Addition of connectionString & dbProductNameVersion
+//             Entries for H2 Database & Setting Memory Connection for Same. Correct
+//             in Setting Memory Connection to Properly Use Properties As Change of 6.95.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -351,7 +355,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.98 02/25/2013
+ * @version 6.99 09/01/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -897,11 +901,14 @@ public class LoginFrame extends JFrame implements ActionListener
       // Example defaults database settings.
       String[] defaultDrivers = {"com.mysql.jdbc.Driver", "org.postgresql.Driver", "org.hsqldb.jdbcDriver",
                                  "oracle.jdbc.driver.OracleDriver", "org.sqlite.JDBC",
-                                 "sun.jdbc.odbc.JdbcOdbcDriver"};
-      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin", "sqlite", "odbc"};
+                                 "sun.jdbc.odbc.JdbcOdbcDriver", "org.apache.derby.jdbc.ClientDriver",
+                                 "org.h2.Driver"};
+      String[] defaultSubProtocols = {"mysql", "postgresql", "hsqldb:hsql", "oracle:thin", "sqlite", "odbc",
+                                      "derby", "h2"};
       
-      String[] defaultPorts = {"3306", "5432", "9001", "1521", "0000", "0000"};
-      String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite.db", "ms_access"};
+      String[] defaultPorts = {"3306", "5432", "9001", "1521", "0000", "0000", "1527", "9092"};
+      String[] defaultDatabases = {"mysql", "postgresql", "hsql;", "oracle", "test/sqlite_test.db",
+                                   "ms_access", "test/derby_db/toursdb", "test/h2_db/h2_test"};
       
       // Clear contents to start anewed.
       driverList.clear();
@@ -1157,6 +1164,16 @@ public class LoginFrame extends JFrame implements ActionListener
             {
                connectionString += subProtocol + ":" + db;
             }
+            // H2
+            else if (subProtocol.equals(ConnectionManager.H2))
+            {
+               if (db.indexOf("tcp:") != -1)
+                  connectionString += subProtocol + ":tcp://" + host + ":" + port + "/"
+                                   + db.substring(db.indexOf("tcp:") + 4);
+               else
+                  connectionString += subProtocol + ":" + db;
+                  
+            }
             // MySQL, PostgreSQL, HSQL, & Derby
             else
             {
@@ -1224,6 +1241,8 @@ public class LoginFrame extends JFrame implements ActionListener
                   dbProductNameVersion = "MS Access ";
                else if (subProtocol.equals(ConnectionManager.DERBY))
                   dbProductNameVersion = "Apache Derby ";
+               else if (subProtocol.equals(ConnectionManager.H2))
+                  dbProductNameVersion = "H2 ";
                else
                   dbProductNameVersion = "Unknown Data Source ";
             }
@@ -1304,9 +1323,12 @@ public class LoginFrame extends JFrame implements ActionListener
                  || (subProtocol.indexOf(ConnectionManager.HSQL) != -1
                      && db.toLowerCase().indexOf("mem:") != -1)    
                  || (subProtocol.equals(ConnectionManager.DERBY)
-                     && db.toLowerCase().indexOf("memory:") != -1))
+                     && db.toLowerCase().indexOf("memory:") != -1)
+                 || (subProtocol.equals(ConnectionManager.H2)
+                     && db.toLowerCase().indexOf("mem:") != -1))
             {
-               ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionString));
+               ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionString,
+                                                                                 connectProperties));
             }
             
             dbConnection.close();
