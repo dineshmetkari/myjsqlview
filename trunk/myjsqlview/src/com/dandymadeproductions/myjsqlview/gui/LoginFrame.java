@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.99 09/01/2013
+// Version 7.00 09/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -298,6 +298,8 @@
 //             accessCheck() Addition of connectionString & dbProductNameVersion
 //             Entries for H2 Database & Setting Memory Connection for Same. Correct
 //             in Setting Memory Connection to Properly Use Properties As Change of 6.95.
+//        7.00 SSL Connection Types Detection for H2 Database in connectionString for
+//             Method accessCheck().
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -355,7 +357,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 6.99 09/01/2013
+ * @version 7.00 09/01/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1170,6 +1172,9 @@ public class LoginFrame extends JFrame implements ActionListener
                if (db.indexOf("tcp:") != -1)
                   connectionString += subProtocol + ":tcp://" + host + ":" + port + "/"
                                    + db.substring(db.indexOf("tcp:") + 4);
+               if (db.indexOf("ssl:") != -1)
+                  connectionString += subProtocol + ":ssl://" + host + ":" + port + "/"
+                                   + db.substring(db.indexOf("ssl:") + 4);
                else
                   connectionString += subProtocol + ":" + db;
                   
