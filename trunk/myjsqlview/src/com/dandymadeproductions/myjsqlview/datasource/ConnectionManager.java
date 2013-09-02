@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.8 08/22/2013
+// Version 3.9 09/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -89,6 +89,10 @@
 //             That was Created.
 //         3.8 Class Method loadDBTables() Change Temporarily to Use a Space for PostgreSQL
 //             getTablePrivileges(). See Note in Code.
+//         3.9 Additional of static final Instances H2 & OTHERDB. Method getConnection()
+//             Inclusion of H2 mem: for Memory Connections. Exclusion of H2 mem: in Method
+//             closeConnection(). Addition of Parameters for H2 in Method loadDBParameters().
+//             Return as Appropriate of H2 for Method getDataSourceType().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -122,7 +126,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.8 08/22/2013
+ * @version 3.9 09/02/2013
  */
 
 public class ConnectionManager
@@ -152,6 +156,8 @@ public class ConnectionManager
    public static final String SQLITE = "sqlite";
    public static final String MSACCESS = "odbc";
    public static final String DERBY = "derby";
+   public static final String H2 = "h2";
+   public static final String OTHERDB = "other";
    
    // private static final String TABLE_CAT = "TABLE_CAT";
    private static final String TABLE_SCHEM = "TABLE_SCHEM";
@@ -159,7 +165,7 @@ public class ConnectionManager
    private static final String TABLE_TYPE = "TABLE_TYPE";
    // private static final String REMARKS = "REMARKS";
    // private static final String TYPE_CAT = "TYPE_CAT";
-   // /private static final String TYPE_SCHEM = "TYPE_SCHEM";
+   // private static final String TYPE_SCHEM = "TYPE_SCHEM";
    // private static final String TYPE_NAME = "TYPE_NAME";
    // private static final String SELF_REFERENCING_COL_NAME = "SELF_REFERENCING_COL_NAME";
    // private static final String REF_GENERATION = "REF_GENERATION";
@@ -223,11 +229,12 @@ public class ConnectionManager
          
          // Create the appropriate connection as needed.
          
-         // HSQL, SQLite, & Derby Memory Connections
+         // HSQL, SQLite, Derby, & H2 Memory Connections
          if ((memoryConnection != null)
               && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
                   || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1)
-                  || (subProtocol.equals(DERBY) && db.toLowerCase().indexOf("memory:") != -1))
+                  || (subProtocol.equals(DERBY) && db.toLowerCase().indexOf("memory:") != -1)
+                  || (subProtocol.equals(H2) && db.toLowerCase().indexOf("mem:") != -1))
             return memoryConnection;
          // All others
          else
@@ -266,8 +273,8 @@ public class ConnectionManager
          if ((memoryConnection != null)
               && (subProtocol.equals(SQLITE) && db.toLowerCase().equals(":memory:"))
                   || (subProtocol.indexOf(HSQL) != -1 && db.toLowerCase().indexOf("mem:") != -1)
-                  || (subProtocol.equals(ConnectionManager.DERBY)
-                      && db.toLowerCase().indexOf("memory:") != -1))
+                  || (subProtocol.equals(DERBY) && db.toLowerCase().indexOf("memory:") != -1)
+                  || (subProtocol.equals(H2) && db.toLowerCase().indexOf("mem:") != -1))
             return;
          else
             dbConnection.close();
@@ -380,8 +387,8 @@ public class ConnectionManager
       }
       catch (SQLException e)
       {
-         if (subProtocol.equals(DERBY) &&
-               (e.getSQLState().equals("08006") || e.getSQLState().equals("XJ015")))
+         if (subProtocol.equals(DERBY) && e.getSQLState() != null &&
+             (e.getSQLState().equals("08006") || e.getSQLState().equals("XJ015")))
          {
             if (MyJSQLView.getDebug())
             {
@@ -475,7 +482,7 @@ public class ConnectionManager
          catalog = null;
          schemaPattern = "%";
          tableNamePattern = "%";
-         dbType = "hsql";
+         dbType = HSQL;
          //db_resultSet = dbMetaData.getTables(null, "%", "%", tableTypes);
       }
       // Oracle
@@ -484,7 +491,7 @@ public class ConnectionManager
          catalog = db;
          schemaPattern = "%";
          tableNamePattern = "%";
-         dbType = "oracle";
+         dbType = ORACLE;
          //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
       }
       // MySQL & PostgreSQL
@@ -494,9 +501,9 @@ public class ConnectionManager
          schemaPattern = "";
          tableNamePattern = "%";
          if (subProtocol.equals(MYSQL))
-            dbType = "mysql";
+            dbType = MYSQL;
          else
-            dbType = "postgresql";
+            dbType = POSTGRESQL;
          //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
       }
       // SQLite
@@ -505,7 +512,7 @@ public class ConnectionManager
          catalog = db;
          schemaPattern = null;
          tableNamePattern = null;
-         dbType = "sqlite";
+         dbType = SQLITE;
          //db_resultSet = dbMetaData.getTables(db, null, null, tableTypes);
          
       }
@@ -515,8 +522,17 @@ public class ConnectionManager
          catalog = db;
          schemaPattern = null;
          tableNamePattern = "%";
-         dbType = "derby";
+         dbType = DERBY;
          //db_resultSet = dbMetaData.getTables(db, null, "%", tableTypes);
+      }
+      // H2
+      else if (subProtocol.equals(H2))
+      {
+         catalog = null;
+         schemaPattern = null;
+         tableNamePattern = "%";
+         dbType = H2;
+         // db_resultSet = dbMetaData.getTables(null, null, "%", tableTypes);
       }
       // Unknown
       else
@@ -524,7 +540,7 @@ public class ConnectionManager
          catalog = null;
          schemaPattern = null;
          tableNamePattern = null;
-         dbType = "other";
+         dbType = OTHERDB;
          //db_resultSet = dbMetaData.getTables(null, null, null, tableTypes);
       }
       
@@ -600,11 +616,13 @@ public class ConnectionManager
                      filter = true;
                   else if (currentLine.toLowerCase().indexOf("off") != -1)
                      filter = false;
+                  
+                  // System.out.println("filter=" + filter);
                }
                
                if (currentLine.toLowerCase().indexOf(dbType) != -1)
                {
-                  //System.out.println(currentLine);
+                  // System.out.println(currentLine);
                   
                   // schemaPattern Parameter
                   if (currentLine.toLowerCase().indexOf("schemapattern") != -1)
@@ -728,15 +746,15 @@ public class ConnectionManager
             
             // All information, could be to much.
             // System.out.println("Table CAT: " + tableCat
-                               // + " Table Schem: " + tableSchem
-                               // + " Table Name: " + tableName
-                               // + " Table Type: " + tableType
-                               // + " Remarks: " + remarks
-                               // + " Type Cat: " + typeCat
-                               // + " Type Schem: " + typeSchem
-                               // + " Type Name: " + typeName
-                               // + " Self Referencing Col Name: " + selfReferencingColName
-                               // + " refGeneration: " + refGeneration);
+            //                     + " Table Schem: " + tableSchem
+            //                     + " Table Name: " + tableName
+            //                     + " Table Type: " + tableType
+            //                     + " Remarks: " + remarks
+            //                     + " Type Cat: " + typeCat
+            //                     + " Type Schem: " + typeSchem
+            //                     + " Type Name: " + typeName
+            //                     + " Self Referencing Col Name: " + selfReferencingColName
+            //                     + " refGeneration: " + refGeneration);
 
             // Filter, only TABLEs & VIEWs allowed in MyJSQLView
             // application.
@@ -873,8 +891,10 @@ public class ConnectionManager
          return MSACCESS;
       else if (subProtocol.equals(DERBY))
          return DERBY;
+      else if (subProtocol.equals(H2))
+         return H2;
       else
-         return "other"; 
+         return OTHERDB; 
    }
    
    //==============================================================
