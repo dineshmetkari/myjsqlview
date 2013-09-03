@@ -13,6 +13,9 @@
 <Site Name="LocalHost_Derby" Driver="org.apache.derby.jdbc.ClientDriver" Protocol="jdbc" SubProtocol="derby" Host="127.0.0.1" Port="1527" Database="derby" User="" Password="" SSH="0" />
 <Site Name="LocalHost_Derby" Driver="org.apache.derby.jdbc.EmbeddedDriver" Protocol="jdbc" SubProtocol="derby" Host="127.0.0.1" Port="1527" Database="memory:dbname" User="" Password="" SSH="0" />
 <Site Name="LocalHost_Derby" Driver="org.apache.derby.jdbc.EmbeddedDriver" Protocol="jdbc" SubProtocol="derby" Host="127.0.0.1" Port="1527" Database="jar:(test/derby_db/toursdb.jar)toursdb" User="" Password="" SSH="0" />
+<Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="test/h2_db/h2test" User="sa" Password="" SSH="0" />
+<Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="mem:dbname" User="" Password="" SSH="0" />
+<Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="tcp:dbname" User="" Password="" SSH="0" />
 </Sites>
 <Settings>
 <Item name="Last Server Name" type="string">Last Site</Item>
