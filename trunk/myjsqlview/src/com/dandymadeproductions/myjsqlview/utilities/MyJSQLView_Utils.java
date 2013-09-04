@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.1 07/05/2013
+// Version 9.2 09/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -168,6 +168,8 @@
 //         9.0 Change in Method processTableData_To_PDFOutput() to Correct the Starting
 //             of the Thread to Properly Output.
 //         9.1 Changed Method buildConst() to buildConstraints().
+//         9.2 Cleaned Up System.outs To Give More Consistent Information. Minor Formatting
+//             Changes.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -199,6 +201,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.DataLine;
+// import javax.sound.sampled.LineEvent;
+// import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.Action;
@@ -234,7 +238,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.1 07/14/2013
+ * @version 9.2 09/04/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -458,7 +462,8 @@ public class MyJSQLView_Utils extends MyJSQLView
          if (dateFormat.indexOf("/") != -1)
             formattedDateString = formattedDateString.replaceAll("-", "/"); 
          
-         // System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
+         // System.out.println("MyJSQLView_Utils convertDBDateString()" + "Year:" + year + " Month:" + month
+         //                    + " Day:" + day);
          return formattedDateString;
       }
       else
@@ -523,7 +528,8 @@ public class MyJSQLView_Utils extends MyJSQLView
          day = view_DateString.substring(firstDashIndex + 1, lastDashIndex); 
       }
       
-      System.out.println("Year:" + year + " Month:" + month + " Day:" + day);
+      // System.out.println("MyJSQLView_Utils convertViewDateString_To_DBDateString()" + "Year:" + year
+      //                    + " Month:" + month + " Day:" + day);
       return year + "-" + month + "-" + day; 
    }
    
@@ -666,7 +672,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       for (int i = 0; i < textActionsArray.length; i++)
       {
          Action currentAction = textActionsArray[i];
-         // System.out.println(a.getValue(Action.NAME));
+         // System.out.println("MyJSQLview_Utils createEditMenu()" + currentAction.getValue(Action.NAME));
+         
          if (currentAction.getValue(Action.NAME).equals("select-all"))
          {
             menuItem = new JMenuItem(currentAction);
@@ -710,7 +717,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
          catch (UnsupportedAudioFileException e)
          {
-            // System.out.println("Unsupported Audio File Format.\n" + e);
+            // System.out.println("MyJSQLView_Utils getAudioClip() Unsupported Audio File Format.\n" + e);
             return null;
          }
 
@@ -719,7 +726,7 @@ public class MyJSQLView_Utils extends MyJSQLView
 
          if (!AudioSystem.isLineSupported(dataLineInfo))
          {
-            // System.out.println("Line NOT Supported");
+            // System.out.println("MyJSQLView_Utils getAudioClip() Line NOT Supported");
             audioInputStream.close();
             return null;
          }
@@ -732,14 +739,25 @@ public class MyJSQLView_Utils extends MyJSQLView
                // The follwing class may be uncommented to
                // provide a event listener to monitor the
                // activity of the sound clip.
+               
                /*
-                * class lineEvent implements LineListener { public void
-                * update(LineEvent e) { Object eventSource = e.getSource(); if
-                * (eventSource instanceof Clip) {
-                * System.out.println(e.getType()); //if (e.getType() ==
-                * LineEvent.Type.STOP) // ((Clip)e.getSource()).close(); } } }
-                * clip.addLineListener(new lineEvent());
-                */
+               class lineEvent implements LineListener
+               {
+                  public void update(LineEvent e)
+                  {
+                     Object eventSource = e.getSource();
+                     if (eventSource instanceof Clip)
+                     {
+                        System.out.println(e.getType());
+                         
+                        if (e.getType() == LineEvent.Type.STOP)
+                           ((Clip)e.getSource()).close();
+                     }
+                  }
+               }
+               clip.addLineListener(new lineEvent());
+               */
+                
 
                clip.open(audioInputStream);
                audioInputStream.close();
@@ -747,14 +765,14 @@ public class MyJSQLView_Utils extends MyJSQLView
             }
             catch (LineUnavailableException e)
             {
-               // System.out.println("Line Unavailable.\n" + e);
+               // System.out.println("MyJSQLView_Utils getAudioClip() Line Unavailable.\n" + e);
                return null;
             }
          }
       }
       catch (IOException e)
       {
-         // System.out.println("IO Exception in InputStream.\n" + e);
+         // System.out.println("MyJSQLView_Utils getAudioClip() IO Exception in InputStream.\n" + e);
          return null;
       }
    }
@@ -783,7 +801,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          catch (SecurityException se)
          {
             if (MyJSQLView.getDebug())
-               System.out.println("Failed to Make Cache Directory.\n"
+               System.out.println("MyJSQLView_Utils getCacheDirectory() Failed to Make Cache Directory.\n"
                                   + se.toString());
          }
       }
@@ -925,7 +943,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       }
       else
          schemaTableName = identifierQuoteString + sqlTable + identifierQuoteString;
-      //System.out.println(schemaTableName);
+      
+      // System.out.println("MyJSQLView_Utils getSchemaTableName() " + schemaTableName);
       
       return schemaTableName;
    }
@@ -1043,7 +1062,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       trimmedString = (unLimitedSQLStatementString.toString()).trim();
       unLimitedSQLStatementString.delete(0, unLimitedSQLStatementString.length());
       unLimitedSQLStatementString.append(trimmedString);
-      // System.out.println(unLimitedSQLStatementString);
+      // System.out.println("MyJSQLView_Utils getUnlimitedSQLStatementString() "
+      //                    + unLimitedSQLStatementString);
       
       return new String(unLimitedSQLStatementString);
    }
@@ -1385,7 +1405,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             for (int i = 0; i < localeFileNames.length; i++)
             {
                lastIndexOfDot = localeFileNames[i].lastIndexOf(".");
-               // System.out.println(localeFileNames[i]);
+               // System.out.println("MyJSQLView_Utils processLocaleLanguage() " + localeFileNames[i]);
 
                if (lastIndexOfDot > 0
                    && (localeFileNames[i].substring(lastIndexOfDot + 1).equals("properties")))
@@ -1417,7 +1437,8 @@ public class MyJSQLView_Utils extends MyJSQLView
             if (localeSelectDialog.isActionResult())
             {
                localeString = (String) localeComboBox.getSelectedItem();
-               // System.out.println("File Does Not Exist, Creating.");
+               // System.out.println("MyJSQLView_Utils processLocaleLanguage() " +
+               //                    "File Does Not Exist, Creating.");
                WriteDataFile.mainWriteDataString(localeFileString, (localeString).getBytes(), false);
             }
             localeSelectDialog.dispose();
@@ -1453,7 +1474,7 @@ public class MyJSQLView_Utils extends MyJSQLView
          localeString = "";
       }
 
-      // System.out.println(localeString);
+      // System.out.println("MyJSQLView_Utils processLocaleLanguage() " + localeString);
       return localeString;
    }
    
@@ -1491,7 +1512,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       calendar = Calendar.getInstance();
       // 1s/1000ms x 1min/60s x 1hr/60min
       timeZone = ((calendar.get(Calendar.ZONE_OFFSET)) / (60 * 60 * 1000)) + ":00";
-      // System.out.println(timeZone);
+      // System.out.println("MyJSQLView_Utils setLocalTimeZone() " + timeZone);
 
       try
       {
@@ -1537,11 +1558,11 @@ public class MyJSQLView_Utils extends MyJSQLView
       while (iterator.hasNext())
       {
          Object curObj = iterator.next();
-         // System.out.println(curObj.toString());
+         // System.out.println("MyJSQLView_Utils setUIManager() " + curObj.toString());
          
          if (curObj.toString().indexOf("font") != -1)
          {
-            // System.out.println(curObj);
+            // System.out.println("MyJSQLView_Utils setUIManager() " + curObj);
             UIManager.put(curObj, new FontUIResource(uiManagerFont.getFontName(),
                                                      uiManagerFont.getStyle(), fontSize));
          }
