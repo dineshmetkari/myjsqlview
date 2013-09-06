@@ -228,6 +228,8 @@
 //                        Instances. Used MyJSQLView_Utils.processFileChooserSelection() For
 //                        Processing Saves. Updated dataExport() to Handle Exporting the Query
 //                        CSV Data in Addition to Summary Table Data.
+//         9.4 09/06/2013 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
+//                        for H2.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -314,7 +316,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.3 07/10/2013
+ * @version 9.4 09/06/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -549,7 +551,8 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // QUERY_STATEMENT_TYPE:1
       if (!dataSourceType.equals(ConnectionManager.MSACCESS) &&
-          !dataSourceType.equals(ConnectionManager.DERBY))
+          !dataSourceType.equals(ConnectionManager.DERBY) &&
+          !dataSourceType.equals(ConnectionManager.H2))
       {
          resource = resourceBundle.getResourceString("QueryFrame.combobox.QueryStatement",
                                                      "Query Statement");
