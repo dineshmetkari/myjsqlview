@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.07 07/02/2013
+// Version 7.08 09/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -316,6 +316,8 @@
 //             TimeStamps Features. Added Argument boolean derbyBit to Method dumpBinaryData()
 //             & Use Therein to Handle Derby BIT DATA & BLOB Types.
 //        7.07 Change in Constructor to Use DBTablePanel.getGeneralDBProperties().
+//        7.08 Additions in Methods insert/explicitStatementData() & dumpBinaryData()
+//             to Handle H2 Database Blob Hexidecimal Data Output."
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -356,7 +358,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.07 07/02/2013
+ * @version 7.08 09/06/2013
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -946,6 +948,8 @@ public class SQLDataDumpThread implements Runnable
                            dumpData = dumpData + "x'";
                         else if (dataSourceType.equals(ConnectionManager.DERBY))
                            dumpData = dumpData + "CAST(X'";
+                        else if (dataSourceType.equals(ConnectionManager.H2))
+                           dumpData = dumpData + "x'";
                         else
                         {
                            if (theBytes.length != 0)
@@ -1424,6 +1428,8 @@ public class SQLDataDumpThread implements Runnable
                               dumpData = dumpData + "x'";
                            else if (dataSourceType.equals(ConnectionManager.DERBY) && updateDump)
                               dumpData = dumpData + "CAST(X'";
+                           else if (dataSourceType.equals(ConnectionManager.H2))
+                              dumpData = dumpData + "x'";
                            else
                            {
                               if (theBytes.length != 0)
@@ -1775,7 +1781,8 @@ public class SQLDataDumpThread implements Runnable
             }
             if (dataSourceType.equals(ConnectionManager.POSTGRESQL) ||
                 dataSourceType.indexOf(ConnectionManager.HSQL) != -1 ||
-                dataSourceType.equals(ConnectionManager.SQLITE))
+                dataSourceType.equals(ConnectionManager.SQLITE) ||
+                dataSourceType.equals(ConnectionManager.H2))
                dumpData = dumpData + "', ";
             else if (dataSourceType.equals(ConnectionManager.DERBY))
             {
