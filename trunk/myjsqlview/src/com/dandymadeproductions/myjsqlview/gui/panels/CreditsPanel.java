@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.1 02/20/2013
+// Version 4.2 09/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //             Instance. Removed the Starting of the Thread for the Panel From
 //             Constructor.
 //         4.1 Apache Derby Database Background Image Addition.
+//         4.2 H2 Database Background Image Addition.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -106,7 +107,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 4.1 02/20/2013
+ * @version 4.2 09/06/2013
  */
 
 public class CreditsPanel extends JPanel implements Runnable
@@ -169,6 +170,9 @@ public class CreditsPanel extends JPanel implements Runnable
       else if (dataSourceType.equals(ConnectionManager.DERBY))
          backgroundImage = (resourceBundle.getResourceImage("images"
                                                             + fileSeparator + "derby.jpg")).getImage();
+      else if (dataSourceType.equals(ConnectionManager.H2))
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "h2.jpg")).getImage();
       else
          backgroundImage = (resourceBundle.getResourceImage("images"
                                                             + fileSeparator + "battleship.jpg")).getImage();
