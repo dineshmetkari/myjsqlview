@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.00 07/02/2013
+// Version 9.01 09/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -370,6 +370,8 @@
 //        8.99 02/19/2013 Change in Method addUpdateTableEntry() Add for Derby AutoIncrement to
 //                        DEFAULT Rather Then Exclusion.
 //        9.00 07/02/2013 Change in addUpdateTableEntry() to Use DBTablePanel.getGeneralDBProperties().
+//        9.01 09/06/2013 Class Method selectFunctionOperator() Add H2 Database Functions File and
+//                        Change to Load Functions From New Sub-Directory functions."
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -441,7 +443,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.00 07/02/2013
+ * @version 9.01 09/06/2013
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -2382,6 +2384,8 @@ public class TableEntryForm extends JFrame implements ActionListener
          functionsFileName = "msaccess_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.DERBY))
          functionsFileName = "derby_" + functionsFileName;
+      else if (dataSourceType.equals(ConnectionManager.H2))
+         functionsFileName = "h2_" + functionsFileName;
       else
          functionsFileName = "mysql_" + functionsFileName;
 
@@ -2396,7 +2400,9 @@ public class TableEntryForm extends JFrame implements ActionListener
          if (functionsFile.createNewFile())
          {
             // System.out.println("File Does Not Exist, Creating.");
-            byte[] fileData = ReadDataFile.mainReadDataString(functionsFileName, false);
+            byte[] fileData = ReadDataFile.mainReadDataString("functions"
+                                                              + MyJSQLView_Utils.getFileSeparator()
+                                                              + functionsFileName, false);
 
             if (fileData != null)
                WriteDataFile.mainWriteDataString(myjsqlviewFunctionsFileString, fileData, false);
