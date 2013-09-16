@@ -2,15 +2,15 @@
 //                   ConnectionManagerHSQL
 //=================================================================
 //    This class provides a specific instance to manage connections
-// to a HSQL database. Note the connection is assumed to reside on
-// the same local host as the MyJSQLView's connection and current
-// user.
+// to a HSQL database. Note the connection default constructor
+// assumes parameters are statically defined based on defaults for
+// HSQL.
 //
 //               << ConnectionManagerHSQL.java >>
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.9 03/06/2013
+// Version 2.0 09/16/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,11 @@
 //         1.8 Added Class Instance ALL_TABLE_SCHEMAS_PATTERN & Method getAllSchemasPattern().
 //         1.9 Class Method shutdownDatabase() Insertion of finally to Handle Connection
 //             That was Created.
+//         2.0 Added Additional Constructors to More Precisely Control Instantiation.
+//             Removed static Definition for Class Instances memoryConnection,
+//             connectionProperties, & debug. Added static Class Instance OTHER. Removed
+//             All static Methods Definitions Except for displaySQLErrors(). Added
+//             boolean debug Argument to displySQLErrors() Method.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,23 +69,21 @@ import java.util.Iterator;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView;
-
 /**
  *    The ConnectionManagerHSQL class provides a specific instance to
- * manage connections to a HSQL database. Note the connection is assumed
- * to reside on the same local host as the MyJSQLView's connection and
- * current user.
+ * manage connections to a HSQL database. Note the connection default
+ * constructor assumes parameters are statically defined based on
+ * defaults for HSQL.
  * 
  * @author Dana M. Proctor
- * @version 1.9 03/06/2013
+ * @version 2.0 09/16/2013
  */
 
 public class ConnectionManagerHSQL
 {
    // Class Instances.
-   private static Connection memoryConnection;
-   private static ConnectionProperties connectionProperties = new ConnectionProperties();
+   private Connection memoryConnection;
+   private ConnectionProperties connectionProperties;
 
    private String dbProductNameVersion;
    private String schemaPattern, tableNamePattern;
@@ -91,10 +94,11 @@ public class ConnectionManagerHSQL
    private String catalogSeparator;
    private String identifierQuoteString;
    private int maxColumnNameLength;
-   private static boolean debug = false;
+   private boolean debug;
 
    public static final String HSQL = "hsql";
    public static final String HSQL2 = "hsql2";
+   public static final String OTHER = "other";
    public static final String MEMORY = "Memory";
    public static final String FILE = "File";
    public static final String RESOURCE = "Resource";
@@ -117,22 +121,29 @@ public class ConnectionManagerHSQL
    //==============================================================
    // ConnectionManagerHSQL Constructors
    // databaseType - HSQL, MEMORY, FILE, RESOURCE.
+   // 
    //==============================================================
    
    public ConnectionManagerHSQL()
    {
       // Default to a Memory.
-      this(MEMORY, HOST, PORT, DB, USER, PASSWORD);
+      this(MEMORY, HOST, PORT, DB, USER, PASSWORD, false);
    }
    
-   public ConnectionManagerHSQL(String databaseType, String databaseName)
+   public ConnectionManagerHSQL(boolean debug)
+   {
+      // Default to a Memory.
+      this(MEMORY, HOST, PORT, DB, USER, PASSWORD, debug);
+   }
+   
+   public ConnectionManagerHSQL(String databaseType, String databaseName, boolean debug)
    {
       // Easy Entry for Memory, File, or Resource.
-      this(databaseType, HOST, PORT, databaseName, USER, PASSWORD);
+      this(databaseType, HOST, PORT, databaseName, USER, PASSWORD, debug);
    }
 
    public ConnectionManagerHSQL(String databaseType, String host, String port, String databaseName,
-                                String user, String password)
+                                String user, String password, boolean deBug)
    {
       // Constructor Instances
       String passwordString;
@@ -141,14 +152,18 @@ public class ConnectionManagerHSQL
       DatabaseMetaData dbMetaData;
       
       // Setup
+      debug = deBug;
+      
       schemas = new ArrayList<String>();
       tables = new ArrayList<String>();
+      connectionProperties = new ConnectionProperties();
 
       // Load Driver.
       try
       {
          Class.forName(DRIVER);
-         // System.out.println("Driver Loaded");
+         if (deBug)
+            System.out.println("Driver Loaded");
       }
       catch (ClassNotFoundException e)
       {
@@ -192,7 +207,8 @@ public class ConnectionManagerHSQL
             connectionString += SUBPROTOCOL + "://" + host + ":" + port + "/" + databaseName + "?user=" + user
                                 + "&password=" + passwordString + "&useSSL=" + SSH;
          }
-         System.out.println(connectionString);
+         if (deBug)
+            System.out.println(connectionString);
 
          connectionProperties.setConnectionString(connectionString);
          connectionProperties.setProperty(ConnectionProperties.DRIVER, DRIVER);
@@ -251,7 +267,7 @@ public class ConnectionManagerHSQL
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL constructor()");
+         displaySQLErrors(e, "ConnectionManagerHSQL constructor()", debug);
       }
    }
 
@@ -262,7 +278,7 @@ public class ConnectionManagerHSQL
    // connection made.
    //==============================================================
 
-   public static Connection getConnection(String description)
+   public Connection getConnection(String description)
    {
       // Method Instances.
       String connectionString;
@@ -294,7 +310,7 @@ public class ConnectionManagerHSQL
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL getConnection");
+         displaySQLErrors(e, "ConnectionManagerHSQL getConnection", debug);
          return null;
       }
    }
@@ -304,7 +320,7 @@ public class ConnectionManagerHSQL
    // connection.
    //==============================================================
 
-   public static void closeConnection(Connection dbConnection, String description)
+   public void closeConnection(Connection dbConnection, String description)
    {
       // Method Instances.
       String db, subProtocol;
@@ -327,7 +343,7 @@ public class ConnectionManagerHSQL
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL closeConnection");
+         displaySQLErrors(e, "ConnectionManagerHSQL closeConnection", debug);
       }
    }
    
@@ -336,7 +352,7 @@ public class ConnectionManagerHSQL
    // database activity appropriately.
    //==============================================================
 
-   public static void shutdown(String description)
+   public void shutdown(String description)
    {
       closeMemoryConnection(description);
       shutdownDatabase(description);
@@ -347,14 +363,14 @@ public class ConnectionManagerHSQL
    // connection upon termination of the application
    //==============================================================
 
-   private static void closeMemoryConnection(String description)
+   private void closeMemoryConnection(String description)
    {  
       try
       {
          // Close connection as needed.
          if (memoryConnection != null)
          {
-            if (MyJSQLView.getDebug())
+            if (debug)
                System.out.println(description + " Memory Connection Closed");
             
             memoryConnection.close();  
@@ -362,7 +378,7 @@ public class ConnectionManagerHSQL
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL closeMemoryConnection()");
+         displaySQLErrors(e, "ConnectionManagerHSQL closeMemoryConnection()", debug);
       }
    }
    
@@ -371,7 +387,7 @@ public class ConnectionManagerHSQL
    // that advocate such, file & memory types.
    //==============================================================
 
-   private static void shutdownDatabase(String description)
+   private void shutdownDatabase(String description)
    {
       // Method Instances.
       Connection dbConnection;
@@ -393,7 +409,7 @@ public class ConnectionManagerHSQL
          if (databaseShutdownString.toLowerCase().indexOf("file:") != -1
              || databaseShutdownString.toLowerCase().indexOf("mem:") != -1)
          {
-            if (MyJSQLView.getDebug())
+            if (debug)
                System.out.println(description + " Shutting Down HSQL File/Memory Database");
                
             dbConnection = DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
@@ -403,7 +419,7 @@ public class ConnectionManagerHSQL
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL shutdownDatabase()");
+         displaySQLErrors(e, "ConnectionManagerHSQL shutdownDatabase()", debug);
       }
       finally
       {
@@ -414,7 +430,7 @@ public class ConnectionManagerHSQL
          }
          catch (SQLException sqle)
          {
-            displaySQLErrors(sqle, "ConnectionManagerHSQL shutdownDatabase()");
+            displaySQLErrors(sqle, "ConnectionManagerHSQL shutdownDatabase()", debug);
          }
       }
    }
@@ -424,7 +440,7 @@ public class ConnectionManagerHSQL
    // errors that occured during a connection to the database.
    //==============================================================
 
-   public static void displaySQLErrors(SQLException e, String classCaller)
+   public static void displaySQLErrors(SQLException e, String classCaller, boolean debug)
    {
       String sqlExceptionString;
 
@@ -607,7 +623,7 @@ public class ConnectionManagerHSQL
    // Class method to get the current connection properties.
    //==============================================================
 
-   public static ConnectionProperties getConnectionProperties()
+   public ConnectionProperties getConnectionProperties()
    {
       return connectionProperties;
    }
@@ -631,7 +647,7 @@ public class ConnectionManagerHSQL
             return HSQL;
       }
       else
-         return "other";
+         return OTHER;
    }
 
    //==============================================================
@@ -720,7 +736,7 @@ public class ConnectionManagerHSQL
    // Class method to set the connection properties.
    //==============================================================
 
-   public static void setConnectionProperties(ConnectionProperties properties)
+   public void setConnectionProperties(ConnectionProperties properties)
    {
       connectionProperties = properties;
    }
@@ -759,7 +775,7 @@ public class ConnectionManagerHSQL
    // Class method to set a memory type connection.
    //==============================================================
 
-   public static void setMemoryConnection(Connection connection)
+   private void setMemoryConnection(Connection connection)
    {
       memoryConnection = connection;
    }
