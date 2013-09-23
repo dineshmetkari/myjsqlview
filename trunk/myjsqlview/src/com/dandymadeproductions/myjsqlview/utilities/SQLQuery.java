@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 09/23/2013
+// Version 1.2 09/23/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 //             Instances in executeSQL() to Handle Collections for Additional HashMaps.
 //             Introduced Using SQL Types in Same Method. Added Getter Methods for
 //             New HashMaps.
+//         1.2 Added Two Additional Constructors & Removed Gathering dataSourceType
+//             Directly From the ConnectionManager, Unless Default Cases.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.1 09/23/2013
+ * @version 1.2 09/23/2013
  */
 
 public class SQLQuery
@@ -81,10 +83,20 @@ public class SQLQuery
    private HashMap<String, Integer> columnSizeHashMap;
    
    //==============================================================
-   // SQLQuery Constructor
+   // SQLQuery Constructors
    //==============================================================
 
-   public SQLQuery(String sqlString, int queryRowLimit)
+   public SQLQuery(String sqlString)
+   {
+      this(sqlString, ConnectionManager.getDataSourceType(), 1);
+   }
+   
+   public SQLQuery(String sqlString, String dataSourceType)
+   {
+      this(sqlString, dataSourceType, 1);
+   }
+   
+   public SQLQuery(String sqlString, String dataSourceType, int queryRowLimit)
    {
       this.sqlString = sqlString;
       tableRowLimit = queryRowLimit;
@@ -92,7 +104,7 @@ public class SQLQuery
       // Setting up a data source name qualifier and other
       // instances.
       
-      dataSourceType = ConnectionManager.getDataSourceType();
+      this.dataSourceType = dataSourceType;
       validQuery = -1;
       
       columnNames = new ArrayList <String>();
