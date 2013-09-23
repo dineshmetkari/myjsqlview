@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 09/16/2013
+// Version 1.1 09/23/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,7 +31,13 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original Initial SQLQuery Class.
-//        
+//         1.1 Changed Class Name tableHeadings to columnNames and columnTypeHashMap
+//             to columnTypeNameHashMap. Removed Class Instance columnNamesHashMap
+//             & Added Class Instances columnSQLType/Precision/ScaleHashMap. Added
+//             Instances in executeSQL() to Handle Collections for Additional HashMaps.
+//             Introduced Using SQL Types in Same Method. Added Getter Methods for
+//             New HashMaps.
+//             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -43,6 +49,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -53,7 +60,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.0 09/16/2013
+ * @version 1.1 09/23/2013
  */
 
 public class SQLQuery
@@ -65,10 +72,12 @@ public class SQLQuery
    private int tableRowLimit;
    private String dataSourceType;
    
-   private ArrayList<String> tableHeadings;
-   private HashMap<String, String> columnNamesHashMap;
+   private ArrayList<String> columnNames;
    private HashMap<String, String> columnClassHashMap;
-   private HashMap<String, String> columnTypeHashMap;
+   private HashMap<String, Integer> columnSQLTypeHashMap;
+   private HashMap<String, String> columnTypeNameHashMap;
+   private HashMap<String, Integer> columnPrecisionHashMap;
+   private HashMap<String, Integer> columnScaleHashMap;
    private HashMap<String, Integer> columnSizeHashMap;
    
    //==============================================================
@@ -86,15 +95,22 @@ public class SQLQuery
       dataSourceType = ConnectionManager.getDataSourceType();
       validQuery = -1;
       
-      tableHeadings = new ArrayList <String>();
-      columnNamesHashMap = new HashMap <String, String>();
+      columnNames = new ArrayList <String>();
       columnClassHashMap = new HashMap <String, String>();
-      columnTypeHashMap = new HashMap <String, String>();
+      columnSQLTypeHashMap = new HashMap <String, Integer>();
+      columnTypeNameHashMap = new HashMap <String, String>();
+      columnScaleHashMap = new HashMap <String, Integer>();
+      columnPrecisionHashMap = new HashMap <String, Integer>();
       columnSizeHashMap = new HashMap <String, Integer>();
    }
          
    //==============================================================
    // Class method to execute the given user's input SQL statement.
+   // Output:
+   //
+   // Invalid Query - (-1)
+   // Update No Results - (0)
+   // Results - (1)
    //==============================================================
 
    public int executeSQL() throws SQLException
@@ -108,8 +124,8 @@ public class SQLQuery
       ResultSetMetaData tableMetaData;
 
       String colNameString;
-      String columnClass, columnType;
-      int columnSize;
+      String columnClass, columnTypeName;
+      int columnType, columnScale, columnPrecision, columnSize;
       
       // Checking to see if anything in the input to
       // execute.
@@ -151,13 +167,18 @@ public class SQLQuery
                // Fill information instances.
                colNameString = "Result";
                columnClass = "java.lang.String";
-               columnType = "VARCHAR";
+               columnType = Types.VARCHAR;
+               columnTypeName = "VARCHAR";
+               columnScale = 0;
+               columnPrecision = 0;
                columnSize = 30;
                
-               tableHeadings.add(colNameString);
-               columnNamesHashMap.put(colNameString, colNameString);
+               columnNames.add(colNameString);
                columnClassHashMap.put(colNameString, columnClass);
-               columnTypeHashMap.put(colNameString, columnType.toUpperCase());
+               columnSQLTypeHashMap.put(colNameString, new Integer(Types.VARCHAR));
+               columnTypeNameHashMap.put(colNameString, columnTypeName.toUpperCase());
+               columnScaleHashMap.put(colNameString, Integer.valueOf(columnScale));
+               columnPrecisionHashMap.put(colNameString, Integer.valueOf(columnPrecision));
                columnSizeHashMap.put(colNameString, Integer.valueOf(columnSize));
                
                validQuery = 0;
@@ -168,23 +189,31 @@ public class SQLQuery
             // information about columns.
             
             tableMetaData = db_resultSet.getMetaData();
+            
+            // System.out.println("index" + "\t" + "Name" + "\t" + "Class" + "\t"
+            //                    + "Type" + "\t" + "Type Name" + "\t" + "Scale"
+            //                    + "\t" + "Precision" + "\t" + "Size");
 
             for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
             {
                colNameString = tableMetaData.getColumnLabel(i);
                columnClass = tableMetaData.getColumnClassName(i);
-               columnType = tableMetaData.getColumnTypeName(i);
+               columnType = tableMetaData.getColumnType(i);
+               columnTypeName = tableMetaData.getColumnTypeName(i);
+               columnScale = tableMetaData.getScale(i);
+               columnPrecision = tableMetaData.getPrecision(i);
                columnSize = tableMetaData.getColumnDisplaySize(i);
-
-               // System.out.println(i + " " + colNameString + " " +
-               //                      columnClass + " " + columnType + " " +
-               //                      columnSize);
+               
+               // System.out.println(i + "\t" + colNameString + "\t" +
+               //                       columnClass + "\t" + columnType + "\t" +
+               //                       columnTypeName + "\t" + columnScale + "\t" +
+               //                       columnPrecision + "\t" + columnSize);
 
                // This going to be a problem so skip these columns.
                // NOT TESTED. This is still problably not going to
                // help. Bound to crash later.
 
-               if (columnClass == null && columnType == null)
+               if (columnClass == null && columnTypeName == null)
                   continue;
 
                // Handle some Oracle data types that have a null
@@ -192,26 +221,30 @@ public class SQLQuery
 
                if (columnClass == null)
                {
-                  if (columnType.equals("BINARY_FLOAT")
+                  if (columnTypeName.toUpperCase().equals("BINARY_FLOAT")
                       && dataSourceType.equals(ConnectionManager.ORACLE))
                   {
                      columnClass = "java.lang.Float";
-                     columnType = "FLOAT";
+                     columnType = Types.FLOAT;
+                     columnTypeName = "FLOAT";
                   }
-                  else if (columnType.equals("BINARY_DOUBLE")
+                  else if (columnTypeName.toUpperCase().equals("BINARY_DOUBLE")
                            && dataSourceType.equals(ConnectionManager.ORACLE))
                   {
                      columnClass = "java.lang.Double";
-                     columnType = "DOUBLE";
+                     columnType = Types.DOUBLE;
+                     columnTypeName = "DOUBLE";
                   }
                   else
-                     columnClass = columnType;
+                     columnClass = "java.lang.Object";
                }
 
-               tableHeadings.add(colNameString);
-               columnNamesHashMap.put(colNameString, colNameString);
+               columnNames.add(colNameString);
                columnClassHashMap.put(colNameString, columnClass);
-               columnTypeHashMap.put(colNameString, columnType.toUpperCase());
+               columnSQLTypeHashMap.put(colNameString, Integer.valueOf(columnType));
+               columnTypeNameHashMap.put(colNameString, columnTypeName.toUpperCase());
+               columnScaleHashMap.put(colNameString, Integer.valueOf(columnScale));
+               columnPrecisionHashMap.put(colNameString, Integer.valueOf(columnPrecision));
                columnSizeHashMap.put(colNameString, Integer.valueOf(columnSize));
             }
             db_resultSet.close();
@@ -242,44 +275,68 @@ public class SQLQuery
    }
    
    //==============================================================
-   // Class method to allow classes to obtain the list of allowed
-   // column names that is presently in the summary table.
+   // Class method to allow classes to obtain the list of column
+   // names that is the result of the query.
    //==============================================================
 
-   public ArrayList<String> getTableHeadings()
+   public ArrayList<String> getColumnNames()
    {
-      return tableHeadings;
+      return columnNames;
    }
 
    //==============================================================
-   // Class method to allow classes to obtain the columnNamesHashMap.
-   //==============================================================
-
-   public HashMap<String, String> getColumnNamesHashMap()
-   {
-      return columnNamesHashMap;
-   }
-
-   //==============================================================
-   // Class method to allow classes to obtain the columnClassHashMap.
+   // Class method to allow classes to obtain the column, Java
+   // classes, HashMap.
    //==============================================================
 
    public HashMap<String, String> getColumnClassHashMap()
    {
       return columnClassHashMap;
    }
-
+   
    //==============================================================
-   // Class method to allow classes to obtain the columnTypeHashMap.
+   // Class method to allow classes to obtain the column, SQL
+   // types, HashMap.
    //==============================================================
 
-   public HashMap<String, String> getColumnTypeHashMap()
+   public HashMap<String, Integer> getColumnSQLTypeHashMap()
    {
-      return columnTypeHashMap;
+      return columnSQLTypeHashMap;
    }
 
    //==============================================================
-   // Class method to allow classes to obtain the columnSizeHashMap.
+   // Class method to allow classes to obtain the column, database
+   // names, HashMap.
+   //==============================================================
+
+   public HashMap<String, String> getColumnTypeNameHashMap()
+   {
+      return columnTypeNameHashMap;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the column scales
+   // HashMap.
+   //==============================================================
+
+   public HashMap<String, Integer> getColumnScaleHashMap()
+   {
+      return columnSizeHashMap;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the column precisions
+   // HashMap.
+   //==============================================================
+
+   public HashMap<String, Integer> getColumnPrecisionHashMap()
+   {
+      return columnSizeHashMap;
+   }
+
+   //==============================================================
+   // Class method to allow classes to obtain the column sizes
+   // HashMap.
    //==============================================================
 
    public HashMap<String, Integer> getColumnSizeHashMap()
