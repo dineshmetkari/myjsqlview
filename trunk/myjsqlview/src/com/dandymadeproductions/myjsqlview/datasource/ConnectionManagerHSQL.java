@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.0 09/16/2013
+// Version 2.1 09/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             connectionProperties, & debug. Added static Class Instance OTHER. Removed
 //             All static Methods Definitions Except for displaySQLErrors(). Added
 //             boolean debug Argument to displySQLErrors() Method.
+//         2.1 Changed Class Instance OTHER to OTHERDB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -76,7 +77,7 @@ import javax.swing.JOptionPane;
  * defaults for HSQL.
  * 
  * @author Dana M. Proctor
- * @version 2.0 09/16/2013
+ * @version 2.1 09/24/2013
  */
 
 public class ConnectionManagerHSQL
@@ -98,7 +99,7 @@ public class ConnectionManagerHSQL
 
    public static final String HSQL = "hsql";
    public static final String HSQL2 = "hsql2";
-   public static final String OTHER = "other";
+   public static final String OTHERDB = "other";
    public static final String MEMORY = "Memory";
    public static final String FILE = "File";
    public static final String RESOURCE = "Resource";
@@ -647,7 +648,7 @@ public class ConnectionManagerHSQL
             return HSQL;
       }
       else
-         return OTHER;
+         return OTHERDB;
    }
 
    //==============================================================
