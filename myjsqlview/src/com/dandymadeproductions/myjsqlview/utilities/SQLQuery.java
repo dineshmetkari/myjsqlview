@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 09/27/2013
+// Version 1.4 09/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //         1.3 Added Class Instances columnIsNullableHashMap & columnIsAutoIncrementHashMap.
 //             Assignment in executeSQL() Method for New Instances & Getter/Setter
 //             Methods.
+//         1.4 Corrected in Methods getColumnScale/PrecistionHashMap the Appropriate
+//             Instances. Commented System.out in executeSQL().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.3 09/27/2013
+ * @version 1.4 09/29/2013
  */
 
 public class SQLQuery
@@ -215,8 +217,8 @@ public class SQLQuery
             tableMetaData = db_resultSet.getMetaData();
             
             // System.out.println("index" + "\t" + "Name" + "\t" + "Class" + "\t"
-            //                    + "Type" + "\t" + "Type Name" + "\t" + "Scale"
-            //                    + "\t" + "Precision" + "\t" + "Size");
+            //                     + "Type" + "\t" + "Type Name" + "\t" + "Scale"
+            //                     + "\t" + "Precision" + "\t" + "Size");
 
             for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
             {
@@ -230,10 +232,10 @@ public class SQLQuery
                columnIsNullable = tableMetaData.isNullable(i);
                columnIsAutoIncrement = tableMetaData.isAutoIncrement(i);
                
-               System.out.println(i + "\t" + colNameString + "\t" +
-                                      columnClass + "\t" + columnType + "\t" +
-                                      columnTypeName + "\t" + columnScale + "\t" +
-                                      columnPrecision + "\t" + columnSize);
+               // System.out.println(i + "\t" + colNameString + "\t" +
+               //                        columnClass + "\t" + columnType + "\t" +
+               //                        columnTypeName + "\t" + columnScale + "\t" +
+               //                        columnPrecision + "\t" + columnSize);
 
                // This going to be a problem so skip these columns.
                // NOT TESTED. This is still problably not going to
@@ -349,7 +351,7 @@ public class SQLQuery
 
    public HashMap<String, Integer> getColumnScaleHashMap()
    {
-      return columnSizeHashMap;
+      return columnScaleHashMap;
    }
    
    //==============================================================
@@ -359,7 +361,7 @@ public class SQLQuery
 
    public HashMap<String, Integer> getColumnPrecisionHashMap()
    {
-      return columnSizeHashMap;
+      return columnPrecisionHashMap;
    }
 
    //==============================================================
