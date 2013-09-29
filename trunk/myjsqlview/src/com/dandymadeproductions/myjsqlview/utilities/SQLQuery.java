@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 09/29/2013
+// Version 1.5 09/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,8 @@
 //             Methods.
 //         1.4 Corrected in Methods getColumnScale/PrecistionHashMap the Appropriate
 //             Instances. Commented System.out in executeSQL().
+//         1.5 Added Argument Connection to Method executeSQL() and Created New One That
+//             Allows to Call Without a Connection.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/29/2013
+ * @version 1.5 09/29/2013
  */
 
 public class SQLQuery
@@ -134,10 +136,27 @@ public class SQLQuery
    // Results - (1)
    //==============================================================
 
-   public int executeSQL() throws SQLException
+   public int executeSQL()
+   {
+      // Setting up a connection.
+      Connection dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
+      
+      try
+      {
+         executeSQL(dbConnection);
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e, "SQLQuery executeSQL()");
+      }
+      
+      ConnectionManager.closeConnection(dbConnection, "SQLQuery executeSQL()");
+      return validQuery;
+   }
+   
+   public int executeSQL(Connection dbConnection) throws SQLException
    {
       // Method Instances
-      Connection dbConnection;
       String sqlStatementString;
       Statement sqlStatement;
       int updateCount;
@@ -150,15 +169,9 @@ public class SQLQuery
       boolean columnIsAutoIncrement;
       
       // Checking to see if anything in the input to
-      // execute.
+      // execute or valid connection.
       
-      if (sqlString.length() < 1)
-         return validQuery;
-
-      // Setting up a connection.
-      dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
-      
-      if (dbConnection == null)
+      if (sqlString.length() < 1 || dbConnection == null)
          return validQuery;
       
       // Connecting to the data base, to obtain
@@ -199,7 +212,7 @@ public class SQLQuery
                
                columnNames.add(colNameString);
                columnClassHashMap.put(colNameString, columnClass);
-               columnSQLTypeHashMap.put(colNameString, new Integer(Types.VARCHAR));
+               columnSQLTypeHashMap.put(colNameString, Integer.valueOf(Types.VARCHAR));
                columnTypeNameHashMap.put(colNameString, columnTypeName.toUpperCase());
                columnScaleHashMap.put(colNameString, Integer.valueOf(columnScale));
                columnPrecisionHashMap.put(colNameString, Integer.valueOf(columnPrecision));
@@ -299,8 +312,6 @@ public class SQLQuery
       {
          if (sqlStatement != null)
             sqlStatement.close();
-         
-         ConnectionManager.closeConnection(dbConnection, "SQLQuery executeSQL()");    
       }
    }
    
