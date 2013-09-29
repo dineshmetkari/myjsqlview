@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.2 09/04/2013
+// Version 9.3 09/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -170,6 +170,7 @@
 //         9.1 Changed Method buildConst() to buildConstraints().
 //         9.2 Cleaned Up System.outs To Give More Consistent Information. Minor Formatting
 //             Changes.
+//         9.3 Method setUIManagerFont() Check of uiObject NULL Before instanceof Font.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -238,7 +239,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.2 09/04/2013
+ * @version 9.3 09/29/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1540,7 +1541,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       uiObject = null;
       uiObject = UIManager.get("Label.font");
       
-      if (uiObject instanceof Font && uiObject != null)
+      if (uiObject != null && uiObject instanceof Font)
          uiManagerFont = (Font) uiObject;
       else
          return;
