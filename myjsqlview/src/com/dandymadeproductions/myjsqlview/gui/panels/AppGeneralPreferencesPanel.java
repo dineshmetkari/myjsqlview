@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 07/14/2013
+// Version 1.1 09/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 07/14/2013 Original AppGeneralPreferencesPanel Class.
+//         1.1 09/29/2013 Constructor Check of uiObject NULL Before instanceof
+//                        of Font.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * font paramerters.   
  * 
  * @author Dana M. Proctor
- * @version 1.0 07/14/2013
+ * @version 1.1 09/29/2013
  */
 
 public class AppGeneralPreferencesPanel extends JPanel
@@ -109,7 +111,7 @@ public class AppGeneralPreferencesPanel extends JPanel
       
       Object uiObject = UIManager.get("Label.font");
       
-      if (uiObject instanceof Font && uiObject != null)
+      if (uiObject != null && uiObject instanceof Font)
       {
          Font uiManagerFont = (Font) uiObject;
          currentFontSize = uiManagerFont.getSize();
