@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 07/02/2013
+// Version 1.2 09/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@
 //=================================================================
 // Version 1.0 Initial GeneralProperties Class for Overall Application.
 //         1.1 Changed the Default fontSize Generation.
+//         1.2 Constructor Check of uiObject NULL Before instanceof Font.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,7 +49,7 @@ import javax.swing.UIManager;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.1 07/02/2013
+ * @version 1.2 09/29/2013
  */
 
 public class GeneralProperties
@@ -72,7 +73,7 @@ public class GeneralProperties
       Object uiObject = null;
       uiObject = UIManager.get("Label.font");
       
-      if (uiObject instanceof Font && uiObject != null)
+      if (uiObject != null && uiObject instanceof Font)
       {
          Font uiManagerFont = (Font) uiObject;
          fontSize = uiManagerFont.getSize();
