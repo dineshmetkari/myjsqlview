@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 09/20/2013
+// Version 1.1 09/30/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,9 @@
 //=================================================================
 // Version 1.0 Original Initial TypeID Class, Concept from PostgreSQL JDBC
 //             Class OID.
+//         1.1 Correction of Class Instance HSQL_BITVARYING to HSQL_BIT_VARYING.
+//             Correction in toString() to Replace Additional Underscore Characters
+//             to Space Instead of Removal.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,7 +49,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.0 09/20/2013
+ * @version 1.1 09/30/2013
  */
 
 public class TypeID
@@ -98,7 +101,7 @@ public class TypeID
    public static final int HSQL_NUMERIC = 290;
    public static final int HSQL_BOOLEAN = 300;
    public static final int HSQL_BIT = 305;
-   public static final int HSQL_BITVARYING = 310;
+   public static final int HSQL_BIT_VARYING = 310;
    public static final int HSQL_DATE = 315;
    public static final int HSQL_TIME = 320;
    public static final int HSQL_TIMETMZ = 325;
@@ -259,7 +262,7 @@ public class TypeID
                   String name = fields[i].getName().substring(fields[i].getName().indexOf("_") + 1);
                   
                   if (name.indexOf("_") != -1)
-                     return name.replaceAll("_", "");
+                     return name.replaceAll("_", " ");
                   else
                      return name;
                }
