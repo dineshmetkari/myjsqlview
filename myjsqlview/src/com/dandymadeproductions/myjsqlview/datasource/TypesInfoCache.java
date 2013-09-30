@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 09/19/2013
+// Version 1.1 09/30/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,9 @@
 // Version 1.0 Original Initial Incomplete, but Functional TypesInfoCache Class.
 //             Concept Based on PostgreSQL TypeInfoCache, but Generalized to be
 //             a More Efficient Lookup Table Mapping of integers Not Objects.
+//         1.1 Change in Class Instance DEFAULT_DATASINK_TYPE to HSQL2. Renaming
+//             of static Class final Instances to Uppercase. Changes in POSTGRESQL_TYPES
+//             for ID of HSQL Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,7 +51,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.0 09/18/2013
+ * @version 1.1 09/30/2013
  */
 
 public class TypesInfoCache
@@ -68,9 +71,9 @@ public class TypesInfoCache
    private static final int HSQL_TYPE = 2;
    private static final int DERBY_TYPE = 3;
    
-   private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL; 
+   private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL2; 
    
-   private static final int[][] h2Types = {
+   private static final int[][] H2_TYPES = {
        {TypeID.H2_IDENTITY, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
        {TypeID.H2_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
        {TypeID.H2_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
@@ -93,7 +96,7 @@ public class TypesInfoCache
        {TypeID.H2_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
        {TypeID.H2_ARRAY, TypeID.H2_ARRAY, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR}};
    
-   private static final int[][] postgresqlTypes = {
+   private static final int[][] POSTGRESQL_TYPES = {
        {TypeID.POSTGRESQL_SERIAL, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
        {TypeID.POSTGRESQL_BIGSERIAL, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
        {TypeID.POSTGRESQL_INT2, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
@@ -107,12 +110,12 @@ public class TypesInfoCache
        {TypeID.POSTGRESQL_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
        {TypeID.POSTGRESQL_BPCHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
        {TypeID.POSTGRESQL_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
-       {TypeID.POSTGRESQL_TEXT, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.POSTGRESQL_TEXT, TypeID.H2_VARCHAR, TypeID.HSQL_CLOB, TypeID.DERBY_VARCHAR},
        {TypeID.POSTGRESQL_NAME, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
-       {TypeID.POSTGRESQL_BYTEA, TypeID.H2_BLOB, TypeID.HSQL_BINARY, TypeID.DERBY_BLOB},
+       {TypeID.POSTGRESQL_BYTEA, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.POSTGRESQL_BOOL, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
        {TypeID.POSTGRESQL_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BIT, TypeID.DERBY_BOOLEAN},
-       {TypeID.POSTGRESQL_VARBIT, TypeID.H2_OTHER, TypeID.HSQL_BITVARYING, TypeID.DERBY_CHARBIT},
+       {TypeID.POSTGRESQL_VARBIT, TypeID.H2_OTHER, TypeID.HSQL_BIT_VARYING, TypeID.DERBY_CHARBIT},
        {TypeID.POSTGRESQL_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
        {TypeID.POSTGRESQL_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
        {TypeID.POSTGRESQL_TIMETZ, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
@@ -152,9 +155,9 @@ public class TypesInfoCache
       nameToType = new HashMap<String, Integer>();
       
       if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-         addSourceSinkType(postgresqlTypes);
+         addSourceSinkType(this.POSTGRESQL_TYPES);
       else if (dataSourceType.equals(ConnectionManager.H2))
-         addSourceSinkType(h2Types);
+         addSourceSinkType(H2_TYPES);
    }
    
    //==============================================================
