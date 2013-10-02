@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 09/30/2013
+// Version 1.2 10/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@
 //         1.1 Change in Class Instance DEFAULT_DATASINK_TYPE to HSQL2. Renaming
 //             of static Class final Instances to Uppercase. Changes in POSTGRESQL_TYPES
 //             for ID of HSQL Types.
+//         1.2 Corrections to Sync With Changes in TypeID Instances.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -51,7 +52,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.1 09/30/2013
+ * @version 1.2 10/02/2013
  */
 
 public class TypesInfoCache
@@ -82,7 +83,7 @@ public class TypesInfoCache
        {TypeID.H2_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.H2_CLOB, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
        {TypeID.H2_OTHER, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
-       {TypeID.H2_UUID, TypeID.H2_UUID, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONGVARCHAR},
+       {TypeID.H2_UUID, TypeID.H2_UUID, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
        {TypeID.H2_BOOLEAN, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
        {TypeID.H2_TINYINT, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
        {TypeID.H2_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
@@ -115,12 +116,12 @@ public class TypesInfoCache
        {TypeID.POSTGRESQL_BYTEA, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.POSTGRESQL_BOOL, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
        {TypeID.POSTGRESQL_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BIT, TypeID.DERBY_BOOLEAN},
-       {TypeID.POSTGRESQL_VARBIT, TypeID.H2_OTHER, TypeID.HSQL_BIT_VARYING, TypeID.DERBY_CHARBIT},
+       {TypeID.POSTGRESQL_VARBIT, TypeID.H2_OTHER, TypeID.HSQL_BIT_VARYING, TypeID.DERBY_CHAR_FOR_BIT_DATA},
        {TypeID.POSTGRESQL_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
        {TypeID.POSTGRESQL_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
-       {TypeID.POSTGRESQL_TIMETZ, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
+       {TypeID.POSTGRESQL_TIMETZ, TypeID.H2_TIME, TypeID.HSQL_TIME_WITH_TIME_ZONE, TypeID.DERBY_TIME},
        {TypeID.POSTGRESQL_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
-       {TypeID.POSTGRESQL_TIMESTAMPTZ, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMPTMZ, TypeID.DERBY_TIMESTAMP},
+       {TypeID.POSTGRESQL_TIMESTAMPTZ, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
        {TypeID.POSTGRESQL_INTERVAL, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL, TypeID.DERBY_VARCHAR},
        {TypeID.POSTGRESQL_CIDR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
        {TypeID.POSTGRESQL_INET, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
@@ -155,7 +156,7 @@ public class TypesInfoCache
       nameToType = new HashMap<String, Integer>();
       
       if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-         addSourceSinkType(this.POSTGRESQL_TYPES);
+         addSourceSinkType(POSTGRESQL_TYPES);
       else if (dataSourceType.equals(ConnectionManager.H2))
          addSourceSinkType(H2_TYPES);
    }
