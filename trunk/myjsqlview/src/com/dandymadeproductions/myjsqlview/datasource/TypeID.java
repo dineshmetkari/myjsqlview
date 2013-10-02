@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 09/30/2013
+// Version 1.2 10/02/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,9 @@
 //         1.1 Correction of Class Instance HSQL_BITVARYING to HSQL_BIT_VARYING.
 //             Correction in toString() to Replace Additional Underscore Characters
 //             to Space Instead of Removal.
+//         1.2 Additional Corrections to Type IDs for HSQL & Derby Database Class
+//             Instances. Method toString() Added Instance of prefix & Excluding
+//             H2 & Oracle Removal of Additional Underscores.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -49,7 +52,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.1 09/30/2013
+ * @version 1.2 10/02/2013
  */
 
 public class TypeID
@@ -104,21 +107,26 @@ public class TypeID
    public static final int HSQL_BIT_VARYING = 310;
    public static final int HSQL_DATE = 315;
    public static final int HSQL_TIME = 320;
-   public static final int HSQL_TIMETMZ = 325;
+   public static final int HSQL_TIME_WITH_TIME_ZONE = 325;
    public static final int HSQL_DATETIME = 330;
    public static final int HSQL_TIMESTAMP = 335;
-   public static final int HSQL_TIMESTAMPTMZ = 340;
+   public static final int HSQL_TIMESTAMP_WITH_TIME_ZONE = 340;
    public static final int HSQL_INTERVAL = 345;
+   public static final int HSQL_INTERVAL_YEAR_TO_MONTH = 350;
+   public static final int HSQL_INTERVAL_YEAR = 355;
+   public static final int HSQL_INTERVAL_DAY_TO_HOUR = 360;
+   public static final int HSQL_INTERVAL_MINUTE_TO_SECOND = 365;
+   public static final int HSQL_INTERVAL_SECOND = 370;
 
    // Derby Data Type IDs
    public static final int DERBY_IDENTITY = 400;
    public static final int DERBY_CHAR = 405;
-   public static final int DERBY_CHARBIT = 410;
+   public static final int DERBY_CHAR_FOR_BIT_DATA = 410;
    public static final int DERBY_VARCHAR = 415;
-   public static final int DERBY_VARCHARBIT = 420;
+   public static final int DERBY_VARCHAR_FOR_BIT_DATA = 420;
    public static final int DERBY_BLOB = 425;
-   public static final int DERBY_LONGVARCHAR = 430;
-   public static final int DERBY_LONGVARCHARBIT = 435;
+   public static final int DERBY_LONG_VARCHAR = 430;
+   public static final int DERBY_LONG_VARCHAR_FOR_BIT_DATA = 435;
    public static final int DERBY_CLOB = 440;
    public static final int DERBY_BOOLEAN = 445;
    public static final int DERBY_SMALLINT = 450;
@@ -244,24 +252,30 @@ public class TypeID
    // ** NOTE **
    // All the fields should adhere to the prescribe naming scheme
    // of having the DB name followed by an underscore and then the
-   // data type.
+   // data type. Underscores in the name will be replaced by a
+   // space except for H2 & Oracle.
    //==============================================================
     
    public static String toString(int typeid)
    {
+      // Method Instances
+      String prefix, name;
+      
       try
       {
          Field[] fields = TypeID.class.getFields();
          
+         // Cycle through instance names.
          for (int i = 0; i < fields.length; ++i)
          {
             if (fields[i].getInt(null) == typeid)
             {
                if (fields[i].getName().indexOf("_") != -1)
                {
-                  String name = fields[i].getName().substring(fields[i].getName().indexOf("_") + 1);
+                  prefix = fields[i].getName().substring(0, fields[i].getName().indexOf("_"));
+                  name = fields[i].getName().substring(fields[i].getName().indexOf("_") + 1);
                   
-                  if (name.indexOf("_") != -1)
+                  if (name.indexOf("_") != -1 && (!prefix.equals("H2") || !prefix.equals("ORACLE")))
                      return name.replaceAll("_", " ");
                   else
                      return name;
