@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 10/02/2013
+// Version 1.3 10/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.2 Additional Corrections to Type IDs for HSQL & Derby Database Class
 //             Instances. Method toString() Added Instance of prefix & Excluding
 //             H2 & Oracle Removal of Additional Underscores.
+//         1.3 Reduced ID Numbers to Increase Performance in Caching.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +53,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/02/2013
+ * @version 1.3 10/03/2013
  */
 
 public class TypeID
@@ -61,189 +62,189 @@ public class TypeID
    public static final int _UNSPECIFIED = 0;
    
    // H2 Data Type IDs
-   public static final int H2_IDENTITY = 5;
-   public static final int H2_CHAR = 10;
-   public static final int H2_VARCHAR = 15;
-   public static final int H2_VARCHAR_IGNORECASE = 20;
-   public static final int H2_BINARY = 25;
-   public static final int H2_BLOB = 30;
-   public static final int H2_CLOB = 35;
-   public static final int H2_OTHER = 40;
-   public static final int H2_UUID = 45;
-   public static final int H2_BOOLEAN = 50;
-   public static final int H2_TINYINT = 55;
-   public static final int H2_SMALLINT = 60;
-   public static final int H2_INTEGER = 65;
-   public static final int H2_BIGINT = 70;
-   public static final int H2_REAL = 75;
-   public static final int H2_DOUBLE = 80;
-   public static final int H2_DECIMAL = 85;
-   public static final int H2_DATE = 90;
-   public static final int H2_TIME = 95;
-   public static final int H2_TIMESTAMP = 100;
-   public static final int H2_ARRAY = 105;
+   public static final int H2_IDENTITY = -254;
+   public static final int H2_CHAR = -252;
+   public static final int H2_VARCHAR = -250;
+   public static final int H2_VARCHAR_IGNORECASE = -248;
+   public static final int H2_BINARY = -246;
+   public static final int H2_BLOB = -244;
+   public static final int H2_CLOB = -242;
+   public static final int H2_OTHER = -240;
+   public static final int H2_UUID = -238;
+   public static final int H2_BOOLEAN = -236;
+   public static final int H2_TINYINT = -234;
+   public static final int H2_SMALLINT = -232;
+   public static final int H2_INTEGER = -230;
+   public static final int H2_BIGINT = -228;
+   public static final int H2_REAL = -226;
+   public static final int H2_DOUBLE = -224;
+   public static final int H2_DECIMAL = -222;
+   public static final int H2_DATE = -220;
+   public static final int H2_TIME = -218;
+   public static final int H2_TIMESTAMP = -216;
+   public static final int H2_ARRAY = -214;
    
    // HSQL 2.0 Data Type IDs
-   public static final int HSQL_IDENTITY = 205;
-   public static final int HSQL_CHAR = 210;
-   public static final int HSQL_VARCHAR = 215;
-   public static final int HSQL_LONGVARCHAR = 220;
-   public static final int HSQL_CLOB = 225;
-   public static final int HSQL_BINARY = 230;
-   public static final int HSQL_VARBINARY = 235;
-   public static final int HSQL_LONGVARBINARY = 240;
-   public static final int HSQL_BLOB = 245;
-   public static final int HSQL_TINYINT = 250;
-   public static final int HSQL_SMALLINT = 255;
-   public static final int HSQL_INTEGER = 260;
-   public static final int HSQL_BIGINT = 265;
-   public static final int HSQL_FLOAT = 270;
-   public static final int HSQL_DOUBLE = 275;
-   public static final int HSQL_REAL = 280;
-   public static final int HSQL_DECIMAL = 285;
-   public static final int HSQL_NUMERIC = 290;
-   public static final int HSQL_BOOLEAN = 300;
-   public static final int HSQL_BIT = 305;
-   public static final int HSQL_BIT_VARYING = 310;
-   public static final int HSQL_DATE = 315;
-   public static final int HSQL_TIME = 320;
-   public static final int HSQL_TIME_WITH_TIME_ZONE = 325;
-   public static final int HSQL_DATETIME = 330;
-   public static final int HSQL_TIMESTAMP = 335;
-   public static final int HSQL_TIMESTAMP_WITH_TIME_ZONE = 340;
-   public static final int HSQL_INTERVAL = 345;
-   public static final int HSQL_INTERVAL_YEAR_TO_MONTH = 350;
-   public static final int HSQL_INTERVAL_YEAR = 355;
-   public static final int HSQL_INTERVAL_DAY_TO_HOUR = 360;
-   public static final int HSQL_INTERVAL_MINUTE_TO_SECOND = 365;
-   public static final int HSQL_INTERVAL_SECOND = 370;
+   public static final int HSQL_IDENTITY = -212;
+   public static final int HSQL_CHAR = -210;
+   public static final int HSQL_VARCHAR = -208;
+   public static final int HSQL_LONGVARCHAR = -206;
+   public static final int HSQL_CLOB = -204;
+   public static final int HSQL_BINARY = -202;
+   public static final int HSQL_VARBINARY = -200;
+   public static final int HSQL_LONGVARBINARY = -198;
+   public static final int HSQL_BLOB = -196;
+   public static final int HSQL_TINYINT = -194;
+   public static final int HSQL_SMALLINT = -192;
+   public static final int HSQL_INTEGER = -190;
+   public static final int HSQL_BIGINT = -188;
+   public static final int HSQL_FLOAT = -186;
+   public static final int HSQL_DOUBLE = -184;
+   public static final int HSQL_REAL = -182;
+   public static final int HSQL_DECIMAL = -180;
+   public static final int HSQL_NUMERIC = -178;
+   public static final int HSQL_BOOLEAN = -176;
+   public static final int HSQL_BIT = -174;
+   public static final int HSQL_BIT_VARYING = -172;
+   public static final int HSQL_DATE = -170;
+   public static final int HSQL_TIME = -168;
+   public static final int HSQL_TIME_WITH_TIME_ZONE = -166;
+   public static final int HSQL_DATETIME = -164;
+   public static final int HSQL_TIMESTAMP = -162;
+   public static final int HSQL_TIMESTAMP_WITH_TIME_ZONE = -160;
+   public static final int HSQL_INTERVAL = -158;
+   public static final int HSQL_INTERVAL_YEAR_TO_MONTH = -156;
+   public static final int HSQL_INTERVAL_YEAR = -154;
+   public static final int HSQL_INTERVAL_DAY_TO_HOUR = -152;
+   public static final int HSQL_INTERVAL_MINUTE_TO_SECOND = -150;
+   public static final int HSQL_INTERVAL_SECOND = -148;
 
    // Derby Data Type IDs
-   public static final int DERBY_IDENTITY = 400;
-   public static final int DERBY_CHAR = 405;
-   public static final int DERBY_CHAR_FOR_BIT_DATA = 410;
-   public static final int DERBY_VARCHAR = 415;
-   public static final int DERBY_VARCHAR_FOR_BIT_DATA = 420;
-   public static final int DERBY_BLOB = 425;
-   public static final int DERBY_LONG_VARCHAR = 430;
-   public static final int DERBY_LONG_VARCHAR_FOR_BIT_DATA = 435;
-   public static final int DERBY_CLOB = 440;
-   public static final int DERBY_BOOLEAN = 445;
-   public static final int DERBY_SMALLINT = 450;
-   public static final int DERBY_INTEGER = 455;
-   public static final int DERBY_BIGINT = 460;
-   public static final int DERBY_FLOAT = 465;
-   public static final int DERBY_REAL = 470;
-   public static final int DERBY_DOUBLE = 475;
-   public static final int DERBY_DECIMAL = 480;
-   public static final int DERBY_DATE = 485;
-   public static final int DERBY_TIME = 490;
-   public static final int DERBY_TIMESTAMP = 495;
+   public static final int DERBY_IDENTITY = -146;
+   public static final int DERBY_CHAR = -144;
+   public static final int DERBY_CHAR_FOR_BIT_DATA = -142;
+   public static final int DERBY_VARCHAR = -140;
+   public static final int DERBY_VARCHAR_FOR_BIT_DATA = -138;
+   public static final int DERBY_BLOB = -136;
+   public static final int DERBY_LONG_VARCHAR = -134;
+   public static final int DERBY_LONG_VARCHAR_FOR_BIT_DATA = -132;
+   public static final int DERBY_CLOB = -130;
+   public static final int DERBY_BOOLEAN = -128;
+   public static final int DERBY_SMALLINT = -126;
+   public static final int DERBY_INTEGER = -124;
+   public static final int DERBY_BIGINT = -122;
+   public static final int DERBY_FLOAT = -120;
+   public static final int DERBY_REAL = -118;
+   public static final int DERBY_DOUBLE = -116;
+   public static final int DERBY_DECIMAL = -114;
+   public static final int DERBY_DATE = -112;
+   public static final int DERBY_TIME = -110;
+   public static final int DERBY_TIMESTAMP = -108;
    
    // PostgreSQL Data Type IDs
-   public static final int POSTGRESQL_SERIAL = 605;
-   public static final int POSTGRESQL_BIGSERIAL = 610;
-   public static final int POSTGRESQL_INT2 = 615;
-   public static final int POSTGRESQL_INT4 = 620;
-   public static final int POSTGRESQL_OID = 625;
-   public static final int POSTGRESQL_INT8 = 630;
-   public static final int POSTGRESQL_MONEY = 635;
-   public static final int POSTGRESQL_NUMERIC = 640;
-   public static final int POSTGRESQL_FLOAT4 = 645;
-   public static final int POSTGRESQL_FLOAT8 = 650;
-   public static final int POSTGRESQL_CHAR = 655;
-   public static final int POSTGRESQL_BPCHAR = 660;
-   public static final int POSTGRESQL_VARCHAR = 665;
-   public static final int POSTGRESQL_TEXT = 670;
-   public static final int POSTGRESQL_NAME = 675;
-   public static final int POSTGRESQL_BYTEA = 680;
-   public static final int POSTGRESQL_BOOL = 685;
-   public static final int POSTGRESQL_BIT = 690;
-   public static final int POSTGRESQL_VARBIT = 695;
-   public static final int POSTGRESQL_DATE = 700;
-   public static final int POSTGRESQL_TIME = 705;
-   public static final int POSTGRESQL_TIMETZ = 710;
-   public static final int POSTGRESQL_TIMESTAMP = 715;
-   public static final int POSTGRESQL_TIMESTAMPTZ = 720;
-   public static final int POSTGRESQL_INTERVAL = 725;
-   public static final int POSTGRESQL_CIDR = 730;
-   public static final int POSTGRESQL_INET = 735;
-   public static final int POSTGRESQL_MACADDR = 740;
-   public static final int POSTGRESQL_POINT = 745;
-   public static final int POSTGRESQL_LSEG = 750;
-   public static final int POSTGRESQL_BOX = 755;
-   public static final int POSTGRESQL_PATH = 780;
-   public static final int POSTGRESQL_POLYGON = 785;
-   public static final int POSTGRESQL_CIRCLE = 790;
-   public static final int POSTGRESQL__ = 795;
+   public static final int POSTGRESQL_SERIAL = -106;
+   public static final int POSTGRESQL_BIGSERIAL = -104;
+   public static final int POSTGRESQL_INT2 = -102;
+   public static final int POSTGRESQL_INT4 = -100;
+   public static final int POSTGRESQL_OID = -98;
+   public static final int POSTGRESQL_INT8 = -96;
+   public static final int POSTGRESQL_MONEY = -94;
+   public static final int POSTGRESQL_NUMERIC = -92;
+   public static final int POSTGRESQL_FLOAT4 = -90;
+   public static final int POSTGRESQL_FLOAT8 = -88;
+   public static final int POSTGRESQL_CHAR = -86;
+   public static final int POSTGRESQL_BPCHAR = -84;
+   public static final int POSTGRESQL_VARCHAR = -82;
+   public static final int POSTGRESQL_TEXT = -80;
+   public static final int POSTGRESQL_NAME = -76;
+   public static final int POSTGRESQL_BYTEA = -74;
+   public static final int POSTGRESQL_BOOL = -72;
+   public static final int POSTGRESQL_BIT = -70;
+   public static final int POSTGRESQL_VARBIT = -68;
+   public static final int POSTGRESQL_DATE = -66;
+   public static final int POSTGRESQL_TIME = -64;
+   public static final int POSTGRESQL_TIMETZ = -62;
+   public static final int POSTGRESQL_TIMESTAMP = -60;
+   public static final int POSTGRESQL_TIMESTAMPTZ = -58;
+   public static final int POSTGRESQL_INTERVAL = -56;
+   public static final int POSTGRESQL_CIDR = -54;
+   public static final int POSTGRESQL_INET = -52;
+   public static final int POSTGRESQL_MACADDR = -50;
+   public static final int POSTGRESQL_POINT = -48;
+   public static final int POSTGRESQL_LSEG = -46;
+   public static final int POSTGRESQL_BOX = -44;
+   public static final int POSTGRESQL_PATH = -42;
+   public static final int POSTGRESQL_POLYGON = -40;
+   public static final int POSTGRESQL_CIRCLE = -38;
+   public static final int POSTGRESQL__ = -36;
    
    // MySQL Data Type IDs
-   public static final int MYSQL_CHAR = 900;
-   public static final int MYSQL_VARCHAR = 905;
-   public static final int MYSQL_TINYBLOB = 910;
-   public static final int MYSQL_BLOB = 915;
-   public static final int MYSQL_MEDIUMBLOB = 920;
-   public static final int MYSQL_LONGBLOB = 925;
-   public static final int MYSQL_TINYINT = 930;
-   public static final int MYSQL_TINYINT_UNSIGNED = 935;
-   public static final int MYSQL_BIT = 940;
-   public static final int MYSQL_SMALLINT = 945;
-   public static final int MYSQL_SMALLINT_UNSIGNED = 950;
-   public static final int MYSQL_MEDIUMINT = 955;
-   public static final int MYSQL_MEDIUMINT_UNSIGNED = 960;
-   public static final int MYSQL_INT = 965;
-   public static final int MYSQL_INT_UNSIGNED = 970;
-   public static final int MYSQL_BIGINT = 975;
-   public static final int MYSQL_BIGINT_UNSIGNED = 980;
-   public static final int MYSQL_FLOAT = 985;
-   public static final int MYSQL_FLOAT_UNSIGNED = 990;
-   public static final int MYSQL_DOUBLE = 995;
-   public static final int MYSQL_DOUBLE_UNSIGNED = 1000;
-   public static final int MYSQL_DECIMAL = 1005;
-   public static final int MYSQL_DATE = 1010;
-   public static final int MYSQL_TIME = 1015;
-   public static final int MYSQL_DATETIME = 1020;
-   public static final int MYSQL_TIMESTAMP = 1025;    
-   public static final int MYSQL_YEAR = 1030;
+   public static final int MYSQL_CHAR = -34;
+   public static final int MYSQL_VARCHAR = -32;
+   public static final int MYSQL_TINYBLOB = -30;
+   public static final int MYSQL_BLOB = -28;
+   public static final int MYSQL_MEDIUMBLOB = -26;
+   public static final int MYSQL_LONGBLOB = -24;
+   public static final int MYSQL_TINYINT = -22;
+   public static final int MYSQL_TINYINT_UNSIGNED = -20;
+   public static final int MYSQL_BIT = -18;
+   public static final int MYSQL_SMALLINT = -16;
+   public static final int MYSQL_SMALLINT_UNSIGNED = -14;
+   public static final int MYSQL_MEDIUMINT = -12;
+   public static final int MYSQL_MEDIUMINT_UNSIGNED = -10;
+   public static final int MYSQL_INT = -8;
+   public static final int MYSQL_INT_UNSIGNED = -6;
+   public static final int MYSQL_BIGINT = -4;
+   public static final int MYSQL_BIGINT_UNSIGNED = -2;
+   public static final int MYSQL_FLOAT = 2;
+   public static final int MYSQL_FLOAT_UNSIGNED = 4;
+   public static final int MYSQL_DOUBLE = 6;
+   public static final int MYSQL_DOUBLE_UNSIGNED = 8;
+   public static final int MYSQL_DECIMAL = 10;
+   public static final int MYSQL_DATE = 12;
+   public static final int MYSQL_TIME = 14;
+   public static final int MYSQL_DATETIME = 16;
+   public static final int MYSQL_TIMESTAMP = 18;    
+   public static final int MYSQL_YEAR = 20;
    
    // Oracle Data Type IDs
-   public static final int ORACLE_CHAR = 1100;
-   public static final int ORACLE_VARCHAR2 = 1105;
-   public static final int ORACLE_LONG = 1110;
-   public static final int ORACLE_RAW = 1115;
-   public static final int ORACLE_BLOB = 1120;
-   public static final int ORACLE_CLOB = 1125;
-   public static final int ORACLE_BFILE = 1130;
-   public static final int ORACLE_NUMBER = 1135;
-   public static final int ORACLE_BINARY_FLOAT = 1140;
-   public static final int ORACLE_BINARY_DOUBLE = 1145;
-   public static final int ORACLE_DATE = 1150;
-   public static final int ORACLE_TIMESTAMP = 1155;
-   public static final int ORACLE_TIMESTAMPTZ = 1160;
-   public static final int ORACLE_INTERVALYM = 1165;
-   public static final int ORACLE_INTERVALDS = 1170;
+   public static final int ORACLE_CHAR = 22;
+   public static final int ORACLE_VARCHAR2 = 24;
+   public static final int ORACLE_LONG = 26;
+   public static final int ORACLE_RAW = 28;
+   public static final int ORACLE_BLOB = 30;
+   public static final int ORACLE_CLOB = 32;
+   public static final int ORACLE_BFILE = 34;
+   public static final int ORACLE_NUMBER = 36;
+   public static final int ORACLE_BINARY_FLOAT = 38;
+   public static final int ORACLE_BINARY_DOUBLE = 40;
+   public static final int ORACLE_DATE = 42;
+   public static final int ORACLE_TIMESTAMP = 44;
+   public static final int ORACLE_TIMESTAMPTZ = 46;
+   public static final int ORACLE_INTERVALYM = 48;
+   public static final int ORACLE_INTERVALDS = 50;
    
    // SQLite Data Type IDs
-   public static final int SQLITE_INTEGER = 1200;
-   public static final int SQLITE_REAL = 1205;
-   public static final int SQLITE_TEXT = 1210;
-   public static final int SQLITE_BLOB = 1215;
+   public static final int SQLITE_INTEGER = 52;
+   public static final int SQLITE_REAL = 54;
+   public static final int SQLITE_TEXT = 56;
+   public static final int SQLITE_BLOB = 58;
    
    // SQLite Data Type IDs
-   public static final int MSACCESS_COUNTER = 1300;
-   public static final int MSACCESS_BINARY = 1305;
-   public static final int MSACCESS_LONGBINARY = 1310;
-   public static final int MSACCESS_VARCHAR = 1315;
-   public static final int MSACCESS_LONGCHAR = 1320;
-   public static final int MSACCESS_BIT = 1325;
-   public static final int MSACCESS_BYTE = 1330;
-   public static final int MSACCESS_SMALLINT = 1335;
-   public static final int MSACCESS_INTEGER = 1340;
-   public static final int MSACCESS_REAL = 1345;
-   public static final int MSACCESS_DOUBLE = 1350;
-   public static final int MSACCESS_CURRENCY = 1355;
-   public static final int MSACCESS_GUID = 1360;
-   public static final int MSACCESS_DATETIME = 1365;
+   public static final int MSACCESS_COUNTER = 60;
+   public static final int MSACCESS_BINARY = 62;
+   public static final int MSACCESS_LONGBINARY = 64;
+   public static final int MSACCESS_VARCHAR = 66;
+   public static final int MSACCESS_LONGCHAR = 68;
+   public static final int MSACCESS_BIT = 70;
+   public static final int MSACCESS_BYTE = 72;
+   public static final int MSACCESS_SMALLINT = 74;
+   public static final int MSACCESS_INTEGER = 76;
+   public static final int MSACCESS_REAL = 78;
+   public static final int MSACCESS_DOUBLE = 80;
+   public static final int MSACCESS_CURRENCY = 82;
+   public static final int MSACCESS_GUID = 84;
+   public static final int MSACCESS_DATETIME = 86;
    
    //==============================================================
    // Class method to allow classes to try and obtain the field
@@ -328,5 +329,48 @@ public class TypeID
          // never happens
       }
       throw new Exception("TypeID name type {0} not known and not a number");
+   }
+   
+   //==============================================================
+   // Class method to test for duplicate IDs.
+   //==============================================================
+
+   public static boolean testDuplicate_IDs()
+   {
+      // Method Instances
+      boolean duplicateID;
+      String name_i, name_j;
+      
+      duplicateID = false;
+      
+      try
+      {
+         Field[] fields = TypeID.class.getFields();
+         
+         // Cycle through instance names.
+         for (int i = 0; i < fields.length; ++i)
+         {
+            name_i = fields[i].getName();
+            
+            for (int j = 0; j < fields.length; j++)
+            {
+               name_j = fields[j].getName();
+               
+               if (!name_i.equals(name_j))
+               {
+                  if (valueOf(name_i) == valueOf(name_j))
+                  {
+                     duplicateID = true;
+                     System.out.println("Duplicate Values: " + name_i + ":" + name_j);
+                  }
+               }
+            }
+         }
+      }
+      catch (Exception e)
+      {
+         // never happens
+      }
+      return duplicateID;
    }
 }
