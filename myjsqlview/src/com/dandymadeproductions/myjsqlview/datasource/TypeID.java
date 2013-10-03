@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 10/03/2013
+// Version 1.4 10/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@
 //             Instances. Method toString() Added Instance of prefix & Excluding
 //             H2 & Oracle Removal of Additional Underscores.
 //         1.3 Reduced ID Numbers to Increase Performance in Caching.
+//         1.4 Changed Class Instance POSTGRESQL__ to POSTGRESQL_ARRAYS.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -53,7 +54,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/03/2013
+ * @version 1.4 10/03/2013
  */
 
 public class TypeID
@@ -176,7 +177,8 @@ public class TypeID
    public static final int POSTGRESQL_PATH = -42;
    public static final int POSTGRESQL_POLYGON = -40;
    public static final int POSTGRESQL_CIRCLE = -38;
-   public static final int POSTGRESQL__ = -36;
+   // Dummy for all arrays, ie. _INT2, _INT4, etc.
+   public static final int POSTGRESQL_ARRAYS = -36;
    
    // MySQL Data Type IDs
    public static final int MYSQL_CHAR = -34;
