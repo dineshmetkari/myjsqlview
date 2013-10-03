@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 10/02/2013
+// Version 1.3 10/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,10 @@
 //             of static Class final Instances to Uppercase. Changes in POSTGRESQL_TYPES
 //             for ID of HSQL Types.
 //         1.2 Corrections to Sync With Changes in TypeID Instances.
+//         1.3 Syncronized Class Instance POSTGRESQL__ to POSTGRESQL_ARRAYS. Assigning
+//             the Same to PostgreSQL Arrays Types, _INT2 etc., in Method getType(). 
+//             Change in Conversion of H2 & PostgreSQL Arrays for HSQL & Derby to
+//             Long Varchars.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -52,7 +56,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/02/2013
+ * @version 1.3 10/03/2013
  */
 
 public class TypesInfoCache
@@ -95,7 +99,7 @@ public class TypesInfoCache
        {TypeID.H2_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
        {TypeID.H2_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
        {TypeID.H2_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
-       {TypeID.H2_ARRAY, TypeID.H2_ARRAY, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR}};
+       {TypeID.H2_ARRAY, TypeID.H2_ARRAY, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR}};
    
    private static final int[][] POSTGRESQL_TYPES = {
        {TypeID.POSTGRESQL_SERIAL, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
@@ -132,7 +136,7 @@ public class TypesInfoCache
        {TypeID.POSTGRESQL_PATH, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
        {TypeID.POSTGRESQL_POLYGON, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
        {TypeID.POSTGRESQL_CIRCLE, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
-       {TypeID.POSTGRESQL__, TypeID.H2_ARRAY, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR}};
+       {TypeID.POSTGRESQL_ARRAYS, TypeID.H2_ARRAY, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR}};
    
    //==============================================================
    // TypesInfoCache Constructors
@@ -175,7 +179,7 @@ public class TypesInfoCache
       for (int i = 0; i < types.length; i++)
       {
          sourceTypeName = TypeID.toString(types[i][TYPE_NAME]);
-         // System.out.println("TypesInfoCache addType() " + sourceTypeName);
+         // System.out.println("TypesInfoCache addSourceSinkType() " + sourceTypeName);
          
          if (dataSinkType.equals(ConnectionManager.H2))
             sink_id = Integer.valueOf(types[i][H2_TYPE]);
@@ -199,9 +203,10 @@ public class TypesInfoCache
       // System.out.println("TypesInfoCache getType() " + sourceTypeName);
       
       // Deal with PostgreSQL Array Types
-      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-         if (sourceTypeName.indexOf("_") != -1)
-            sourceTypeName = "_";
+      if (dataSourceType.equals(ConnectionManager.POSTGRESQL) && sourceTypeName.startsWith("_"))
+         sourceTypeName = TypeID.toString(TypeID.POSTGRESQL_ARRAYS);
+      
+      System.out.println(sourceTypeName);
       
       if (nameToType.containsKey(sourceTypeName))
          return TypeID.toString(nameToType.get(sourceTypeName));
