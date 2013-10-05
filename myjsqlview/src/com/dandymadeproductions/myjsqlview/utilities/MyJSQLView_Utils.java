@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.3 09/29/2013
+// Version 9.4 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -171,6 +171,7 @@
 //         9.2 Cleaned Up System.outs To Give More Consistent Information. Minor Formatting
 //             Changes.
 //         9.3 Method setUIManagerFont() Check of uiObject NULL Before instanceof Font.
+//         9.4 Added Class Method getFrameIcon().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -182,6 +183,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -239,7 +241,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.3 09/29/2013
+ * @version 9.4 10/05/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -882,6 +884,17 @@ public class MyJSQLView_Utils extends MyJSQLView
          dateFormatOptionsCopy[i] = dateFormatOptions[i];
       
       return dateFormatOptionsCopy;
+   }
+   
+   //==============================================================
+   // Class method to return a standardized frame icon.
+   //==============================================================
+
+   public static Image getFrameIcon()
+   {
+      return MyJSQLView.getResourceBundle().getResourceImage(MyJSQLView_Utils.getIconsDirectory() +
+                                                      MyJSQLView_Utils.getFileSeparator()
+                                                      + "searchIcon.png").getImage();
    }
    
    //==============================================================
