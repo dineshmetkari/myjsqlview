@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.7 09/20/2012
+// Version 2.8 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -57,6 +57,7 @@
 //             to getResourceBundle().
 //         2.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         2.7 Constructor Starting of creditsPanel Threading Done Locally Here.
+//         2.8 Constructor Set Frame's Icon.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,13 +86,14 @@ import javax.swing.JPanel;
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.gui.panels.CreditsPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
  *    The AboutFrame class provides the user access to information about the
  * MyJSQLView application when the Help About selection is made in the menu bar.
  * 
  * @author Dana M. Proctor
- * @version 2.7 09/20/2012
+ * @version 2.8 10/05/2013
  */
 
 class AboutFrame extends JFrame implements ActionListener
@@ -119,6 +121,7 @@ class AboutFrame extends JFrame implements ActionListener
       resourceBundle = MyJSQLView.getResourceBundle();
       resource = resourceBundle.getResourceString("AboutFrame.message.Title", "About");
       setTitle(resource + " MyJSQLView");
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();

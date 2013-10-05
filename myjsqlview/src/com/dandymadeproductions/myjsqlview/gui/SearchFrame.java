@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.5 09/20/2012
+// Version 4.6 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -99,6 +99,7 @@
 //         4.4 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         4.5 Class Method actionPerformed() Created sqlSearchDatabaseThread to
 //             Run the Searches.
+//         4.6 Constructor Set Frame's Icon.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -149,7 +150,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SearchResultTableCellRender
  * a connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 4.5 09/20/2012
+ * @version 4.6 10/05/2013
  */
 
 class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -205,6 +206,7 @@ class SearchFrame extends JFrame implements ActionListener, KeyListener, MouseLi
       
       resource = resourceBundle.getResourceString("SearchFrame.message.Title", "Search Frame");
       setTitle("MyJSQLView " + resource);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       searchIcon = resourceBundle.getResourceImage(iconsDirectory + "searchIcon.png");
       removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");

@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 08/11/2013
+// Version 3.5 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,7 @@
 //         3.4 Added static Class Instance LOAD_DEFAULT_REPOSITORY to More Closely Control
 //             the Loading of the MyJSQLView, Default, Repository. Methods Effected
 //             removeRepository(), & loadCachedRepository().
+//         3.5 Constructor Set Frame's Icon.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -179,7 +180,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.4 08/11/2013
+ * @version 3.5 10/05/2013
  */
 
 //=================================================================
@@ -244,6 +245,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    protected PluginFrame(MyJSQLView_Frame parent)
    {
       parentFrame = parent;
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       // Constructor Instances.
       JPanel southButtonPanel, buttonPanel;
