@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.3 07/02/2013
+// Version 8.4 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -199,6 +199,7 @@
 //                        Upon Frame Closing.
 //         8.2 03/05/2013 Correction in reloadDBTables() for Connection Identification.
 //         8.3 07/02/2013 Added Class Method setFontSize().
+//         8.4 10/05/2013 Method createGUI() Set Frame's Icon.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -246,7 +247,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.3 07/02/2013
+ * @version 8.4 10/05/2013
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -326,12 +327,14 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       
       resourceBundle = MyJSQLView.getResourceBundle();
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
-      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;;
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
       
       // Obtain & create Image Icons.
       
       mainTabIcon = resourceBundle.getResourceImage(iconsDirectory + "mainTabIcon.png");
       databaseTablesIcon = resourceBundle.getResourceImage(iconsDirectory + "databasetablesIcon.png");
+      
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
       
       // Setup the menu bar for the frame.
       
