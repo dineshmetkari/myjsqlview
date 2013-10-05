@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.4 07/02/2013
+// Version 9.5 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -191,6 +191,7 @@
 //         9.3 Created preferencesTopPanelThread in Constructor to Be used to Start the
 //             preferencesTopPanel Thread.
 //         9.4 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
+//         9.5 Constructor Set Frame's Icon.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -259,7 +260,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.4 07/02/2013
+ * @version 9.5 10/05/2013
  */
 
 //=================================================================
@@ -336,6 +337,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       
       resource = resourceBundle.getResourceString("PreferencesFrame.message.Title", "Preferences");
       setTitle(resource);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
       
       mainPanel = new JPanel(new BorderLayout());
 

@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.6 09/11/2012
+// Version 2.7 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -52,6 +52,7 @@
 //         2.4 Copyright Update.
 //         2.5 Organized Imports.
 //         2.6 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         2.7 Constructor Set Frame's Icon.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,6 +76,8 @@ import javax.swing.JScrollPane;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+
 //==================================================================
 //                     MyJSQLView Help Frame
 //==================================================================
@@ -83,7 +86,7 @@ import javax.swing.event.HyperlinkListener;
  * The HelpFrame class is used to display html help information.
  * 
  * @author Dana M. Proctor
- * @version 2.6 09/11/2012
+ * @version 2.7 10/05/2013
  */
 
 public class HelpFrame extends JFrame
@@ -102,8 +105,9 @@ public class HelpFrame extends JFrame
 
    public HelpFrame(String frameTitle, String htmlFile, JButton closeButton)
    {
-      // Setting the Frame Title.
+      // Setting the Frame Title & Image.
       super(frameTitle);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       this.closeButton = closeButton;
       failedToLoadContents = false;

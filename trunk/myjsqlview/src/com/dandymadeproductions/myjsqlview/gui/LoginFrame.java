@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.01 09/02/2013
+// Version 7.02 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -302,6 +302,7 @@
 //             Method accessCheck().
 //        7.01 Method accessCheck() Correction for H2 Conditional Check for tcp to Use
 //             else if.
+//        7.02 Constructor Set Frame's Icon.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -359,7 +360,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.01 09/02/2013
+ * @version 7.02 10/05/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -420,6 +421,7 @@ public class LoginFrame extends JFrame implements ActionListener
       
       resource = resourceBundle.getResourceString("LoginFrame.message.Title", "Login");
       setTitle("MyJSQLView " + resource);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
       // Setting up Various Instances.

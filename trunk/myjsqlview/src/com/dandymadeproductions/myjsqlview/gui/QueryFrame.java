@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.3 07/10/2013
+// Version 9.4 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -230,6 +230,7 @@
 //                        CSV Data in Addition to Summary Table Data.
 //         9.4 09/06/2013 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
 //                        for H2.
+//         9.5 10/05/2013 Constructor Set Frame's Icon.
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -316,7 +317,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.4 09/06/2013
+ * @version 9.5 10/05/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -410,6 +411,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       resource = resourceBundle.getResourceString("QueryFrame.message.Title", "Query Frame");
       setTitle("MyJSQLView " + resource + "   " + hostName + ":" + databaseName);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
       
       resource = resourceBundle.getResourceString("QueryFrame.dialogtitle.Alert", "Alert");
       resourceAlert = resource;

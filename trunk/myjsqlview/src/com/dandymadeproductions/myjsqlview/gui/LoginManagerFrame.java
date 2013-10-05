@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.8 10/18/2012
+// Version 5.9 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,6 +113,7 @@
 //             Package.
 //         5.7 Made Inner Class SitesTreePanel static.
 //         5.8 Class Methods addSite() & renameSite() Dressed Up JTextField.
+//         5.9 Constructor Set Frame's Icon.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -171,7 +172,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.8 10/18/2012
+ * @version 5.9 10/05/2013
  */
 
 public class LoginManagerFrame extends JFrame implements ActionListener
@@ -213,6 +214,7 @@ public class LoginManagerFrame extends JFrame implements ActionListener
 
       this.standardParametersPanel = standardParametersPanel;
       this.advancedParametersPanel = advancedParametersPanel;
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
       
       // Constructor Instances
       String iconsDirectory;

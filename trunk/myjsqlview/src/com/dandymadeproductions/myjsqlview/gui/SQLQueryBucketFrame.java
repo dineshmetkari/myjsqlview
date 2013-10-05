@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.6 09/11/2012
+// Version 2.7 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //                        to getResourceBundle().
 //         2.5 08/18/2012 Collection of All Image Resources Through resourceBundle.
 //         2.6 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
+//         2.7 10/13/2013 Constructor Set Frame's Icon.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +135,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQueryBucketListObject;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.6 09/11/2012
+ * @version 2.7 10/05/2013
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -214,10 +215,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       processItem = false;
       lastActionCommand = "";
 
-      // Setting title and common alert resource.
+      // Setting title, frame icon and common alert resource.
       
       resource = resourceBundle.getResourceString("SQLQueryBucketFrame.message.Title", "Query Bucket Frame");
       setTitle("MyJSQLView " + resource);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       resourceAlert = resourceBundle.getResourceString("SQLQueryBucketFrame.dialogtitle.Alert", "Alert");
 
