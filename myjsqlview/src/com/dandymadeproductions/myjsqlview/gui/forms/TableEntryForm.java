@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.01 09/06/2013
+// Version 9.02 10/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -372,6 +372,7 @@
 //        9.00 07/02/2013 Change in addUpdateTableEntry() to Use DBTablePanel.getGeneralDBProperties().
 //        9.01 09/06/2013 Class Method selectFunctionOperator() Add H2 Database Functions File and
 //                        Change to Load Functions From New Sub-Directory functions."
+//        9.02 10/06/2013 Constructor Set Frame's Icon.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -443,7 +444,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.01 09/06/2013
+ * @version 9.02 10/06/2013
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -567,6 +568,7 @@ public class TableEntryForm extends JFrame implements ActionListener
          resource = title;
 
       setTitle(resource + ": " + sqlTable);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       JPanel mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createEtchedBorder());
