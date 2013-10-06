@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.5 07/02/2013
+// Version 5.6 10/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -142,6 +142,7 @@
 //                        First Use Before Using Again.
 //         5.5 07/02/2013 Change in updateTable() & getWhereSQLExpression() to Use DBTablePanel.
 //                        getGeneralDBProperties().
+//         5.6 10/06/2013 Constructor Set Frame's Icon.
 //                        
 //=================================================================
 
@@ -197,7 +198,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.5 07/02/2013
+ * @version 5.6 10/06/2013
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -282,6 +283,7 @@ public class UpdateForm extends JFrame implements ActionListener
       
       resource = resourceBundle.getResourceString("UpdateForm.message.Title", "Update");
       setTitle(resource + " : " + table);
+      setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       dataSourceType = ConnectionManager.getDataSourceType();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
