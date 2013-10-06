@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.6 09/07/2013
+// Version 5.7 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,6 +148,8 @@
 //             Creating VIEW Type Table. Addition of Support for Apache Derby. Added
 //             Method createDerbyTableDefinition().
 //         5.6 Addition of Support of H2 Databases. Added Method createH2TableDefinition().
+//         5.7 Modification to Allow Possible Use of CHAR & VARCHAR BIT DATA Types
+//             in Method createDerbyTableDefinition().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -177,7 +179,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.6 09/07/2013
+ * @version 5.7 10/05/2013
  */
 
 public class TableDefinitionGenerator
@@ -1800,16 +1802,22 @@ public class TableDefinitionGenerator
             // Character Types
             if (columnType.indexOf("CHAR") != -1)
             {
-               if (columnType.equals("CHAR"))
-                  tableDefinition.append("CHAR(" + columnSize + ")");
-               else if (columnType.equals("CHAR () FOR BIT DATA"))
-                  tableDefinition.append("CHAR(" + columnSize + ") FOR BIT DATA");
-               else if (columnType.equals("VARCHAR"))
-                  tableDefinition.append("VARCHAR(" + columnSize + ")");
-               else if (columnType.equals("VARCHAR () FOR BIT DATA"))
-                  tableDefinition.append("VARCHAR(" + columnSize + ") FOR BIT DATA");
-               else
-                  tableDefinition.append(columnType);
+               if (columnType.indexOf("CHAR") != -1)
+               {
+                  if (columnType.equals("CHAR"))
+                     tableDefinition.append("CHAR(" + columnSize + ")");
+                  else if (columnType.equals("VARCHAR"))
+                     tableDefinition.append("VARCHAR(" + columnSize + ")");
+                  else if (columnType.indexOf("FOR BIT DATA") != -1)
+                  {
+                     if (columnType.indexOf("VARCHAR") != -1)
+                        tableDefinition.append("VARCHAR(" + columnSize + ") FOR BIT DATA");
+                     else
+                        tableDefinition.append("CHAR(" + columnSize + ") FOR BIT DATA");
+                  }
+                  else
+                     tableDefinition.append(columnType);
+               }
             }
             
             // Blob Types
