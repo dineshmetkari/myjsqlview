@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 10/03/2013
+// Version 1.5 10/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,7 +39,9 @@
 //             Instances. Method toString() Added Instance of prefix & Excluding
 //             H2 & Oracle Removal of Additional Underscores.
 //         1.3 Reduced ID Numbers to Increase Performance in Caching.
-//         1.4 Changed Class Instance POSTGRESQL__ to POSTGRESQL_ARRAYS.
+//         1.4 Changed Class Instance POSTGRESQL__ to POSTGRESQL_ARRAYS. Added
+//             Method testDuplicate_IDs().
+//         1.5 Added Class Instance H2_LONGVARCHAR.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,7 +56,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/03/2013
+ * @version 1.5 10/06/2013
  */
 
 public class TypeID
@@ -67,6 +69,7 @@ public class TypeID
    public static final int H2_CHAR = -252;
    public static final int H2_VARCHAR = -250;
    public static final int H2_VARCHAR_IGNORECASE = -248;
+   public static final int H2_LONGVARCHAR = -247;
    public static final int H2_BINARY = -246;
    public static final int H2_BLOB = -244;
    public static final int H2_CLOB = -242;
@@ -262,11 +265,12 @@ public class TypeID
    public static String toString(int typeid)
    {
       // Method Instances
+      Field[] fields;
       String prefix, name;
       
       try
       {
-         Field[] fields = TypeID.class.getFields();
+         fields = TypeID.class.getFields();
          
          // Cycle through instance names.
          for (int i = 0; i < fields.length; ++i)
@@ -302,6 +306,9 @@ public class TypeID
 
    public static int valueOf(String typeidName) throws Exception
    {
+      // Method Instances
+      Field[] fields;
+      
       // Just return the number given an input
       // number.
       try
@@ -316,7 +323,7 @@ public class TypeID
       {
          typeidName = typeidName.toUpperCase();
          
-         Field[] fields = TypeID.class.getFields();
+         fields = TypeID.class.getFields();
          
          for (int i = 0; i < fields.length; ++i)
          {
