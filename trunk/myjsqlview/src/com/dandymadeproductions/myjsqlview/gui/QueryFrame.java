@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.4 10/05/2013
+// Version 9.6 10/09/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -231,6 +231,9 @@
 //         9.4 09/06/2013 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
 //                        for H2.
 //         9.5 10/05/2013 Constructor Set Frame's Icon.
+//         9.6 10/09/2013 Changes in Constructor to UI for queryPanel Components, Control & Query
+//                        Entry Area.
+//         
 //                                        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -317,7 +320,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.5 10/05/2013
+ * @version 9.6 10/08/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -394,7 +397,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       JPanel framePanel, mainPanel;
       JSplitPane querySplitPane;
       JPanel queryPanel, centerPanel, queryResultPanel;
-      JPanel statusControlPanel, controlPanel, statusPanel, buttonPanel;
+      JPanel statusControlPanel, statusPanel;
       
       ImageIcon sqlQueryBucketIcon;
       ConnectionProperties connectionProperties;
@@ -506,7 +509,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       framePanel.add(queryFrameToolBar, BorderLayout.PAGE_START);
 
       mainPanel = new JPanel(new BorderLayout());
-      mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+      mainPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       
       querySplitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT);
       querySplitPane.setBorder(BorderFactory.createEmptyBorder());
@@ -518,15 +521,44 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
       
-      queryPanel = new JPanel(gridbag);
-      queryPanel.setBorder(BorderFactory.createEtchedBorder());
+      queryPanel = new JPanel(new BorderLayout());
+      queryPanel.setBorder(BorderFactory.createLoweredBevelBorder());
       
       statusControlPanel = new JPanel(gridbag);
       statusControlPanel.setBorder(BorderFactory.createRaisedBevelBorder());
       
-      // Query Bucket, SQL Type & Status Indicator
+      // Status Indicator
+      statusPanel = new JPanel(gridbag);
+      statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
+                                                               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
       
-      controlPanel = new JPanel(gridbag);
+      statusIndicator = new JLabel("", JLabel.LEFT);
+      statusIndicator.setIcon(statusIdleIcon);
+      statusIndicator.setDisabledIcon(statusWorkingIcon);
+      statusIndicator.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 15, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statusIndicator, constraints);
+      statusPanel.add(statusIndicator);
+      
+      statusLabel = new JTextField("Idle", 10);
+      statusLabel.setHorizontalAlignment(JTextField.LEFT);
+      statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+      statusLabel.setEditable(false);
+      
+      buildConstraints(constraints, 1, 0, 1, 1, 85, 100);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statusLabel, constraints);
+      statusPanel.add(statusLabel);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 6, 100);
+      constraints.fill = GridBagConstraints.BOTH;
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statusPanel, constraints);
+      statusControlPanel.add(statusPanel);
       
       // SQL Query Bucket Drop Button.
       sqlQueryBucketButton = new JButton(sqlQueryBucketIcon);
@@ -537,11 +569,11 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       sqlQueryBucketButton.setFocusPainted(false);
       sqlQueryBucketButton.addActionListener(this);
       
-      buildConstraints(constraints, 0, 0, 1, 1, 1, 100);
+      buildConstraints(constraints, 1, 0, 1, 1, 1, 100);
       constraints.fill = GridBagConstraints.HORIZONTAL;
-      constraints.anchor = GridBagConstraints.CENTER;
+      constraints.anchor = GridBagConstraints.WEST;
       gridbag.setConstraints(sqlQueryBucketButton, constraints);
-      controlPanel.add(sqlQueryBucketButton);
+      statusControlPanel.add(sqlQueryBucketButton);
       
       // SQL Query Type
       statementTypeComboBox = new JComboBox();
@@ -561,85 +593,13 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
          statementTypeComboBox.addItem(resource + " : ");
       }
       
-      buildConstraints(constraints, 1, 0, 1, 1, 99, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(statementTypeComboBox, constraints);
-      controlPanel.add(statementTypeComboBox);
-      
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(controlPanel, constraints);
-      statusControlPanel.add(controlPanel);
-      
-      statusPanel = new JPanel(gridbag);
-      statusPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLoweredBevelBorder(),
-                                                               BorderFactory.createEmptyBorder(5, 5, 5, 5)));
-      
-      statusIndicator = new JLabel("", JLabel.LEFT);
-      statusIndicator.setIcon(statusIdleIcon);
-      statusIndicator.setDisabledIcon(statusWorkingIcon);
-      statusIndicator.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
-      
-      buildConstraints(constraints, 0, 0, 1, 1, 20, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(statusIndicator, constraints);
-      statusPanel.add(statusIndicator);
-      
-      statusLabel = new JTextField("Idle", 15);
-      statusLabel.setHorizontalAlignment(JTextField.LEFT);
-      statusLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-      statusLabel.setEditable(false);
-      
-      buildConstraints(constraints, 1, 0, 1, 1, 80, 100);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(statusLabel, constraints);
-      statusPanel.add(statusLabel);
-      
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 50);
+      buildConstraints(constraints, 2, 0, 1, 1, 73, 100);
       constraints.fill = GridBagConstraints.HORIZONTAL;
-      constraints.anchor = GridBagConstraints.NORTH;
-      gridbag.setConstraints(statusPanel, constraints);
-      statusControlPanel.add(statusPanel);
+      constraints.anchor = GridBagConstraints.WEST;
+      gridbag.setConstraints(statementTypeComboBox, constraints);
+      statusControlPanel.add(statementTypeComboBox);
       
-      buildConstraints(constraints, 0, 0, 1, 1, 20, 100);
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(statusControlPanel, constraints);
-      queryPanel.add(statusControlPanel);
-      
-      queryTextArea = new JTextArea(5, 40);
-      queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
-      queryTextArea.setLineWrap(true);
-      queryTextArea.setDragEnabled(true);
-      queryTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());
-      
-      JScrollPane queryScrollPane = new JScrollPane(queryTextArea);
-      
-      buildConstraints(constraints, 1, 0, 1, 1, 60, 100);
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(queryScrollPane, constraints);
-      queryPanel.add(queryScrollPane);
-      
-      buttonPanel = new JPanel();
-      buttonPanel.setLayout(gridbag);
-      buttonPanel.setBorder(BorderFactory.createEtchedBorder());
-
-      resource = resourceBundle.getResourceString("QueryFrame.button.Execute", "Execute");
-      executeButton = new JButton(resource);
-      executeButton.setMnemonic(KeyEvent.VK_ENTER);
-      executeButton.addActionListener(this);
-      
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 50);
-      constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
-      gridbag.setConstraints(executeButton, constraints);
-      buttonPanel.add(executeButton);
-
+      // New Tab Selector
       resource = resourceBundle.getResourceString("QueryFrame.checkbox.NewTab", "New Tab");
       newTabCheckBox = new JCheckBox(resource, true);
       
@@ -649,18 +609,38 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       newTabCheckBox.setBorder(BorderFactory.createRaisedBevelBorder());
       newTabCheckBox.setFocusPainted(false);
       
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 50);
+      buildConstraints(constraints, 3, 0, 1, 1, 10, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.NORTH;
+      constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(newTabCheckBox, constraints);
-      buttonPanel.add(newTabCheckBox);
+      statusControlPanel.add(newTabCheckBox);
       
-      buildConstraints(constraints, 2, 0, 1, 1, 20, 100);
-      constraints.fill = GridBagConstraints.BOTH;
-      constraints.anchor = GridBagConstraints.WEST;
-      gridbag.setConstraints(buttonPanel, constraints);
-      queryPanel.add(buttonPanel);
-
+      // Execute Button
+      resource = resourceBundle.getResourceString("QueryFrame.button.Execute", "Execute");
+      executeButton = new JButton(resource);
+      executeButton.setFocusPainted(false);
+      executeButton.setMnemonic(KeyEvent.VK_ENTER);
+      executeButton.addActionListener(this);
+      
+      buildConstraints(constraints, 4, 0, 1, 1, 10, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.EAST;
+      gridbag.setConstraints(executeButton, constraints);
+      statusControlPanel.add(executeButton);
+      
+      
+      queryPanel.add(statusControlPanel, BorderLayout.NORTH);
+      
+      // Query Entry Area
+      queryTextArea = new JTextArea(5, 40);
+      queryTextArea.setBorder(BorderFactory.createLoweredBevelBorder());
+      queryTextArea.setLineWrap(true);
+      queryTextArea.setDragEnabled(true);
+      queryTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());
+      
+      JScrollPane queryScrollPane = new JScrollPane(queryTextArea);
+      queryPanel.add(queryScrollPane, BorderLayout.CENTER);
+      
       querySplitPane.setTopComponent(queryPanel);
 
       // =====================================
