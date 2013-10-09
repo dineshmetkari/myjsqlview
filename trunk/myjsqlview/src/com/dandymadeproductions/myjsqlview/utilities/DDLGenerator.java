@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 10/06/2013
+// Version 1.2 10/08/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,10 @@
 //=================================================================
 // Version 1.0 09/27/2013 Original Initial DDLGenerator Class.
 //         1.1 10/06/2013 Initial Completed Functional DDLGenerator Class.
+//         1.2 10/08/2013 Added Temporary Class Instance INDEXCOUNT. Added Class Instance
+//                        indexList. Introduced Constructor Instance schemaTableName &
+//                        Assigned. Added Code to Method getDDL() to Create Index(s) for
+//                        DDL Generated Table.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -41,6 +45,7 @@
 package com.dandymadeproductions.myjsqlview.utilities;
 
 import java.sql.ResultSetMetaData;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
@@ -52,7 +57,7 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/06/2013
+ * @version 1.2 10/08/2013
  */
 
 public class DDLGenerator
@@ -68,9 +73,11 @@ public class DDLGenerator
    private boolean columnIsAutoIncrement;
    
    private StringBuffer tableDefinition;
+   private ArrayList<String> indexList;
    
-   private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL;
+   private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL2;
    private static final char IDENTIFIER_QUOTE_STRING = '\"';
+   private static final int INDEXCOUNT = 1;
    
    //==============================================================
    // SQLQuery Constructors
@@ -96,6 +103,7 @@ public class DDLGenerator
       sqlQuery = new SQLQuery(sqlString);
       infoCache = new TypesInfoCache(dataSourceType, dataSinkType);
       tableDefinition = new StringBuffer();
+      indexList = new ArrayList<String>();
    }
    
    //==============================================================
@@ -106,21 +114,23 @@ public class DDLGenerator
    public String getDDL(String schemaName, String tableName)
    {
       // Method Instances
+      String schemaTableName; 
       Iterator<String> colNameIterator;
+      int currentColumnIndex;
       
       // Reset
       tableDefinition.delete(0, tableDefinition.length());
+      indexList.clear();
+      currentColumnIndex = 0;
       
       // Create given table name.
       if (schemaName.equals(""))
-         tableDefinition.append("CREATE TABLE "
-                                + IDENTIFIER_QUOTE_STRING + tableName + IDENTIFIER_QUOTE_STRING
-                                + " (\n    ");
+         schemaTableName = IDENTIFIER_QUOTE_STRING + tableName + IDENTIFIER_QUOTE_STRING;
       else
-         tableDefinition.append("CREATE TABLE "
-                                + IDENTIFIER_QUOTE_STRING + schemaName + IDENTIFIER_QUOTE_STRING
-                                + "." + IDENTIFIER_QUOTE_STRING + tableName + IDENTIFIER_QUOTE_STRING
-                                + " (\n    ");
+         schemaTableName = IDENTIFIER_QUOTE_STRING + schemaName + IDENTIFIER_QUOTE_STRING
+                           + "." + IDENTIFIER_QUOTE_STRING + tableName + IDENTIFIER_QUOTE_STRING;
+         
+      tableDefinition.append("CREATE TABLE " + schemaTableName + " (\n    ");
       
       // Execute the query & collect characteristics.
       sqlQuery.executeSQL();
@@ -162,10 +172,33 @@ public class DDLGenerator
             tableDefinition.append(" NOT NULL,\n    ");
          else
             tableDefinition.append(",\n    ");
+         
+         // Trace Column Number
+         if (currentColumnIndex < INDEXCOUNT)
+         {
+            indexList.add(columnName);
+            currentColumnIndex++;
+         }
       }
       tableDefinition.delete(tableDefinition.length() - 6, tableDefinition.length());
-      tableDefinition.append("\n);");
+      tableDefinition.append("\n);\n");
       
+      // Add Index(s) if defined.
+      if (!indexList.isEmpty())
+      {
+         tableDefinition.append("CREATE INDEX "
+                                + IDENTIFIER_QUOTE_STRING + indexList.get(0) + IDENTIFIER_QUOTE_STRING
+                                + " ON " + schemaTableName + "(");
+         Iterator<String> indexListIterator = indexList.iterator();
+         
+         while (indexListIterator.hasNext())
+         {
+            tableDefinition.append(IDENTIFIER_QUOTE_STRING + indexListIterator.next()
+                                   + IDENTIFIER_QUOTE_STRING + ", ");
+         }
+         tableDefinition.delete(tableDefinition.length() - 2, tableDefinition.length());
+         tableDefinition.append(");\n");
+      }
       return tableDefinition.toString();
    }
    
