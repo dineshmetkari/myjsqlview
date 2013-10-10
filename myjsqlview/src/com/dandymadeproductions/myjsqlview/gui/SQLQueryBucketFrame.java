@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.7 10/05/2013
+// Version 2.8 10/10/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,7 +64,8 @@
 //                        to getResourceBundle().
 //         2.5 08/18/2012 Collection of All Image Resources Through resourceBundle.
 //         2.6 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
-//         2.7 10/13/2013 Constructor Set Frame's Icon.
+//         2.7 10/05/2013 Constructor Set Frame's Icon.
+//         2.8 10/10/2013 Changes in Method createSQLObject() UI formDialog Components.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -135,7 +136,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQueryBucketListObject;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.7 10/05/2013
+ * @version 2.8 10/10/2013
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -984,8 +985,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          
       namePanel.add(listItemNameTextField);
       
-      buildConstraints(constraints, 0, 0, 1, 1, 100, 25);
-      constraints.fill = GridBagConstraints.NONE;
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 5);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(namePanel, constraints);
       componentHoldingPanel.add(namePanel);
@@ -1001,7 +1002,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       sqlStatementLabel = new JLabel(resource);
       sqlStatementLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
       
-      buildConstraints(constraints, 0, 0, 2, 1, 100, 100);
+      buildConstraints(constraints, 0, 0, 2, 1, 100, 5);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sqlStatementLabel, constraints);
@@ -1024,7 +1025,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       JScrollPane sqlTextScrollPane = new JScrollPane(dialog_sqlTextArea);
       
-      buildConstraints(constraints, 0, 1, 2, 1, 100, 100);
+      buildConstraints(constraints, 0, 1, 2, 1, 100, 85);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sqlTextScrollPane, constraints);
@@ -1050,7 +1051,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       limitPanel.add(limitLabel);
       
-      buildConstraints(constraints, 0, 2, 1, 1, 100, 100);
+      buildConstraints(constraints, 0, 2, 1, 1, 100, 5);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(limitPanel, constraints);
@@ -1078,13 +1079,13 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       
       colorPanel.add(colorLabel);
       
-      buildConstraints(constraints, 1, 2, 1, 1, 100, 100);
+      buildConstraints(constraints, 1, 2, 1, 1, 100, 5);
       constraints.fill = GridBagConstraints.NONE;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(colorPanel, constraints);
       sqlStatementPanel.add(colorPanel);
       
-      buildConstraints(constraints, 0, 1, 1, 1, 100, 75);
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 95);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(sqlStatementPanel, constraints);
@@ -1100,7 +1101,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       formDialog = new InputDialog(null, resource, resourceOK, resourceCancel,
                                    content, null);
       formDialog.setJMenuBar(formMenuBar);
-      formDialog.setMinimumSize(new Dimension(500, 350));
+      formDialog.setMinimumSize(new Dimension(600, 400));
       formDialog.pack();
       formDialog.center();
       formDialog.setVisible(true);
