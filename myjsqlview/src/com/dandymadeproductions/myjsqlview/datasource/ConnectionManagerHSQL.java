@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.1 09/24/2013
+// Version 2.2 10/12/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,8 @@
 //             All static Methods Definitions Except for displaySQLErrors(). Added
 //             boolean debug Argument to displySQLErrors() Method.
 //         2.1 Changed Class Instance OTHER to OTHERDB.
+//         2.2 Constructor Change to Test for Product & Version to Use isEmpty() Instead
+//             of Equals an Empty String.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +79,7 @@ import javax.swing.JOptionPane;
  * defaults for HSQL.
  * 
  * @author Dana M. Proctor
- * @version 2.1 09/24/2013
+ * @version 2.2 10/12/2013
  */
 
 public class ConnectionManagerHSQL
@@ -228,13 +230,13 @@ public class ConnectionManagerHSQL
          dbMetaData = dbConnection.getMetaData();
 
          // Product
-         if (dbMetaData.getDatabaseProductName().equals(""))
+         if (!dbMetaData.getDatabaseProductName().isEmpty())
             dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
          else
          {
             dbProductNameVersion = "HSQL ";
          }
-         if (dbMetaData.getDatabaseProductVersion().equals(""))
+         if (!dbMetaData.getDatabaseProductVersion().isEmpty())
             dbProductNameVersion += dbMetaData.getDatabaseProductVersion();
 
          setDBProductName_And_Version(dbProductNameVersion);
