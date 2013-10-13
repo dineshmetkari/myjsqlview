@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.9 09/02/2013
+// Version 4.0 10/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -93,6 +93,7 @@
 //             Inclusion of H2 mem: for Memory Connections. Exclusion of H2 mem: in Method
 //             closeConnection(). Addition of Parameters for H2 in Method loadDBParameters().
 //             Return as Appropriate of H2 for Method getDataSourceType().
+//         4.0 Class Method getConnection() Insured Use of SSL Property for HSQL & HSQL2.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 3.9 09/02/2013
+ * @version 4.0 10/13/2013
  */
 
 public class ConnectionManager
@@ -211,7 +212,7 @@ public class ConnectionManager
       connectProperties.setProperty("password", connectionProperties.getPassword());
       
       // Handle SSL
-      if (subProtocol.equals(ConnectionManager.HSQL) || subProtocol.equals(ConnectionManager.MYSQL)
+      if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 || subProtocol.equals(ConnectionManager.MYSQL)
           || subProtocol.equals(ConnectionManager.POSTGRESQL))
       {
            connectProperties.setProperty("useSSL",
