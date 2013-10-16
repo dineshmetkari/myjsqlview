@@ -1,5 +1,5 @@
 //=================================================================
-//               ConnectionProperties Class
+//                 ConnectionProperties Class
 //=================================================================
 //    This class provides the structure for the connection properties
 // storage.
@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 09/10/2012
+// Version 1.5 10/16/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 //         1.3 Made Class Public Along With Methods get/setConnection()
 //             & setProperty().
 //         1.4 Changed Package Name to com.dandymadeproductions.myjsqlview.datasource.
+//         1.5 Changed Class Instance connectionProperties to connectionURLString.
+//             Same to Getter/Setter Methods of this Instance.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -48,13 +50,13 @@ package com.dandymadeproductions.myjsqlview.datasource;
  * connection properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/10/2012
+ * @version 1.5 10/16/2013
  */
 
 public class ConnectionProperties
 {
    // Class Instances.
-   private String connectionProperties;
+   private String connectionURLString;
    
    private String driver;
    private String protocol;
@@ -87,9 +89,9 @@ public class ConnectionProperties
    // objects.
    //==============================================================
    
-   public String getConnectionString()
+   public String getConnectionURLString()
    {
-      return connectionProperties;
+      return connectionURLString;
    }
    
    public String getProperty(String property)
@@ -124,9 +126,9 @@ public class ConnectionProperties
    // objects.
    //==============================================================
    
-   public void setConnectionString(String connectionProperties)
+   public void setConnectionURLString(String connectionURLString)
    {
-      this.connectionProperties = connectionProperties;
+      this.connectionURLString = connectionURLString;
    }
    
    public void setProperty(String property, String value)
