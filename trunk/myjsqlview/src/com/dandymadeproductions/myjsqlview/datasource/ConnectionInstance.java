@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 10/18/2013
+// Version 1.2 10/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,10 +32,13 @@
 // Version 1.0 10/12/2013 Initial ConnectionInstance Class.
 //         1.1 10/18/2013 Completed & Functional Class With Default Memory Database
 //                        Connections.
+//         1.2 10/19/2013 Added Correct Package.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
+
+package com.dandymadeproductions.myjsqlview.datasource;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -55,7 +58,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/18/2013
+ * @version 1.2 10/19/2013
  */
 public class ConnectionInstance
 {
