@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.1 10/18/2013
+// Version 4.2 10/19/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,8 @@
 //             Database Parameters to New Class DatabaseProperties. Removed Associated
 //             Setter Methods for Database Attributes & Added Method setDatabasePropeties().
 //             Referenced Getter Methods for Parameters to databaseProperties.
+//         4.2 Class Method createConnectionURLString() Changed Argument Name to properties
+//             to Advoid Confusion With Class Instance connectionProperties.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -123,7 +125,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.1 10/18/2013
+ * @version 4.2 10/19/2013
  */
 
 public class ConnectionManager
@@ -439,19 +441,19 @@ public class ConnectionManager
    // given connection properties.
    //==============================================================
 
-   public static String createConnectionURLString(ConnectionProperties connectionProperties)
+   public static String createConnectionURLString(ConnectionProperties properties)
    {
       // Method Instances
       String connectionURLString;
       String driver, protocol, subProtocol, host, port, db;
       
       // Collect Instances
-      driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
-      protocol = connectionProperties.getProperty(ConnectionProperties.PROTOCOL);
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
-      host = connectionProperties.getProperty(ConnectionProperties.HOST);
-      port = connectionProperties.getProperty(ConnectionProperties.PORT);
-      db = connectionProperties.getProperty(ConnectionProperties.DB);
+      driver = properties.getProperty(ConnectionProperties.DRIVER);
+      protocol = properties.getProperty(ConnectionProperties.PROTOCOL);
+      subProtocol = properties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      host = properties.getProperty(ConnectionProperties.HOST);
+      port = properties.getProperty(ConnectionProperties.PORT);
+      db = properties.getProperty(ConnectionProperties.DB);
       
       // Take into consideration various database requirements.
       connectionURLString = protocol + ":";
