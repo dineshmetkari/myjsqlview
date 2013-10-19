@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.0 10/13/2013
+// Version 4.1 10/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -94,6 +94,10 @@
 //             closeConnection(). Addition of Parameters for H2 in Method loadDBParameters().
 //             Return as Appropriate of H2 for Method getDataSourceType().
 //         4.0 Class Method getConnection() Insured Use of SSL Property for HSQL & HSQL2.
+//         4.1 Added Class Instance databaseProperties & Transfered All Aspects of Collecting
+//             Database Parameters to New Class DatabaseProperties. Removed Associated
+//             Setter Methods for Database Attributes & Added Method setDatabasePropeties().
+//             Referenced Getter Methods for Parameters to databaseProperties.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -101,18 +105,10 @@
 
 package com.dandymadeproductions.myjsqlview.datasource;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Properties;
 
 import javax.sound.sampled.Clip;
@@ -127,7 +123,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.0 10/13/2013
+ * @version 4.1 10/18/2013
  */
 
 public class ConnectionManager
@@ -135,19 +131,9 @@ public class ConnectionManager
    // Class Instances.
    private static Connection memoryConnection;
    private static ConnectionProperties connectionProperties = new ConnectionProperties();
-   private static final String configurationFileName = "myjsqlview.conf";
+   private static DatabaseProperties databaseProperties = new DatabaseProperties(connectionProperties);
    
-   private static String dbProductNameVersion;
-   private static String catalog, schemaPattern, tableNamePattern;
-   private static String[] tableTypes;
-   private static ArrayList<String> schemas = new ArrayList <String>();
-   private static ArrayList<String> tables = new ArrayList <String>();
-   
-   private static String catalogSeparator;
-   private static String identifierQuoteString;
-   private static int maxColumnNameLength;
    private static Clip errorSoundClip;
-   private static boolean filter = true;
    
    public static final String MYSQL = "mysql";
    public static final String POSTGRESQL = "postgresql";
@@ -159,17 +145,6 @@ public class ConnectionManager
    public static final String DERBY = "derby";
    public static final String H2 = "h2";
    public static final String OTHERDB = "other";
-   
-   // private static final String TABLE_CAT = "TABLE_CAT";
-   private static final String TABLE_SCHEM = "TABLE_SCHEM";
-   private static final String TABLE_NAME = "TABLE_NAME";
-   private static final String TABLE_TYPE = "TABLE_TYPE";
-   // private static final String REMARKS = "REMARKS";
-   // private static final String TYPE_CAT = "TYPE_CAT";
-   // private static final String TYPE_SCHEM = "TYPE_SCHEM";
-   // private static final String TYPE_NAME = "TYPE_NAME";
-   // private static final String SELF_REFERENCING_COL_NAME = "SELF_REFERENCING_COL_NAME";
-   // private static final String REF_GENERATION = "REF_GENERATION";
    
    //==============================================================
    // ConnectionManager Constructor
@@ -198,13 +173,13 @@ public class ConnectionManager
    {
       // Method Instances.
       Properties connectProperties;
-      String connectionString;
+      String connectionURLString;
       String db, subProtocol;
       
       // Setup.
       connectProperties = new Properties();
       
-      connectionString = connectionProperties.getConnectionString();
+      connectionURLString = connectionProperties.getConnectionURLString();
       db = connectionProperties.getProperty(ConnectionProperties.DB);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
       
@@ -218,7 +193,6 @@ public class ConnectionManager
            connectProperties.setProperty("useSSL",
               connectionProperties.getProperty(ConnectionProperties.SSH));  
       }
-      // System.out.println(connectionString);
             
       // Select and try to return an appropriate connection
       // type.
@@ -240,7 +214,7 @@ public class ConnectionManager
          // All others
          else
          {
-            return DriverManager.getConnection(connectionString, connectProperties);
+            return DriverManager.getConnection(connectionURLString, connectProperties);
          }
       }
       catch (SQLException e)
@@ -330,18 +304,18 @@ public class ConnectionManager
    {
       // Method Instances.
       Connection dbConnection;
-      String connectionString, driver, subProtocol;
+      String connectionURLString, driver, subProtocol;
       String databaseShutdownString;
       
       // Setup.
-      connectionString = connectionProperties.getConnectionString();
+      connectionURLString = connectionProperties.getConnectionURLString();
       driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
       
-      if (connectionString.indexOf(";") != -1)
-         databaseShutdownString = connectionString.substring(0, connectionString.indexOf(";"));
+      if (connectionURLString.indexOf(";") != -1)
+         databaseShutdownString = connectionURLString.substring(0, connectionURLString.indexOf(";"));
       else
-         databaseShutdownString = connectionString;
+         databaseShutdownString = connectionURLString;
       
       dbConnection = null;
       
@@ -451,397 +425,105 @@ public class ConnectionManager
    }
    
    //==============================================================
-   // Class method that provides the ability to load/reload database
-   // parameters. The default is always loaded and a check is also
-   // made to load an advanced users peferences from the file
-   // myjsqlview.conf in default home directory.
-   //==============================================================
-
-   public static void loadDBParameters(Connection dbConnection) throws SQLException
-   {
-      // Method Instances
-      DatabaseMetaData dbMetaData;
-      ResultSet db_resultSet;
-      
-      String db, subProtocol;
-      String myjsqlviewConfigFileString;
-      String dbType, currentLine;
-      File configurationFile;
-      FileReader fileReader;
-      BufferedReader bufferedReader;
-      
-      //======================================================
-      // Collect the appropriate default database information.
-      
-      filter = true;
-      db = connectionProperties.getProperty(ConnectionProperties.DB);
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
-      
-      // HSQL
-      if (subProtocol.indexOf(HSQL) != -1)
-      {
-         catalog = null;
-         schemaPattern = "%";
-         tableNamePattern = "%";
-         dbType = HSQL;
-         //db_resultSet = dbMetaData.getTables(null, "%", "%", tableTypes);
-      }
-      // Oracle
-      else if (subProtocol.indexOf(ORACLE) != -1)
-      {
-         catalog = db;
-         schemaPattern = "%";
-         tableNamePattern = "%";
-         dbType = ORACLE;
-         //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
-      }
-      // MySQL & PostgreSQL
-      else if (subProtocol.equals(MYSQL) || subProtocol.equals(POSTGRESQL))
-      {
-         catalog = db;
-         schemaPattern = "";
-         tableNamePattern = "%";
-         if (subProtocol.equals(MYSQL))
-            dbType = MYSQL;
-         else
-            dbType = POSTGRESQL;
-         //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
-      }
-      // SQLite
-      else if (subProtocol.equals(SQLITE))
-      {
-         catalog = db;
-         schemaPattern = null;
-         tableNamePattern = null;
-         dbType = SQLITE;
-         //db_resultSet = dbMetaData.getTables(db, null, null, tableTypes);
-         
-      }
-      // Derby
-      else if (subProtocol.equals(DERBY))
-      {
-         catalog = db;
-         schemaPattern = null;
-         tableNamePattern = "%";
-         dbType = DERBY;
-         //db_resultSet = dbMetaData.getTables(db, null, "%", tableTypes);
-      }
-      // H2
-      else if (subProtocol.equals(H2))
-      {
-         catalog = null;
-         schemaPattern = null;
-         tableNamePattern = "%";
-         dbType = H2;
-         // db_resultSet = dbMetaData.getTables(null, null, "%", tableTypes);
-      }
-      // Unknown
-      else
-      {
-         catalog = null;
-         schemaPattern = null;
-         tableNamePattern = null;
-         dbType = OTHERDB;
-         //db_resultSet = dbMetaData.getTables(null, null, null, tableTypes);
-      }
-      
-      if (db.toLowerCase().equals("null"))
-         catalog = null;
-      
-      try
-      {
-         dbMetaData = dbConnection.getMetaData();
-         
-         // ========================
-         // Table Types, to be used.
-         
-         int i = 0;
-         db_resultSet = dbMetaData.getTableTypes();
-         while (db_resultSet.next())
-            i++;
-
-         tableTypes = new String[i];
-
-         i = 0;
-         db_resultSet = dbMetaData.getTableTypes();
-         while (db_resultSet.next())
-         {
-            tableTypes[i] = db_resultSet.getString(TABLE_TYPE);
-            // System.out.println("Table Types: " + tableTypes[i]);
-            i++;
-         }
-      }
-      catch (SQLException e)
-      {
-         throw new SQLException("ConnectionManager loadDBParameters() " + e);
-      }
-      
-      //==============================================================
-      // Try overriding the default parameters with a myjsqlview.conf
-      // file.
-      
-      // Create file name for retrieval.
-      myjsqlviewConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
-                                   + MyJSQLView_Utils.getFileSeparator() + configurationFileName;
-      
-      try
-      {
-         // Check to see if file exists.
-         configurationFile = new File(myjsqlviewConfigFileString);
-         try
-         { 
-            if (!configurationFile.exists())
-               return;
-         }
-         catch (SecurityException e)
-         {
-            //System.out.println("SecurityException " + e);
-            return;
-         }
-         
-         // Looks good so create reader and buffer to read
-         // in the lines from the file.
-         fileReader = new FileReader(myjsqlviewConfigFileString);
-         bufferedReader = new BufferedReader(fileReader);
-            
-         while ((currentLine = bufferedReader.readLine()) != null)
-         {
-            currentLine = currentLine.trim();
-            
-            if (!currentLine.startsWith("#"))
-            {
-               // Filter Parameter
-               if (currentLine.toLowerCase().indexOf("filter") != -1)
-               {
-                  if (currentLine.toLowerCase().indexOf("on") != -1)
-                     filter = true;
-                  else if (currentLine.toLowerCase().indexOf("off") != -1)
-                     filter = false;
-                  
-                  // System.out.println("filter=" + filter);
-               }
-               
-               if (currentLine.toLowerCase().indexOf(dbType) != -1)
-               {
-                  // System.out.println(currentLine);
-                  
-                  // schemaPattern Parameter
-                  if (currentLine.toLowerCase().indexOf("schemapattern") != -1)
-                  {
-                     if (currentLine.indexOf("=") != -1)
-                     {
-                        schemaPattern = currentLine.substring(currentLine.indexOf("=") + 1).trim();
-                        if (schemaPattern.equals("null"))
-                           schemaPattern = null;
-                     }
-                  }
-                  
-                  // tableNamePattern Parameter
-                  if (currentLine.toLowerCase().indexOf("tablenamepattern") != -1)
-                  {
-                     if (currentLine.indexOf("=") != -1)
-                     {
-                        tableNamePattern = currentLine.substring(currentLine.indexOf("=") + 1).trim();
-                        if (tableNamePattern.equals("null"))
-                           tableNamePattern = null;
-                     }
-                  }
-                  
-                  // tableTypes Parameter
-                  if (currentLine.toLowerCase().indexOf("types") != -1)
-                  {
-                     if (currentLine.indexOf("=") != -1)
-                     {
-                        currentLine = currentLine.substring(currentLine.indexOf("=") + 1).trim();
-                        if (currentLine.equals("null"))
-                           tableTypes = null;
-                        else
-                           tableTypes = currentLine.split(",");
-                     }
-                  }
-               }
-            }
-         }
-         bufferedReader.close();
-         fileReader.close();
-      }
-      catch (IOException ioe) 
-      {
-         if (MyJSQLView.getDebug())
-            System.out.println("File I/O Problem. " + ioe);
-      }
-   }
-   
-   //==============================================================
    // Class method that provides the ability to load/reload the
    // database schemas & tables.
    //==============================================================
    
    public static void loadDBTables(Connection dbConnection) throws SQLException
    {
+      databaseProperties.loadDBTables(dbConnection);
+   }
+   
+   //==============================================================
+   // Class method to create a connection URL string based on the
+   // given connection properties.
+   //==============================================================
+
+   public static String createConnectionURLString(ConnectionProperties connectionProperties)
+   {
       // Method Instances
-      DatabaseMetaData dbMetaData;
-      ResultSet db_resultSet;
-      HashSet<String> oracleSystemSchemaHash;
-      String db, subProtocol;
-      String tableSchem, tableName, tableType;
-      // String tableCat, remarks, typeCat, typeSchem, typeName, selfReferencingColName, refGeneration;
-      String grantee, user;
+      String connectionURLString;
+      String driver, protocol, subProtocol, host, port, db;
       
-      try
+      // Collect Instances
+      driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
+      protocol = connectionProperties.getProperty(ConnectionProperties.PROTOCOL);
+      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
+      host = connectionProperties.getProperty(ConnectionProperties.HOST);
+      port = connectionProperties.getProperty(ConnectionProperties.PORT);
+      db = connectionProperties.getProperty(ConnectionProperties.DB);
+      
+      // Take into consideration various database requirements.
+      connectionURLString = protocol + ":";
+
+      // Oracle
+      if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
       {
-         db = connectionProperties.getProperty(ConnectionProperties.DB);
-         subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
-         dbMetaData = dbConnection.getMetaData();
-         
-         // ============================
-         // Obtain the databases tables.
-         
-         //********************************************************
-         // THIS IS WHERE EACH DATABASE'S TABLES/VIEWS ARE OBTAINED.
-         // EACH DATABASE WILL NEED TO BE TESTED HERE TO PROPERLY
-         // OBTAIN THE PROPER INPUT FOR the dbMetaData.getTables()
-         // ARGUMENTS TO GET THINGS TO WORK.
-         // *******************************************************
-         
-         // System.out.println("'" + catalog + "' '" + schemaPattern + "' '" + tableNamePattern + "'");
-         db_resultSet = dbMetaData.getTables(catalog, schemaPattern, tableNamePattern, tableTypes);
-         
-         // Setup some Oracle system exclusion schema.
-         oracleSystemSchemaHash = new HashSet <String>();
-         String[] oracleSystemSchemas = {"CTXSYS", "DBSNMP", "DSSYS", "MDSYS",
-                                         "ODM", "ODM_MTR", "OLAPSYS", "ORDPLUGINS",
-                                         "ORDSYS", "OUTLN", "PERFSTAT", "REPADMIN",
-                                         "SYS", "SYSTEM", "TRACESVR", "TSMSYS",
-                                         "WKPROXY", "WKSYS", "WMSYS", "XDB"};
-
-         for (int j = 0; j < oracleSystemSchemas.length; j++)
-            oracleSystemSchemaHash.add(oracleSystemSchemas[j]);
-
-         // This is where you can modifiy MyJSQLView to obtain all the
-         // available tables you want. Uncomment the System.out below
-         // and run to see what is available.
-         
-         // Clear the tables vector and load it with the databases
-         // tables.
-         schemas.clear();
-         tables.clear();
-         
-         // ResultSetMetaData rsmd = db_resultSet.getMetaData();
-         // for (int i = 1; i <= rsmd.getColumnCount(); i++)
-         //    System.out.println(rsmd.getColumnName(i));
-
-         
-         while (db_resultSet.next())
-         {
-            // tableCat = db_resultSet.getString(TABLE_CAT);
-            tableSchem = db_resultSet.getString(TABLE_SCHEM);
-            tableName = db_resultSet.getString(TABLE_NAME);
-            tableType = db_resultSet.getString(TABLE_TYPE);
-            // remarks = db_resultSet.getString(REMARKS);
-            // typeCat = db_resultSet.getString(TYPE_CAT);
-            // typeSchem = db_resultSet.getString(TYPE_SCHEM);
-            // typeName = db_resultSet.getString(TYPE_NAME);
-            // selfReferencingColName = db_resultSet.getString(SELF_REFERENCING_COL_NAME);
-            // refGeneration = db_resultSet.getString(REF_GENERATION);
-            
-            // All information, could be to much.
-            // System.out.println("Table CAT: " + tableCat
-            //                     + " Table Schem: " + tableSchem
-            //                     + " Table Name: " + tableName
-            //                     + " Table Type: " + tableType
-            //                     + " Remarks: " + remarks
-            //                     + " Type Cat: " + typeCat
-            //                     + " Type Schem: " + typeSchem
-            //                     + " Type Name: " + typeName
-            //                     + " Self Referencing Col Name: " + selfReferencingColName
-            //                     + " refGeneration: " + refGeneration);
-
-            // Filter, only TABLEs & VIEWs allowed in MyJSQLView
-            // application.
-            
-            if (tableType != null && !(tableType.indexOf("INDEX") != -1)
-                && !(tableType.indexOf("SEQUENCE") != -1) && !(tableType.indexOf("SYNONYM") != -1)
-                && (tableType.equals("TABLE") || tableType.equals("VIEW") || !filter))
-            {
-               // Filter some more for Oracle.
-               if ((subProtocol.indexOf(ORACLE) != -1 && filter)
-                     && (oracleSystemSchemaHash.contains(tableSchem) || tableSchem.indexOf("FLOWS") != -1 ||
-                         tableName.indexOf("BIN$") != -1))
-                  continue;
-
-               // Abreviated and filtered information.
-               // System.out.println(tableType + " " + tableSchem + "." + tableName);
-
-               if (tableSchem != null && !tableSchem.equals(""))
-               {
-                  tables.add(tableSchem + getCatalogSeparator() + tableName);
-               }
-               else
-                  tables.add(tableName);
-            }
-         }
-
-         // ************************************************************
-         // PostgreSQL databases may have schemas that limit access to
-         // tables by users. So make a check and remove tables that are
-         // not accessable by the user.
-         
-         if (subProtocol.equals(POSTGRESQL))
-         {
-            // This is temporary fix for ACL SQLException Thrown When
-            // Using jre7. This is a bug in pgjdbc or server. A space
-            // essentially returns no results so this is not used.
-            
-            //db_resultSet = dbMetaData.getTablePrivileges(db, "", "%");
-            db_resultSet = dbMetaData.getTablePrivileges(db, " ", "%");
-             
-            while (db_resultSet.next())
-            {
-               tableName = db_resultSet.getString(TABLE_NAME);
-               
-               if (tables.contains(tableName))
-               {
-                  grantee = db_resultSet.getString("GRANTEE");
-                  user = connectionProperties.getProperty(ConnectionProperties.USER);
-                  
-                  if (MyJSQLView.getDebug())
-                     System.out.println("Unauthorized Table Access: " + tableName + " : "
-                        + grantee + " : " + user);
-
-                  if (tables.contains(tableName) && !grantee.equals(user))
-                     tables.remove(tableName);
-               }
-            }
-         }
-         
-         // ============================
-         // Obtain the databases schemas.
-         
-         Iterator<String> tablesIterator = tables.iterator();
-         
-         while (tablesIterator.hasNext())
-         {
-            tableName = tablesIterator.next();
-            
-            if (tableName.indexOf(".") != -1)
-            {
-               String schemasName = tableName.substring(0, tableName.indexOf("."));
-               
-               if (!schemas.contains(schemasName))
-               {
-                  schemas.add(schemasName);
-                  // System.out.println(schemasName);
-               }
-            }
-         }
-         
-         db_resultSet.close();
+         if (subProtocol.indexOf("thin") != -1)
+            connectionURLString += subProtocol + ":@//" + host + ":" + port + "/" + db;
+         else
+            connectionURLString += subProtocol + ":@" + db;
       }
-      catch (SQLException e)
+      // SQLite
+      else if (subProtocol.equals(ConnectionManager.SQLITE))
       {
-         throw new SQLException("ConnectionManager loadDBTables() " + e);
+         connectionURLString += subProtocol + ":" + db.replace("\\", "/");
       }
+      // HSQL Memory, File, & Resource
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 &&
+                (db.indexOf("mem:") != -1) || db.indexOf("file:") != -1 || db.indexOf("res:") != -1)
+      {
+         connectionURLString += "hsqldb:" + db;
+      }
+      // Derby Memory
+      else if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
+               db.indexOf("memory:") != -1)
+      {
+         if (db.toLowerCase().indexOf(";create=true") == -1)
+            db += ";create=true";
+         
+         if (driver.indexOf("EmbeddedDriver") != -1)
+            connectionURLString += subProtocol + ":" + db;
+         else
+            connectionURLString += subProtocol + "://" + host + ":" + port + "/" + db;
+      }
+      // MS Access
+      else if (subProtocol.equals(ConnectionManager.MSACCESS))
+      {
+         connectionURLString += subProtocol + ":" + db;
+      }
+      // H2
+      else if (subProtocol.equals(ConnectionManager.H2))
+      {
+         if (db.indexOf("tcp:") != -1)
+            connectionURLString += subProtocol + ":tcp://" + host + ":" + port + "/"
+                             + db.substring(db.indexOf("tcp:") + 4);
+         else if (db.indexOf("ssl:") != -1)
+            connectionURLString += subProtocol + ":ssl://" + host + ":" + port + "/"
+                             + db.substring(db.indexOf("ssl:") + 4);
+         else
+            connectionURLString += subProtocol + ":" + db;
+            
+      }
+      // MySQL, PostgreSQL, HSQL, & Derby
+      else
+      {
+         // The % character is interpreted as the start of a special escaped sequence,
+         // two digit hexadeciaml value. So replace passwordString characters with that
+         // character with that characters hexadecimal value as sequence, %37. Java
+         // API URLDecoder.
+         
+         if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
+               driver.indexOf("EmbeddedDriver") != -1)
+            connectionURLString += subProtocol + ":" + db;
+         else
+            connectionURLString += subProtocol + "://" + host + ":" + port + "/" + db;
+      }
+      
+      if (MyJSQLView.getDebug())
+         System.out.println("ConnectionManager createConnectionURLString() " + connectionURLString);
+      
+      return connectionURLString;
    }
    
    //==============================================================
@@ -850,7 +532,7 @@ public class ConnectionManager
 
    public static String getCatalogSeparator()
    {
-      return catalogSeparator;
+      return databaseProperties.getCatalogSeparator();
    }
    
    //==============================================================
@@ -863,39 +545,13 @@ public class ConnectionManager
    }
    
    //==============================================================
-   // Class method to get the current data source type.
+   // Class method to get the current data source type given by a
+   // ConnectionProperties & DatabaseProperties Classes.
    //==============================================================
-
+   
    public static String getDataSourceType()
    {
-      // Method Instances.
-      String subProtocol;
-      
-      subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
-      
-      if (subProtocol.equals(MYSQL))
-         return MYSQL;
-      else if (subProtocol.equals(POSTGRESQL))
-         return POSTGRESQL;
-      else if (subProtocol.indexOf(HSQL) != -1)
-      {
-         if (dbProductNameVersion.indexOf(" 2.") != -1)
-            return HSQL2;
-         else
-            return HSQL;
-      }
-      else if (subProtocol.indexOf(ORACLE) != -1)
-         return ORACLE;
-      else if (subProtocol.equals(SQLITE))
-         return SQLITE;
-      else if (subProtocol.equals(MSACCESS))
-         return MSACCESS;
-      else if (subProtocol.equals(DERBY))
-         return DERBY;
-      else if (subProtocol.equals(H2))
-         return H2;
-      else
-         return OTHERDB; 
+      return databaseProperties.getDataSourceType();
    }
    
    //==============================================================
@@ -905,7 +561,7 @@ public class ConnectionManager
 
    public static String getDBProductName_And_Version()
    {
-      return dbProductNameVersion;
+      return databaseProperties.getDBProductName_And_Version();
    }
    
    //==============================================================
@@ -915,7 +571,7 @@ public class ConnectionManager
 
    public static String getIdentifierQuoteString()
    {
-      return identifierQuoteString;
+      return databaseProperties.getIdentifierQuoteString();
    }
    
    //==============================================================
@@ -925,7 +581,7 @@ public class ConnectionManager
 
    public static int getMaxColumnNameLength()
    {
-      return maxColumnNameLength;
+      return databaseProperties.getMaxColumnNameLength();
    }
 
    //==============================================================
@@ -935,13 +591,7 @@ public class ConnectionManager
 
    public static ArrayList<String> getSchemas()
    {
-      ArrayList<String> schemasList = new ArrayList <String>();
-      Iterator<String> schemasIterator = schemas.iterator();
-      
-      while (schemasIterator.hasNext())
-         schemasList.add(schemasIterator.next());
-      
-      return schemasList;
+      return databaseProperties.getSchemas();
    }
    
    //==============================================================
@@ -952,14 +602,7 @@ public class ConnectionManager
 
    public static String getAllSchemasPattern()
    {
-      if (getDataSourceType().equals(HSQL)
-          || getDataSourceType().equals(ORACLE))
-         return "%";
-      else if (getDataSourceType().equals(MYSQL)
-               || getDataSourceType().equals(POSTGRESQL))
-         return "";
-      else
-         return null;
+      return databaseProperties.getAllSchemasPattern();
    }
    
    //==============================================================
@@ -969,22 +612,7 @@ public class ConnectionManager
 
    public static ArrayList<String> getTableNames()
    {
-      ArrayList<String> tablesList = new ArrayList <String>();
-      Iterator<String> tablesIterator = tables.iterator();
-      
-      while (tablesIterator.hasNext())
-         tablesList.add(tablesIterator.next());
-      
-      return tablesList;
-   }
-   
-   //==============================================================
-   // Class method to set the current database catalog separator.
-   //==============================================================
-
-   public static void setCatalogSeparator(String separator)
-   {
-      catalogSeparator = separator;
+      return databaseProperties.getTableNames();
    }
    
    //==============================================================
@@ -997,34 +625,9 @@ public class ConnectionManager
       connectionProperties = properties;
    }
    
-   //==============================================================
-   // Class method to set the current database product name &
-   // version.
-   //==============================================================
-
-   public static void setDBProductName_And_Version(String name_And_Version)
+   public static void setDatabaseProperties(DatabaseProperties properties)
    {
-      dbProductNameVersion = name_And_Version;
-   }
-
-   //==============================================================
-   // Class method to set the identifier quote string that the
-   // application will use.
-   //==============================================================
-
-   public static void setIdentifierQuoteString(String identifier)
-   {
-      identifierQuoteString = identifier;
-   }
-   
-   //==============================================================
-   // Class method to set the max column name length that the
-   // application will use.
-   //==============================================================
-
-   public static void setMaxColumnNameLength(int maxLength)
-   {
-      maxColumnNameLength = maxLength;
+      databaseProperties = properties;
    }
    
    //==============================================================
@@ -1042,6 +645,6 @@ public class ConnectionManager
    
    public static void setSchemaPattern(String pattern)
    {
-      schemaPattern = pattern;
+      databaseProperties.setSchemaPattern(pattern);
    }
 }
