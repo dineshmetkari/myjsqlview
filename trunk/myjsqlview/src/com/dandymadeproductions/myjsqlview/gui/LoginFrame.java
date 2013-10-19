@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.02 10/05/2013
+// Version 7.03 10/18/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -303,6 +303,9 @@
 //        7.01 Method accessCheck() Correction for H2 Conditional Check for tcp to Use
 //             else if.
 //        7.02 Constructor Set Frame's Icon.
+//        7.03 Class Method accessCheck() Changed Instance connectionString to
+//             connectionURLString. Cleaned All Aspects of Collecting Database
+//             Attributes from Same Method to New Declared Instance DatabaseProperties.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -317,7 +320,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -346,6 +348,7 @@ import javax.swing.SwingConstants;
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
+import com.dandymadeproductions.myjsqlview.datasource.DatabaseProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.AdvancedParametersPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.SplashPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.StandardParametersPanel;
@@ -360,7 +363,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.02 10/05/2013
+ * @version 7.03 10/18/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1016,17 +1019,11 @@ public class LoginFrame extends JFrame implements ActionListener
    {
       Connection dbConnection;
       
-      Properties connectProperties;
       String driver, protocol, subProtocol, host, port, db, user, passwordString, ssh;
-      String connectionString;
-      char[] passwordCharacters;
-      String dbProductNameVersion;
-      String catalogSeparator;
-      String identifierQuoteString;
-      int maxColumnNameLength;
+      String connectionURLString;
+      Properties connectProperties;
       
-      DatabaseMetaData dbMetaData;
-      // ResultSet db_resultSet;
+      char[] passwordCharacters;
 
       // Try to login in the user with the specified connection
 
@@ -1121,6 +1118,35 @@ public class LoginFrame extends JFrame implements ActionListener
             passwordCharacters[i] = '0';
          }
          passwordString = tempBuffer.toString();
+         
+         // The % character is interpreted as the start of a special escaped sequence,
+         // two digit hexadeciaml value. So replace passwordString characters with that
+         // character with that characters hexadecimal value as sequence, %37. Java
+         // API URLDecoder.
+         
+         if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
+             || subProtocol.equals(ConnectionManager.DERBY)
+             || subProtocol.equals(ConnectionManager.POSTGRESQL)
+             || subProtocol.equals(ConnectionManager.MYSQL))
+            passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
+         
+         connectProperties.setProperty("password", passwordString);
+         
+         // Store parameters.
+         ConnectionProperties connectionProperties = new ConnectionProperties();
+         
+         connectionProperties.setProperty(ConnectionProperties.DRIVER, driver);
+         connectionProperties.setProperty(ConnectionProperties.PROTOCOL, protocol);
+         connectionProperties.setProperty(ConnectionProperties.SUBPROTOCOL, subProtocol);
+         connectionProperties.setProperty(ConnectionProperties.HOST, host);
+         connectionProperties.setProperty(ConnectionProperties.PORT, port);
+         connectionProperties.setProperty(ConnectionProperties.DB, db);
+         connectionProperties.setProperty(ConnectionProperties.USER, user);
+         connectionProperties.setProperty(ConnectionProperties.PASSWORD, passwordString);
+         connectionProperties.setProperty(ConnectionProperties.SSH, ssh);
+         
+         connectionURLString = ConnectionManager.createConnectionURLString(connectionProperties);
+         connectionProperties.setConnectionURLString(connectionURLString);
 
          // ===============================================
          // Connection Attempt.
@@ -1128,205 +1154,27 @@ public class LoginFrame extends JFrame implements ActionListener
 
          try
          {
-            // Take into consideration various database requirements.
-            connectionString = protocol + ":";
-
-            // Oracle
-            if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
-            {
-               if (subProtocol.indexOf("thin") != -1)
-                  connectionString += subProtocol + ":@//" + host + ":" + port + "/" + db;
-               else
-                  connectionString += subProtocol + ":@" + db;
-            }
-            // SQLite
-            else if (subProtocol.equals(ConnectionManager.SQLITE))
-            {
-               connectionString += subProtocol + ":" + db.replace("\\", "/");
-            }
-            // HSQL Memory, File, & Resource
-            else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 &&
-                      (db.indexOf("mem:") != -1) || db.indexOf("file:") != -1 || db.indexOf("res:") != -1)
-            {
-               connectionString += "hsqldb:" + db;
-               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
-            }
-            // Derby Memory
-            else if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
-                     db.indexOf("memory:") != -1)
-            {
-               if (db.toLowerCase().indexOf(";create=true") == -1)
-                  db += ";create=true";
-               
-               if (driver.indexOf("EmbeddedDriver") != -1)
-                  connectionString += subProtocol + ":" + db;
-               else
-                  connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
-               
-               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
-            }
-            // MS Access
-            else if (subProtocol.equals(ConnectionManager.MSACCESS))
-            {
-               connectionString += subProtocol + ":" + db;
-            }
-            // H2
-            else if (subProtocol.equals(ConnectionManager.H2))
-            {
-               if (db.indexOf("tcp:") != -1)
-                  connectionString += subProtocol + ":tcp://" + host + ":" + port + "/"
-                                   + db.substring(db.indexOf("tcp:") + 4);
-               else if (db.indexOf("ssl:") != -1)
-                  connectionString += subProtocol + ":ssl://" + host + ":" + port + "/"
-                                   + db.substring(db.indexOf("ssl:") + 4);
-               else
-                  connectionString += subProtocol + ":" + db;
-                  
-            }
-            // MySQL, PostgreSQL, HSQL, & Derby
-            else
-            {
-               // The % character is interpreted as the start of a special escaped sequence,
-               // two digit hexadeciaml value. So replace passwordString characters with that
-               // character with that characters hexadecimal value as sequence, %37. Java
-               // API URLDecoder.
-               
-               if (subProtocol.indexOf(ConnectionManager.DERBY) != -1 &&
-                     driver.indexOf("EmbeddedDriver") != -1)
-                  connectionString += subProtocol + ":" + db;
-               else
-                  connectionString += subProtocol + "://" + host + ":" + port + "/" + db;
-               passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
-            }
-            
-            if (MyJSQLView.getDebug())
-               System.out.println("LoginFrame accessCheck() " + connectionString);
-            
-            connectProperties.setProperty("password", passwordString);
-            dbConnection = DriverManager.getConnection(connectionString, connectProperties);
+            dbConnection = DriverManager.getConnection(connectionURLString, connectProperties);
             
             // The Connection is valid if it does not throw a SQL Exception.
             // So save the connection properties and collect the associated
             // database tables and other pertinent information necessary to
-            // bring up the application.
+            // bring up the application with the DatabaseProperties Instance.
             
             createSplashWindow();
-            
-            ConnectionProperties connectionProperties = new ConnectionProperties();
-            
-            connectionProperties.setConnectionString(connectionString);
-            connectionProperties.setProperty(ConnectionProperties.DRIVER, driver);
-            connectionProperties.setProperty(ConnectionProperties.PROTOCOL, protocol);
-            connectionProperties.setProperty(ConnectionProperties.SUBPROTOCOL, subProtocol);
-            connectionProperties.setProperty(ConnectionProperties.HOST, host);
-            connectionProperties.setProperty(ConnectionProperties.PORT, port);
-            connectionProperties.setProperty(ConnectionProperties.DB, db);
-            connectionProperties.setProperty(ConnectionProperties.USER, user);
-            connectionProperties.setProperty(ConnectionProperties.PASSWORD, passwordString);
-            connectionProperties.setProperty(ConnectionProperties.SSH, ssh);
-            
             ConnectionManager.setConnectionProperties(connectionProperties);
             
-            dbMetaData = dbConnection.getMetaData();
-
-            // =======================
-            // Database Product Name & Version
+            DatabaseProperties databaseProperties = new DatabaseProperties(connectionProperties);
+            databaseProperties.init(dbConnection);
+            ConnectionManager.setDatabaseProperties(databaseProperties);
             
-            if (!dbMetaData.getDatabaseProductName().isEmpty())
-               dbProductNameVersion = dbMetaData.getDatabaseProductName() + " ";
-            else
-            {
-               if (subProtocol.equals(ConnectionManager.MYSQL))
-                  dbProductNameVersion = "MySQL ";
-               else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
-                  dbProductNameVersion = "PostgreSQL ";
-               else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
-                  dbProductNameVersion = "HSQL ";
-               else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
-                  dbProductNameVersion = "Oracle ";
-               else if (subProtocol.equals(ConnectionManager.SQLITE))
-                  dbProductNameVersion = "SQLite ";
-               else if (subProtocol.equals(ConnectionManager.MSACCESS))
-                  dbProductNameVersion = "MS Access ";
-               else if (subProtocol.equals(ConnectionManager.DERBY))
-                  dbProductNameVersion = "Apache Derby ";
-               else if (subProtocol.equals(ConnectionManager.H2))
-                  dbProductNameVersion = "H2 ";
-               else
-                  dbProductNameVersion = "Unknown Data Source ";
-            }
-            if (!dbMetaData.getDatabaseProductVersion().isEmpty())
-               dbProductNameVersion += dbMetaData.getDatabaseProductVersion();
-            
-            ConnectionManager.setDBProductName_And_Version(dbProductNameVersion);
-            
-            // Lots of debug info for gathering database information during
-            // testing. Some of these will fail, throw exceptions/null pointers
-            // for some databases.
-
-            // =======================
-            // SQL Key Words
-            
-            // System.out.println("SQL key Words:\n" + dbMetaData.getSQLKeywords());
-            
-            // =======================
-            // Database Functions
-            /*
-            System.out.println("Numeric Functions:\n" + dbMetaData.getNumericFunctions());
-            System.out.println("String Functions:\n" + dbMetaData.getStringFunctions());
-            System.out.println("System Functions:\n" + dbMetaData.getSystemFunctions());
-            System.out.println("Time/Date Functions:\n" + dbMetaData.getTimeDateFunctions());
-            */
-            
-            // =======================
-            // Catalogs
-            /*
-            db_resultSet = dbMetaData.getCatalogs();
-            while (db_resultSet.next())
-               System.out.println("Catalogs: " + db_resultSet.getString("TABLE_CAT"));
-            */
-
-            // =======================
-            // Schema
-            /*
-            db_resultSet = dbMetaData.getSchemas();
-            while (db_resultSet.next())
-               System.out.println("Table Scheme: " + db_resultSet.getString(1));
-            */
-            
-            // =======================
-            // Catalog Separator
-            
-            catalogSeparator = dbMetaData.getCatalogSeparator();
-            if (catalogSeparator == null || catalogSeparator.equals(""))
-               catalogSeparator = ".";
-            ConnectionManager.setCatalogSeparator(catalogSeparator);
-            // System.out.println("Catalog Separator: " + catalogSeparator);
-            
-            // =======================
-            // SQL Identifier
-            
-            identifierQuoteString = dbMetaData.getIdentifierQuoteString();
-            if (identifierQuoteString == null || identifierQuoteString.equals(" "))
-               identifierQuoteString = "";
-            ConnectionManager.setIdentifierQuoteString(identifierQuoteString);
-            // System.out.println("Identifier Quote String: " + identifierQuoteString);
-            
-            // =======================
-            // Max Column Name Length
-            
-            maxColumnNameLength = dbMetaData.getMaxColumnNameLength();
-            ConnectionManager.setMaxColumnNameLength(maxColumnNameLength);
-            // System.out.println("Max Column Name Length: " + maxColumnNameLength);
-
-            // Load parameters and the databases tables.
-            ConnectionManager.loadDBParameters(dbConnection);
-            ConnectionManager.loadDBTables(dbConnection);
+            // Override defaults with configuration file
+            // if needed & load database tables.
+            databaseProperties.overideDefaults();
+            databaseProperties.loadDBTables(dbConnection);
             
             // Must be good so close things out and create a
             // costant connection for memory database connections.
-            
-            //db_resultSet.close();
             
             if ((subProtocol.equals(ConnectionManager.SQLITE) && db.toLowerCase().equals(":memory:"))
                  || (subProtocol.indexOf(ConnectionManager.HSQL) != -1
@@ -1336,7 +1184,7 @@ public class LoginFrame extends JFrame implements ActionListener
                  || (subProtocol.equals(ConnectionManager.H2)
                      && db.toLowerCase().indexOf("mem:") != -1))
             {
-               ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionString,
+               ConnectionManager.setMemoryConnection(DriverManager.getConnection(connectionURLString,
                                                                                  connectProperties));
             }
             
