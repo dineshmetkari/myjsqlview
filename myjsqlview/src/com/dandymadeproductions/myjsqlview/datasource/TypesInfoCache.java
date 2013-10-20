@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 10/06/2013
+// Version 1.5 10/20/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //             Long Varchars.
 //         1.4 Changes to Class Instances H2_TYPES & POSTGRESQL_TYPES for Correct
 //             Conversion Processing.
+//         1.5 Added Class Instances HSQL_TYPES & DERBY_TYPES Along With Conditional
+//             Check in Constructor of Such.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/06/2013
+ * @version 1.5 10/20/2013
  */
 
 public class TypesInfoCache
@@ -102,7 +104,65 @@ public class TypesInfoCache
        {TypeID.H2_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
        {TypeID.H2_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
        {TypeID.H2_ARRAY, TypeID.H2_ARRAY, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR}};
+    
+   // HSQL2
+   private static final int[][] HSQL_TYPES = {
+       {TypeID.HSQL_IDENTITY, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_BIGINT},
+       {TypeID.HSQL_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
+       {TypeID.HSQL_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_LONGVARCHAR, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.HSQL_CLOB, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
+       {TypeID.HSQL_BINARY, TypeID.H2_BINARY, TypeID.HSQL_BINARY, TypeID.DERBY_BLOB},
+       {TypeID.HSQL_VARBINARY, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_BLOB},
+       {TypeID.HSQL_LONGVARBINARY, TypeID.H2_BLOB, TypeID.HSQL_LONGVARBINARY, TypeID.DERBY_BLOB},
+       {TypeID.HSQL_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.HSQL_TINYINT, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
+       {TypeID.HSQL_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.HSQL_INTEGER, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.HSQL_BIGINT, TypeID.H2_BIGINT, TypeID.HSQL_BIGINT, TypeID.DERBY_BIGINT},
+       {TypeID.HSQL_FLOAT, TypeID.H2_REAL, TypeID.HSQL_FLOAT, TypeID.DERBY_REAL},
+       {TypeID.HSQL_DOUBLE, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.HSQL_REAL, TypeID.H2_REAL, TypeID.HSQL_REAL, TypeID.DERBY_REAL},
+       {TypeID.HSQL_DECIMAL, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.HSQL_NUMERIC, TypeID.H2_DECIMAL, TypeID.HSQL_NUMERIC, TypeID.DERBY_DECIMAL},
+       {TypeID.HSQL_BOOLEAN, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
+       {TypeID.HSQL_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BIT, TypeID.DERBY_BOOLEAN},
+       {TypeID.HSQL_BIT_VARYING, TypeID.H2_VARCHAR, TypeID.HSQL_BIT_VARYING, TypeID.DERBY_CHAR_FOR_BIT_DATA},
+       {TypeID.HSQL_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
+       {TypeID.HSQL_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
+       {TypeID.HSQL_TIME_WITH_TIME_ZONE, TypeID.H2_TIME, TypeID.HSQL_TIME_WITH_TIME_ZONE, TypeID.DERBY_TIME},
+       {TypeID.HSQL_DATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_DATETIME, TypeID.DERBY_TIMESTAMP},
+       {TypeID.HSQL_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
+       {TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
+       {TypeID.HSQL_INTERVAL, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_INTERVAL_YEAR_TO_MONTH, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_YEAR_TO_MONTH, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_INTERVAL_YEAR, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_YEAR, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_INTERVAL_DAY_TO_HOUR, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_DAY_TO_HOUR, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_INTERVAL_MINUTE_TO_SECOND, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_MINUTE_TO_SECOND, TypeID.DERBY_VARCHAR},
+       {TypeID.HSQL_INTERVAL_SECOND, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_SECOND, TypeID.DERBY_VARCHAR}};
    
+   private static final int[][] DERBY_TYPES = {
+       {TypeID.DERBY_IDENTITY, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
+       {TypeID.DERBY_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
+       {TypeID.DERBY_CHAR_FOR_BIT_DATA, TypeID.H2_VARCHAR, TypeID.HSQL_BIT_VARYING, TypeID.DERBY_CHAR_FOR_BIT_DATA},
+       {TypeID.DERBY_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.DERBY_VARCHAR_FOR_BIT_DATA, TypeID.H2_BINARY, TypeID.HSQL_VARBINARY, TypeID.DERBY_VARCHAR_FOR_BIT_DATA},
+       {TypeID.DERBY_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.DERBY_LONG_VARCHAR, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.DERBY_LONG_VARCHAR_FOR_BIT_DATA, TypeID.H2_BINARY, TypeID.HSQL_VARBINARY, TypeID.DERBY_LONG_VARCHAR_FOR_BIT_DATA},
+       {TypeID.DERBY_CLOB, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
+       {TypeID.DERBY_BOOLEAN, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
+       {TypeID.DERBY_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.DERBY_INTEGER, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.DERBY_BIGINT, TypeID.H2_BIGINT, TypeID.HSQL_BIGINT, TypeID.DERBY_BIGINT},
+       {TypeID.DERBY_FLOAT, TypeID.H2_DOUBLE, TypeID.HSQL_FLOAT, TypeID.DERBY_FLOAT},
+       {TypeID.DERBY_REAL, TypeID.H2_REAL, TypeID.HSQL_REAL, TypeID.DERBY_REAL},
+       {TypeID.DERBY_DOUBLE, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.DERBY_DECIMAL, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.DERBY_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
+       {TypeID.DERBY_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
+       {TypeID.DERBY_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP}};
+    
    private static final int[][] POSTGRESQL_TYPES = {
        {TypeID.POSTGRESQL_SERIAL, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_BIGINT},
        {TypeID.POSTGRESQL_BIGSERIAL, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_BIGINT},
@@ -165,6 +225,10 @@ public class TypesInfoCache
          addSourceSinkType(POSTGRESQL_TYPES);
       else if (dataSourceType.equals(ConnectionManager.H2))
          addSourceSinkType(H2_TYPES);
+      else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
+         addSourceSinkType(HSQL_TYPES);
+      else if (dataSourceType.indexOf(ConnectionManager.DERBY) != -1)
+         addSourceSinkType(DERBY_TYPES);
    }
    
    //==============================================================
