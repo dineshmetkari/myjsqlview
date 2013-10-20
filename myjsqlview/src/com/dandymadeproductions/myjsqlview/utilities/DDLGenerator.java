@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 10/08/2013
+// Version 1.3 10/19/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //                        indexList. Introduced Constructor Instance schemaTableName &
 //                        Assigned. Added Code to Method getDDL() to Create Index(s) for
 //                        DDL Generated Table.
+//         1.3 10/19/2013 Changed Constructor Two Argument Second Argument to dataSinkType.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +58,7 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/08/2013
+ * @version 1.3 10/19/2013
  */
 
 public class DDLGenerator
@@ -88,9 +89,9 @@ public class DDLGenerator
       this(sqlString, ConnectionManager.getDataSourceType(), DEFAULT_DATASINK_TYPE);
    }
    
-   public DDLGenerator(String sqlString, String dataSourceType)
+   public DDLGenerator(String sqlString, String dataSinkType)
    {
-      this(sqlString, dataSourceType, DEFAULT_DATASINK_TYPE);
+      this(sqlString, ConnectionManager.getDataSourceType(), dataSinkType);
    }
    
    public DDLGenerator(String sqlString, String dataSourceType, String dataSinkType)
