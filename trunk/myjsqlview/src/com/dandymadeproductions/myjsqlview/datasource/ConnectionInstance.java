@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 10/18/2013
+// Version 1.3 10/20/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@
 //         1.1 10/18/2013 Completed & Functional Class With Default Memory Database
 //                        Connections.
 //         1.2 10/19/2013 Added Correct Package.
+//         1.3 10/20/2013 Changed displaySQLErrors() Description to Correct Class Name
+//                        in initConnection().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.2 10/19/2013
+ * @version 1.3 10/20/2013
  */
 public class ConnectionInstance
 {
@@ -262,7 +264,7 @@ public class ConnectionInstance
       }
       catch (SQLException e)
       {
-         displaySQLErrors(e, "ConnectionManagerHSQL constructor()", debug);
+         displaySQLErrors(e, "ConnectionInstance constructor()", debug);
       }
       
       return true;
