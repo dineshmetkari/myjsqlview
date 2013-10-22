@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.5 10/20/2013
+// Version 1.6 10/22/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,8 @@
 //             Conversion Processing.
 //         1.5 Added Class Instances HSQL_TYPES & DERBY_TYPES Along With Conditional
 //             Check in Constructor of Such.
+//         1.6 Added Class Instances MYSQL_TYPES, ORACLE_TYPES, SQLITE_TYPES,
+//             & MSACCESS_TYPES Along With Conditional Check in Constructor of Such.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +62,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/20/2013
+ * @version 1.6 10/22/2013
  */
 
 public class TypesInfoCache
@@ -81,6 +83,8 @@ public class TypesInfoCache
    private static final int DERBY_TYPE = 3;
    
    private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL2; 
+   
+   // Conversion Instances
    
    private static final int[][] H2_TYPES = {
        {TypeID.H2_IDENTITY, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_BIGINT},
@@ -200,6 +204,74 @@ public class TypesInfoCache
        {TypeID.POSTGRESQL_CIRCLE, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
        {TypeID.POSTGRESQL_ARRAYS, TypeID.H2_ARRAY, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR}};
    
+   private static final int[][] MYSQL_TYPES = {
+       {TypeID.MYSQL_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
+       {TypeID.MYSQL_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.MYSQL_TINYBLOB, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_VARCHAR_FOR_BIT_DATA},
+       {TypeID.MYSQL_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.MYSQL_MEDIUMBLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.MYSQL_LONGBLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.MYSQL_TINYINT, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MYSQL_SMALLINT_UNSIGNED, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MYSQL_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BIT, TypeID.DERBY_BOOLEAN},
+       {TypeID.MYSQL_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MYSQL_SMALLINT_UNSIGNED, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MYSQL_MEDIUMINT, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MYSQL_MEDIUMINT_UNSIGNED, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MYSQL_INT, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MYSQL_INT_UNSIGNED, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MYSQL_BIGINT, TypeID.H2_BIGINT, TypeID.HSQL_BIGINT, TypeID.DERBY_BIGINT},
+       {TypeID.MYSQL_BIGINT_UNSIGNED, TypeID.H2_BIGINT, TypeID.HSQL_BIGINT, TypeID.DERBY_BIGINT},
+       {TypeID.MYSQL_FLOAT, TypeID.H2_REAL, TypeID.HSQL_FLOAT, TypeID.DERBY_REAL},
+       {TypeID.MYSQL_FLOAT_UNSIGNED, TypeID.H2_REAL, TypeID.HSQL_FLOAT, TypeID.DERBY_REAL},
+       {TypeID.MYSQL_DOUBLE, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.MYSQL_DOUBLE_UNSIGNED, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.MYSQL_DECIMAL, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.MYSQL_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
+       {TypeID.MYSQL_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
+       {TypeID.MYSQL_DATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_DATETIME, TypeID.DERBY_TIMESTAMP},
+       {TypeID.MYSQL_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
+       {TypeID.MYSQL_YEAR, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE}};
+   
+   private static final int[][] ORACLE_TYPES = {
+       {TypeID.ORACLE_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHAR, TypeID.DERBY_CHAR},
+       {TypeID.ORACLE_VARCHAR2, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.ORACLE_LONG, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.ORACLE_RAW, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_VARCHAR_FOR_BIT_DATA},
+       {TypeID.ORACLE_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.ORACLE_CLOB, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
+       {TypeID.ORACLE_BFILE, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.ORACLE_NUMBER, TypeID.H2_DECIMAL, TypeID.HSQL_NUMERIC, TypeID.DERBY_DECIMAL},
+       {TypeID.ORACLE_BINARY_FLOAT, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.ORACLE_BINARY_DOUBLE, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.ORACLE_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
+       {TypeID.ORACLE_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
+       {TypeID.ORACLE_TIMESTAMPTZ, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
+       {TypeID.ORACLE_INTERVALYM, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_YEAR_TO_MONTH, TypeID.DERBY_VARCHAR},
+       {TypeID.ORACLE_INTERVALDS, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR}};
+   
+   private static final int[][] SQLITE_TYPES = {
+       {TypeID.SQLITE_INTEGER, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.SQLITE_REAL, TypeID.H2_REAL, TypeID.HSQL_REAL, TypeID.DERBY_REAL},
+       {TypeID.SQLITE_TEXT, TypeID.H2_VARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.SQLITE_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB}};
+   
+   private static final int[][] MSACCESS_TYPES = {
+       {TypeID.MSACCESS_COUNTER, TypeID.H2_IDENTITY, TypeID.HSQL_IDENTITY, TypeID.DERBY_IDENTITY},
+       {TypeID.MSACCESS_BINARY, TypeID.H2_BINARY, TypeID.HSQL_BINARY, TypeID.DERBY_BLOB},
+       {TypeID.MSACCESS_LONGBINARY, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_LONG_VARCHAR_FOR_BIT_DATA},
+       {TypeID.MSACCESS_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.MSACCESS_LONGCHAR, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.MSACCESS_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BOOLEAN, TypeID.DERBY_BOOLEAN},
+       {TypeID.MSACCESS_BYTE, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MSACCESS_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MSACCESS_INTEGER, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MSACCESS_REAL, TypeID.H2_REAL, TypeID.HSQL_REAL, TypeID.DERBY_REAL},
+       {TypeID.MSACCESS_DOUBLE, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.MSACCESS_CURRENCY, TypeID.H2_DECIMAL, TypeID.HSQL_NUMERIC, TypeID.DERBY_DECIMAL},
+       {TypeID.MSACCESS_GUID, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.MSACCESS_DATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP}};
+   
    //==============================================================
    // TypesInfoCache Constructors
    //==============================================================
@@ -221,14 +293,24 @@ public class TypesInfoCache
       
       nameToType = new HashMap<String, Integer>();
       
-      if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
-         addSourceSinkType(POSTGRESQL_TYPES);
-      else if (dataSourceType.equals(ConnectionManager.H2))
+      if (dataSourceType.equals(ConnectionManager.H2))
          addSourceSinkType(H2_TYPES);
       else if (dataSourceType.indexOf(ConnectionManager.HSQL) != -1)
          addSourceSinkType(HSQL_TYPES);
       else if (dataSourceType.indexOf(ConnectionManager.DERBY) != -1)
          addSourceSinkType(DERBY_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
+         addSourceSinkType(POSTGRESQL_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.MYSQL))
+         addSourceSinkType(MYSQL_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.ORACLE))
+         addSourceSinkType(ORACLE_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.SQLITE))
+         addSourceSinkType(SQLITE_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+         addSourceSinkType(MSACCESS_TYPES);
+      
+      // Source not found, all will become UNSPECIFIED.
    }
    
    //==============================================================
