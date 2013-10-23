@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.5 10/06/2013
+// Version 1.6 10/22/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //         1.4 Changed Class Instance POSTGRESQL__ to POSTGRESQL_ARRAYS. Added
 //             Method testDuplicate_IDs().
 //         1.5 Added Class Instance H2_LONGVARCHAR.
+//         1.6 Added Class Instances ORACLE_LONG_RAW, & ORACLE_ROWID.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -56,7 +57,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/06/2013
+ * @version 1.6 10/22/2013
  */
 
 public class TypeID
@@ -217,9 +218,11 @@ public class TypeID
    public static final int ORACLE_VARCHAR2 = 24;
    public static final int ORACLE_LONG = 26;
    public static final int ORACLE_RAW = 28;
+   public static final int ORACLE_LONG_RAW = 29;
    public static final int ORACLE_BLOB = 30;
    public static final int ORACLE_CLOB = 32;
    public static final int ORACLE_BFILE = 34;
+   public static final int ORACLE_ROWID = 35;
    public static final int ORACLE_NUMBER = 36;
    public static final int ORACLE_BINARY_FLOAT = 38;
    public static final int ORACLE_BINARY_DOUBLE = 40;
