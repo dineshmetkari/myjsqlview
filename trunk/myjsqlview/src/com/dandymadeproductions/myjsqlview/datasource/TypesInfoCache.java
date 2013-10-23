@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 10/22/2013
+// Version 1.7 10/22/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //             Check in Constructor of Such.
 //         1.6 Added Class Instances MYSQL_TYPES, ORACLE_TYPES, SQLITE_TYPES,
 //             & MSACCESS_TYPES Along With Conditional Check in Constructor of Such.
+//         1.7 Added Conversions in ORACLE_TYPES for ORACLE_LONG_RAW & ORACLE_ROWID.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +63,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/22/2013
+ * @version 1.7 10/22/2013
  */
 
 public class TypesInfoCache
@@ -238,9 +239,11 @@ public class TypesInfoCache
        {TypeID.ORACLE_VARCHAR2, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
        {TypeID.ORACLE_LONG, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
        {TypeID.ORACLE_RAW, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_VARCHAR_FOR_BIT_DATA},
+       {TypeID.ORACLE_LONG_RAW, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.ORACLE_BLOB, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.ORACLE_CLOB, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
        {TypeID.ORACLE_BFILE, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
+       {TypeID.ORACLE_ROWID, TypeID.H2_UUID, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
        {TypeID.ORACLE_NUMBER, TypeID.H2_DECIMAL, TypeID.HSQL_NUMERIC, TypeID.DERBY_DECIMAL},
        {TypeID.ORACLE_BINARY_FLOAT, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.ORACLE_BINARY_DOUBLE, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
