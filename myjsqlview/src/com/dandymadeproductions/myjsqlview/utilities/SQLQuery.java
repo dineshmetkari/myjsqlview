@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.5 09/29/2013
+// Version 1.6 10/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,9 @@
 //             Instances. Commented System.out in executeSQL().
 //         1.5 Added Argument Connection to Method executeSQL() and Created New One That
 //             Allows to Call Without a Connection.
+//         1.6 Changed Constructors to Use ConnectionProperties Instead of String of
+//             dataSourceType. Class Method executeSQL() Used ConnectionProperties to
+//             Create the Appropriate Type of Connection, (CM) or (CI).
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,14 +65,17 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionInstance;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 
 /**
  *    The SQLQuery class provides the means to collect in a generic manner
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.5 09/29/2013
+ * @version 1.6 10/24/2013
  */
 
 public class SQLQuery
@@ -80,6 +86,7 @@ public class SQLQuery
 
    private int tableRowLimit;
    private String dataSourceType;
+   private ConnectionProperties connectionProperties;
    
    private ArrayList<String> columnNames;
    private HashMap<String, String> columnClassHashMap;
@@ -97,23 +104,23 @@ public class SQLQuery
 
    public SQLQuery(String sqlString)
    {
-      this(sqlString, ConnectionManager.getDataSourceType(), 1);
+      this(sqlString, ConnectionManager.getConnectionProperties(), 1);
    }
    
-   public SQLQuery(String sqlString, String dataSourceType)
+   public SQLQuery(String sqlString, ConnectionProperties connectionProperties)
    {
-      this(sqlString, dataSourceType, 1);
+      this(sqlString, connectionProperties, 1);
    }
    
-   public SQLQuery(String sqlString, String dataSourceType, int queryRowLimit)
+   public SQLQuery(String sqlString, ConnectionProperties connectProperties, int queryRowLimit)
    {
       this.sqlString = sqlString;
+      this.connectionProperties = connectProperties;
       tableRowLimit = queryRowLimit;
       
       // Setting up a data source name qualifier and other
       // instances.
       
-      this.dataSourceType = dataSourceType;
       validQuery = -1;
       
       columnNames = new ArrayList <String>();
@@ -138,8 +145,23 @@ public class SQLQuery
 
    public int executeSQL()
    {
+      // Method Instances
+      Connection dbConnection;
+      
       // Setting up a connection.
-      Connection dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
+      if (connectionProperties == ConnectionManager.getConnectionProperties())
+      {
+         dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
+         dataSourceType = ConnectionManager.getDataSourceType();
+      }
+      else
+      {
+         ConnectionInstance connectionInstance = new ConnectionInstance(connectionProperties,
+                                                                        MyJSQLView.getDebug(), false);
+         dbConnection = connectionInstance.getConnection("SQLQuery executeSQL()");
+         dataSourceType = connectionInstance.getDataSourceType(); 
+      }
+      System.out.println("SQLQuery executeSQL() dataSourceType: " + dataSourceType);
       
       try
       {
@@ -246,9 +268,9 @@ public class SQLQuery
                columnIsAutoIncrement = tableMetaData.isAutoIncrement(i);
                
                // System.out.println(i + "\t" + colNameString + "\t" +
-               //                        columnClass + "\t" + columnType + "\t" +
-               //                        columnTypeName + "\t" + columnScale + "\t" +
-               //                        columnPrecision + "\t" + columnSize);
+               //                         columnClass + "\t" + columnType + "\t" +
+               //                         columnTypeName + "\t" + columnScale + "\t" +
+               //                         columnPrecision + "\t" + columnSize);
 
                // This going to be a problem so skip these columns.
                // NOT TESTED. This is still problably not going to
