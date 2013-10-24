@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.0 10/16/2013
+// Version 1.1 10/23/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -30,6 +30,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Initial DatabaseProperties Class.
+//         1.1 Correction in Method getDataSourceType() For Conditional Check
+//             for HSQL & HSQL2 Databases.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.0 10/16/2013
+ * @version 1.1 10/23/2013
  */
 
 public class DatabaseProperties
@@ -643,10 +645,13 @@ public class DatabaseProperties
          return ConnectionManager.MYSQL;
       else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          return ConnectionManager.POSTGRESQL;
-      else if (subProtocol.equals(ConnectionManager.HSQL))
-         return ConnectionManager.HSQL;
-      else if (subProtocol.equals(ConnectionManager.HSQL2))
-         return ConnectionManager.HSQL2;
+      else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
+      {
+         if (dbProductNameVersion.indexOf(" 2.") != -1)
+            return ConnectionManager.HSQL2;
+         else
+            return ConnectionManager.HSQL;
+      }
       else if (subProtocol.indexOf(ConnectionManager.ORACLE) != -1)
          return ConnectionManager.ORACLE;
       else if (subProtocol.equals(ConnectionManager.SQLITE))
