@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 10/20/2013
+// Version 1.4 10/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,10 @@
 //         1.2 10/19/2013 Added Correct Package.
 //         1.3 10/20/2013 Changed displaySQLErrors() Description to Correct Class Name
 //                        in initConnection().
+//         1.4 10/24/2013 Debug System.output Description Properly Identified Class Name
+//                        Throughout. Moved the Setting of the connectionURLString for
+//                         Default ConnectionProperties to
+//                         createDefaultMemoryConnectionProperties().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +64,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/20/2013
+ * @version 1.4 10/24/2013
  */
 public class ConnectionInstance
 {
@@ -182,11 +186,18 @@ public class ConnectionInstance
       connectionProperties.setProperty(ConnectionProperties.USER, USER);
       connectionProperties.setProperty(ConnectionProperties.PASSWORD, PASSWORD);
       connectionProperties.setProperty(ConnectionProperties.SSH, SSH);
+      
+      connectionProperties.setConnectionURLString(
+         ConnectionManager.createConnectionURLString(connectionProperties));
    }
    
    //==============================================================
    // Class method to initailize the connection to insure proper
-   // parameters and driver.
+   // parameters and driver. The ConnectionProperties instance must
+   // properly be setup in order for this to function properly.
+   // This will be done in basic default constructors. If you are
+   // passing this instance make sure the connectionURLString has
+   // been set.
    //==============================================================
    
    private boolean initConnection(boolean filter)
@@ -201,7 +212,7 @@ public class ConnectionInstance
       {
          Class.forName(connectionProperties.getProperty(ConnectionProperties.DRIVER));
          if (debug)
-            System.out.println("Driver Loaded");
+            System.out.println("ConnectionInstance initConnection() Driver Loaded");
       }
       catch (ClassNotFoundException e)
       {
@@ -227,10 +238,10 @@ public class ConnectionInstance
       // Connection Requirements.
       try
       {
-         connectionURLString = ConnectionManager.createConnectionURLString(connectionProperties);
+         connectionURLString = connectionProperties.getConnectionURLString();
+         
          if (debug)
-            System.out.println(connectionURLString);
-         connectionProperties.setConnectionURLString(connectionURLString);
+            System.out.println("ConnectionInstance initConnection() " + connectionURLString);
          
          connectProperties = new Properties();
          connectProperties.setProperty("user",
@@ -314,7 +325,7 @@ public class ConnectionInstance
       try
       {
          if (debug)
-            System.out.println(description + " Connection Created");
+            System.out.println(description + " (CI) Connection Created");
          
          // Create the appropriate connection as needed.
          
@@ -357,7 +368,7 @@ public class ConnectionInstance
       try
       {
          if (debug)
-            System.out.println(description + " Connection Closed");
+            System.out.println(description + " (CI) Connection Closed");
          
          // Close connection as needed.
          if ((memoryConnection != null)
@@ -399,7 +410,7 @@ public class ConnectionInstance
          if (memoryConnection != null)
          {
             if (debug)
-               System.out.println(description + " Memory Connection Closed");
+               System.out.println(description + " (CI) Memory Connection Closed");
             
             memoryConnection.close();  
          }
@@ -443,7 +454,7 @@ public class ConnectionInstance
             if (databaseShutdownString.toLowerCase().indexOf("memory:") != -1)
             {
                if (debug)
-                  System.out.println(description + " Dropping Derby Memory Database");
+                  System.out.println(description + " (CI) Dropping Derby Memory Database");
                
                dbConnection = DriverManager.getConnection(databaseShutdownString + ";drop=true");
                dbConnection.close();
@@ -453,7 +464,7 @@ public class ConnectionInstance
             if (driver.indexOf("EmbeddedDriver") != -1)
             {
                if (debug)
-                  System.out.println(description + " Shutting Down Derby Embedded Database");
+                  System.out.println(description + " (CI) Shutting Down Derby Embedded Database");
                
                dbConnection = DriverManager.getConnection("jdbc:derby:;shutdown=true");
                dbConnection.close();
@@ -467,7 +478,7 @@ public class ConnectionInstance
                 || databaseShutdownString.toLowerCase().indexOf("mem:") != -1)
             {
                if (debug)
-                  System.out.println(description + " Shutting Down HSQL File/Memory Database");
+                  System.out.println(description + " (CI) Shutting Down HSQL File/Memory Database");
                
                dbConnection = DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
                dbConnection.close();
