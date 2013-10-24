@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.2 10/19/2013
+// Version 4.3 10/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,7 @@
 //             Referenced Getter Methods for Parameters to databaseProperties.
 //         4.2 Class Method createConnectionURLString() Changed Argument Name to properties
 //             to Advoid Confusion With Class Instance connectionProperties.
+//         4.3 Debug System.output Description Properly Identified Class Name Throughout.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,7 +126,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.2 10/19/2013
+ * @version 4.3 10/24/2013
  */
 
 public class ConnectionManager
@@ -202,7 +203,7 @@ public class ConnectionManager
       try
       {
          if (MyJSQLView.getDebug())
-            System.out.println(description + " Connection Created");
+            System.out.println(description + " (CM) Connection Created");
          
          // Create the appropriate connection as needed.
          
@@ -244,7 +245,7 @@ public class ConnectionManager
       try
       {
          if (MyJSQLView.getDebug())
-            System.out.println(description + " Connection Closed");
+            System.out.println(description + " (CM) Connection Closed");
          
          // Close connection as needed.
          if ((memoryConnection != null)
@@ -286,7 +287,7 @@ public class ConnectionManager
          if (memoryConnection != null)
          {
             if (MyJSQLView.getDebug())
-               System.out.println(description + " Memory Connection Closed");
+               System.out.println(description + " (CM) Memory Connection Closed");
             
             memoryConnection.close();  
          }
@@ -330,7 +331,7 @@ public class ConnectionManager
             if (databaseShutdownString.toLowerCase().indexOf("memory:") != -1)
             {
                if (MyJSQLView.getDebug())
-                  System.out.println(description + " Dropping Derby Memory Database");
+                  System.out.println(description + " (CM) Dropping Derby Memory Database");
                
                dbConnection = DriverManager.getConnection(databaseShutdownString + ";drop=true");
                dbConnection.close();
@@ -340,7 +341,7 @@ public class ConnectionManager
             if (driver.indexOf("EmbeddedDriver") != -1)
             {
                if (MyJSQLView.getDebug())
-                  System.out.println(description + " Shutting Down Derby Embedded Database");
+                  System.out.println(description + " (CM) Shutting Down Derby Embedded Database");
                
                dbConnection = DriverManager.getConnection("jdbc:derby:;shutdown=true");
                dbConnection.close();
@@ -354,7 +355,7 @@ public class ConnectionManager
                 || databaseShutdownString.toLowerCase().indexOf("mem:") != -1)
             {
                if (MyJSQLView.getDebug())
-                  System.out.println(description + " Shutting Down HSQL File/Memory Database");
+                  System.out.println(description + " (CM) Shutting Down HSQL File/Memory Database");
                
                dbConnection = DriverManager.getConnection(databaseShutdownString + ";shutdown=true");
                dbConnection.close();
