@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.3 10/24/2013
+// Version 4.4 10/25/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,7 @@
 //         4.2 Class Method createConnectionURLString() Changed Argument Name to properties
 //             to Advoid Confusion With Class Instance connectionProperties.
 //         4.3 Debug System.output Description Properly Identified Class Name Throughout.
+//         4.4 Removed Debug Output in Method createConnectURLString().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -126,7 +127,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.3 10/24/2013
+ * @version 4.4 10/25/2013
  */
 
 public class ConnectionManager
@@ -522,10 +523,6 @@ public class ConnectionManager
          else
             connectionURLString += subProtocol + "://" + host + ":" + port + "/" + db;
       }
-      
-      if (MyJSQLView.getDebug())
-         System.out.println("ConnectionManager createConnectionURLString() " + connectionURLString);
-      
       return connectionURLString;
    }
    
