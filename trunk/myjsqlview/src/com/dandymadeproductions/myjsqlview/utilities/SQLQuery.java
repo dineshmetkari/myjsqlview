@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 10/24/2013
+// Version 1.7 10/24/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,10 @@
 //         1.6 Changed Constructors to Use ConnectionProperties Instead of String of
 //             dataSourceType. Class Method executeSQL() Used ConnectionProperties to
 //             Create the Appropriate Type of Connection, (CM) or (CI).
+//         1.7 Removed Class Instances connectionProperties & dataSourceType. Modified
+//             Constructors as a Result. Defaulted Method executeSQL() With No Argument
+//             to MyJSQLView Login Database. Removed in Same New ConnectionInstance
+//             Creation.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,17 +69,14 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.dandymadeproductions.myjsqlview.MyJSQLView;
-import com.dandymadeproductions.myjsqlview.datasource.ConnectionInstance;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 
 /**
  *    The SQLQuery class provides the means to collect in a generic manner
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/24/2013
+ * @version 1.7 10/24/2013
  */
 
 public class SQLQuery
@@ -85,8 +86,6 @@ public class SQLQuery
    private int validQuery;
 
    private int tableRowLimit;
-   private String dataSourceType;
-   private ConnectionProperties connectionProperties;
    
    private ArrayList<String> columnNames;
    private HashMap<String, String> columnClassHashMap;
@@ -104,18 +103,12 @@ public class SQLQuery
 
    public SQLQuery(String sqlString)
    {
-      this(sqlString, ConnectionManager.getConnectionProperties(), 1);
+      this(sqlString, 1);
    }
    
-   public SQLQuery(String sqlString, ConnectionProperties connectionProperties)
-   {
-      this(sqlString, connectionProperties, 1);
-   }
-   
-   public SQLQuery(String sqlString, ConnectionProperties connectProperties, int queryRowLimit)
+   public SQLQuery(String sqlString, int queryRowLimit)
    {
       this.sqlString = sqlString;
-      this.connectionProperties = connectProperties;
       tableRowLimit = queryRowLimit;
       
       // Setting up a data source name qualifier and other
@@ -136,6 +129,9 @@ public class SQLQuery
          
    //==============================================================
    // Class method to execute the given user's input SQL statement.
+   // Use this method if MyJSQLView's login database is the query
+   // subject or supply a Database Connection.
+   //
    // Output:
    //
    // Invalid Query - (-1)
@@ -149,19 +145,7 @@ public class SQLQuery
       Connection dbConnection;
       
       // Setting up a connection.
-      if (connectionProperties == ConnectionManager.getConnectionProperties())
-      {
-         dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
-         dataSourceType = ConnectionManager.getDataSourceType();
-      }
-      else
-      {
-         ConnectionInstance connectionInstance = new ConnectionInstance(connectionProperties,
-                                                                        MyJSQLView.getDebug(), false);
-         dbConnection = connectionInstance.getConnection("SQLQuery executeSQL()");
-         dataSourceType = connectionInstance.getDataSourceType(); 
-      }
-      System.out.println("SQLQuery executeSQL() dataSourceType: " + dataSourceType);
+      dbConnection = ConnectionManager.getConnection("SQLQuery executeSQL()");
       
       try
       {
@@ -182,14 +166,14 @@ public class SQLQuery
       String sqlStatementString;
       Statement sqlStatement;
       int updateCount;
-      ResultSet db_resultSet;
-      ResultSetMetaData tableMetaData;
-
-      String colNameString;
-      String columnClass, columnTypeName;
+      
+      String colNameString, columnClass, columnTypeName;
       int columnType, columnScale, columnPrecision, columnSize, columnIsNullable;
       boolean columnIsAutoIncrement;
       
+      ResultSet db_resultSet;
+      ResultSetMetaData tableMetaData;
+
       // Checking to see if anything in the input to
       // execute or valid connection.
       
@@ -284,15 +268,13 @@ public class SQLQuery
 
                if (columnClass == null)
                {
-                  if (columnTypeName.toUpperCase().equals("BINARY_FLOAT")
-                      && dataSourceType.equals(ConnectionManager.ORACLE))
+                  if (columnTypeName.toUpperCase().equals("BINARY_FLOAT"))
                   {
                      columnClass = "java.lang.Float";
                      columnType = Types.FLOAT;
                      columnTypeName = "FLOAT";
                   }
-                  else if (columnTypeName.toUpperCase().equals("BINARY_DOUBLE")
-                           && dataSourceType.equals(ConnectionManager.ORACLE))
+                  else if (columnTypeName.toUpperCase().equals("BINARY_DOUBLE"))
                   {
                      columnClass = "java.lang.Double";
                      columnType = Types.DOUBLE;
