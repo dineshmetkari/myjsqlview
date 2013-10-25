@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 10/19/2013
+// Version 1.4 10/25/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@
 //                        Assigned. Added Code to Method getDDL() to Create Index(s) for
 //                        DDL Generated Table.
 //         1.3 10/19/2013 Changed Constructor Two Argument Second Argument to dataSinkType.
+//         1.4 10/25/2013 Diversified getDDL() Method by Additional Argument of the Database
+//                        Connection for the SQLQuery.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -45,7 +47,9 @@
 
 package com.dandymadeproductions.myjsqlview.utilities;
 
+import java.sql.Connection;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
@@ -58,7 +62,7 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/19/2013
+ * @version 1.4 10/25/2013
  */
 
 public class DDLGenerator
@@ -109,10 +113,27 @@ public class DDLGenerator
    
    //==============================================================
    // Class method to obtain the data definition language, DDL, for
-   // the given constructed query, data source/sink types.
+   // the given constructed query, data source/sink types. Either
+   // use default login database or given connection database.
    //==============================================================
    
    public String getDDL(String schemaName, String tableName)
+   {
+      // Method Instances
+      Connection dbConnection;
+      StringBuffer tempBuffer;
+      
+      // Setting up a connection.
+      dbConnection = ConnectionManager.getConnection("DDLGenerator getDDL()");
+      tempBuffer = new StringBuffer();
+      
+      tempBuffer.append(getDDL(dbConnection, schemaName, tableName));
+      
+      ConnectionManager.closeConnection(dbConnection, "DDLGenerator getDDL()");
+      return tempBuffer.toString();
+   }
+   
+   public String getDDL(Connection dbConnection, String schemaName, String tableName)
    {
       // Method Instances
       String schemaTableName; 
@@ -134,7 +155,14 @@ public class DDLGenerator
       tableDefinition.append("CREATE TABLE " + schemaTableName + " (\n    ");
       
       // Execute the query & collect characteristics.
-      sqlQuery.executeSQL();
+      try
+      {
+         sqlQuery.executeSQL(dbConnection);
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e, "DDLGenerator getDDL()");
+      }
      
       // Create the appropriate DDL.
       colNameIterator = sqlQuery.getColumnNames().iterator();
