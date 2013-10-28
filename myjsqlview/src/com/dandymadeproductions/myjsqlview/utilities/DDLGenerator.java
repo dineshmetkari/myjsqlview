@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 10/25/2013
+// Version 1.5 10/27/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,10 @@
 //         1.3 10/19/2013 Changed Constructor Two Argument Second Argument to dataSinkType.
 //         1.4 10/25/2013 Diversified getDDL() Method by Additional Argument of the Database
 //                        Connection for the SQLQuery.
+//         1.5 10/27/2013 Changed in All createXXX_DDL() Methods for Oracle Deviance of NUMBER
+//                        BigDecimal Types to DOUBLE. Proper Support in createDerby_DDL() for
+//                        LONG VARCHARs & Limiting Precision for NUMERIC Types. Method
+//                        createHSQL_DDL() Half Ass Fix for Some of INTERVAL Types.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,6 +58,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
+import com.dandymadeproductions.myjsqlview.datasource.TypeID;
 import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
 
 /**
@@ -62,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/25/2013
+ * @version 1.5 10/27/2013
  */
 
 public class DDLGenerator
@@ -267,7 +272,11 @@ public class DDLGenerator
       // Decimal & Numeric Types
       else if (columnType.equals("DECIMAL") || columnType.equals("NUMERIC"))
       {
-         tableDefinition.append(columnType + "(" + columnPrecision + "," + columnScale + ")");
+         // Oracle deviance of NUMBER.
+         if (columnClass.toLowerCase().indexOf("double") != -1)
+            tableDefinition.append("DOUBLE");
+         else
+            tableDefinition.append(columnType + "(" + columnPrecision + "," + columnScale + ")");
       }
       // Blob Types
       else if (columnType.equals("BLOB") || columnType.equals("BINARY"))
@@ -302,11 +311,21 @@ public class DDLGenerator
          if (columnType.equals("CHAR"))
             tableDefinition.append("CHAR(" + columnSize + ")");
          else if (columnType.equals("VARCHAR"))
-            tableDefinition.append("VARCHAR(" + columnSize + ")");
+         {
+            if (columnSize >= 32700)
+               tableDefinition.append("LONG VARCHAR");
+            else
+               tableDefinition.append("VARCHAR(" + columnSize + ")");
+         }
          else if (columnType.indexOf("FOR BIT DATA") != -1)
          {
             if (columnType.indexOf("VARCHAR") != -1)
-               tableDefinition.append("VARCHAR(" + columnSize + ") FOR BIT DATA");
+            {
+               if (columnType.indexOf("LONG") != -1)
+                  tableDefinition.append("LONG VARCHAR FOR BIT DATA");
+               else
+                  tableDefinition.append("VARCHAR(" + columnSize + ") FOR BIT DATA");
+            }
             else
                tableDefinition.append("CHAR(" + columnSize + ") FOR BIT DATA");
          }
@@ -335,7 +354,16 @@ public class DDLGenerator
       // Decimal & Numeric Types
       else if (columnType.equals("DECIMAL"))
       {
-         tableDefinition.append(columnType + "(" + columnPrecision + "," + columnScale + ")");
+         // Oracle deviance of NUMBER.
+         if (columnClass.toLowerCase().indexOf("double") != -1)
+            tableDefinition.append("DOUBLE");
+         else
+         {
+            if (columnPrecision > 31)
+               tableDefinition.append(columnType + "(31," + columnScale + ")");
+            else  
+               tableDefinition.append(columnType + "(" + columnPrecision + "," + columnScale + ")");
+         }
       }
       // All Others.
       else
@@ -370,7 +398,8 @@ public class DDLGenerator
             }
             else
             {
-               if (columnSize >= 16777216 || columnClass.indexOf("Array") != -1)
+               if (columnSize >= 16777216 || columnPrecision >= 16777216
+                   || columnClass.indexOf("Array") != -1)
                   tableDefinition.append("LONGVARCHAR");
                else
                   tableDefinition.append("VARCHAR(" + columnSize + ")");      
@@ -410,11 +439,17 @@ public class DDLGenerator
       // Decimal & Numeric Types
       else if (columnType.equals("DECIMAL") || columnType.equals("NUMERIC"))
       {
-         if (dataSinkType.equals(ConnectionManager.HSQL) && columnType.equals("NUMERIC"))
-            tableDefinition.append(columnType);
+         // Oracle deviance of NUMBER.
+         if (columnClass.toLowerCase().indexOf("double") != -1)
+            tableDefinition.append("DOUBLE");
          else
-            tableDefinition.append(columnType + "(" + columnPrecision
-                                   + "," + columnScale + ")");
+         {
+            if (dataSinkType.equals(ConnectionManager.HSQL) && columnType.equals("NUMERIC"))
+               tableDefinition.append(columnType);
+            else
+               tableDefinition.append(columnType + "(" + columnPrecision
+                                      + "," + columnScale + ")");
+         }
       }
       // Time With Time Zone
       else if (columnType.equals("TIME WITH TIME ZONE"))
@@ -446,10 +481,13 @@ public class DDLGenerator
             tableDefinition.append(columnType);
          }           
       }
-      // Interval
+      // Interval (Note: Works, but does not cover all cases.)
       else if (columnType.indexOf("INTERVAL") != -1)
       {
-         tableDefinition.append(columnType + "(" + columnScale + ")");
+         if (columnType.equals(TypeID.HSQL_INTERVAL_YEAR))
+            tableDefinition.append(columnType + "(" + columnPrecision + ")");
+         else
+            tableDefinition.append(columnType);
       }
       // Bit Varying
       else if (columnType.equals("BIT VARYING")
