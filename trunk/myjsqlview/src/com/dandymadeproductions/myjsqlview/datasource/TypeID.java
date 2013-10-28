@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 10/22/2013
+// Version 1.7 10/27/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,9 @@
 //             Method testDuplicate_IDs().
 //         1.5 Added Class Instance H2_LONGVARCHAR.
 //         1.6 Added Class Instances ORACLE_LONG_RAW, & ORACLE_ROWID.
+//         1.7 Changed Class Instance HSQL_CHAR to HSQL_CHARACTER. Added Class Instances
+//             ORACLE_FLOAT & ORACLE_DOUBLE. Correction in Method toString() Conditional
+//             Check to Replace of Underscore Character.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +60,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.6 10/22/2013
+ * @version 1.7 10/27/2013
  */
 
 public class TypeID
@@ -91,7 +94,7 @@ public class TypeID
    
    // HSQL 2.0 Data Type IDs
    public static final int HSQL_IDENTITY = -212;
-   public static final int HSQL_CHAR = -210;
+   public static final int HSQL_CHARACTER = -210;
    public static final int HSQL_VARCHAR = -208;
    public static final int HSQL_LONGVARCHAR = -206;
    public static final int HSQL_CLOB = -204;
@@ -225,7 +228,9 @@ public class TypeID
    public static final int ORACLE_ROWID = 35;
    public static final int ORACLE_NUMBER = 36;
    public static final int ORACLE_BINARY_FLOAT = 38;
+   public static final int ORACLE_FLOAT = 39; // Virtual
    public static final int ORACLE_BINARY_DOUBLE = 40;
+   public static final int ORACEL_DOUBLE = 41; // Virtual
    public static final int ORACLE_DATE = 42;
    public static final int ORACLE_TIMESTAMP = 44;
    public static final int ORACLE_TIMESTAMPTZ = 46;
@@ -285,7 +290,7 @@ public class TypeID
                   prefix = fields[i].getName().substring(0, fields[i].getName().indexOf("_"));
                   name = fields[i].getName().substring(fields[i].getName().indexOf("_") + 1);
                   
-                  if (name.indexOf("_") != -1 && (!prefix.equals("H2") || !prefix.equals("ORACLE")))
+                  if (name.indexOf("_") != -1 && (!prefix.equals("H2") && !prefix.equals("ORACLE")))
                      return name.replaceAll("_", " ");
                   else
                      return name;
