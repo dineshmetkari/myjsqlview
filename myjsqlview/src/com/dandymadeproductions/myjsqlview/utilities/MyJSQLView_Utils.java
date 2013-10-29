@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.4 10/05/2013
+// Version 9.5 10/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -172,6 +172,7 @@
 //             Changes.
 //         9.3 Method setUIManagerFont() Check of uiObject NULL Before instanceof Font.
 //         9.4 Added Class Method getFrameIcon().
+//         9.5 Added Overloaded Class Method getSchemaTableName().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -241,7 +242,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.4 10/05/2013
+ * @version 9.5 10/29/2013
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -937,15 +938,23 @@ public class MyJSQLView_Utils extends MyJSQLView
    // valid table name for the current database that MyJSQLView is
    // connected to.
    //==============================================================
-
+   
    public static String getSchemaTableName(String sqlTable)
    {
+      return getSchemaTableName(sqlTable, ConnectionManager.getCatalogSeparator(),
+                                ConnectionManager.getIdentifierQuoteString());
+   }
+   
+   //==============================================================
+   // Class method to return the properly format SQL database table
+   // name to be used in a query statement given the catalog &
+   // identifier quote string.
+   //==============================================================
+
+   public static String getSchemaTableName(String sqlTable, String catalogSeparator,
+                                           String identifierQuoteString)
+   {
       String schemaTableName;
-      String catalogSeparator;
-      String identifierQuoteString;
-      
-      catalogSeparator = ConnectionManager.getCatalogSeparator();
-      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
       
       if (sqlTable.indexOf(catalogSeparator) != -1)
       {
