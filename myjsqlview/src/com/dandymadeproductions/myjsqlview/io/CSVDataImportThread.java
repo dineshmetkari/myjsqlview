@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.2 07/02/2013
+// Version 7.3 10/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -160,6 +160,10 @@
 //         7.1 Method importCSVFile() Check DBTablesPanel.getSelectedTableTabPanel()
 //             Being NULL.
 //         7.2 Change in importCSVFile() to Use DBTablePanel.getGeneralDBProperties().
+//         7.3 Restructured Class to Support Independent Database Connections Rather
+//             Then Just MyJSQLView Login Database. Changes to Constructor & Additional
+//             Constructors. Added Class Instances argConnection & useStatusDialog.
+//             Main Changes in Method importCSVFile() to Properly Setup Connections.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -185,6 +189,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
 
 /**
  *    The CSVDataImportThread class provide the means to import a
@@ -193,29 +198,52 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.2 07/02/2013
+ * @version 7.3 10/29/2013
  */
 
 public class CSVDataImportThread implements Runnable
 {
    // Class Instance Fields.
-   String dataSourceType, fileName, csvOption;
-   boolean validImport, temporaryDataFile;
+   private Connection dbConnection;
+   
+   private String dataSourceType, importTable, fileName, csvOption;
+   private boolean argConnection, validImport;
+   private boolean useStatusDialog, temporaryDataFile;
 
    //==============================================================
-   // CSVDataImportThread Constructor.
+   // CSVDataImportThread Constructors.
+   // 
+   // MyJSQLView uses the first for standard database login table
+   // import functionality. Use the second for generic import into
+   // a specified database connection table.
    //==============================================================
-
+   
    public CSVDataImportThread(String fileName, String csvOption, boolean temporaryDataFile)
    {
+      this(null, ConnectionManager.getDataSourceType(), "", fileName, csvOption, true, temporaryDataFile);
+   }
+   
+   public CSVDataImportThread(Connection dbConnection, String dataSourceType,
+                               String tableName, boolean useStatusDialog, String fileName)
+   {
+      this(dbConnection, dataSourceType, tableName, fileName, "Insert", useStatusDialog, false);
+   }
+   
+   private CSVDataImportThread(Connection dbConnection, String dataSourceType, String importTable,
+                                String fileName, String csvOption, boolean useStatusDialog,
+                                boolean temporaryDataFile)
+   {
       // Constructor Instances
-
+      
+      this.dbConnection = dbConnection;
+      this.dataSourceType = dataSourceType;
+      this.importTable = importTable;
       this.fileName = fileName;
       this.csvOption = csvOption;
+      this.useStatusDialog = useStatusDialog;
       this.temporaryDataFile = temporaryDataFile;
-
-      // Setup some needed instances.
-      dataSourceType = ConnectionManager.getDataSourceType();
+      
+      argConnection = true;
    }
 
    //==============================================================
@@ -241,7 +269,7 @@ public class CSVDataImportThread implements Runnable
          // removing the  temporary file, clipboard pastes, if
          // needed.
          
-         if (validImport)
+         if (validImport && !argConnection)
          {
             refreshTableTabPanel();
 
@@ -270,7 +298,6 @@ public class CSVDataImportThread implements Runnable
    private void importCSVFile()
    {
       // Class Method Instances.
-      Connection dbConnection;
       Statement sqlStatement;
       StringBuffer sqlFieldNamesString, sqlValuesString;
       String sqlKeyString;
@@ -279,11 +306,11 @@ public class CSVDataImportThread implements Runnable
       FileReader fileReader;
       BufferedReader bufferedReader;
 
-      String importTable, schemaTableName;
+      String schemaTableName;
       ArrayList<String> primaryKeys, tableFields, fields;
       HashMap<String, String> columnTypeHashMap;
       HashMap<String, String> columnClassHashMap;
-      String identifierQuoteString;
+      String catalogSeparator, identifierQuoteString;
 
       String currentLine, columnClass, columnType;
       int fileLineLength, fieldNumber, line;
@@ -294,52 +321,84 @@ public class CSVDataImportThread implements Runnable
       MyJSQLView_ProgressBar csvImportProgressBar;
       String dateFormat;
 
-      // Obtain database connection & setting up.
-
-      dbConnection = ConnectionManager.getConnection("CSVDataImportThread importCSVFile()");
-
-      if (dbConnection == null || DBTablesPanel.getSelectedTableTabPanel() == null)
-      {
-         validImport = false;
-         return;
-      }
-
-      importTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
-
-      csvImportProgressBar = new MyJSQLView_ProgressBar("CSV Import To: " + importTable);
-
-      identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
-      schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
-
-      primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
+      // Setting up.
       tableFields = new ArrayList<String>();
       fields = new ArrayList<String>();
-      columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
-      columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
-
+      
       dateFormat = DBTablesPanel.getDataImportProperties().getDateFormat();
       batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
       batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
-
+      
       fileReader = null;
       bufferedReader = null;
+      sqlStatement = null;
+      csvImportProgressBar = null;
       fileLineLength = 0;
       line = 0;
-
-      // Begin the processing of the input CSV file by reading
-      // each line and separating field data. Expectation
-      // being that the first line will hold the field names
-      // thereafter data.
       
-      sqlStatement = null;
-
+      // Determine database connection.
+      
       try
       {
+         if (dbConnection == null)
+         {
+            // Login Database.
+            dbConnection = ConnectionManager.getConnection("CSVDataImportThread importCSVFile()");
+         
+            if (dbConnection == null || DBTablesPanel.getSelectedTableTabPanel() == null)
+            {
+               validImport = false;
+               return;
+            }
+            
+            importTable = DBTablesPanel.getSelectedTableTabPanel().getTableName();
+            identifierQuoteString = ConnectionManager.getIdentifierQuoteString();
+            schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable);
+            primaryKeys = DBTablesPanel.getSelectedTableTabPanel().getPrimaryKeys();
+            columnTypeHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnTypeHashMap();
+            columnClassHashMap = DBTablesPanel.getSelectedTableTabPanel().getColumnClassHashMap();
+         
+            argConnection = false;
+         }
+         else
+         {
+            // Specified Database Connection.
+            
+            catalogSeparator = dbConnection.getMetaData().getCatalogSeparator();
+            if (catalogSeparator == null || catalogSeparator.equals(""))
+               catalogSeparator = ".";
+            
+            identifierQuoteString = dbConnection.getMetaData().getIdentifierQuoteString();
+            if (identifierQuoteString == null || identifierQuoteString.equals(" "))
+               identifierQuoteString = "";
+            
+            schemaTableName = MyJSQLView_Utils.getSchemaTableName(importTable, catalogSeparator,
+                                                                  identifierQuoteString);
+            
+            SQLQuery sqlQuery = new SQLQuery("SELECT * FROM " + schemaTableName);
+         
+            if (sqlQuery.executeSQL(dbConnection) != 1)
+            {
+               validImport = false;
+               return;
+            }
+            
+            primaryKeys = new ArrayList <String>();
+            columnTypeHashMap = sqlQuery.getColumnTypeNameHashMap();
+            columnClassHashMap = sqlQuery.getColumnClassHashMap();
+         }
+         csvImportProgressBar = new MyJSQLView_ProgressBar("CSV Import To: " + importTable);
+         
          // Disable autocommit and begin the start
          // of transactions.
          dbConnection.setAutoCommit(false);
          sqlStatement = dbConnection.createStatement();
 
+         // Begin the processing of the input CSV file by reading
+         // each line and separating field data. Expectation
+         // being that the first line will hold the field names
+         // thereafter data.
+         
          // Only MySQL & PostgreSQL supports.
          if (dataSourceType.equals(ConnectionManager.MYSQL)
              || dataSourceType.equals(ConnectionManager.POSTGRESQL))
@@ -357,7 +416,7 @@ public class CSVDataImportThread implements Runnable
             csvImportProgressBar.setTaskLength(fileLineLength);
             csvImportProgressBar.pack();
             csvImportProgressBar.center();
-            csvImportProgressBar.setVisible(true);
+            csvImportProgressBar.setVisible(useStatusDialog);
             validImport = true;
 
             // Beginning processing the input file for insertions
@@ -406,7 +465,10 @@ public class CSVDataImportThread implements Runnable
                      if (csvOption.equals("Insert"))
                         sqlFieldNamesString.append(identifierQuoteString + lineContent[i]
                                                    + identifierQuoteString + ", ");
-                     tableFields.add(parseColumnNameField(lineContent[i]));
+                     if (argConnection)
+                        tableFields.add(lineContent[i]);
+                     else
+                        tableFields.add(parseColumnNameField(lineContent[i]));
                      fields.add(lineContent[i]);
                   }
                   if (csvOption.equals("Insert"))
@@ -431,8 +493,9 @@ public class CSVDataImportThread implements Runnable
                   {
                      columnClass = columnClassHashMap.get(tableFields.get(i));
                      columnType = columnTypeHashMap.get(tableFields.get(i));
-                     // System.out.println("ColumnClass: " + columnClass + " " + "ColumnType: "
-                     // + columnType + " " + lineContent[i]);
+                     // System.out.println("tableField:" + tableFields.get(i) + " ColumnClass: "
+                     //                    + columnClass + " ColumnType: " + columnType
+                     //                    + " " + lineContent[i]);
 
                      // Make sure and catch all null default entries first.
 
@@ -645,11 +708,15 @@ public class CSVDataImportThread implements Runnable
             bufferedReader.close();
             sqlStatement.close();
             dbConnection.setAutoCommit(true);
-            ConnectionManager.closeConnection(dbConnection, "CSVDataImportThread importCSVFile()");
+            
+            if (!argConnection)
+               ConnectionManager.closeConnection(dbConnection, "CSVDataImportThread importCSVFile()");
          }
          catch (IOException e)
          {
-            csvImportProgressBar.dispose();
+            if (csvImportProgressBar != null)
+               csvImportProgressBar.dispose();
+            
             JOptionPane.showMessageDialog(null, "Unable to Read Input File!", "Alert",
                JOptionPane.ERROR_MESSAGE);
             try
@@ -657,8 +724,10 @@ public class CSVDataImportThread implements Runnable
                sqlStatement.close();
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
-               ConnectionManager
-                     .closeConnection(dbConnection, "CSVDataImportThread importCSVFile() rollback");
+               
+               if (!argConnection)
+                  ConnectionManager.closeConnection(dbConnection,
+                                                    "CSVDataImportThread importCSVFile() rollback");
             }
             catch (SQLException error)
             {
@@ -675,7 +744,10 @@ public class CSVDataImportThread implements Runnable
          {
             dbConnection.rollback();
             dbConnection.setAutoCommit(true);
-            ConnectionManager.closeConnection(dbConnection, "CSVDataImportThread importCSVFile() rollback");
+            
+            if (!argConnection)
+               ConnectionManager.closeConnection(dbConnection,
+                                                 "CSVDataImportThread importCSVFile() rollback");
          }
          catch (SQLException error)
          {
