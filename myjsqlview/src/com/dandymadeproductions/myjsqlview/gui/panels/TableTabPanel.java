@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.16 07/01/2013
+// Version 5.17 10/29/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -250,6 +250,8 @@
 //        5.15 Class Method getTableSQLStatement() Returns a New String().
 //        5.16 Change in displayMyDateString() & deleteSelectedItem() to Use
 //             DBTablePanel.getGeneralDBProperties().
+//        5.17 Correction in Method pasteClipboardContents() to Create a Thread
+//             Instance for the CSVDataImportThead and Start it.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -328,7 +330,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.16 07/01/2013
+ * @version 5.17 10/29/2013
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2369,8 +2371,11 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                csvOption = insertRadioButton.getText();
             else
                csvOption = updateRadioButton.getText();
-
-            new CSVDataImportThread(tempDataFileName, csvOption, true);
+            
+            Thread csvDataImportThread = new Thread(new CSVDataImportThread(
+               tempDataFileName, csvOption, true), "CSVDataImportThread");
+            
+            csvDataImportThread.start();
          }
          insertUpdateDialog.dispose();
       }
