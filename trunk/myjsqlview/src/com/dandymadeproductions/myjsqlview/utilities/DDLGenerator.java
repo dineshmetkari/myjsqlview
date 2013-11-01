@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.5 10/27/2013
+// Version 1.6 11/01/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@
 //                        BigDecimal Types to DOUBLE. Proper Support in createDerby_DDL() for
 //                        LONG VARCHARs & Limiting Precision for NUMERIC Types. Method
 //                        createHSQL_DDL() Half Ass Fix for Some of INTERVAL Types.
+//         1.6 11/01/2013 Added Class Instance indexCount & Additional Constructor. Use of New
+//                        Instance in Constructors & Method getDDL(). Made static Class
+//                        Instances DEFAULT_DATASINK_TYPE & INDEXCOUNT Public.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,13 +70,14 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.5 10/27/2013
+ * @version 1.6 11/01/2013
  */
 
 public class DDLGenerator
 {
    // Class Instances.
    private String dataSinkType;
+   private int indexCount;
    
    private SQLQuery sqlQuery;
    private TypesInfoCache infoCache;
@@ -85,27 +89,36 @@ public class DDLGenerator
    private StringBuffer tableDefinition;
    private ArrayList<String> indexList;
    
-   private static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL2;
+   public static final String DEFAULT_DATASINK_TYPE = ConnectionManager.HSQL2;
    private static final char IDENTIFIER_QUOTE_STRING = '\"';
-   private static final int INDEXCOUNT = 1;
+   public static final int INDEXCOUNT = 1;
    
    //==============================================================
    // SQLQuery Constructors
+   //
+   // Use the first three for MyJSQLView login database source or
+   // specify in fourth.
    //==============================================================
 
    public DDLGenerator(String sqlString)
    {
-      this(sqlString, ConnectionManager.getDataSourceType(), DEFAULT_DATASINK_TYPE);
+      this(sqlString, ConnectionManager.getDataSourceType(), DEFAULT_DATASINK_TYPE, INDEXCOUNT);
    }
    
    public DDLGenerator(String sqlString, String dataSinkType)
    {
-      this(sqlString, ConnectionManager.getDataSourceType(), dataSinkType);
+      this(sqlString, ConnectionManager.getDataSourceType(), dataSinkType, INDEXCOUNT);
    }
    
-   public DDLGenerator(String sqlString, String dataSourceType, String dataSinkType)
+   public DDLGenerator(String sqlString, String dataSinkType, int indexCount)
+   {
+      this(sqlString, ConnectionManager.getDataSourceType(), dataSinkType, indexCount);
+   }
+   
+   public DDLGenerator(String sqlString, String dataSourceType, String dataSinkType, int indexCount)
    {
       this.dataSinkType = dataSinkType;
+      this.indexCount = indexCount;
       
       // Just setup the required instances to accomplish
       // the ddl generation.
@@ -208,7 +221,7 @@ public class DDLGenerator
             tableDefinition.append(",\n    ");
          
          // Trace Column Number
-         if (currentColumnIndex < INDEXCOUNT)
+         if (currentColumnIndex < indexCount)
          {
             indexList.add(columnName);
             currentColumnIndex++;
