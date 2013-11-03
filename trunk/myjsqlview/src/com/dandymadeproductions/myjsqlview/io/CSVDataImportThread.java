@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.3 10/29/2013
+// Version 7.4 11/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -164,6 +164,8 @@
 //             Then Just MyJSQLView Login Database. Changes to Constructor & Additional
 //             Constructors. Added Class Instances argConnection & useStatusDialog.
 //             Main Changes in Method importCSVFile() to Properly Setup Connections.
+//         7.4 Class Method importCSVFile() Check for csvImportProgressBar NULL Before
+//             Disposing in SQLExeception Catch.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -198,7 +200,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.3 10/29/2013
+ * @version 7.4 11/03/2013
  */
 
 public class CSVDataImportThread implements Runnable
@@ -738,7 +740,8 @@ public class CSVDataImportThread implements Runnable
       }
       catch (SQLException e)
       {
-         csvImportProgressBar.dispose();
+         if (csvImportProgressBar != null)
+            csvImportProgressBar.dispose();
          ConnectionManager.displaySQLErrors(e, "line# " + line + " CSVDataImportThread importCSVLFile()");
          try
          {
