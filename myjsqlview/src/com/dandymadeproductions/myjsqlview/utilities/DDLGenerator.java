@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 11/01/2013
+// Version 1.7 11/03/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,8 @@
 //         1.6 11/01/2013 Added Class Instance indexCount & Additional Constructor. Use of New
 //                        Instance in Constructors & Method getDDL(). Made static Class
 //                        Instances DEFAULT_DATASINK_TYPE & INDEXCOUNT Public.
+//         1.7 11/03/2013 Use of Direct String in Method creatHSQL_DDL() for INTERVAL YEAR
+//                        Conditional Check.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +63,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
-import com.dandymadeproductions.myjsqlview.datasource.TypeID;
 import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
 
 /**
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.datasource.TypesInfoCache;
  * a given database query to an alternate database table. 
  * 
  * @author Dana M. Proctor
- * @version 1.6 11/01/2013
+ * @version 1.7 11/03/2013
  */
 
 public class DDLGenerator
@@ -497,7 +498,7 @@ public class DDLGenerator
       // Interval (Note: Works, but does not cover all cases.)
       else if (columnType.indexOf("INTERVAL") != -1)
       {
-         if (columnType.equals(TypeID.HSQL_INTERVAL_YEAR))
+         if (columnType.equals("INTERVAL YEAR"))
             tableDefinition.append(columnType + "(" + columnPrecision + ")");
          else
             tableDefinition.append(columnType);
