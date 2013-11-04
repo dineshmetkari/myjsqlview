@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.2 09/30/2012
+// Version 2.3 11/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //         2.0 Removed Class Method setName().
 //         2.1 Added Class Interface getAuthor().
 //         2.2 Added Class Interfaces getCategory() & getSize().
+//         2.3 Added Class Interface shutdown().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -69,7 +70,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.2 09/30/2012
+ * @version 2.3 11/03/2013
  */
 
 public interface PluginModuleInterface
@@ -163,4 +164,11 @@ public interface PluginModuleInterface
    //==============================================================
 
    void setDBTables(ArrayList<String> tables);
+   
+   //==============================================================
+   // Class method to allow the plugin to close activities pending
+   // a closing of the application.
+   //==============================================================
+
+   void shutdown();
 }
