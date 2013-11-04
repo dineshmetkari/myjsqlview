@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 10/24/2013
+// Version 1.5 11/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //                        Throughout. Moved the Setting of the connectionURLString for
 //                         Default ConnectionProperties to
 //                         createDefaultMemoryConnectionProperties().
+//         1.5 11/04/2013 Added MyJSQLView.getDebug() for No & Single Argument Constructors.
+//                        Added Two Argument Constructor of dataSourceType & filter.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -54,6 +56,7 @@ import java.util.Properties;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.datasource.DatabaseProperties;
@@ -64,8 +67,9 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/24/2013
+ * @version 1.5 11/04/2013
  */
+
 public class ConnectionInstance
 {
    // Class Instances.
@@ -117,12 +121,17 @@ public class ConnectionInstance
    
    public ConnectionInstance()
    {
-      this(HSQL2, false, true);
+      this(HSQL2, MyJSQLView.getDebug(), true);
    }
    
    public ConnectionInstance(String dataSourceType)
    {
-      this(dataSourceType, false, true);
+      this(dataSourceType, MyJSQLView.getDebug(), true);
+   }
+   
+   public ConnectionInstance(String dataSourceType, boolean filter)
+   {
+      this(dataSourceType, MyJSQLView.getDebug(), filter);
    }
    
    public ConnectionInstance(String dataSourceType, boolean debug, boolean filter)
