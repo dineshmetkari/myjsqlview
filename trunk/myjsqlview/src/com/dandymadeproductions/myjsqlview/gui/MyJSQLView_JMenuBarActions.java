@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.59 07/14/2013
+// Version 7.60 11/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -304,6 +304,8 @@
 //        7.59 Removed Methods setLocalization(), getLocaleList(), & buildConstraints().
 //             Replaced GUI Elements of Setting Localization to AppGeneralPreferencesPanel.
 //             Changed setGeneralPreferences() to generalPropertiesAction().
+//        7.60 Added Code to ACTION_EXIT to Cycle Through Loaded Plugins to Indicate Pending
+//             Close.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -327,6 +329,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import javax.sound.sampled.Clip;
 import javax.swing.ButtonGroup;
@@ -357,6 +360,7 @@ import com.dandymadeproductions.myjsqlview.io.SQLDataDumpThread;
 import com.dandymadeproductions.myjsqlview.io.SQLDatabaseDumpThread;
 import com.dandymadeproductions.myjsqlview.io.SQLDatabaseSchemeDumpThread;
 import com.dandymadeproductions.myjsqlview.io.SaveTableStateThread;
+import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
 import com.dandymadeproductions.myjsqlview.utilities.MyJFileFilter;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
@@ -369,7 +373,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.59 07/14/2013
+ * @version 7.60 11/04/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -492,6 +496,15 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
          sqlQueryBucketFrame.saveLastUsedList();
          ConnectionManager.shutdown("MyJSQLView_JMenuBarActions ACTION_EXIT");
          MyJSQLView_Utils.clearCache();
+         
+         // Notify plugins to pending close.
+         Iterator<MyJSQLView_PluginModule> pluginModulesIterator = MyJSQLView_Frame.getPlugins().iterator();
+         while (pluginModulesIterator.hasNext())
+         {
+            MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
+            currentPlugin.shutdown();
+         }
+         
          System.exit(0);
       }
 
