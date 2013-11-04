@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.3 10/01/2012
+// Version 3.4 11/04/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,7 @@
 //         3.1 Added Class Instance author & Methods getAuthor() & getControlledAuthor().
 //         3.2 Added Class Instances category, size, & Their Getter Methods.
 //         3.3 Comment Change.
+//         3.4 Added Interface Method shutdown().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +88,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.3 10/01/2012
+ * @version 3.4 11/04/2013
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -314,5 +315,15 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public void setDBTables(ArrayList<String> tableNames)
    {
       // Do what you will if you need database table names.
+   }
+   
+   //==============================================================
+   // Class method to allow the plugin to close activities pending
+   // a closing of the application.
+   //==============================================================
+   
+   public void shutdown()
+   {
+      // Do what you will to notify pending closing.
    }
 }
