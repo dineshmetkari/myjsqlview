@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.03 10/18/2013
+// Version 7.04 11/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -306,6 +306,7 @@
 //        7.03 Class Method accessCheck() Changed Instance connectionString to
 //             connectionURLString. Cleaned All Aspects of Collecting Database
 //             Attributes from Same Method to New Declared Instance DatabaseProperties.
+//        7.04 Class Method accessCheck() Debug Output for connectionURLString.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -363,7 +364,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.03 10/18/2013
+ * @version 7.04 11/05/2013
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1146,6 +1147,10 @@ public class LoginFrame extends JFrame implements ActionListener
          connectionProperties.setProperty(ConnectionProperties.SSH, ssh);
          
          connectionURLString = ConnectionManager.createConnectionURLString(connectionProperties);
+         
+         if (MyJSQLView.getDebug())
+            System.out.println("LoginFrame accessCheck() " + connectionURLString);
+         
          connectionProperties.setConnectionURLString(connectionURLString);
 
          // ===============================================
