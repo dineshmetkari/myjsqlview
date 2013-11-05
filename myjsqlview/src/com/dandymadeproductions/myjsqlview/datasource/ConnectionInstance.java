@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.5 11/04/2013
+// Version 1.6 11/05/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,8 @@
 //                         createDefaultMemoryConnectionProperties().
 //         1.5 11/04/2013 Added MyJSQLView.getDebug() for No & Single Argument Constructors.
 //                        Added Two Argument Constructor of dataSourceType & filter.
+//         1.6 11/05/2013 Commented Out Derby Shutdown Code in Method shutdownDatabase().
+//                        See Note.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.5 11/04/2013
+ * @version 1.6 11/05/2013
  */
 
 public class ConnectionInstance
@@ -439,12 +441,14 @@ public class ConnectionInstance
    {
       // Method Instances.
       Connection dbConnection;
-      String connectionURLString, driver, subProtocol;
+      String connectionURLString;
+      //String driver;
+      String subProtocol;
       String databaseShutdownString;
       
       // Setup.
       connectionURLString = connectionProperties.getConnectionURLString();
-      driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
+      //driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
       
       if (connectionURLString.indexOf(";") != -1)
@@ -457,6 +461,17 @@ public class ConnectionInstance
       try
       {
          // Try to shutdown Derby & HSQL database properly.
+         
+         /*
+         Derby:
+         
+         Unable to get a drop or shutdown to function without the
+         following error message. Even Derby examples give same error.
+         
+         SQLException: invalid database address: jdbc:derby:~~
+         SQLState: null
+         VendorError: 0
+         
          if (subProtocol.equals(DERBY))
          {
             // Drop Memory Databases
@@ -480,6 +495,7 @@ public class ConnectionInstance
             }
             return;
          }
+         */
          
          if (subProtocol.indexOf(HSQL) != -1)
          {
