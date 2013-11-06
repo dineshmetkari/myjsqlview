@@ -442,13 +442,13 @@ public class ConnectionInstance
       // Method Instances.
       Connection dbConnection;
       String connectionURLString;
-      //String driver;
+      // String driver;
       String subProtocol;
       String databaseShutdownString;
       
       // Setup.
       connectionURLString = connectionProperties.getConnectionURLString();
-      //driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
+      // driver = connectionProperties.getProperty(ConnectionProperties.DRIVER);
       subProtocol = connectionProperties.getProperty(ConnectionProperties.SUBPROTOCOL);
       
       if (connectionURLString.indexOf(";") != -1)
