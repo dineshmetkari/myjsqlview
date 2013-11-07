@@ -299,7 +299,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       // See if cache exists
       if (cacheDirectory.exists() && cacheDirectory.isDirectory())
       {
-         // Collect contents a delete.
+         // Collect contents and delete.
          try
          {
             cacheContents = cacheDirectory.listFiles();
