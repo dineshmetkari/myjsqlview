@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.60 11/04/2013
+// Version 7.61 11/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -306,6 +306,8 @@
 //             Changed setGeneralPreferences() to generalPropertiesAction().
 //        7.60 Added Code to ACTION_EXIT to Cycle Through Loaded Plugins to Indicate Pending
 //             Close.
+//        7.61 Moved Cache Clearing on ACTION_EXIT Event to After the Cycling of Plugins
+//             Shutdown.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -373,7 +375,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.60 11/04/2013
+ * @version 7.61 11/06/2013
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -495,7 +497,6 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       {
          sqlQueryBucketFrame.saveLastUsedList();
          ConnectionManager.shutdown("MyJSQLView_JMenuBarActions ACTION_EXIT");
-         MyJSQLView_Utils.clearCache();
          
          // Notify plugins to pending close.
          Iterator<MyJSQLView_PluginModule> pluginModulesIterator = MyJSQLView_Frame.getPlugins().iterator();
@@ -504,6 +505,8 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
             currentPlugin.shutdown();
          }
+         
+         MyJSQLView_Utils.clearCache();
          
          System.exit(0);
       }
