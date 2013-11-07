@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.5 11/04/2013
+// Version 8.6 11/06/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,8 @@
 //         8.4 10/05/2013 Method createGUI() Set Frame's Icon.
 //         8.5 11/04/2013 Inner Class myjsqlviewFrameListener WindowAdapter Added Code to Cycle
 //                        Through the Loaded Plugins to Indicate Pending Application Close.
+//         8.6 11/06/2013 Moved Cache Clearing on myjsqlviewFrameListener Window Closing Event
+//                        to After the Cycling of Plugins Shutdown.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -249,7 +251,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.5 11/04/2013
+ * @version 8.6 11/06/2013
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -301,7 +303,6 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          {
             sqlQueryBucketFrame.saveLastUsedList();
             ConnectionManager.shutdown("MyJSQLView_Frame WINDOW_CLOSING");
-            MyJSQLView_Utils.clearCache();
             
             // Notify plugins to pending close.
             Iterator<MyJSQLView_PluginModule> pluginModulesIterator = loadedPluginModules.iterator();
@@ -310,6 +311,8 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
                MyJSQLView_PluginModule currentPlugin = pluginModulesIterator.next();
                currentPlugin.shutdown();
             }
+            
+            MyJSQLView_Utils.clearCache();
             
             System.exit(0);
          }
