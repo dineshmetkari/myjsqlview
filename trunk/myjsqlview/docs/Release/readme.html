@@ -13,7 +13,7 @@
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.46<br></u></b>
+			<b><u>MyJSQLView Version 3.47<br></u></b>
 		</p>
 		<p align="center">
 			Copyright 2005-2013<br>
@@ -24,7 +24,7 @@
 		<p><u><b>What is MyJSQLView?</b></u></p>
 		<p>
 			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing,
-			adding, editing, or deleting entries in the Derby, HSQL, MSAccess, MySQL, Oracle,
+			adding, editing, or deleting entries in the Derby, H2, HSQL, MSAccess, MySQL, Oracle,
 			PostgreSQL, and SQLite databases. All tables and fields are available for access in
 			the selected database.<br><br>
 
@@ -43,12 +43,12 @@
 			Connectivity, driver. The JDBC provides the driver interface between the
 			Java SQL, structured query language, statements, and the database. As of
 			the release of this version of MyJSQLView the application has been tested
-			with the Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases.
+			with the Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases.
 			The application once installed can provide a much quicker access/update to
 			a database than a web based interface frontend and MyJSQLView supports
 			transaction locking. If your small business, scientific community, government
 			agency, or educational institute wants to quickly access either a Apache
-			Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database for
+			Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database for
 			viewing, adding, editing, searching, and analyzing data MyJSQLView provides
 			an alternative that is simple and easy to use.<br><br>
 
@@ -91,8 +91,9 @@
 		<ul>
   			<li> Microsoft<sup>&reg;</sup> Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, &amp; X-Window Environment.</li>
                     	<li>Java Runtime Environment, <font color="#ff0000">JRE 1.5</font> or Newer.</li>
-			<li>Apache Derby <font color="#ff0000">10.9.1.0</font></li>
-			<li>HSQL <font color="#ff0000">2.2.5 - 2.2.9</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
+			<li>Apache Derby <font color="#ff0000">10.9.1.0</font>.</li>
+			<li>H2 <font color="#ff0000">1.3.173 - 1.3.174</font>.</li>
+			<li>HSQL <font color="#ff0000">2.2.5 - 2.3.1</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 			<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge, Control Panel Data Sources.</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
@@ -121,7 +122,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.44</b> does, will have an example configuration
+			additional database, release <b>v3.47</b> does, will have an example configuration
 			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -156,10 +157,10 @@
 			Please consult with each vendor for specific installation instructions for these
 			JDBC pieces of code. Similarly if other databases are to be accessed via the
 			application then again installed the recommended driver(s) to the Java Runtime
-			/lib/ext directory. The two exception JDBC installations are for the Derby and
-			HSQL databases. Derby requires the derby.jar, derbynet.jar, and derbyclient.jar
-			files to placed in the Java Extension directory. HSQL uses an integrated JDBC
-			built into the application. MyJSQLView as of v3.33 includes this database so
+			/lib/ext directory. The exceptions to JDBC installations are for the Derby, H2,
+			and HSQL databases. Derby requires the derby.jar, derbynet.jar, and derbyclient.jar
+			files to placed in the Java Extension directory. H2, and HSQL use an integrated JDBC
+			built into the application. MyJSQLView as of v3.47 includes these databases so
 			no additional installation need take place.<br><br>
 			
 			&nbsp;&nbsp;&nbsp;&nbsp;The new login interface and Connection Manager use
@@ -236,6 +237,11 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.47</td>
+      				<td width="80%">H2 Database Support. Architectural revisions to support mutiple
+						database connections instances. HeatMapper plugin CSV Imports.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.46</td>
       				<td width="80%">Bug fix for CSV imports of single digit month fields. Feature
