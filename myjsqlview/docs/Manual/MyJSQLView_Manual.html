@@ -19,7 +19,7 @@
 	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
 	<p align="center">Copyright &copy; 2005-2013 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
 	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
-	<p align="center"><font size="+1">September 2013</font></p>
+	<p align="center"><font size="+1">November 2013</font></p>
 
 	<hr size="2" width="100%">
 	<strong><font size="+3">Table of Contents</font></strong>
@@ -76,6 +76,13 @@
 				<li><a href="#Preferences_Data_Export_CSV">Data Export CSV</a></li>
       				<li><a href="#Preferences_Data_Export_PDF">Data Export PDF</a></li>
       				<li><a href="#Preferences_Data_Export_SQL">Data Export SQL</a></li>
+				<li><a href="#Login_Parameters">Login Parameters</a></li>
+    			</ol>
+  		</li>
+
+		<li><strong><a href="#Login_Parameters">Login Parameters</a></strong><br>
+    			<ol type="i">
+				<li><a href="#Login_Parameters">Table 2.</a></li>
     			</ol>
   		</li>
 	</ol>
@@ -85,7 +92,7 @@
 	<a name="Introduction"></a>
 	<p><font size="+3"><strong>1 Introduction</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a Apache Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle, SQLite, and Derby just JDBC, and PostgreSQL JDBC3. <font style="border: 2px solid yellow;" size="+1">*</font>The HSQL database is now fully integrated into the MyJSQLView application as a library so an additional JDBC need not be installed. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of version <b>v3.17</b> of MyJSQLView the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a Apache Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle, SQLite, and Derby just JDBC, and PostgreSQL JDBC3. <font style="border: 2px solid yellow;" size="+1">*</font>The H2, and HSQL databases are now fully integrated into the MyJSQLView application as a libraries so those JDBCs need not be installed. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of version <b>v3.17</b> of MyJSQLView the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
 
 	<hr>
 	
@@ -167,6 +174,7 @@
 
 	<ul>
 		<li>Apache Derby <font color="#ff0000">10.9.1.0</font></li>
+		<li>H2 <font color="#ff0000">1.3.173 - 1.3.174</font>.</li>
 		<li>HSQL <font color="#ff0000">2.2.5 - 2.2.9</font>. <font style="border: 2px solid yellow;" size="+1">*</font><b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 		<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge.</li>
 		<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
@@ -188,7 +196,8 @@
 	<a name="GeneralInstallationInstructions"></a>
 	<p><font size="+1"><strong>General Installation Instructions</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does require the JRE to be installed. The minimum runtime environment needs to be <b>JRE-1.5</b>. In addition to the JRE an extension needs to be installed that allows Java to communicate to the MySQL, Oracle, PostgreSQL, or SQLite database. The programs are available on the Internet free of charge and for MySQL is called <b>MySQL Connector/J</b>. The PostgreSQL program is called <b>JDBC3</b>, Oracle, SQLite, Derby just <b>JDBC</b>. The jar file for these extensions needs to be installed to the JRE /lib/ext directory. Please consult with installation instructions for these pieces of code from the vendor, or see the MyJSQView README file for additional information. The two exception JDBC installations are for the Derby and HSQL databases. Derby requires derby.jar, derbynet.jar, and derbyclient.jar files to placed in the Java Extension directory.The HSQL database uses an integrated <b>JDBC</b> built into the application and MyJSQLView as of <b>v3.34</b> includes this database so no additional installation need take place.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;The login interface and Connection Manager uses a XML configuration file for saving user preferences. Upon first running MyJSQLView a reference XML file, myjsqlview.xml, located in the installation directory is read then copied to the user's home directory under a newly created directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On Windows &reg; XP, Vista, and Windows 7 the new directory will be in the user's home folder. On a Linux system the new directory will be '/home/user/.myjsqview'. All saved changes performed in site management will be stored in the XML file located in the above referenced directory. As of <b>v2.72</b>++ of MyJSQLView the XML configuration file once saved with a user's passwords will not be able to be used on another system, encrypted password data is not transferable. The user is encouraged to make a backup of this file on occasional. The .myjsqlview directory in addition to holding the XML configuration file will also contain the file myjsqlview_locale.txt which holds the entry that allows control of language support.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with in order to work. It is beyond the scope of this document for installing and setting up this type of application, but insure the correct access <b>grant rights</b> are specified for the user and database tables that are desired to be reached. All databases normally have some form of privilege configuration for selective control to access rights. So just because you have local access rights does not mean the database will let you also login from a remote machine. Remember also that the MyJSQLView application uses TCP/IP, Transmission Control Protocol/Internet Protocol, for its connection to the database. <font style="border: 2px solid yellow;" size="+1">*</font> Many of the default installations for these databases limit connections to just from the local host only.</p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does require the JRE to be installed. The minimum runtime environment needs to be <b>JRE-1.5</b>. In addition to the JRE an extension needs to be installed that allows Java to communicate to the MySQL, Oracle, PostgreSQL, or SQLite database. The programs are available on the Internet free of charge and for MySQL is called <b>MySQL Connector/J</b>. The PostgreSQL program is called <b>JDBC3</b>, Oracle, SQLite, Derby just <b>JDBC</b>. The jar file for these extensions needs to be installed to the JRE /lib/ext directory. Please consult with installation instructions for these pieces of code from the vendor, or see the MyJSQView README file for additional information. The exceptions to JDBC installations are for the Derby, H2, and HSQL databases. Derby requires derby.jar, derbynet.jar, and derbyclient.jar files to placed in the Java Extension directory. The H2, and HSQL databases use an integrated <b>JDBC</b> built into the application and MyJSQLView as of <b>v3.34</b> includes these database so no additional installation need take place.<br><br>
+	&nbsp;&nbsp;&nbsp;&nbsp;The login interface and Connection Manager uses a XML configuration file for saving user preferences. Upon first running MyJSQLView a reference XML file, myjsqlview.xml, located in the installation directory is read then copied to the user's home directory under a newly created directory, .myjsqlview. <b>DO NOT MODIFY THIS REFERENCE FILE!</b> The newly created directory On Windows &reg; 98 will be 'C:Windows\.myjsqlview'. On Windows &reg; XP, Vista, and Windows 7 the new directory will be in the user's home folder. On a Linux system the new directory will be '/home/user/.myjsqview'. All saved changes performed in site management will be stored in the XML file located in the above referenced directory. As of <b>v2.72</b>++ of MyJSQLView the XML configuration file once saved with a user's passwords will not be able to be used on another system, encrypted password data is not transferable. The user is encouraged to make a backup of this file on occasional. The .myjsqlview directory in addition to holding the XML configuration file will also contain the file myjsqlview_locale.txt which holds the entry that allows control of language support.<br><br> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView requires a database to be setup to communicate with in order to work. It is beyond the scope of this document for installing and setting up this type of application, but insure the correct access <b>grant rights</b> are specified for the user and database tables that are desired to be reached. All databases normally have some form of privilege configuration for selective control to access rights. So just because you have local access rights does not mean the database will let you also login from a remote machine. Remember also that the MyJSQLView application uses TCP/IP, Transmission Control Protocol/Internet Protocol, for its connection to the database. <font style="border: 2px solid yellow;" size="+1">*</font> Many of the default installations for these databases limit connections to just from the local host only.</p>
 
 	<a name="AddingaShortcut"></a>
 	<p><strong><font size="+1">Adding a Shortcut</font></strong></p>
@@ -204,7 +213,7 @@
 	<a name="Login_Access"></a>
 	<p><font size="+2"><strong>Login Access</strong></font></p>
 	
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;Upon first running the MyJSQLView application the user will be presented with a login access. The basic login requires four inputs to be provided in order to gain access to a database. <b>Figure 1.</b> below shows the login window with the textfields that require proper input. The Host input is the server that is running the database. Ex. localhost, 127.0.0.1, 216.123.456.001, mysqlserver.net, dandymadeproductions.com. A database must also be specified because a database server can have several databases associated with it. MyJSQLView provides for the access of only one database at a time. Multiple processes of the program may be used to access more than one database at time. The database entry may also be used to provide additional parameters to effect the connection, such as for PostgreSQL "myDB;loglevel=2". The last two entries in the login are the User and Password inputs to gain access to the database server. At the top of the login access is a toolbar that allows saved site selection, Connection Manager site management, and the advanced options for connections. The advanced options portion of the login interface has four additional parameters, Driver, Protocol, SubProtocol, and Port. The default installation of MyJSQLView comes with example entries for the Derby, HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases for these parameters. It will be obvious for the Driver and SubProtocol entries which selection is correct, because the contents contains the database name. Derby, HSQL, MySQL, Oracle, PostgreSQL, and SQLite all share a common entry for Protocol, jdbc, but the ports are not as such; Derby's port is 1527, HSQL's 9001, MySQL's 3306, Oracle's 1521,  &#038; PostgreSQL's 5432. SQLite and MSAccess actually needs no port number since it is file oriented but, MyJSQLView requires a port entry so the arbitrary number 0000 was chosen for the example entry. <font style="border: 2px solid yellow;" size="+1">*</font> Beware these are just the default ports for these databases. An administer of the database may change these default configurations. Also if you are updating the MyJSQLView application your existing saved sites in the .myjsqlview.xml file will not be over written with a new myjsqlview.xml reference file from the installation. The implications is you will not see any new example parameters for additional databases supported.  You may have to manually open the reference myjsqlview.xml file with a text editor in the installation directory to view these examples parameters.</p><br>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;Upon first running the MyJSQLView application the user will be presented with a login access. The basic login requires four inputs to be provided in order to gain access to a database. <b>Figure 1.</b> below shows the login window with the textfields that require proper input. The Host input is the server that is running the database. Ex. localhost, 127.0.0.1, 216.123.456.001, mysqlserver.net, dandymadeproductions.com. A database must also be specified because a database server can have several databases associated with it. MyJSQLView provides for the access of only one database at a time. Multiple processes of the program may be used to access more than one database at time. The database entry may also be used to provide additional parameters to effect the connection, such as for PostgreSQL "myDB;loglevel=2". The last two entries in the login are the User and Password inputs to gain access to the database server. At the top of the login access is a toolbar that allows saved site selection, Connection Manager site management, and the advanced options for connections. The advanced options portion of the login interface has four additional parameters, Driver, Protocol, SubProtocol, and Port. The default installation of MyJSQLView comes with example entries for the Derby, H2, HSQL, MySQL, Oracle, PostgreSQL, and SQLite databases for these parameters. It will be obvious for the Driver and SubProtocol entries which selection is correct, because the contents contains the database name. Derby, H2, HSQL, MySQL, Oracle, PostgreSQL, and SQLite all share a common entry for Protocol, jdbc, but the ports are not as such; Derby's port is 1527, H2's 9092, HSQL's 9001, MySQL's 3306, Oracle's 1521,  &#038; PostgreSQL's 5432. SQLite and MSAccess actually needs no port number since it is file oriented but, MyJSQLView requires a port entry so the arbitrary number 0000 was chosen for the example entry. <font style="border: 2px solid yellow;" size="+1">*</font> Beware these are just the default ports for these databases. An administer of the database may change these default configurations. Also if you are updating the MyJSQLView application your existing saved sites in the .myjsqlview.xml file will not be over written with a new myjsqlview.xml reference file from the installation. The implications is you will not see any new example parameters for additional databases supported. You may have to manually open the reference myjsqlview.xml file with a text editor in the installation directory to view these examples parameters or review <a href="#Login_Parameters">Appendix B</a>.</p><br>
 
 	<div style="text-align: center;">
 		<img alt="" src="login.png" style="width: 400px; height: 370px;">
@@ -491,6 +500,127 @@
   			</tbody>
 		</table><br>
 		<b>Table 1.</b>
+	</div><br>
+
+	<a name="Login_Parameters"></a>
+	<p><strong><font size="+1">Login Parameters</font></strong></p>
+
+	<div style="text-align: center;">
+		<table  summary="" border="1" cellpadding="1"  cellspacing="1"  width="650" align="center">
+		<tbody>
+			<tr>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">DB System</span></td>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">Type</span></td>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">Database</span></td>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">Driver</span></td>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">Protocol</span></td>
+				<td style="vertical-align: top; text-align: center; font-weight: bold;">SubProtocol</td>
+				<td style="vertical-align: top; text-align: center;"><span style="font-weight: bold;">Port</span></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;"><span style="font-weight: bold;">Derby</span></td>
+				<td style="vertical-align: top;">Server</td>
+				<td style="vertical-align: top;">dbName</td>
+				<td style="text-align: center; vertical-align: top;">org.apache.derby.jdbc.ClientDriver</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">jdbc</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">derby</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">1527</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">File</td>
+				<td style="vertical-align: top;">path/dbName</td>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: middle;">org.apache.derby.jdbc.EmbeddedDriver</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Memory</td>
+				<td style="vertical-align: top;">memory:dbName</td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;"><span style="font-weight: bold;">H2</span></td>
+				<td style="vertical-align: top;">Server</td>
+				<td style="vertical-align: top;">tcp:dnName</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">org.h2.Driver</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">jdbc</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">h2</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">9092</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">File</td>
+				<td style="vertical-align: top;">path/dbName</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Memory</td>
+				<td style="vertical-align: top;">mem:dbName</td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;"><span style="font-weight: bold;">HSQL</span></td>
+				<td style="vertical-align: top;">Server</td>
+				<td style="vertical-align: top;">dbName</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">org.hsqldb.jdbcDriver</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">jdbc</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">hsqldb:hsql</td>
+				<td colspan="1" rowspan="3" style="text-align: center; vertical-align: middle;">9001</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">File</td>
+				<td style="vertical-align: top;">file:path/dbName</td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Memory</td>
+				<td style="vertical-align: top;">mem:dbName</td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>MSAccess</span><br><br></td>
+				<td colspan="1" rowspan="1" style="vertical-align: top;"><br>File<br></td>
+				<td colspan="1" rowspan="1" style="vertical-align: top;"><br>dbName<br></td>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>sun.jdbc.odbc.JdbcOdbcDriver<br></td>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>odbc<br></td>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>0000<br></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>MySQL</span><br><br></td>
+				<td style="vertical-align: top;"><br>Server<br></td>
+				<td style="vertical-align: top;"><br>dbName<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>com.mysql.jdbc.Driver<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>mysql<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>3306<br></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>Oracle</span><br><br></td>
+				<td style="vertical-align: top;"><br>Server<br></td>
+				<td style="vertical-align: top;"><br>dbName<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>oracle.jdbc.driver.OracleDriver<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>oracle:thin<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>1521<br></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>PostgreSQL</span><br><br></td>
+				<td style="vertical-align: top;"><br>Server<br></td>
+				<td style="vertical-align: top;"><br>dbName<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>org.postgresql.Driver<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>postgresql<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>5432<br></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: middle;"><span style="font-weight: bold;">SQLite</span><br></td>
+				<td style="vertical-align: top;">File<br></td>
+				<td style="vertical-align: top;">path/dnName<br></td>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: top;"><br>org.sqlite.JDBC<br><br></td>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: top;"><br>sqlite<br></td>
+				<td colspan="1" rowspan="2" style="text-align: center; vertical-align: top;"><br>0000<br></td>
+			</tr>
+			<tr>
+				<td style="vertical-align: top;">Memory<br></td>
+				<td style="vertical-align: top;">:memory:dbName<br></td>
+			</tr>
+		</tbody>
+		</table><br>
+		<b>Table 2.</b>
 	</div><br>
 	
 	</body>
