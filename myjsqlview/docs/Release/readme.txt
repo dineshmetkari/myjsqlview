@@ -1,4 +1,4 @@
-MyJSQLView Version 3.46
+MyJSQLView Version 3.47
 
 Copyright 2005-2013
 by Dana Proctor
@@ -7,7 +7,7 @@ http://dandymadeproductions.com
 What is MyJSQLView?
 
    MyJSQLView provides an easy to use Java based interface for viewing, adding,
-editing, or deleting entries in the Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL,
+editing, or deleting entries in the Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL,
 and SQLite databases. All tables and fields are available for access in the selected
 database.
 
@@ -24,14 +24,14 @@ databases and plugins. The application only needs two other pieces of code, the
 JRE, Java Runtime Environment, and a JDBC, Java Database Connectivity, driver.
 The JDBC provides the driver interface between the Java SQL, structured query
 language, statements, and the database. As of the release of this version of
-MyJSQLView the application has been tested with the Derby, HSQL, MSAccess, MySQL,
+MyJSQLView the application has been tested with the Derby, H2, HSQL, MSAccess, MySQL,
 Oracle, PostgreSQL, and SQLite databases. The application once installed can provide
 a much quicker access/update to a database than a web based interface frontend
 and MyJSQLView supports transaction locking. If your small business, scientific
 community, government agency, or educational institute wants to quickly access
-either a Apache Derby, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database
-for viewing, adding, editing, searching, and analyzing data MyJSQLView provides
-an alternative that is simple and easy to use.
+either a Apache Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite
+database for viewing, adding, editing, searching, and analyzing data MyJSQLView
+provides an alternative that is simple and easy to use.
 
    Dana M. Proctor
    Project Manager 
@@ -70,8 +70,9 @@ Requirements:
 
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
    * Java Runtime Environment, JRE 1.5 or Newer.
-   * Apache Derby 10.9.1.0. 
-   * HSQL 2.2.5 - 2.2.9. *NOTE, 1.8.x No Longer Supported
+   * Apache Derby 10.9.1.0.
+   * H2 1.3.173 - 1.3.174.
+   * HSQL 2.2.5 - 2.2.9. *NOTE, 1.8.x No Longer Supported.
    * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
    * MySQL 5.0.7 - 5.1.61, JDBC 5.0.7, 5.1.5, 5.1.8.
    * Oracle 10g JDBC 14.
@@ -98,7 +99,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.44 does, will have an example configuration
+additional database, release v3.47 does, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
@@ -127,11 +128,11 @@ the /usr/lib directory, and is most easily found by typing the command "which
 java" in a console. Please consult with each vendor for specific installation
 instructions for these JDBC pieces of code. Similarly if other databases are
 to be accessed via the application then again installed the recommended driver(s)
-to the Java Runtime /lib/ext directory. The two exception JDBC installations
-are for the Derby and HSQL databases. Derby requires the derby.jar, derbynet.jar,
-and derbyclient.jar files to placed in the Java Extension directory. HSQL uses
-an integrated JDBC built into the application. MyJSQLView as of v3.33 includes
-this database so no additional installation need take place.
+to the Java Runtime /lib/ext directory. The exceptions to JDBC installations
+are for the Derby, H2, and HSQL databases. Derby requires the derby.jar, derbynet.jar,
+and derbyclient.jar files to placed in the Java Extension directory. H2, and HSQL
+uses an integrated JDBC built into the application. MyJSQLView as of v3.47 includes
+these databases so no additional installation need take place.
 
     The new login interface and Connection Manager use a XML configuration file
 for saving user preferences. Upon first running MyJSQLView a reference XML file,
@@ -211,6 +212,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 3.47 H2 Database Support. Architectural revisions to support mutiple
+                  database connections instances. HeatMapper plugin CSV Imports.
    * Version 3.46 Bug fix for CSV imports of single digit month fields. Feature
                   additions of LIMIT Control over CSV Summary Table Exports and
                   overall interface font sizing. Finnish and Hebrew language
@@ -232,13 +235,13 @@ Production (2008-12-31):
                   read and write batching.
    * Version 3.33 Integration of HSQLDB2, HyperSQL, database for In-Memory data
                   Analysis. HyperSQL database File and Jar resource connection
-		          support. Advanced Sort/Search interface Aggregation and GROUP
-		          BY feature. SQL Query Bucket Fixes and interface changes to
-		          increase efficiency of use. HeatMapper Plugin.
+		  support. Advanced Sort/Search interface Aggregation and GROUP
+		  BY feature. SQL Query Bucket Fixes and interface changes to
+		  increase efficiency of use. HeatMapper Plugin.
    * Versoin 3.31 HSQLDB2 and MSAccess Database Support. Bug fix for large SQL
                   import files. Multi-language PDF support through the use of
-		          embedded fonts. Corrections to table definition generator unique
-		          key construction. 
+		  embedded fonts. Corrections to table definition generator unique
+		  key construction. 
    * Versoin 3.30 Preliminary Production Release to Address/Correct Reported Problems
                   With PDF Exports and Gnome Desktop Functionality.
    * Version 3.29 Summary Table sort/search history implementation and addition of
