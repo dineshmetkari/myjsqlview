@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.1 10/23/2013
+// Version 1.2 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,9 @@
 // Version 1.0 Initial DatabaseProperties Class.
 //         1.1 Correction in Method getDataSourceType() For Conditional Check
 //             for HSQL & HSQL2 Databases.
+//         1.2 Class Method overideDefaults() Inclusion of a finally Clause
+//             for Insuring Instances fileReader & bufferedReader Get Closed
+//             on IOException.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +63,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.1 10/23/2013
+ * @version 1.2 11/13/2013
  */
 
 public class DatabaseProperties
@@ -514,6 +517,8 @@ public class DatabaseProperties
       // Create file name for retrieval.
       myjsqlviewConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
                                    + MyJSQLView_Utils.getFileSeparator() + configurationFileName;
+      fileReader = null;
+      bufferedReader = null;
       
       try
       {
@@ -593,13 +598,39 @@ public class DatabaseProperties
                }
             }
          }
-         bufferedReader.close();
-         fileReader.close();
       }
       catch (IOException ioe) 
       {
          if (MyJSQLView.getDebug())
-            System.out.println("File I/O Problem. " + ioe);
+            System.out.println("DatabaseProperties overideDefaults() File I/O Problem. " + ioe);
+      }
+      finally
+      {
+         try
+         {
+            if (bufferedReader != null)
+               bufferedReader.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("DatabaseProperties overideDefaults() Failed to Close BufferedReader. "
+                                  + ioe);
+         }
+         finally
+         {
+            try
+            {
+               if (fileReader != null)
+                  fileReader.close();
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("DatabaseProperties overideDefaults() Failed to Close FileReader. "
+                                     + ioe);
+            }
+         }
       }
    }
    
