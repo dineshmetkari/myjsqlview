@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.8 10/10/2013
+// Version 2.9 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,8 @@
 //         2.6 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         2.7 10/05/2013 Constructor Set Frame's Icon.
 //         2.8 10/10/2013 Changes in Method createSQLObject() UI formDialog Components.
+//         2.0 11/13/2013 Class Method saveSQLStatementFile() Inclusion of a finally Clause
+//                        for Insuring Instances fileStream & filebuff Gets Closed on IOException.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -1144,6 +1146,9 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       byte[] buf;
       JFileChooser exportDataChooser;
       int resultsOfFileChooser;
+      
+      FileOutputStream fileStream;
+      BufferedOutputStream filebuff;
 
       // Setting up a file separator instance.
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -1167,11 +1172,15 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          {
             // Creating the buffered data of the text
             // and outputing.
+            
+            fileStream = null;
+            filebuff = null;
+            
             try
             {
                // Setting up OutputStream
-               FileOutputStream fileStream = new FileOutputStream(fileName);
-               BufferedOutputStream filebuff = new BufferedOutputStream(fileStream);
+               fileStream = new FileOutputStream(fileName);
+               filebuff = new BufferedOutputStream(fileStream);
 
                // Writing to the Specified Ouput File.
                for (int i = 0; i < buf.length; i++)
@@ -1191,6 +1200,37 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                
                JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);
+            }
+            finally
+            {
+               try
+               {
+                  if (filebuff != null)
+                  {
+                     filebuff.flush();
+                     filebuff.close();
+                  }
+               }
+               catch (IOException ioe)
+               {
+                  if (MyJSQLView.getDebug())
+                     System.out.println("SQLQueryBucketFrame saveSQLStatementFile() "
+                                        + "Failed to Close BufferedOutputStream. " + ioe);
+               }
+               finally
+               {
+                  try
+                  {
+                     if (fileStream != null)
+                        fileStream.close();
+                  }
+                  catch (IOException ioe)
+                  {
+                     if (MyJSQLView.getDebug())
+                        System.out.println("SQLQueryBucketFrame saveSQLStatementFile() "
+                        		             + "Failed to Close FileOutputStream. " + ioe);
+                  }
+               }
             }
          }
          else
