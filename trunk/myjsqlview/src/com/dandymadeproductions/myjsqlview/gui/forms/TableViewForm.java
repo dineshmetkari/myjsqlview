@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.9 02/17/2013
+// Version 7.0 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -159,6 +159,8 @@
 //                        Made Class, Constructor, & Getter/Setter Methods Public.
 //         6.9 02/17/2013 Handling of Derby Bit Data in Constructor & Class Methods
 //                        actionPerformed(), saveBlobTextField() & setFormField().
+//         7.0 11/13/2013 Class Method saveBlobTextField() Inclusion of a finally Clause for
+//                        Insuring Instances fileStream & filebuff Get Closed on IOException.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -205,7 +207,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 6.9 02/17/2013
+ * @version 7.0 11/13/2013
  */
 
 public class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -497,7 +499,10 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
       byte[] buf;
       JFileChooser exportDataChooser;
       int resultsOfFileChooser;
-
+      
+      FileOutputStream fileStream;
+      BufferedOutputStream filebuff;
+      
       // Setting up a file separator instance.
       String fileSeparator = MyJSQLView_Utils.getFileSeparator();
 
@@ -528,11 +533,15 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
          {
             // Creating the buffered data of the binary/text
             // and outputing.
+            
+            fileStream = null;
+            filebuff = null;
+            
             try
             {
                // Setting up OutputStream
-               FileOutputStream fileStream = new FileOutputStream(fileName);
-               BufferedOutputStream filebuff = new BufferedOutputStream(fileStream);
+               fileStream = new FileOutputStream(fileName);
+               filebuff = new BufferedOutputStream(fileStream);
 
                // Writing to the Specified Ouput File.
                for (int i = 0; i < buf.length; i++)
@@ -540,8 +549,6 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
                   filebuff.write(buf[i]);
                   // System.out.print(buf[i]);
                }
-               filebuff.flush();
-               filebuff.close();
             }
             catch (IOException e)
             {
@@ -553,6 +560,40 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
                
                JOptionPane.showMessageDialog(null, resourceMessage + " " + fileName, resourceAlert,
                   JOptionPane.ERROR_MESSAGE);
+            }
+            finally
+            {
+               try
+               {
+                  if (filebuff != null)
+                  {
+                     filebuff.flush();
+                     filebuff.close();
+                  }
+               }
+               catch (IOException ioe)
+               {
+                  if (MyJSQLView.getDebug())
+                     System.out.println("TableViewForm saveBlobTextField() Failed "
+                                        + "to Close FileOutputStream. " + ioe);
+               }
+               finally
+               {
+                  try
+                  {
+                     if (fileStream != null)
+                     {
+                        fileStream.flush();
+                        fileStream.close();
+                     }
+                  }
+                  catch (IOException ioe)
+                  {
+                     if (MyJSQLView.getDebug())
+                        System.out.println("TableViewForm saveBlobTextField() Failed "
+                                           + "to Close FileReader. " + ioe);
+                  }
+               }
             }
          }
          else
