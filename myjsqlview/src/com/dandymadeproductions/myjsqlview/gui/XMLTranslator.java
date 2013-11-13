@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.2 09/19/2012
+// Version 5.3 11/13/2013
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -118,6 +118,8 @@
 //         5.2 09/19/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //                        Removed Import of SiteParameters From Structures Since It
 //                        Moved to this Classes' Package.
+//         5.3 11/13/2013 Class Method saveXML() Inclusion of a finally Clause for Insuring
+//                        Instance fileStream Gets Closed on IOException.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -152,6 +154,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.io.ReadDataFile;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
@@ -162,7 +165,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 5.2 09/19/2012
+ * @version 5.3 11/13/2013
  */
 
 public class XMLTranslator
@@ -293,7 +296,10 @@ public class XMLTranslator
    {
       // Class method instances.
       String errorString;
+      FileOutputStream fileStream;
 
+      fileStream = null;
+      
       try
       {
          TransformerFactory factory = TransformerFactory.newInstance();
@@ -303,9 +309,12 @@ public class XMLTranslator
 
          DOMSource source = new DOMSource(xmlDocument);
 
-         PrintWriter pw = new PrintWriter(new FileOutputStream(myjsqlviewXMLFileString));
-         StreamResult result = new StreamResult(pw);
+         fileStream = new FileOutputStream(myjsqlviewXMLFileString);
+         PrintWriter printWriter = new PrintWriter(fileStream);
+         StreamResult result = new StreamResult(printWriter);
          trans.transform(source, result);
+         printWriter.flush();
+         printWriter.close();
       }
       catch (TransformerException tfe)
       {
@@ -316,6 +325,22 @@ public class XMLTranslator
       {
          errorString = "XMLTranslator saveXML(): Failed to create File to store XML result.\n" + ioe;
          displayErrors(errorString);
+      }
+      finally
+      {
+         try
+         {
+            if (fileStream != null)
+            {
+               fileStream.flush();
+               fileStream.close();
+            }
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("XMLTranslator saveXML() Failed to Flush/Close FileOutputStream. " + ioe);
+         }
       }
 
       // Spent several hours trying to remove newlines in removal of child nodes
