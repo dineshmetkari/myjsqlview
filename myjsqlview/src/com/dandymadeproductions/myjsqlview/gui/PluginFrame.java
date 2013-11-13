@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.5 10/05/2013
+// Version 3.6 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,9 @@
 //             the Loading of the MyJSQLView, Default, Repository. Methods Effected
 //             removeRepository(), & loadCachedRepository().
 //         3.5 Constructor Set Frame's Icon.
+//         3.6 Class Method removePluginConfigurationModule() Inclusion of a
+//             finally Clause for Insuring Instances fileReader & bufferedReader
+//             Gets Closed on IOException.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -180,7 +183,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.5 10/05/2013
+ * @version 3.6 11/13/2013
  */
 
 //=================================================================
@@ -1211,6 +1214,9 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       pluginConfigFileString = MyJSQLView_Utils.getMyJSQLViewDirectory()
                                + MyJSQLView_Utils.getFileSeparator()
                                + MYJSQLVIEW_PLUGIN_CONFIGURATION_FILE;
+      
+      fileReader = null;
+      bufferedReader = null;
 
       try
       {
@@ -1247,8 +1253,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             if (currentLine.indexOf(pluginPathFileName) == -1)
                newPluginConfigurationFileContents.append(currentLine + "\n");
          }
-         bufferedReader.close();
-         fileReader.close();
 
          if (newPluginConfigurationFileContents.length() == 0)
          {
@@ -1269,6 +1273,34 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          String optionPaneStringErrors = resource + " " + ioe;
          JOptionPane
                .showMessageDialog(null, optionPaneStringErrors, resourceAlert, JOptionPane.ERROR_MESSAGE);
+      }
+      finally
+      {
+         try
+         {
+            if (bufferedReader != null)
+               bufferedReader.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("PluginFrame removePluginConfigurationModule() "
+                                  + "Failed to Close BufferedReader. " + ioe);
+         }
+         finally
+         {
+            try
+            {
+               if (fileReader != null)
+                  fileReader.close();
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("PluginFrame removePluginConfigurationModule() "
+                                     + "Failed to Close FileReader. " + ioe);
+            }
+         }
       }
    }
 
