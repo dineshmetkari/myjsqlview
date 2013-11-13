@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.4 11/03/2013
+// Version 7.5 11/12/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -166,6 +166,9 @@
 //             Main Changes in Method importCSVFile() to Properly Setup Connections.
 //         7.4 Class Method importCSVFile() Check for csvImportProgressBar NULL Before
 //             Disposing in SQLExeception Catch.
+//         7.5 Additional try/catch in importCSVFile() for fileReader & bufferedReader
+//             to Insure Closure. The Whole Combination of IO/SQLExecptions Should
+//             Really be Cleaned Up, But Do Not Wish to Fix Something THAT IS WORKING!
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -200,7 +203,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.4 11/03/2013
+ * @version 7.5 11/12/2013
  */
 
 public class CSVDataImportThread implements Runnable
@@ -773,15 +776,18 @@ public class CSVDataImportThread implements Runnable
       {
          try
          {
-            if (fileReader != null)
-            {
-               fileReader.close();
+            if (bufferedReader != null)
                bufferedReader.close();
-            }
          }
-         catch (IOException ioe)
+         catch (IOException ioe1){}
+         finally
          {
-            // Tried
+            try
+            {
+               if (fileReader != null)
+                  fileReader.close();
+            }
+            catch (IOException ioe2){}
          }
       }
    }
