@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.6 10/09/2013
+// Version 9.7 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,8 @@
 //         9.5 10/05/2013 Constructor Set Frame's Icon.
 //         9.6 10/09/2013 Changes in Constructor to UI for queryPanel Components, Control & Query
 //                        Entry Area.
+//         9.7 11/13/2013 Class Method openScriptFile() Inclusion of a finally Clause for Insuring
+//                        Instances fileReader & bufferedReader Gets Closed on IOException.
 //         
 //                                        
 //-----------------------------------------------------------------
@@ -320,7 +322,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.6 10/08/2013
+ * @version 9.7 11/13/2013
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -926,6 +928,9 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       int scriptLineLimit = 100;
       String fileName, resource, message;
       
+      FileReader fileReader;
+      BufferedReader bufferedReader;
+      
       // Choosing the file to import data from.
       
       if (scriptLastDirectory.equals(""))
@@ -945,10 +950,13 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
 
          if (!fileName.equals(""))
          {
+            fileReader = null;
+            bufferedReader = null;
+            
             try
             {
-               FileReader fileReader = new FileReader(fileName);
-               BufferedReader bufferedReader = new BufferedReader(fileReader);
+               fileReader = new FileReader(fileName);
+               bufferedReader = new BufferedReader(fileReader);
                String currentLine;
 
                int lineNumber = 1;
@@ -959,8 +967,6 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
                   queryTextArea.append(currentLine);
                   lineNumber++;
                }
-               bufferedReader.close();
-               fileReader.close();
             }
             catch (IOException e)
             {
@@ -968,6 +974,34 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
                                                            "Unalbe to Read Input File");
                message = resource; 
                JOptionPane.showMessageDialog(null, message, resourceAlert, JOptionPane.ERROR_MESSAGE);
+            }
+            finally
+            {
+               try
+               {
+                  if (bufferedReader != null)
+                     bufferedReader.close();
+               }
+               catch (IOException ioe)
+               {
+                  if (MyJSQLView.getDebug())
+                     System.out.println("QueryFrame openScriptFile() Failed to Close BufferedReader. "
+                                        + ioe);
+               }
+               finally
+               {
+                  try
+                  {
+                     if (fileReader != null)
+                        fileReader.close();
+                  }
+                  catch (IOException ioe)
+                  {
+                     if (MyJSQLView.getDebug())
+                        System.out.println("QueryFrame openScriptFile() Failed to Close FileReader. "
+                                           + ioe);
+                  }
+               }
             }
          }
          else
