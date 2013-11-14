@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.08 09/06/2013
+// Version 7.09 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -318,6 +318,8 @@
 //        7.07 Change in Constructor to Use DBTablePanel.getGeneralDBProperties().
 //        7.08 Additions in Methods insert/explicitStatementData() & dumpBinaryData()
 //             to Handle H2 Database Blob Hexidecimal Data Output."
+//        7.09 Class Method run() Inclusion of a finally Clause for Insuring Instances
+//             fileStream & filebuff Get Closed on IOException.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -344,6 +346,7 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
@@ -358,7 +361,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.08 09/06/2013
+ * @version 7.00 11/13/2013
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -483,6 +486,9 @@ public class SQLDataDumpThread implements Runnable
       
       if (dbConnection == null)
          return;
+      
+      fileStream = null;
+      filebuff = null;
 
       // Setting up OutputStream
       try
@@ -658,8 +664,31 @@ public class SQLDataDumpThread implements Runnable
       }
       finally
       {
-         if (filebuff != null)
-            filebuff.close();
+         try
+         {
+            if (filebuff != null)
+               filebuff.close();
+         }
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("SQLDataDumpThread dumpData() Failed to Close BufferedOutputStream. "
+                                  + ioe);
+         }
+         finally
+         {
+            try
+            {
+               if (fileStream != null)
+                  fileStream.close();
+            }
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("SQLDataDumpThread dumpData() Failed to Close FileStream. "
+                                     + ioe);
+            }
+         } 
       }
    }
    
