@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.5 11/12/2013
+// Version 7.6 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -169,6 +169,8 @@
 //         7.5 Additional try/catch in importCSVFile() for fileReader & bufferedReader
 //             to Insure Closure. The Whole Combination of IO/SQLExecptions Should
 //             Really be Cleaned Up, But Do Not Wish to Fix Something THAT IS WORKING!
+//         7.6 Debug Output in importCSVFile() on IOExceptions on Failure to Close
+//             Operations.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -189,6 +191,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
@@ -203,7 +206,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.5 11/12/2013
+ * @version 7.6 11/13/2013
  */
 
 public class CSVDataImportThread implements Runnable
@@ -779,7 +782,12 @@ public class CSVDataImportThread implements Runnable
             if (bufferedReader != null)
                bufferedReader.close();
          }
-         catch (IOException ioe1){}
+         catch (IOException ioe)
+         {
+            if (MyJSQLView.getDebug())
+               System.out.println("CSVDataImporthread importCSV() Failed to Close BufferedReader. "
+                                  + ioe);
+         }
          finally
          {
             try
@@ -787,7 +795,12 @@ public class CSVDataImportThread implements Runnable
                if (fileReader != null)
                   fileReader.close();
             }
-            catch (IOException ioe2){}
+            catch (IOException ioe)
+            {
+               if (MyJSQLView.getDebug())
+                  System.out.println("CSVDataImporthread importCSV() Failed to Close FileReader. "
+                                     + ioe);
+            }
          }
       }
    }
