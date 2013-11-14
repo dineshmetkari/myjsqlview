@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.19 07/06/2013
+// Version 6.20 11/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,6 +145,8 @@
 //             Implemented With the Use of limits in run() the Control of SQL
 //             Statement of Either Exporting Complete Table or Summary Table.
 //        6.19 Closed db_Connection in run() Only After All finallys Completed.
+//        6.20 Class Method run() Inclusion of a finally Clause for Insuring Instances
+//             fileStream & filebuff Get Closed on IOException.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -167,6 +169,7 @@ import java.util.Iterator;
 
 import javax.swing.JOptionPane;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
@@ -178,7 +181,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.18 07/06/2013
+ * @version 6.20 11/13/2013
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -255,6 +258,9 @@ public class CSVDataDumpThread implements Runnable
       if (db_Connection == null)
          return;
       
+      fileStream = null;
+      filebuff = null;
+      
       // Setting up OutputStream
       try
       {
@@ -269,6 +275,349 @@ public class CSVDataDumpThread implements Runnable
          }
          fileStream = new FileOutputStream(fileName, true);
          filebuff = new BufferedOutputStream(fileStream);
+         
+         // Collect the column names.
+         columnNamesString = new StringBuffer();
+         oracleColumnNamesString = new StringBuffer();
+         columnNamesIterator = columnNameFields.iterator();
+         
+         while (columnNamesIterator.hasNext())
+         {
+            field = columnNamesIterator.next();
+
+            // Oracle TIMESTAMPLTZ handled differently to remove the
+            // need to SET SESSION.
+
+            if (dataSourceType.equals(ConnectionManager.ORACLE)
+                && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
+            {
+               oracleColumnNamesString.append("TO_CHAR(" + identifierQuoteString
+                                              + tableColumnNamesHashMap.get(field) 
+                                              + identifierQuoteString
+                                              + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS " 
+                                              + identifierQuoteString
+                                              + tableColumnNamesHashMap.get(field) 
+                                              + identifierQuoteString + ", ");
+            }
+            else
+               oracleColumnNamesString.append(identifierQuoteString 
+                                              + tableColumnNamesHashMap.get(field)
+                                              + identifierQuoteString + ", ");
+            
+            // Unmodified Names.
+            columnNamesString.append(identifierQuoteString + tableColumnNamesHashMap.get(field)
+                                     + identifierQuoteString + ", ");
+         }
+         oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
+            oracleColumnNamesString.length());
+         columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
+         firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
+         
+         // Have a connection, file to write to and columns so begin
+         // dumping data.
+         
+         sqlStatement = null;
+         dbResultSet = null;
+         
+         try
+         {
+            sqlStatement = db_Connection.createStatement();
+            
+            // Collect the row count of the table and setting
+            // up a progress bar for tracking/canceling.
+            
+            if (limits)
+               rowsCount = DBTablesPanel.getSelectedTableTabPanel().getValidDataRowCount();
+            {
+               sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
+               // System.out.println(sqlStatementString);
+
+               dbResultSet = sqlStatement.executeQuery(sqlStatementString);
+
+               if (dbResultSet.next())
+                  rowsCount = dbResultSet.getInt(1);
+            }
+
+            dumpProgressBar.setTaskLength(rowsCount);
+            dumpProgressBar.pack();
+            dumpProgressBar.center();
+            dumpProgressBar.setVisible(true);
+            
+            // Begin Dumping Data.
+            
+            dumpData = "";
+            
+            // Constructing the column names line & dumping.
+            columnNamesIterator = columnNameFields.iterator();
+
+            while (columnNamesIterator.hasNext())
+               dumpData = (String) dumpData + tableColumnNamesHashMap.get(columnNamesIterator.next())
+                          + dataDelimiter;
+            dumpData = ((String) dumpData).substring(0,
+                              ((String) dumpData).length() - dataDelimiter.length()) + "\n";
+            
+            dumpChunkOfData(dumpData);
+            dumpData = "";
+            
+            // Setting up to begin actual field value dump.
+            currentTableIncrement = 0;
+            currentRow = 0;
+            
+            do
+            {
+               // Creating the Select statement to retrieve data. If not using
+               // limit then Oracle needs special handling for Timestamps with
+               // Time Zone.
+               
+               if (limits)
+                  sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
+               else
+               {
+                  if (dataSourceType.equals(ConnectionManager.ORACLE))
+                     sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                          + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
+                                          + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
+                                          + "FROM " + schemaTableName + ") " + "WHERE dmprownumber BETWEEN "
+                                          + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                          + limitIncrement);
+                  // MSAccess
+                  else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                     sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                           + schemaTableName;
+                  // Derby
+                  else if (dataSourceType.equals(ConnectionManager.DERBY))
+                     sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                          + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
+                                          + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
+                  else
+                     sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                          + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
+                                          + currentTableIncrement;
+               }
+               // System.out.println(sqlStatementString);
+
+               dbResultSet = sqlStatement.executeQuery(sqlStatementString);
+               
+               // Actual data dump.
+               while (dbResultSet.next() && !dumpProgressBar.isCanceled())
+               {
+                  int i = 1;
+                  dumpProgressBar.setCurrentValue(currentRow++);
+
+                  columnNamesIterator = columnNameFields.iterator();
+                  
+                  while (columnNamesIterator.hasNext())
+                  {
+                     // Filtering out blob & text data as needed.
+                     String currentHeading = columnNamesIterator.next();
+                     columnClass = tableColumnClassHashMap.get(currentHeading);
+                     columnType = tableColumnTypeHashMap.get(currentHeading);
+                     columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
+
+                     // Blob/Bytea/Binary/Bit Data/Raw data.
+                     
+                     if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
+                         (columnClass.toUpperCase().indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
+                         (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
+                         (columnType.indexOf("BIT DATA") != -1) || (columnType.indexOf("RAW") != -1))
+                     {
+                        Object binaryContent = dbResultSet.getBytes(i);
+                        
+                        if (binaryContent != null)
+                           dumpData = dumpData + "Binary" + dataDelimiter;
+                        else
+                           dumpData = dumpData + "NULL" + dataDelimiter;
+                     }
+
+                     // Text, MediumText, LongText, & CLOB.
+                     else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
+                               columnSize > 255) ||
+                              (columnClass.indexOf("String") != -1 && columnType.equals("LONG")) ||
+                              (columnType.indexOf("CLOB") != -1))
+                     {
+                        fieldContent = dbResultSet.getString(i);
+                        
+                        // Check to see if a portion of the TEXT data should be
+                        // included as defined in the Preferences | Export Data |
+                        // CVS.
+                        
+                        if (fieldContent != null)
+                        {
+                           if (DBTablesPanel.getDataExportProperties().getTextInclusion())
+                           {
+                              int textLength = DBTablesPanel.getDataExportProperties().getTextCharsNumber();
+
+                              // Obtain text and cleanup some
+                              fieldContent = fieldContent.replaceAll("\n", "");
+                              fieldContent = fieldContent.replaceAll("\r", "");
+                              
+                              if (fieldContent.length() > textLength)
+                                 dumpData = dumpData + fieldContent.substring(0, textLength) + dataDelimiter;
+                              else
+                                 dumpData = dumpData + fieldContent + dataDelimiter;
+                           }
+                           else
+                              dumpData = dumpData + "Text" + dataDelimiter;
+                        }
+                        else
+                           dumpData = dumpData + "NULL" + dataDelimiter;
+                     }
+
+                     // Convert MySQL Bit Fields to Such, Since they will
+                     // be returned in base 10.
+                     else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                              && columnType.indexOf("BIT") != -1)
+                     {
+                        fieldContent = dbResultSet.getString(i);
+                        
+                        if (fieldContent != null)
+                        {
+                           try
+                           {
+                              dumpData = dumpData + Integer.toBinaryString(Integer.parseInt(fieldContent))
+                                         + dataDelimiter;
+                           }
+                           catch (NumberFormatException e)
+                           {
+                              // Should never happen.
+                           }
+                        }
+                        else
+                           dumpData = dumpData + "NULL" + dataDelimiter;
+                     }
+
+                     // Insure MySQL Date/Year fields are chopped to only 4 digits.
+                     else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                              && columnType.indexOf("YEAR") != -1)
+                     {
+                        fieldContent = dbResultSet.getString(i);
+                        
+                        if (fieldContent != null)
+                        {
+                           String yearString = fieldContent.trim();
+
+                           if (yearString.length() > 4)
+                              yearString = yearString.substring(0, 4);
+
+                           dumpData = dumpData + yearString + dataDelimiter;
+                        }
+                        else
+                           dumpData = dumpData + "NULL" + dataDelimiter;
+                     }
+                     
+                     // Format Date & Timestamp Fields as Needed.
+                     else if (columnType.equals("DATE") || columnType.equals("DATETIME")
+                              || (columnType.indexOf("TIMESTAMP") != -1 && columnClass.indexOf("Array") == -1))
+                     {
+                        if (columnType.equals("DATE"))
+                        {
+                           Object date = dbResultSet.getDate(i);
+                           if (date != null)
+                              fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                                 date + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
+                           else
+                              fieldContent = "NULL";
+                        }
+                        else
+                        {  
+                           if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+                           {
+                              Object dateTime = dbResultSet.getTimestamp(i);
+                              if (dateTime != null)
+                                 fieldContent = (new SimpleDateFormat(
+                                    DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                    + " HH:mm:ss")).format(dateTime) + "";
+                              else
+                                 fieldContent = "NULL";
+                           }
+                           else if (columnType.equals("TIMESTAMPTZ"))
+                           {
+                              Object dateTime = dbResultSet.getTimestamp(i);
+                              if (dateTime != null)
+                                 fieldContent = (new SimpleDateFormat(
+                                    DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                    + " HH:mm:ss Z")).format(dateTime) + "";
+                              else
+                                 fieldContent = "NULL";
+                           }
+                           // TIMESTAMPLTZ, Oracle
+                           else
+                           {
+                              String timestamp = dbResultSet.getString(i);
+                              
+                              if (timestamp != null)
+                              {
+                                 if (timestamp.indexOf(" ") != -1)
+                                    fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                                                        timestamp.substring(0, timestamp.indexOf(" ")),
+                                                        DBTablesPanel.getDataExportProperties().getCSVDateFormat())
+                                                        + timestamp.substring(timestamp.indexOf(" "));
+                                 else
+                                    fieldContent = timestamp;
+                              }
+                              else
+                                 fieldContent = "NULL";
+                           }
+                        }
+                        dumpData = dumpData + fieldContent + dataDelimiter;  
+                     }
+                     
+                     // All other fields.
+                     else
+                     {
+                        fieldContent = dbResultSet.getString(i);
+                        
+                        if (fieldContent != null)
+                           dumpData = dumpData + fieldContent.trim() + dataDelimiter;
+                        else
+                           dumpData = dumpData + "NULL" + dataDelimiter;     
+                     }
+                     i++;
+                  }
+                  dumpData = ((String) dumpData).substring(0,
+                                    ((String) dumpData).length() - dataDelimiter.length()) + "\n";
+                  // System.out.print(currentRow + " " + dumpData);
+                  
+                  dumpChunkOfData(dumpData);
+                  dumpData = "";
+               }
+               currentTableIncrement += limitIncrement;
+            }
+            while (!limits && currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
+            
+            dumpProgressBar.dispose();
+         }
+         catch (SQLException e)
+         {
+            dumpProgressBar.dispose();
+            ConnectionManager.displaySQLErrors(e, "CSVDataDumpThread run()");
+         }
+         finally
+         {
+            try
+            {
+               if (dbResultSet != null)
+                  dbResultSet.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "CSVDataDumpThread run() failed closing result set");
+            }
+            finally
+            {
+               try
+               {
+                  if (sqlStatement != null)
+                     sqlStatement.close();
+               }
+               catch (SQLException sqle)
+               {
+                  ConnectionManager.displaySQLErrors(sqle,
+                     "CSVDataDumpThread run() failed closing sql statement");
+               }
+            }
+         }   
       }
       catch (IOException e)
       {
@@ -276,348 +625,33 @@ public class CSVDataDumpThread implements Runnable
          JOptionPane.showMessageDialog(null, msg, fileName, JOptionPane.ERROR_MESSAGE);
          return;
       }
-      
-      // Collect the column names.
-      columnNamesString = new StringBuffer();
-      oracleColumnNamesString = new StringBuffer();
-      columnNamesIterator = columnNameFields.iterator();
-      
-      while (columnNamesIterator.hasNext())
-      {
-         field = columnNamesIterator.next();
-
-         // Oracle TIMESTAMPLTZ handled differently to remove the
-         // need to SET SESSION.
-
-         if (dataSourceType.equals(ConnectionManager.ORACLE)
-             && (tableColumnTypeHashMap.get(field)).equals("TIMESTAMPLTZ"))
-         {
-            oracleColumnNamesString.append("TO_CHAR(" + identifierQuoteString
-                                           + tableColumnNamesHashMap.get(field) 
-                                           + identifierQuoteString
-                                           + ", 'YYYY-MM-DD HH24:MM:SS TZR') AS " 
-                                           + identifierQuoteString
-                                           + tableColumnNamesHashMap.get(field) 
-                                           + identifierQuoteString + ", ");
-         }
-         else
-            oracleColumnNamesString.append(identifierQuoteString 
-                                           + tableColumnNamesHashMap.get(field)
-                                           + identifierQuoteString + ", ");
-         
-         // Unmodified Names.
-         columnNamesString.append(identifierQuoteString + tableColumnNamesHashMap.get(field)
-                                  + identifierQuoteString + ", ");
-      }
-      oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
-         oracleColumnNamesString.length());
-      columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
-      firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
-      
-      // Have a connection, file to write to and columns so begin
-      // dumping data.
-      
-      sqlStatement = null;
-      dbResultSet = null;
-      
-      try
-      {
-         sqlStatement = db_Connection.createStatement();
-         
-         // Collect the row count of the table and setting
-         // up a progress bar for tracking/canceling.
-         
-         if (limits)
-            rowsCount = DBTablesPanel.getSelectedTableTabPanel().getValidDataRowCount();
-         {
-            sqlStatementString = "SELECT COUNT(*) FROM " + schemaTableName;
-            // System.out.println(sqlStatementString);
-
-            dbResultSet = sqlStatement.executeQuery(sqlStatementString);
-
-            if (dbResultSet.next())
-               rowsCount = dbResultSet.getInt(1);
-         }
-
-         dumpProgressBar.setTaskLength(rowsCount);
-         dumpProgressBar.pack();
-         dumpProgressBar.center();
-         dumpProgressBar.setVisible(true);
-         
-         // Begin Dumping Data.
-         
-         dumpData = "";
-         
-         // Constructing the column names line & dumping.
-         columnNamesIterator = columnNameFields.iterator();
-
-         while (columnNamesIterator.hasNext())
-            dumpData = (String) dumpData + tableColumnNamesHashMap.get(columnNamesIterator.next())
-                       + dataDelimiter;
-         dumpData = ((String) dumpData).substring(0,
-                           ((String) dumpData).length() - dataDelimiter.length()) + "\n";
-         
-         dumpChunkOfData(dumpData);
-         dumpData = "";
-         
-         // Setting up to begin actual field value dump.
-         currentTableIncrement = 0;
-         currentRow = 0;
-         
-         do
-         {
-            // Creating the Select statement to retrieve data. If not using
-            // limit then Oracle needs special handling for Timestamps with
-            // Time Zone.
-            
-            if (limits)
-               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
-            else
-            {
-               if (dataSourceType.equals(ConnectionManager.ORACLE))
-                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                       + "(SELECT ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) " 
-                                       + "AS dmprownumber, " + oracleColumnNamesString.toString() + " "
-                                       + "FROM " + schemaTableName + ") " + "WHERE dmprownumber BETWEEN "
-                                       + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
-                                       + limitIncrement);
-               // MSAccess
-               else if (dataSourceType.equals(ConnectionManager.MSACCESS))
-                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                        + schemaTableName;
-               // Derby
-               else if (dataSourceType.equals(ConnectionManager.DERBY))
-                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                       + schemaTableName + " OFFSET " + currentTableIncrement + " ROWS "
-                                       + "FETCH NEXT " + limitIncrement + " ROWS ONLY";
-               else
-                  sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
-                                       + schemaTableName + " LIMIT " + limitIncrement + " OFFSET "
-                                       + currentTableIncrement;
-            }
-            // System.out.println(sqlStatementString);
-
-            dbResultSet = sqlStatement.executeQuery(sqlStatementString);
-            
-            // Actual data dump.
-            while (dbResultSet.next() && !dumpProgressBar.isCanceled())
-            {
-               int i = 1;
-               dumpProgressBar.setCurrentValue(currentRow++);
-
-               columnNamesIterator = columnNameFields.iterator();
-               
-               while (columnNamesIterator.hasNext())
-               {
-                  // Filtering out blob & text data as needed.
-                  String currentHeading = columnNamesIterator.next();
-                  columnClass = tableColumnClassHashMap.get(currentHeading);
-                  columnType = tableColumnTypeHashMap.get(currentHeading);
-                  columnSize = (tableColumnSizeHashMap.get(currentHeading)).intValue();
-
-                  // Blob/Bytea/Binary/Bit Data/Raw data.
-                  
-                  if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnClass.toUpperCase().indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
-                      (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                      (columnType.indexOf("BIT DATA") != -1) || (columnType.indexOf("RAW") != -1))
-                  {
-                     Object binaryContent = dbResultSet.getBytes(i);
-                     
-                     if (binaryContent != null)
-                        dumpData = dumpData + "Binary" + dataDelimiter;
-                     else
-                        dumpData = dumpData + "NULL" + dataDelimiter;
-                  }
-
-                  // Text, MediumText, LongText, & CLOB.
-                  else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
-                            columnSize > 255) ||
-                           (columnClass.indexOf("String") != -1 && columnType.equals("LONG")) ||
-                           (columnType.indexOf("CLOB") != -1))
-                  {
-                     fieldContent = dbResultSet.getString(i);
-                     
-                     // Check to see if a portion of the TEXT data should be
-                     // included as defined in the Preferences | Export Data |
-                     // CVS.
-                     
-                     if (fieldContent != null)
-                     {
-                        if (DBTablesPanel.getDataExportProperties().getTextInclusion())
-                        {
-                           int textLength = DBTablesPanel.getDataExportProperties().getTextCharsNumber();
-
-                           // Obtain text and cleanup some
-                           fieldContent = fieldContent.replaceAll("\n", "");
-                           fieldContent = fieldContent.replaceAll("\r", "");
-                           
-                           if (fieldContent.length() > textLength)
-                              dumpData = dumpData + fieldContent.substring(0, textLength) + dataDelimiter;
-                           else
-                              dumpData = dumpData + fieldContent + dataDelimiter;
-                        }
-                        else
-                           dumpData = dumpData + "Text" + dataDelimiter;
-                     }
-                     else
-                        dumpData = dumpData + "NULL" + dataDelimiter;
-                  }
-
-                  // Convert MySQL Bit Fields to Such, Since they will
-                  // be returned in base 10.
-                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
-                           && columnType.indexOf("BIT") != -1)
-                  {
-                     fieldContent = dbResultSet.getString(i);
-                     
-                     if (fieldContent != null)
-                     {
-                        try
-                        {
-                           dumpData = dumpData + Integer.toBinaryString(Integer.parseInt(fieldContent))
-                                      + dataDelimiter;
-                        }
-                        catch (NumberFormatException e)
-                        {
-                           // Should never happen.
-                        }
-                     }
-                     else
-                        dumpData = dumpData + "NULL" + dataDelimiter;
-                  }
-
-                  // Insure MySQL Date/Year fields are chopped to only 4 digits.
-                  else if (dataSourceType.equals(ConnectionManager.MYSQL)
-                           && columnType.indexOf("YEAR") != -1)
-                  {
-                     fieldContent = dbResultSet.getString(i);
-                     
-                     if (fieldContent != null)
-                     {
-                        String yearString = fieldContent.trim();
-
-                        if (yearString.length() > 4)
-                           yearString = yearString.substring(0, 4);
-
-                        dumpData = dumpData + yearString + dataDelimiter;
-                     }
-                     else
-                        dumpData = dumpData + "NULL" + dataDelimiter;
-                  }
-                  
-                  // Format Date & Timestamp Fields as Needed.
-                  else if (columnType.equals("DATE") || columnType.equals("DATETIME")
-                           || (columnType.indexOf("TIMESTAMP") != -1 && columnClass.indexOf("Array") == -1))
-                  {
-                     if (columnType.equals("DATE"))
-                     {
-                        Object date = dbResultSet.getDate(i);
-                        if (date != null)
-                           fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-                              date + "", DBTablesPanel.getDataExportProperties().getCSVDateFormat());
-                        else
-                           fieldContent = "NULL";
-                     }
-                     else
-                     {  
-                        if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
-                        {
-                           Object dateTime = dbResultSet.getTimestamp(i);
-                           if (dateTime != null)
-                              fieldContent = (new SimpleDateFormat(
-                                 DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                                 + " HH:mm:ss")).format(dateTime) + "";
-                           else
-                              fieldContent = "NULL";
-                        }
-                        else if (columnType.equals("TIMESTAMPTZ"))
-                        {
-                           Object dateTime = dbResultSet.getTimestamp(i);
-                           if (dateTime != null)
-                              fieldContent = (new SimpleDateFormat(
-                                 DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                                 + " HH:mm:ss Z")).format(dateTime) + "";
-                           else
-                              fieldContent = "NULL";
-                        }
-                        // TIMESTAMPLTZ, Oracle
-                        else
-                        {
-                           String timestamp = dbResultSet.getString(i);
-                           
-                           if (timestamp != null)
-                           {
-                              if (timestamp.indexOf(" ") != -1)
-                                 fieldContent = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
-                                                     timestamp.substring(0, timestamp.indexOf(" ")),
-                                                     DBTablesPanel.getDataExportProperties().getCSVDateFormat())
-                                                     + timestamp.substring(timestamp.indexOf(" "));
-                              else
-                                 fieldContent = timestamp;
-                           }
-                           else
-                              fieldContent = "NULL";
-                        }
-                     }
-                     dumpData = dumpData + fieldContent + dataDelimiter;  
-                  }
-                  
-                  // All other fields.
-                  else
-                  {
-                     fieldContent = dbResultSet.getString(i);
-                     
-                     if (fieldContent != null)
-                        dumpData = dumpData + fieldContent.trim() + dataDelimiter;
-                     else
-                        dumpData = dumpData + "NULL" + dataDelimiter;     
-                  }
-                  i++;
-               }
-               dumpData = ((String) dumpData).substring(0,
-                                 ((String) dumpData).length() - dataDelimiter.length()) + "\n";
-               // System.out.print(currentRow + " " + dumpData);
-               
-               dumpChunkOfData(dumpData);
-               dumpData = "";
-            }
-            currentTableIncrement += limitIncrement;
-         }
-         while (!limits && currentTableIncrement < rowsCount && !dumpProgressBar.isCanceled());
-         
-         dumpProgressBar.dispose();
-      }
-      catch (SQLException e)
-      {
-         dumpProgressBar.dispose();
-         ConnectionManager.displaySQLErrors(e, "CSVDataDumpThread run()");
-      }
       finally
       {
          try
          {
-            if (dbResultSet != null)
-               dbResultSet.close();
+            if (filebuff != null)
+               filebuff.close();
          }
-         catch (SQLException sqle)
+         catch (IOException ioe)
          {
-            ConnectionManager.displaySQLErrors(sqle,
-               "CSVDataDumpThread run() failed closing result set");
+            if (MyJSQLView.getDebug())
+               System.out.println("CSVDataDumpThread run() Failed to Close BufferedOutputStream. "
+                                  + ioe);
          }
          finally
          {
             try
             {
-               if (sqlStatement != null)
-                  sqlStatement.close();
+               if (fileStream != null)
+                  fileStream.close();
             }
-            catch (SQLException sqle)
+            catch (IOException ioe)
             {
-               ConnectionManager.displaySQLErrors(sqle,
-                  "CSVDataDumpThread run() failed closing sql statement");
+               if (MyJSQLView.getDebug())
+                  System.out.println("CSVDataDumpThread run() Failed to Close FileStream. "
+                                     + ioe);
             }
-         }
+         } 
       }
       ConnectionManager.closeConnection(db_Connection, "CSVDataDumpThread run()");
    }
