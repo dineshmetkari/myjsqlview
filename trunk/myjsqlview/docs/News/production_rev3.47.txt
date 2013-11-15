@@ -1,7 +1,7 @@
 MyJSQLView Version 3.47 Released
 
 The MyJSQLView project is pleased to release v3.47 to the public. The
-release marks the support for the H2 database and its inclusion has a
+release marks the support for the H2 database and its inclusion as a
 library with the application. H2 provides an additional focal point
 for allowing locale file and in-memory data analysis for MyJSQLView 
 and its plugins. Architectural changes for MyJSQLView have also been
