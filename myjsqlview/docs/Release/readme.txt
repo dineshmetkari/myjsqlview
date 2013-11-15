@@ -212,7 +212,7 @@ Version History:
 
 Production (2008-12-31):
 
-   * Version 3.47 H2 Database Support. Architectural revisions to support mutiple
+   * Version 3.47 H2 Database Support. Architectural revisions to support multiple
                   database connections instances. HeatMapper plugin CSV Imports.
    * Version 3.46 Bug fix for CSV imports of single digit month fields. Feature
                   additions of LIMIT Control over CSV Summary Table Exports and
