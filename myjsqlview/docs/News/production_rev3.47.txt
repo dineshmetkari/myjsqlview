@@ -1,0 +1,22 @@
+MyJSQLView Version 3.47 Released
+
+The MyJSQLView project is pleased to release v3.47 to the public. The
+release marks the support for the H2 database and its inclusion has a
+library with the application. H2 provides an additional focal point
+for allowing locale file and in-memory data analysis for MyJSQLView 
+and its plugins. Architectural changes for MyJSQLView have also been
+implemented with v3.47 that ease the ability to create alternate
+database connections within the application. The Heat Mapper plugin
+has also been updated to allow CSV imports for analysis.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to visually build queries, profile and
+plot data for analysis.
