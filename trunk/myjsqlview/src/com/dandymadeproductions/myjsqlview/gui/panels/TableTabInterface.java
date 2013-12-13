@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.9 09/11/2012
+// Version 4.0 12/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -71,6 +71,7 @@
 //             Vector to ArrayList.
 //         3.8 Added Interfaces getForeignKeys() & getExportedKeys().
 //         3.9 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
+//         4.0 Changed Interface Method getTableSQLStatement() Return Type to StringBuffer.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -93,7 +94,7 @@ import javax.swing.JTable;
  * application with other classes.
  * 
  * @author Dana M. Proctor
- * @version 3.9 09/11/2012
+ * @version 4.0 12/13/2012
  */
 
 interface TableTabInterface
@@ -212,7 +213,7 @@ interface TableTabInterface
    // table SQL statement.
    //==============================================================
 
-   public String getTableSQLStatement();
+   public StringBuffer getTableSQLStatement();
 
    //==============================================================
    // Class method to allow classes to obtain the table row start.
