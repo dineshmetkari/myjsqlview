@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.17 10/29/2013
+// Version 5.18 12/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -252,6 +252,8 @@
 //             DBTablePanel.getGeneralDBProperties().
 //        5.17 Correction in Method pasteClipboardContents() to Create a Thread
 //             Instance for the CSVDataImportThead and Start it.
+//        5.18 Method getTableSqlStatement() Changed Return Type From String to
+//             StringBuffer.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -330,7 +332,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.17 10/29/2013
+ * @version 5.18 12/13/2013
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2507,9 +2509,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    // table SQL statement.
    //==============================================================
    
-   public String getTableSQLStatement()
+   public StringBuffer getTableSQLStatement()
    {
-      return new String(sqlTableStatement);
+      return sqlTableStatement;
    }
 
    //==============================================================
