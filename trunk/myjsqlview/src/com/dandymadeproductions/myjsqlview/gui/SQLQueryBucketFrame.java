@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.9 11/13/2013
+// Version 3.0 12/14/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,8 +66,13 @@
 //         2.6 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.
 //         2.7 10/05/2013 Constructor Set Frame's Icon.
 //         2.8 10/10/2013 Changes in Method createSQLObject() UI formDialog Components.
-//         2.0 11/13/2013 Class Method saveSQLStatementFile() Inclusion of a finally Clause
+//         2.9 11/13/2013 Class Method saveSQLStatementFile() Inclusion of a finally Clause
 //                        for Insuring Instances fileStream & filebuff Gets Closed on IOException.
+//         3.0 12/14/2013 Class TransferHandler createTransferable() Refractoring of Code
+//                        to Create StringSelection. Method actionPerformed() Add Creation
+//                        of StringBuffer for Changed Argument to addSQLStatement(). Method
+//                        createSQLObjectDialog() Setting dialog_sqlTextArea.setText() Change
+//                        to Convert toString() From SQLQueryBucketListObject.getSQLStatementString().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -138,7 +143,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQueryBucketListObject;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 2.8 10/10/2013
+ * @version 3.0 12/14/2013
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -391,9 +396,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          protected Transferable createTransferable(JComponent c)
          {
             JList list = (JList) c;
-            String sqlStatement = ((SQLQueryBucketListObject) list.getSelectedValue())
-                                     .getSQLStatementString();
-            return new StringSelection(sqlStatement);
+            return new StringSelection(((SQLQueryBucketListObject) list.getSelectedValue())
+                                     .getSQLStatementString().toString());
          }
       });
       sqlQueryList.setDropMode(DropMode.INSERT);
@@ -514,7 +518,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
          // Add
          else if (actionCommand.equals(ADD))
-            addSQLStatement("");
+            addSQLStatement(new StringBuffer());
             
          // Delete
          else if (actionCommand.equals(DELETE))
@@ -1023,7 +1027,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          dialog_sqlTextArea.addMouseListener(MyJSQLView.getPopupMenuListener());  
       }
       
-      dialog_sqlTextArea.setText(processingBucketListObject.getSQLStatementString());
+      dialog_sqlTextArea.setText(processingBucketListObject.getSQLStatementString().toString());
       
       JScrollPane sqlTextScrollPane = new JScrollPane(dialog_sqlTextArea);
       
@@ -1322,14 +1326,14 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    // Class methods to add a SQL statement to the bucket's list.
    //==============================================================
 
-   public void addSQLStatement(String sqlStatement)
+   public void addSQLStatement(StringBuffer sqlStatement)
    {
       setVisible(true);
       // System.out.println(sqlStatement);
       
       processingBucketListObject = new SQLQueryBucketListObject();
       processingBucketListObject.setText("");
-      processingBucketListObject.setSQLStatementString(sqlStatement);
+      processingBucketListObject.setSQLStatementString(sqlStatement.toString());
       processingBucketListObject.setLimited(true);
       processingBucketListObject.setBackground(getBackground());
       
