@@ -10,7 +10,7 @@
 // 
 // Copyright (C) 2005-2013 Dana M. Proctor
 // All rights reserved.
-// Version 1.7 09/11/2012
+// Version 1.8 12/14/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,9 @@
 //         1.6 01/01/2012 Made Class Instance buttonImage transient.
 //         1.7 09/11/2012 Change Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //                        Made Class, & Constructor Public.
+//         1.8 12/14/2013 Changed Class Instance sqlStatementString from String to a
+//                        StringBuffer. Setup of Same in constructSQLQueryBucketListObject()
+//                        & Changes in get/setSQLStatement() Methods to Accomodate.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +71,7 @@ import javax.swing.JButton;
  * Swing button that exempts translucency.
  * 
  * @author Chet, Dana M. Proctor
- * @version 1.7 09/11/2012
+ * @version 1.8 12/14/2013
  */
 
 public class SQLQueryBucketListObject extends JButton
@@ -78,7 +81,7 @@ public class SQLQueryBucketListObject extends JButton
    private static final float alphaValue = 0.76f;
    
    private transient BufferedImage buttonImage = null;
-   private String sqlStatementString;
+   private StringBuffer sqlStatementString;
    private boolean isLimited;
 
    //==============================================================
@@ -99,8 +102,10 @@ public class SQLQueryBucketListObject extends JButton
    
    private void constructSQLQueryBucketListObject()
    {
-      setFont(getFont().deriveFont(Font.BOLD));
+      sqlStatementString = new StringBuffer();
       isLimited = false;
+      
+      setFont(getFont().deriveFont(Font.BOLD));
       setContentAreaFilled(false);
       setOpaque(false);
    }
@@ -147,10 +152,16 @@ public class SQLQueryBucketListObject extends JButton
    // used with the MyJSQLView SQLQueryBucketFrame Class.
    //==============================================================
    
-   public String getSQLStatementString()
+   public StringBuffer getSQLStatementString()
    {
       if (!isLimited)
-         return MyJSQLView_Utils.getUnlimitedSQLStatementString(sqlStatementString);
+      {
+         String newSQLStatementString;
+         newSQLStatementString = MyJSQLView_Utils.getUnlimitedSQLStatementString(sqlStatementString.toString());
+         sqlStatementString.delete(0, sqlStatementString.length());
+         sqlStatementString.append(newSQLStatementString);
+         return sqlStatementString;
+      }
       else
          return sqlStatementString;
    }
@@ -162,7 +173,8 @@ public class SQLQueryBucketListObject extends JButton
    
    public void setSQLStatementString(String value)
    {
-      sqlStatementString = value;
+      sqlStatementString.delete(0, sqlStatementString.length());
+      sqlStatementString.append(value);
    }
    
    //==============================================================
