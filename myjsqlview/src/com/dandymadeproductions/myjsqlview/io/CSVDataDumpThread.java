@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.20 11/13/2013
+// Version 6.21 12/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -147,6 +147,8 @@
 //        6.19 Closed db_Connection in run() Only After All finallys Completed.
 //        6.20 Class Method run() Inclusion of a finally Clause for Insuring Instances
 //             fileStream & filebuff Get Closed on IOException.
+//        6.21 Conversion of StringBuffer TableTabPanel.getTableSQLStatement().toString()
+//             in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -181,7 +183,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.20 11/13/2013
+ * @version 6.21 12/13/2013
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -370,7 +372,7 @@ public class CSVDataDumpThread implements Runnable
                // Time Zone.
                
                if (limits)
-                  sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
+                  sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement().toString();
                else
                {
                   if (dataSourceType.equals(ConnectionManager.ORACLE))
