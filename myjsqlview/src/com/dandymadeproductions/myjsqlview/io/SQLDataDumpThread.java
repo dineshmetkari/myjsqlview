@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.09 11/13/2013
+// Version 7.10 12/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -318,8 +318,10 @@
 //        7.07 Change in Constructor to Use DBTablePanel.getGeneralDBProperties().
 //        7.08 Additions in Methods insert/explicitStatementData() & dumpBinaryData()
 //             to Handle H2 Database Blob Hexidecimal Data Output."
-//        7.09 Class Method run() Inclusion of a finally Clause for Insuring Instances
+//        7.09 Class Method dumpData() Inclusion of a finally Clause for Insuring Instances
 //             fileStream & filebuff Get Closed on IOException.
+//        7.10 Conversion of StringBuffer TableTabPanel.getTableSQLStatement().toString()
+//             in insertReplace/explicitStatementData() Methods.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -361,7 +363,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.00 11/13/2013
+ * @version 7.10 12/13/2013
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -912,7 +914,7 @@ public class SQLDataDumpThread implements Runnable
          {
             // Finishing creating the Select statement to retrieve data.
             if (limits)
-               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
+               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement().toString();
             else
             {
                // Oracle
@@ -1355,7 +1357,7 @@ public class SQLDataDumpThread implements Runnable
          do
          {
             if (limits)
-               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement();
+               sqlStatementString = DBTablesPanel.getSelectedTableTabPanel().getTableSQLStatement().toString();
             else
             {
                // Oracle
