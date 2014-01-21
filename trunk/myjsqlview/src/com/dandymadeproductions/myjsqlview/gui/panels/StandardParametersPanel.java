@@ -9,8 +9,8 @@
 //            << StandardParametersPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.1 10/18/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.2 01/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,8 @@
 //         3.0 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Change Class, Constructor, and Getter/Setter Method Public.
 //         3.1 Constructor Dressed Up JComboBoxes & JPasswordField.
+//         3.2 Class Methods getHost(), getDataBase(), & getUser() Return Empty
+//             String If No Selection in ComboBox.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -91,7 +93,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 3.1 10/18/2012
+ * @version 3.2 01/21/2014
  */
 
 public class StandardParametersPanel extends JPanel
@@ -172,17 +174,26 @@ public class StandardParametersPanel extends JPanel
 
    public String getHost()
    {
-      return (String) hostJComboBox.getSelectedItem();
+      if (hostJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) hostJComboBox.getSelectedItem();
    }
 
    public String getDataBase()
    {
-      return (String) dbJComboBox.getSelectedItem();
+      if (dbJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) dbJComboBox.getSelectedItem();
    }
 
    public String getUser()
    {
-      return (String) userJComboBox.getSelectedItem();
+      if (userJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) userJComboBox.getSelectedItem();
    }
 
    public char[] getPassword()
