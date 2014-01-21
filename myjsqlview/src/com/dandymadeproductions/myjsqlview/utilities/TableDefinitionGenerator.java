@@ -8,8 +8,8 @@
 //              << TableDefinitionGenerator.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.7 10/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.8 01/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -150,6 +150,8 @@
 //         5.6 Addition of Support of H2 Databases. Added Method createH2TableDefinition().
 //         5.7 Modification to Allow Possible Use of CHAR & VARCHAR BIT DATA Types
 //             in Method createDerbyTableDefinition().
+//         5.8 Constructor Check for Additional Parameters Passed in Database Login
+//             Field, & If so Trunk.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -179,7 +181,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.7 10/05/2013
+ * @version 5.8 01/21/2014
  */
 
 public class TableDefinitionGenerator
@@ -205,6 +207,8 @@ public class TableDefinitionGenerator
       
       databaseName = ConnectionManager.getConnectionProperties().getProperty(
          ConnectionProperties.DB);
+      if (databaseName.indexOf(";") != -1)
+         databaseName = databaseName.substring(0, databaseName.indexOf(";"));
 
       // Setting up required instances.
       dbIdentifierQuoteString = ConnectionManager.getIdentifierQuoteString();
