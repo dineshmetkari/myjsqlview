@@ -9,8 +9,8 @@
 //               << MyJSQLView_JMenuBarActions.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.61 11/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 7.62 01/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -308,6 +308,8 @@
 //             Close.
 //        7.61 Moved Cache Clearing on ACTION_EXIT Event to After the Cycling of Plugins
 //             Shutdown.
+//        7.62 Method dataExportAction() Truncated Additional Parameters Passed in Database
+//             Login Field for File Naming.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -375,7 +377,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.61 11/06/2013
+ * @version 7.62 01/21/2014
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1218,7 +1220,7 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
       SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
       database = ConnectionManager.getConnectionProperties().getProperty(ConnectionProperties.DB);
       if (database.indexOf(";") != -1)
-         database = database.replaceAll(";", "");
+         database = database.substring(0, database.indexOf(";"));
       
       if (DBTablesPanel.getSelectedTableTabPanel() == null)
          return;
