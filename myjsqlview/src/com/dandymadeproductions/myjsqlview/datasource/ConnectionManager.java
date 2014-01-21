@@ -8,8 +8,8 @@
 //                 << ConnectionManager.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.5 11/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 4.6 01/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -103,6 +103,8 @@
 //         4.3 Debug System.output Description Properly Identified Class Name Throughout.
 //         4.4 Removed Debug Output in Method createConnectURLString().
 //         4.5 Commented Out Derby Shutdown Code in Method shutdownDatabase(). See Note.
+//         4.6 Added static final Class Instance MSSQL. Class Method createConnectionURLString()
+//             Addition of Code to Create MS SQL Server Connection String.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -128,7 +130,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.5 11/05/2013
+ * @version 4.6 01/20/2014
  */
 
 public class ConnectionManager
@@ -147,6 +149,7 @@ public class ConnectionManager
    public static final String ORACLE = "oracle";
    public static final String SQLITE = "sqlite";
    public static final String MSACCESS = "odbc";
+   public static final String MSSQL = "sqlserver";
    public static final String DERBY = "derby";
    public static final String H2 = "h2";
    public static final String OTHERDB = "other";
@@ -511,6 +514,14 @@ public class ConnectionManager
       else if (subProtocol.equals(ConnectionManager.MSACCESS))
       {
          connectionURLString += subProtocol + ":" + db;
+      }
+      // MSSQL
+      else if (subProtocol.equals(ConnectionManager.MSSQL))
+      {
+         if (db.isEmpty())
+            connectionURLString += subProtocol + "://" + host + ":" + port;
+         else
+            connectionURLString += subProtocol + "://" + host + ":" + port + ";databaseName=" + db;
       }
       // H2
       else if (subProtocol.equals(ConnectionManager.H2))
