@@ -9,8 +9,8 @@
 //           << AdvancedParametersPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.6 10/18/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.7 01/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -61,6 +61,8 @@
 //         2.5 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //             Made Class, Constructor, & All Getter/Setter Methods Public.
 //         2.6 Constructor Dressed Up JComboBoxes.
+//         2.7 Class Methods getDriver(), getProtocol(), getSubProtocol(), &
+//             getPort() Return Empty String If No Selection in ComboBox.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -85,7 +87,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.6 10/18/2012
+ * @version 2.7 01/21/2014
  */
 
 public class AdvancedParametersPanel extends JPanel
@@ -169,22 +171,34 @@ public class AdvancedParametersPanel extends JPanel
 
    public String getDriver()
    {
-      return (String) driverJComboBox.getSelectedItem();
+      if (driverJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) driverJComboBox.getSelectedItem();
    }
 
    public String getProtocol()
    {
-      return (String) protocolJComboBox.getSelectedItem();
+      if (protocolJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) protocolJComboBox.getSelectedItem();
    }
 
    public String getSubProtocol()
    {
-      return (String) subProtocolJComboBox.getSelectedItem();
+      if (subProtocolJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) subProtocolJComboBox.getSelectedItem();
    }
 
    public String getPort()
    {
-      return (String) portJComboBox.getSelectedItem();
+      if (portJComboBox.getSelectedItem() == null)
+         return "";
+      else
+         return (String) portJComboBox.getSelectedItem();
    }
 
    //===============================================================
