@@ -11,8 +11,8 @@
 //                   << LoginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.04 11/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 7.05 01/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -307,6 +307,7 @@
 //             connectionURLString. Cleaned All Aspects of Collecting Database
 //             Attributes from Same Method to New Declared Instance DatabaseProperties.
 //        7.04 Class Method accessCheck() Debug Output for connectionURLString.
+//        7.05 Minor Changes/Additions to Debug Output in Method accessCheck().
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -364,7 +365,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.04 11/05/2013
+ * @version 7.05 01/22/2014
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1051,7 +1052,7 @@ public class LoginFrame extends JFrame implements ActionListener
          {
             driver = advancedParametersPanel.getDriver();
             if (MyJSQLView.getDebug())
-               System.out.println("LoginFrame accessCheck() driver: " + driver);
+               System.out.println("LoginFrame accessCheck() Driver: " + driver);
             
             // Run SQLite in pure Java mode to maintain compatibility,
             // slower, but works with older versions of JVM. Revisit
@@ -1149,7 +1150,7 @@ public class LoginFrame extends JFrame implements ActionListener
          connectionURLString = ConnectionManager.createConnectionURLString(connectionProperties);
          
          if (MyJSQLView.getDebug())
-            System.out.println("LoginFrame accessCheck() " + connectionURLString);
+            System.out.println("LoginFrame accessCheck() Connection URL: " + connectionURLString);
          
          connectionProperties.setConnectionURLString(connectionURLString);
 
@@ -1160,6 +1161,9 @@ public class LoginFrame extends JFrame implements ActionListener
          try
          {
             dbConnection = DriverManager.getConnection(connectionURLString, connectProperties);
+            
+            if (MyJSQLView.getDebug())
+               System.out.println("LoginFrame accessCheck() Connection Established Initializing:");
             
             // The Connection is valid if it does not throw a SQL Exception.
             // So save the connection properties and collect the associated
