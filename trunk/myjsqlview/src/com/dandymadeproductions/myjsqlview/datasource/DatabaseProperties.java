@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.3 01/21/2014
+// Version 1.4 01/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@
 //             Passed In for db. Added Default Database Parameters, catalog, etc.
 //             for MSSSQL Database. Method getDataSourceType() Returns MSSQL
 //             on subProtocol Match.
+//         1.4 Class Method loadDBTables() Additional Filtering of Table Loading
+//             Based On Schema for MSSQL.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.3 01/21/2014
+ * @version 1.4 01/22/2014
  */
 
 public class DatabaseProperties
@@ -437,10 +439,15 @@ public class DatabaseProperties
                 && !(tableType.indexOf("SEQUENCE") != -1) && !(tableType.indexOf("SYNONYM") != -1)
                 && (tableType.equals("TABLE") || tableType.equals("VIEW") || !filter))
             {
-               // Filter some more for Oracle.
+               // Filter some more for Oracle & MSSQL.
                if ((subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && filter)
                      && (oracleSystemSchemaHash.contains(tableSchem) || tableSchem.indexOf("FLOWS") != -1 ||
                          tableName.indexOf("BIN$") != -1))
+                  continue;
+               
+               if ((subProtocol.indexOf(ConnectionManager.MSSQL) != -1 && filter)
+                     && (tableSchem.toUpperCase().indexOf("SYS") != -1
+                         || tableSchem.toUpperCase().indexOf("INFORMATION_SCHEMA") != -1))
                   continue;
 
                // Abreviated and filtered information.
