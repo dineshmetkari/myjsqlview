@@ -7,8 +7,8 @@
 //                << DatabaseProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.3 01/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,10 @@
 //         1.2 Class Method overideDefaults() Inclusion of a finally Clause
 //             for Insuring Instances fileReader & bufferedReader Get Closed
 //             on IOException.
+//         1.3 Class Method init() Truncated Additional Options That May Be
+//             Passed In for db. Added Default Database Parameters, catalog, etc.
+//             for MSSSQL Database. Method getDataSourceType() Returns MSSQL
+//             on subProtocol Match.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -63,7 +67,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.2 11/13/2013
+ * @version 1.3 01/21/2014
  */
 
 public class DatabaseProperties
@@ -129,6 +133,9 @@ public class DatabaseProperties
       //======================================================
       // Collect the appropriate default database information.
       
+      if (db.indexOf(";") != -1)
+         db = db.substring(0, db.indexOf(";"));
+      
       // HSQL
       if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
       {
@@ -188,6 +195,15 @@ public class DatabaseProperties
          dbType = ConnectionManager.H2;
          // db_resultSet = dbMetaData.getTables(null, null, "%", tableTypes);
       }
+      // MSSQL
+      else if (subProtocol.equals(ConnectionManager.MSSQL))
+      {
+         catalog = db;
+         schemaPattern = null;
+         tableNamePattern = "%";
+         dbType = ConnectionManager.MSSQL;
+         // db_resultSet = dbMetaData.getTables(db, null, "%", tableTypes);
+      }
       // Unknown
       else
       {
@@ -227,6 +243,8 @@ public class DatabaseProperties
                dbProductNameVersion = "SQLite ";
             else if (subProtocol.equals(ConnectionManager.MSACCESS))
                dbProductNameVersion = "MS Access ";
+            else if (subProtocol.equals(ConnectionManager.MSSQL))
+               dbProductNameVersion = "Microsoft SQL Server ";
             else if (subProtocol.equals(ConnectionManager.DERBY))
                dbProductNameVersion = "Apache Derby ";
             else if (subProtocol.equals(ConnectionManager.H2))
@@ -689,6 +707,8 @@ public class DatabaseProperties
          return ConnectionManager.SQLITE;
       else if (subProtocol.equals(ConnectionManager.MSACCESS))
          return ConnectionManager.MSACCESS;
+      else if (subProtocol.equals(ConnectionManager.MSSQL))
+         return ConnectionManager.MSSQL;
       else if (subProtocol.equals(ConnectionManager.DERBY))
          return ConnectionManager.DERBY;
       else if (subProtocol.equals(ConnectionManager.H2))
