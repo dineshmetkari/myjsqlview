@@ -10,8 +10,8 @@
 //                 << DBTablesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.9 07/02/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 6.0 01/23/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -133,6 +133,8 @@
 //         5.8 Changed GeneralProperties Class to GeneralDBProperties. Changed All
 //             Instances, Comments, & Methods to Reflect.
 //         5.9 Reorganized Getter/Setter Methods.
+//         6.0 Class Method loadTable() Addition for Loading tableTabPanel,
+//             TableTabPanel_MSSQL.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -177,7 +179,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 5.9 07/02/2013
+ * @version 6.0 01/23/2014
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -432,6 +434,9 @@ public class DBTablesPanel extends JPanel implements ActionListener
       // MS Access
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          tableTabPanel = new TableTabPanel_MSAccess(tableName, dbConnection, false);
+      // MSSQL
+      else if (dataSourceType.equals(ConnectionManager.MSSQL))
+         tableTabPanel = new TableTabPanel_MSSQL(tableName, dbConnection, false);
       // Apache Derby
       else if (dataSourceType.equals(ConnectionManager.DERBY))
          tableTabPanel = new TableTabPanel_Derby(tableName, dbConnection, false);
