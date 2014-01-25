@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.19 01/24/2014
+// Version 5.20 01/25/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -255,6 +255,9 @@
 //        5.18 Method getTableSqlStatement() Changed Return Type From String to
 //             StringBuffer.
 //        5.19 Creation of Method Instance newStringBuffer in getTableSQLStatement().
+//        5.20 Method setSpecialFieldData() Changes in Conditional for Inclution
+//             of Bit Column Types for True/False Option. Uppercase Conversion for
+//             Check.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -333,7 +336,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.19 01/24/2014
+ * @version 5.20 01/25/2014
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -1917,8 +1920,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                listStrings = columnEnumHashMap.get(currentColumnName);
 
                // Special case of enum field Boolean single bit.
-               if (listStrings.equals("tinyint(1)") || listStrings.equals("bool")
-                   || listStrings.equals("BOOLEAN"))
+               if (listStrings.equals("tinyint(1)") || listStrings.toUpperCase().equals("BOOL")
+                   || listStrings.toUpperCase().equals("BOOLEAN")
+                   || listStrings.toUpperCase().equals("BIT"))
                   listStrings = "(\'TRUE\',\'FALSE\')";
             }
             else
