@@ -12,8 +12,8 @@
 //           << TableTabPanel_PostgreSQL.java >>
 //
 //==============================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 14.5 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 14.6 01/24/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -328,6 +328,7 @@
 //             Collected via getDisposeButton().
 //        14.5 Change in loadTable(), viewSelectedItem(), addItem(), &
 //             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
+//        14.6 Copyright Update & Minor Changes in loadTable(), Semicolon Removal.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -359,7 +360,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 14.5 07/01/2013
+ * @version 14.6 01/24/2014
  */
 
 public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionListener
@@ -873,7 +874,6 @@ public class TableTabPanel_PostgreSQL extends TableTabPanel //implements ActionL
                   else if (columnClass.indexOf("Boolean") != -1)
                   {
                      tableData[i][j++] = rs.getString(columnName);
-                     ;
                   }
 
                   // =============================================
