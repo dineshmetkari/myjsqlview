@@ -9,8 +9,8 @@
 //                 << TableViewForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.0 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 7.1 01/26/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -161,6 +161,8 @@
 //                        actionPerformed(), saveBlobTextField() & setFormField().
 //         7.0 11/13/2013 Class Method saveBlobTextField() Inclusion of a finally Clause for
 //                        Insuring Instances fileStream & filebuff Get Closed on IOException.
+//         7.1 01/26/2014 Constructor & Class Methods actionPerformed(), saveBlobTextField(),
+//                        & setFormField() Detection of IMAGE Types for Button Processing/Actions.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -207,7 +209,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the TableTabPanel summary table.
  * 
  * @author Dana M. Proctor
- * @version 7.0 11/13/2013
+ * @version 7.1 01/26/2014
  */
 
 public class TableViewForm extends JPanel implements ActionListener, KeyListener
@@ -301,6 +303,7 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
              || (columnType.indexOf("BYTEA") != -1)
              || (columnType.indexOf("BINARY") != -1)
              || (columnType.indexOf("BIT DATA") != -1)
+             || (columnType.indexOf("IMAGE") != -1)
              || (columnType.indexOf("RAW") != -1)
              || (columnType.indexOf("CLOB") != -1))
          {
@@ -395,6 +398,7 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
                 || ((JButton) evt.getSource()).getText().indexOf("BYTEA") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BINARY") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("BIT DATA") != -1
+                      || ((JButton) evt.getSource()).getText().indexOf("IMAGE") != -1
                 || ((JButton) evt.getSource()).getText().indexOf("RAW") != -1)
                saveBlobTextField(panelSource);
 
@@ -511,6 +515,7 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
           || ((JButton) panelSource).getText().indexOf("BYTEA") != -1
           || ((JButton) panelSource).getText().indexOf("BINARY") != -1
           || ((JButton) panelSource).getText().indexOf("BIT DATA") != -1
+          || ((JButton) panelSource).getText().indexOf("IMAGE") != -1
           || ((JButton) panelSource).getText().indexOf("RAW") != -1)
 
          buf = (byte[]) blobBytesHashMap.get((JButton) panelSource);
@@ -637,6 +642,7 @@ public class TableViewForm extends JPanel implements ActionListener, KeyListener
           || (columnType.indexOf("BYTEA") != -1)
           || (columnType.indexOf("BINARY") != -1)
           || (columnType.indexOf("BIT DATA") != -1)
+          || (columnType.indexOf("IMAGE") != -1)
           || (columnType.indexOf("RAW") != -1) || (columnType.indexOf("CLOB") != -1))
 
          ((JButton) fieldHashMap.get(itemName)).setText((String) content);
