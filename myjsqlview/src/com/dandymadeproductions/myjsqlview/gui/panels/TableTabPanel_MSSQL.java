@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.0 01/23/2014
+// Version 1.1 01/27/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 // also be included with the original copyright author.
 //=================================================================
 // Version 1.0 Original TableTabPanel_MSSQL Class.
+//         1.1 Finalized TableTabPanel for MSSQL With Functionality Verified for
+//             mssqlTypes, Data Types, Table.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -67,7 +69,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * also provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.0 01/23/2014
+ * @version 1.1 01/27/2014
  */
 
 public class TableTabPanel_MSSQL extends TableTabPanel
@@ -188,14 +190,15 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             columnType = tableMetaData.getColumnTypeName(i);
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
-            System.out.println(i + " " + colNameString + " " +
-            comboBoxNameString + " " +
-            columnClass + " " + columnType + " " +
-            columnSize);
+            // System.out.println(i + " " + colNameString + " " +
+            //                      comboBoxNameString + " " +
+            //                      columnClass + " " + columnType + " " +
+            //                      columnSize);
 
-            // This going to be a problem so skip this column.
+            // These going to be a problem so skip these columns.
 
-            if (columnClass == null && columnType == null)
+            if ((columnClass == null && columnType == null)
+                || columnType.toUpperCase().equals("TIMESTAMP"))
                continue;
 
             if (columnClass == null)
@@ -374,7 +377,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                   if (searchString.equals("0"))
                      searchString = searchTextString;
                }
-               else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+               else if (columnType.indexOf("DATETIME") != -1 || columnType.equals("TIMESTAMP"))
                {
                   if (searchString.indexOf(" ") != -1)
                      searchString = MyJSQLView_Utils.processDateFormatSearch(
@@ -397,7 +400,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             
             if (columnType.equals("DATE"))
                searchTextString = MyJSQLView_Utils.processDateFormatSearch(searchTextString);
-            else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+            else if (columnType.indexOf("DATETIME") != -1 || columnType.equals("TIMESTAMP"))
             {
                if (searchTextString.indexOf(" ") != -1)
                   searchTextString = MyJSQLView_Utils.processDateFormatSearch(
@@ -411,7 +414,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                                      + " LIKE '%" + searchTextString + "%'");
          }
       }
-      System.out.println(searchTextString);
+      // System.out.println(searchTextString);
 
       // Connect to database to obtain the initial/new items set
       // and then sorting that set.
@@ -598,6 +601,34 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                      String displayDate = displayMyDateString(currentContentData + "");
                      tableData[i][j++] = displayDate;
                   }
+                  
+                  // =============================================
+                  // Datetime Offset
+                  else if (columnType.equals("DATETIMEOFFSET"))
+                  {
+                     String dateString, timeString;
+                     
+                     dateString = currentContentData + "";
+                     dateString = dateString.substring(0, (dateString.indexOf(" ")));
+                     dateString = displayMyDateString(dateString);
+
+                     timeString = currentContentData + "";
+                     timeString = timeString.substring(timeString.indexOf(" "));
+                     
+                     tableData[i][j++] = dateString + timeString;
+                  }
+                  
+                  // =============================================
+                  // Datetime
+                  else if (columnType.indexOf("DATETIME") != -1)
+                  {
+                     currentContentData = rs.getTimestamp(columnName);
+                     // System.out.println(currentContentData);
+                     
+                     tableData[i][j++] = (new SimpleDateFormat(
+                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
+                        + " HH:mm:ss").format(currentContentData));
+                  }
 
                   // =============================================
                   // Timestamps
@@ -610,12 +641,9 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                   }
                   
                   // =============================================
-                  // BINARY, IMAGE, & TEXT
-                  if ((columnType.toUpperCase().indexOf("BINARY") != -1)
-                        || (columnType.toUpperCase().indexOf("IMAGE") != -1)
-                        || (columnType.toUpperCase().indexOf("XML") != -1)
-                        || (columnClass.indexOf("String") != -1
-                            && columnType.toUpperCase().indexOf("TEXT") != -1))
+                  // BINARY, & IMAGE
+                  else if ((columnType.toUpperCase().indexOf("BINARY") != -1)
+                            || (columnType.toUpperCase().indexOf("IMAGE") != -1))
                   {
                      // Handles a key Blob
                      if (keyLength != null)
@@ -646,7 +674,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
 
                   // =============================================
                   // Text & XML
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                  else if (columnClass.indexOf("String") != -1 && columnType.indexOf("CHAR") == -1
                            && columnSize > 255)
                   {
                      String stringName;
@@ -750,6 +778,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
       Iterator<String> keyIterator, textFieldNamesIterator;
       Object currentColumnName, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
+      int columnSize = 0;
       int keyColumn = 0;
 
       // Connecting to the data base, to obtain
@@ -851,6 +880,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                currentDB_ColumnName = (String) columnNamesHashMap.get(listTable.getColumnName(i));
                currentColumnClass = columnClassHashMap.get(listTable.getColumnName(i));
                currentColumnType = columnTypeHashMap.get(listTable.getColumnName(i));
+               columnSize = columnSizeHashMap.get(listTable.getColumnName(i)).intValue();
                
                // System.out.println("field:" + currentDB_ColumnName + " class:" + currentColumnClass
                //                    + " type:" + currentColumnType + " value:" + currentContentData);
@@ -889,8 +919,9 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                      
                      sqlStatementString.append("='" + dateString + "' ");
                   }
+                  
                   // Process DateTime
-                  else if (currentColumnType.equals("DATETIME") || currentColumnType.equals("TIMESTAMP"))
+                  else if (currentColumnType.indexOf("DATETIME") != -1 || currentColumnType.equals("TIMESTAMP"))
                   {
                      String content, dateTimeString;
                      content = (String) currentContentData;
@@ -942,8 +973,8 @@ public class TableTabPanel_MSSQL extends TableTabPanel
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
-            // currentDB_ColumnName + " " +
-            // currentColumnType + " " + columnSize + " " + currentContentData);
+            //                    currentDB_ColumnName + " " +
+            //                    currentColumnType + " " + columnSize + " " + currentContentData);
 
             if (currentContentData != null)
             {
@@ -954,9 +985,9 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                   tableViewForm.setFormField(currentColumnName,
                      (Object) displayMyDateString(currentContentData + ""));
                }
-
+               
                // DATETIME Type Field
-               else if (currentColumnType.equals("DATETIME"))
+               else if (currentColumnType.indexOf("DATETIME") != -1)
                {
                   String dateString = currentContentData + "";
                   dateString = dateString.substring(0, (dateString.indexOf(" ")));
@@ -1135,11 +1166,28 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             currentContentData = "hh:mm:ss";
             addForm.setFormField(currentColumnName, currentContentData);
          }
+         
+         // DATETIME Type Field
+         if (currentColumnType.equals("DATETIME") || currentColumnType.equals("DATETIME2")
+             || currentColumnType.equals("SMALLDATETIME"))
+         {
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
+            currentContentData = currentContentData + " HH:mm:ss";
+            addForm.setFormField(currentColumnName, currentContentData);
+         }
+         
+         // DATETIME OFFSET Type Field
+         if (currentColumnType.equals("DATETIMEOFFSET"))
+         {
+            currentContentData = DBTablesPanel.getGeneralDBProperties().getViewDateFormat();
+            currentContentData = currentContentData + " HH:mm:ss.nnnnnnn +|-hh:mm";
+            addForm.setFormField(currentColumnName, currentContentData);
+         }
 
          // TIMESTAMP Type Field
-         if (currentColumnType.equals("TIMESTAMP") || currentColumnType.equals("TIMESTAMPTZ"))
+         if (currentColumnType.equals("TIMESTAMP"))
          {
-            currentContentData = "NOW()";
+            currentContentData = "";
             addForm.setFormField(currentColumnName, currentContentData);
          }
 
@@ -1150,7 +1198,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             if (currentColumnType.indexOf("BINARY") != -1)
                addForm.setFormField(currentColumnName, (Object) ("BINARY Browse"));
             else
-               addForm.setFormField(currentColumnName, (Object) ("BIT DATA Browse"));
+               addForm.setFormField(currentColumnName, (Object) ("IMAGE Browse"));
          }
 
          // All TEXT, & XML
@@ -1341,6 +1389,47 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                   editForm.setFormField(currentColumnName, 
                                         (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
             }
+            
+            // DATETIME OFFSET Type Field
+            else if (currentColumnType.equals("DATETIMEOFFSET"))
+            {
+               String dateString, timeString;
+               
+               if (currentContentData != null)
+               {
+                  dateString = currentContentData + "";
+                  dateString = dateString.substring(0, (dateString.indexOf(" ")));
+                  dateString = displayMyDateString(dateString);
+
+                  timeString = currentContentData + "";
+                  timeString = timeString.substring(timeString.indexOf(" "));
+                  currentContentData = dateString + timeString;
+                  
+                  editForm.setFormField(currentColumnName, (Object) currentContentData); 
+               }
+               else
+                  editForm.setFormField(currentColumnName,
+                     (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
+                               + " HH:mm:ss.nnnnnnn +|-hh:mm"));
+            }
+            
+            // DATETIME Type Field
+            else if (currentColumnType.indexOf("DATETIME") != -1)
+            {
+               if (currentContentData != null)
+               {
+                  currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
+                  // System.out.println(currentContentData);
+                  
+                  currentContentData = new SimpleDateFormat(
+                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
+                     + " HH:mm:ss").format(currentContentData);
+                  editForm.setFormField(currentColumnName, currentContentData);
+               }
+               else
+                  editForm.setFormField(currentColumnName,
+                     (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss"));
+            }
 
             // Timestamps Type Field
             else if (currentColumnType.equals("TIMESTAMP"))
@@ -1355,8 +1444,8 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                }
                else
                   editForm.setFormField(currentColumnName,
-                                        (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
-                                        + " HH:MM:SS");
+                                        (Object) (DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
+                                        + " HH:mm:ss"));
             }
 
             // Binary/Image Type Field
