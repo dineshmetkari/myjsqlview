@@ -16,6 +16,7 @@
 <Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="test/h2_db/h2test" User="sa" Password="" SSH="0" />
 <Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="mem:dbname" User="" Password="" SSH="0" />
 <Site Name="LocalHost_H2" Driver="org.h2.Driver" Protocol="jdbc" SubProtocol="h2" Host="127.0.0.1" Port="9092" Database="tcp:dbname" User="" Password="" SSH="0" />
+<Site Name="LocalHost_MSSQL" Driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" Protocol="jdbc" SubProtocol="sqlserver" Host="127.0.0.1" Port="1433" Database="mssql" User="" Password="" SSH="0" />
 </Sites>
 <Settings>
 <Item name="Last Server Name" type="string">Last Site</Item>
