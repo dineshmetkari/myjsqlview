@@ -8,8 +8,8 @@
 //                  << TableEntryForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.02 10/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 9.03 01/27/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -373,6 +373,9 @@
 //        9.01 09/06/2013 Class Method selectFunctionOperator() Add H2 Database Functions File and
 //                        Change to Load Functions From New Sub-Directory functions."
 //        9.02 10/06/2013 Constructor Set Frame's Icon.
+//        9.03 01/27/2014 DateTimeOffset Processing in Constructor for MSSQL. Changes in Method
+//                        addUpdateTableEntry() for Proper Handling of MSSQL XML, Keys, &
+//                        DateTime Types. Method setFormField() XML Detection.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -444,7 +447,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.02 10/06/2013
+ * @version 9.03 01/27/2014
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -787,7 +790,7 @@ public class TableEntryForm extends JFrame implements ActionListener
          // TINYTEXT, & All Other Type Fields
          else
          {
-            if (columnType.indexOf("DATE") != -1)
+            if (columnType.indexOf("DATE") != -1 && !columnType.equals("DATETIMEOFFSET"))
             {
                currentField = new JButton(calendarIcon);
                ((JButton) currentField).setBounds(x + 345, y, 20, 20);
@@ -1254,7 +1257,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                columnSize = (columnSizeHashMap.get(columnName)).intValue();
                isTextField = (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                               && columnSize > 255)
-                              || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                             || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                             || (columnClass.indexOf("String") != -1 && columnType.equals("XML"))
                              || (columnType.indexOf("CLOB") != -1);
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
@@ -1262,7 +1266,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                              || columnType.indexOf("RAW") != -1 || columnType.indexOf("IMAGE") != -1
                              || (columnClass.indexOf("byte[]") != -1 && columnType.indexOf("BIT DATA") != -1);
                isArrayField = (columnClass.indexOf("Array") != -1 || columnClass.indexOf("Object") != -1)
-                              && columnType.indexOf("_") != -1;
+                               && columnType.indexOf("_") != -1;
 
                // Composing intial SQL prepareStatement with special
                // consideration
@@ -1272,8 +1276,9 @@ public class TableEntryForm extends JFrame implements ActionListener
                
                if ((!isTextField && !isBlobField && !isArrayField && !functionsHashMap.containsKey(columnName))
                      && ((getFormField(columnName).equals(""))
-                          || (dataSourceType.equals(ConnectionManager.MSACCESS) && 
-                              getFormField(columnName).toLowerCase().equals("auto"))))
+                          || ((dataSourceType.equals(ConnectionManager.MSACCESS)
+                               || dataSourceType.equals(ConnectionManager.MSSQL))
+                              && getFormField(columnName).toLowerCase().equals("auto"))))
                {
                   // Do Nothing, Field Takes Default.
                }
@@ -1497,6 +1502,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                columnSize = (columnSizeHashMap.get(columnName)).intValue();
                isTextField = (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") && columnSize > 255)
                              || (columnClass.indexOf("String") != -1 && columnType.equals("LONG"))
+                             || (columnClass.indexOf("String") != -1 && columnType.equals("XML"))
                              || (columnType.indexOf("CLOB") != -1);
                isBlobField = (columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1)
                              || (columnClass.indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1)
@@ -1564,8 +1570,9 @@ public class TableEntryForm extends JFrame implements ActionListener
                      }
                      else
                      {
-                        // Can't Update autoincrement in MS Access.
-                        if (!dataSourceType.equals(ConnectionManager.MSACCESS))
+                        // Can't Update autoincrement in MS SQL & Access.
+                        if (!dataSourceType.equals(ConnectionManager.MSACCESS)
+                            && !dataSourceType.equals(ConnectionManager.MSSQL))
                            sqlStatementString.append(identifierQuoteString + columnNamesHashMap.get(columnName)
                                                      + identifierQuoteString + "=?, ");
                      }
@@ -1861,7 +1868,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                     || getFormField(columnName).toLowerCase().equals("null")
                     || getFormField(columnName).toLowerCase().equals("default")
                     || (autoIncrementHashMap.containsKey(columnName)
-                        && dataSourceType.equals(ConnectionManager.MSACCESS))))
+                        && (dataSourceType.equals(ConnectionManager.MSACCESS)
+                            || dataSourceType.equals(ConnectionManager.MSSQL)))))
             {
                // Do Nothing, Field Already Set.
             }
@@ -2020,7 +2028,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                      }
                   }
                   // DateTime
-                  else if (columnType.equals("DATETIME"))
+                  else if (columnType.indexOf("DATETIME") != -1)
                   {
                      java.sql.Timestamp dateTimeValue;
                      dateString = "";
@@ -2034,8 +2042,14 @@ public class TableEntryForm extends JFrame implements ActionListener
                      dateString = MyJSQLView_Utils.convertViewDateString_To_DBDateString(dateString,
                         DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
                      timeString = getFormField(columnName).substring(dateTimeFormString.indexOf(" "));
-                     dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
-                     prepared_sqlStatement.setTimestamp(i++, dateTimeValue);
+                     
+                     if (columnType.equals("DATETIMEOFFSET"))
+                        prepared_sqlStatement.setString(i++, dateString + timeString);
+                     else
+                     {
+                        dateTimeValue = java.sql.Timestamp.valueOf(dateString + timeString);
+                        prepared_sqlStatement.setTimestamp(i++, dateTimeValue); 
+                     }
                   }
                   // Timestamp
                   else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMP WITH TIME ZONE")
@@ -2659,7 +2673,8 @@ public class TableEntryForm extends JFrame implements ActionListener
          // Text Button
          else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
                    && (columnSizeHashMap.get(columnName)).intValue() > 255)
-                  || (columnClass.indexOf("String") != -1 && columnType.equals("LONG")))
+                  || (columnClass.indexOf("String") != -1 && columnType.equals("LONG")
+                  || (columnType.indexOf("XML") != -1)))
             ((JButton) fieldHashMap.get(columnName)).setText((String) content);
 
          // Array Button
