@@ -8,8 +8,8 @@
 //                    << SQLTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.5 07/09/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.6 01/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -66,6 +66,9 @@
 //         2.5 Added Class Instances ACTION_SELECT_ALL & ACTION_DESELECT_ALL. Changed
 //             Static Instance maxPreferredColumnSize to All Capitals. Changed
 //             Resource to Reference SQLTablePanel & Added 'Empty'.
+//         2.6 Excluded the TIMESTAMP Type of MSSQL From Being Processed in
+//             Method executeSQL(). In Same Method Processing for DATETIMEOFFSET
+//             & IMAGE Types & Catching All DATETIME Types With indexOf Conditional.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -114,6 +117,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_MouseAdapter;
 import com.dandymadeproductions.myjsqlview.gui.QueryFrame;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
 
 /**
@@ -121,7 +125,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.5 07/09/2013
+ * @version 2.6 01/29/2014
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -377,7 +381,9 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                // NOT TESTED. This is still problably not going to
                // help. Bound to crash later.
 
-               if (columnClass == null && columnType == null)
+               if ((columnClass == null && columnType == null)
+                   ||(dataSourceType.equals(ConnectionManager.MSSQL)
+                      && columnType.toUpperCase().equals("TIMESTAMP")))
                   continue;
 
                // Handle some Oracle data types that have a null
@@ -458,10 +464,34 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                         rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties()
                            .getViewDateFormat()).format(currentContentData);
                   }
+                  
+                  // =============================================
+                  // Datetime Offset
+                  else if (columnType.equals("DATETIMEOFFSET"))
+                  {
+                     String dateString, timeString;
+                     
+                     currentContentData = db_resultSet.getString(colNameString);
+                     
+                     if (currentContentData == null)
+                        rowData[j++] = "NULL";
+                     else
+                     {
+                        dateString = currentContentData + "";
+                        dateString = dateString.substring(0, (dateString.indexOf(" ")));
+                        dateString = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(dateString,
+                           DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
+                        
+                        timeString = currentContentData + "";
+                        timeString = timeString.substring(timeString.indexOf(" "));
+                        
+                        rowData[j++] = dateString + timeString;
+                     }
+                  }
 
                   // =============================================
                   // Datetime
-                  else if (columnType.equals("DATETIME"))
+                  else if (columnType.indexOf("DATETIME") != -1)
                   {
                      currentContentData = db_resultSet.getObject(colNameString);
                      if (currentContentData == null)
@@ -595,6 +625,13 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                   else if (columnType.indexOf("RAW") != -1)
                   {
                      rowData[j++] = "Raw";
+                  }
+                  
+                  //=============================================
+                  // IMAGE
+                  else if (columnType.indexOf("IMAGE") != -1)
+                  {
+                     rowData[j++] = "IMAGE";
                   }
 
                   // =============================================
