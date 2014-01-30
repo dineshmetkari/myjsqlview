@@ -8,8 +8,8 @@
 //                  << QueryFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.8 12/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 9.9 01/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,8 +237,9 @@
 //                        Instances fileReader & bufferedReader Gets Closed on IOException.
 //         9.8 12/13/2013 Method actionPerformed() Query Bucket Action Creation of StringBuffer
 //                        for MyJSQLView_Frame.getSQLBucket().addSQLStatement().
-//         
-//                                        
+//         9.9 01/29/2014 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
+//                        for MSSQL.
+//
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
 //=================================================================
@@ -324,7 +325,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.8 12/13/2013
+ * @version 9.9 01/29/2014
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -589,6 +590,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       
       // QUERY_STATEMENT_TYPE:1
       if (!dataSourceType.equals(ConnectionManager.MSACCESS) &&
+          !dataSourceType.equals(ConnectionManager.MSSQL) &&
           !dataSourceType.equals(ConnectionManager.DERBY) &&
           !dataSourceType.equals(ConnectionManager.H2))
       {
