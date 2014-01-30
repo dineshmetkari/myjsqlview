@@ -9,8 +9,8 @@
 //                 << CSVQueryDataDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.7 01/13/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //             while Loop Properly When false.
 //         1.6 Class Method run() Inclusion of a finally Clause for Insuring Instances
 //             fileStream & filebuff Get Closed on IOException.
+//         1.7 Method run() Additions to Handle MSSQL IMAGE, XML, & DATETIMEOFFSET
+//             Data Types. Modification in Same for MSSQL Non-Limit SQL Query.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -79,7 +81,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 1.6 11/13/2013
+ * @version 1.7 01/29/2014
  */
 
 public class CSVQueryDataDumpThread implements Runnable
@@ -284,6 +286,17 @@ public class CSVQueryDataDumpThread implements Runnable
                   {
                      sqlStatementString = queryString;
                   }
+                  // MSSQL
+                  else if (dataSourceType.equals(ConnectionManager.MSSQL))
+                  {
+                     sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                          + "(SELECT *, ROW_NUMBER() OVER (ORDER BY " + identifierQuoteString
+                                          + columnNameFields.get(0) + identifierQuoteString + " ASC) "
+                                          + "AS dmprownumber FROM (" +  queryString + ")"+ " AS t) AS t1 "
+                                          + "WHERE t1.dmprownumber BETWEEN "
+                                          + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                                + limitIncrement);
+                  }
                   // Derby
                   else if (dataSourceType.equals(ConnectionManager.DERBY))
                   {
@@ -323,7 +336,8 @@ public class CSVQueryDataDumpThread implements Runnable
                      if ((columnClass.indexOf("String") == -1 && columnType.indexOf("BLOB") != -1) ||
                          (columnClass.toUpperCase().indexOf("BLOB") != -1 && columnType.indexOf("BLOB") != -1) ||
                          (columnType.indexOf("BYTEA") != -1) || (columnType.indexOf("BINARY") != -1) ||
-                         (columnType.indexOf("BIT DATA") != -1) || (columnType.indexOf("RAW") != -1))
+                         (columnType.indexOf("BIT DATA") != -1) || (columnType.indexOf("RAW") != -1) ||
+                         (columnType.indexOf("IMAGE") != -1))
                      {
                         Object binaryContent = dbResultSet.getBytes(i);
                         
@@ -337,7 +351,7 @@ public class CSVQueryDataDumpThread implements Runnable
                      else if ((columnClass.indexOf("String") != -1 && !columnType.equals("CHAR") &&
                                columnSize > 255) ||
                               (columnClass.indexOf("String") != -1 && columnType.equals("LONG")) ||
-                              (columnType.indexOf("CLOB") != -1))
+                              (columnType.indexOf("CLOB") != -1) || (columnType.indexOf("XML") != -1))
                      {
                         fieldContent = dbResultSet.getString(i);
                         
@@ -410,7 +424,7 @@ public class CSVQueryDataDumpThread implements Runnable
                      }
                      
                      // Format Date & Timestamp Fields as Needed.
-                     else if (columnType.equals("DATE") || columnType.equals("DATETIME")
+                     else if (columnType.equals("DATE") || columnType.indexOf("DATETIME") != -1
                               || (columnType.indexOf("TIMESTAMP") != -1 && columnClass.indexOf("Array") == -1))
                      {
                         if (columnType.equals("DATE"))
@@ -424,7 +438,27 @@ public class CSVQueryDataDumpThread implements Runnable
                         }
                         else
                         {  
-                           if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP"))
+                           if (columnType.equals("DATETIMEOFFSET"))
+                           {
+                              String dateTime = dbResultSet.getString(i);
+                              String date;
+                              
+                              if (dateTime != null)
+                              {
+                                 if (dateTime.indexOf(" ") != -1)
+                                 {
+                                    date = MyJSQLView_Utils.convertDBDateString_To_ViewDateString(
+                                       dateTime.substring(0, dateTime.indexOf(" ")),
+                                       DBTablesPanel.getDataExportProperties().getCSVDateFormat());
+                                    fieldContent = date + dateTime.substring(dateTime.indexOf(" "));
+                                 }
+                                 else
+                                    fieldContent = "";
+                              }
+                              else
+                                 fieldContent = "NULL";
+                           }
+                           else if (columnType.indexOf("DATETIME") != -1 || columnType.equals("TIMESTAMP"))
                            {
                               Object dateTime = dbResultSet.getTimestamp(i);
                               if (dateTime != null)
