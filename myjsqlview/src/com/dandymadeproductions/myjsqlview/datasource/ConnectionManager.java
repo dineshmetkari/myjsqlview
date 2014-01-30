@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 4.6 01/20/2014
+// Version 4.7 01/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -105,6 +105,7 @@
 //         4.5 Commented Out Derby Shutdown Code in Method shutdownDatabase(). See Note.
 //         4.6 Added static final Class Instance MSSQL. Class Method createConnectionURLString()
 //             Addition of Code to Create MS SQL Server Connection String.
+//         4.7 Minor Reference & Comment Changes.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -130,7 +131,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.6 01/20/2014
+ * @version 4.7 01/30/2014
  */
 
 public class ConnectionManager
@@ -195,8 +196,8 @@ public class ConnectionManager
       connectProperties.setProperty("password", connectionProperties.getPassword());
       
       // Handle SSL
-      if (subProtocol.indexOf(ConnectionManager.HSQL) != -1 || subProtocol.equals(ConnectionManager.MYSQL)
-          || subProtocol.equals(ConnectionManager.POSTGRESQL))
+      if (subProtocol.indexOf(HSQL) != -1 || subProtocol.equals(MYSQL)
+          || subProtocol.equals(POSTGRESQL))
       {
            connectProperties.setProperty("useSSL",
               connectionProperties.getProperty(ConnectionProperties.SSH));  
@@ -345,7 +346,6 @@ public class ConnectionManager
          
          if (subProtocol.equals(DERBY))
          {
-            /*
             // Drop Memory Databases
             if (databaseShutdownString.toLowerCase().indexOf("memory:") != -1)
             {
@@ -643,8 +643,7 @@ public class ConnectionManager
    }
    
    //==============================================================
-   // Class method to set the current database product name &
-   // version.
+   // Class method to set the connection properties.
    //==============================================================
 
    public static void setConnectionProperties(ConnectionProperties properties)
