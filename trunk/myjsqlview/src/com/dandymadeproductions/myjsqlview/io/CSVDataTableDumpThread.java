@@ -10,8 +10,8 @@
 //                << CSVDataTableDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.5 07/02/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.6 01/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -78,6 +78,7 @@
 //         3.4 Renamed From DataTableDumpThread to CSVDataTableDumpThread. Updated
 //             Comments.
 //         3.5 Change in run() to Use DBTablePanel.getGeneralDBProperties().
+//         3.6 Change in run() to Detect All DateTime Fields by indexOf Check.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -100,7 +101,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 3.5 07/02/2013
+ * @version 3.6 01/29/2014
  */
 
 public class CSVDataTableDumpThread implements Runnable
@@ -189,7 +190,7 @@ public class CSVDataTableDumpThread implements Runnable
                currentType = summaryListTableNameTypes.get(Integer.toString(j));
 
                if ((currentType != null)
-                   && (currentType.equals("DATE") || currentType.equals("DATETIME")
+                   && (currentType.equals("DATE") || currentType.indexOf("DATETIME") != -1
                        || (currentType.indexOf("TIMESTAMP") != -1) && currentType.indexOf("_") == -1))
                {
                   if (!currentString.toLowerCase().equals("null"))
