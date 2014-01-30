@@ -7,8 +7,8 @@
 //               << ConnectionInstance.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.6 11/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.7 01/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 //                        Added Two Argument Constructor of dataSourceType & filter.
 //         1.6 11/05/2013 Commented Out Derby Shutdown Code in Method shutdownDatabase().
 //                        See Note.
+//         1.7 01/30/2014 Added static final Class Instance MSSQL.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +70,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.6 11/05/2013
+ * @version 1.7 01/30/2014
  */
 
 public class ConnectionInstance
@@ -88,6 +89,7 @@ public class ConnectionInstance
    public static final String ORACLE = ConnectionManager.ORACLE;
    public static final String SQLITE = ConnectionManager.SQLITE;
    public static final String MSACCESS = ConnectionManager.MSACCESS;
+   public static final String MSSQL = ConnectionManager.MSSQL;
    public static final String DERBY = ConnectionManager.DERBY;
    public static final String H2 = ConnectionManager.H2;
    public static final String OTHERDB = ConnectionManager.OTHERDB;
