@@ -8,8 +8,8 @@
 //            << SQLExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.3 07/04/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.4 01/31/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -127,7 +127,9 @@
 //                        Defaults in actionPerformed().
 //         5.2 07/04/2013 Minor Organizational/Format Changes.
 //         5.3 07/04/2013 Methods get/setSQLExportOptions() Change to dataProperties.
-//                        get/setSQLSummaryTableUseLimit() Instead of get/setSummaryTableUseLimit(). 
+//                        get/setSQLSummaryTableUseLimit() Instead of get/setSummaryTableUseLimit().
+//         5.4 01/31/2014 ComboBox insertReplaceUpdateComboBox Exclusion of TYPE_REPLACE for
+//                        MSSQL Database.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -166,7 +168,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.3 07/04/2013
+ * @version 5.4 01/31/2014
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -345,6 +347,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       insertReplaceUpdateComboBox.addItem(TYPE_INSERT);
       if (!dataSourceType.equals(ConnectionManager.POSTGRESQL)
             && !dataSourceType.equals(ConnectionManager.MSACCESS)
+            && !dataSourceType.equals(ConnectionManager.MSSQL)
             && !dataSourceType.equals(ConnectionManager.DERBY))
          insertReplaceUpdateComboBox.addItem(TYPE_REPLACE);
       insertReplaceUpdateComboBox.addItem(TYPE_UPDATE);
