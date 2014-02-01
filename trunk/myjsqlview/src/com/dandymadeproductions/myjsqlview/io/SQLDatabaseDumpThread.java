@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.4 01/31/2014
+// Version 9.5 02/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -241,6 +241,8 @@
 //             Update for MSSQL. Latter Methods Proper Handling of Bit & Timestamp Also
 //             for MSSQL. Minor Formatting Changes in generateHeaders() & Removal of
 //             Connection Argument.
+//         9.5 Proper Handling of MSSQL Identity Fields When SQL Export Option AutoIncrement
+//             Set in Method insertReplaceStatementData().
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -289,7 +291,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.4 01/31/2014
+ * @version 9.5 02/01/2014
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -698,6 +700,9 @@ public class SQLDatabaseDumpThread implements Runnable
             if (dataSourceType.equals(ConnectionManager.ORACLE))
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1),
                                              currentTableTabPanel.getAutoIncrementHashMap().get(field));
+            else if (dataSourceType.equals(ConnectionManager.MSSQL)
+                  && sqlDataExportOptions.getAutoIncrement())
+            continue;
             else
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1), tableColumnNames.get(field));
          }
