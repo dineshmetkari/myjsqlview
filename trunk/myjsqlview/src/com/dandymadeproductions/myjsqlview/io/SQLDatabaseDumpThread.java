@@ -9,8 +9,8 @@
 //                 << SQLDatabaseDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.3 09/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 9.4 01/31/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -237,6 +237,10 @@
 //         9.2 Change in dumpDatabaseData() to Use DBTablePanel.getGeneralDBProperties().
 //         9.3 Additions in Methods insert/explicitStatementData() & dumpBinaryData()
 //             to Handle H2 Database Blob Hexidecimal Data Output."
+//         9.4 Methods dumpDatabaseData(), & insertReplace/explicitStatementData() Query
+//             Update for MSSQL. Latter Methods Proper Handling of Bit & Timestamp Also
+//             for MSSQL. Minor Formatting Changes in generateHeaders() & Removal of
+//             Connection Argument.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -269,6 +273,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_Generic;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_HSQL;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_MSAccess;
+import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_MSSQL;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_MySQL;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_Oracle;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel_PostgreSQL;
@@ -284,7 +289,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.3 09/06/2013
+ * @version 9.4 01/31/2014
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -389,7 +394,7 @@ public class SQLDatabaseDumpThread implements Runnable
          // the selected file.
 
          // Header info.
-         dumpData = generateHeaders(dbConnection);
+         dumpData = generateHeaders();
 
          // Collect Database Table Count and Proceed with Dump.
          tableCount = DBTablesPanel.getTableCount();
@@ -434,6 +439,9 @@ public class SQLDatabaseDumpThread implements Runnable
                // MS Access
                else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                   currentTableTabPanel = new TableTabPanel_MSAccess(exportedTable, dbConnection, true);
+               // MSSQL
+               else if (dataSourceType.equals(ConnectionManager.MSSQL))
+                  currentTableTabPanel = new TableTabPanel_MSSQL(exportedTable, dbConnection, true);
                // Generic
                else
                   currentTableTabPanel = new TableTabPanel_Generic(exportedTable, dbConnection, true);
@@ -495,6 +503,8 @@ public class SQLDatabaseDumpThread implements Runnable
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " WHERE ROWNUM=1");
                else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                   rs = sqlStatement.executeQuery("SELECT * FROM " + dbSchemaTableName + " AS t");
+               else if (dataSourceType.equals(ConnectionManager.MSSQL))
+                  rs = sqlStatement.executeQuery("SELECT TOP 1 * FROM " + dbSchemaTableName + " AS t");
                else if (dataSourceType.equals(ConnectionManager.DERBY))
                   rs = sqlStatement.executeQuery("SELECT * FROM " + schemaTableName 
                                                  + " AS t FETCH FIRST ROW ONLY");
@@ -704,14 +714,16 @@ public class SQLDatabaseDumpThread implements Runnable
          // Save the index of bit entries.
          if (columnType.indexOf("BIT") != -1)
          {
-            if (!dataSourceType.equals(ConnectionManager.MSACCESS))
+            if (!dataSourceType.equals(ConnectionManager.MSACCESS)
+                && !dataSourceType.equals(ConnectionManager.MSSQL))
                bitFieldIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of TimeStamp Fields.
          if (columnType.indexOf("TIMESTAMP") != -1)
          {
-            timeStampIndexes.add(Integer.valueOf(columnsCount + 1));
+            if (!dataSourceType.equals(ConnectionManager.MSSQL))
+               timeStampIndexes.add(Integer.valueOf(columnsCount + 1));
          }
 
          // Save the index of Oracle TimeStamp(TZ) Fields.
@@ -835,6 +847,16 @@ public class SQLDatabaseDumpThread implements Runnable
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + dbSchemaTableName;
+            // MSSQL
+            else if (dataSourceType.equals(ConnectionManager.MSSQL))
+            {
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + "(SELECT *, ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) "
+                                    + "AS dmprownumber FROM " + schemaTableName + " AS t) AS t1 "
+                                    + "WHERE t1.dmprownumber BETWEEN "
+                                    + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                          + limitIncrement);
+            }
             // Derby
             else if (dataSourceType.equals(ConnectionManager.DERBY))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
@@ -1229,7 +1251,6 @@ public class SQLDatabaseDumpThread implements Runnable
       
       try
       {
-         
          rowsCount = getRowsCount(dbConnection, dbSchemaTableName);
       }
       catch (SQLException sqle)
@@ -1267,6 +1288,16 @@ public class SQLDatabaseDumpThread implements Runnable
             else if (dataSourceType.equals(ConnectionManager.MSACCESS))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
                                      + dbSchemaTableName;
+            // MSSQL
+            else if (dataSourceType.equals(ConnectionManager.MSSQL))
+            {
+               sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
+                                    + "(SELECT *, ROW_NUMBER() OVER (ORDER BY " + firstField + " ASC) "
+                                    + "AS dmprownumber FROM " + schemaTableName + " AS t) AS t1 "
+                                    + "WHERE t1.dmprownumber BETWEEN "
+                                    + (currentTableIncrement + 1) + " AND " + (currentTableIncrement
+                                          + limitIncrement);
+            }
             // Derby
             else if (dataSourceType.equals(ConnectionManager.DERBY))
                sqlStatementString = "SELECT " + columnNamesString.toString() + " FROM "
@@ -1494,7 +1525,8 @@ public class SQLDatabaseDumpThread implements Runnable
                                  dumpData = dumpData + "X'";
                                  dumpBinaryData(rs.getBytes(tableColumnNames.get(field)), true);
                               }
-                              else if (dataSourceType.equals(ConnectionManager.MSACCESS))
+                              else if (dataSourceType.equals(ConnectionManager.MSACCESS)
+                                       || dataSourceType.equals(ConnectionManager.MSSQL))
                               {
                                  dumpData = dumpData + "'" + bitValue + "', ";
                               }
@@ -1738,7 +1770,7 @@ public class SQLDatabaseDumpThread implements Runnable
    // Class method for generating dump header info
    //==============================================================
 
-   public String generateHeaders(Connection dbConnection)
+   public String generateHeaders()
    {
       // Class Method Instances.
       ConnectionProperties connectionProperties;
@@ -1756,9 +1788,10 @@ public class SQLDatabaseDumpThread implements Runnable
       dateTime = dateTimeFormat.format(new Date());
 
       headers = "--\n" + "-- MyJSQLView SQL Dump\n" + "-- Version: " + myJSQLView_Version[1] + "\n"
-                + "-- WebSite: http://myjsqlview.org\n" + "--\n" + "-- Host: "
-                + hostName + "\n" + "-- Generated On: " + dateTime + "\n"
-                + "-- SQL version: " + ConnectionManager.getDBProductName_And_Version() + "\n"
+                + "-- WebSite: http://myjsqlview.org\n"
+                + "--\n" + "-- Host: " + hostName + "\n"
+                + "-- Generated On: " + dateTime + "\n" + "-- SQL version: "
+                + ConnectionManager.getDBProductName_And_Version() + "\n"
                 + "-- Database: " + databaseName + "\n" + "--\n\n"
                 + "-- ------------------------------------------\n";
 
