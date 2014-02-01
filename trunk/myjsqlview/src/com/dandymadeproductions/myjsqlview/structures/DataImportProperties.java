@@ -7,8 +7,8 @@
 //           << DataImportProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.2 09/10/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.3 02/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,7 +47,10 @@
 //             Constructor.
 //         2.1 Copyright Update.
 //         2.2 Changed Package Name to com.dandymadeproductions.myjsqlview.structures.
-//             Made Class, Constructor, & Getter/Setter Methods Public.       
+//             Made Class, Constructor, & Getter/Setter Methods Public.
+//         2.3 Added Class Instances identityInsert, & IDENTITYINSERT. Processing for
+//             New Parameter in Constructor & toString() Along With Getter/Setter &
+//             savePreferences() Methods.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -57,24 +60,30 @@ package com.dandymadeproductions.myjsqlview.structures;
 
 import java.util.prefs.Preferences;
 
-import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.gui.panels.CSVImportPreferencesPanel;
+import com.dandymadeproductions.myjsqlview.gui.panels.SQLImportPreferencesPanel;
 
 /**
  *    The DataImportProperties class provides the structure for
  * data import properties storage.
  * 
  * @author Dana M. Proctor
- * @version 2.2 09/10/2012
+ * @version 2.3 02/01/2014
  */
 
 public class DataImportProperties
 {
    // Class Instances.
+   private boolean identityInsert;
    private String dataDelimiter;
    private String dateFormat;
    
    private Preferences dataImportPreferences;
    
+   // SQL
+   private static final String IDENTITYINSERT = "ImportIdentityInsert";
+   
+   // CSV
    private static final String DATADELIMITER = "ImportDataDelimiter";
    private static final String DATEFORMAT = "ImportDateFormat";
 
@@ -85,8 +94,13 @@ public class DataImportProperties
    public DataImportProperties()
    {  
       // Set default state.
-      dataDelimiter = ",";
-      dateFormat = MyJSQLView_Utils.MMddyyyy_DASH;
+      
+      // SQL
+      identityInsert = SQLImportPreferencesPanel.DEFAULT_IDENTITY_INSERT;
+      
+      // CSV
+      dataDelimiter = CSVImportPreferencesPanel.DEFAULT_DATA_DELIMITER;
+      dateFormat = CSVImportPreferencesPanel.DEFAULT_DATE_FORMAT;
       
       // Try to retrieve state from Preferences.
       try
@@ -97,8 +111,9 @@ public class DataImportProperties
       
       try
       {
-         dataDelimiter = dataImportPreferences.get(DATADELIMITER, ",");
-         dateFormat = dataImportPreferences.get(DATEFORMAT, MyJSQLView_Utils.MMddyyyy_DASH);
+         identityInsert = dataImportPreferences.getBoolean(IDENTITYINSERT, identityInsert);
+         dataDelimiter = dataImportPreferences.get(DATADELIMITER, dataDelimiter);
+         dateFormat = dataImportPreferences.get(DATEFORMAT, dateFormat);
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -109,6 +124,13 @@ public class DataImportProperties
    // object components.
    //==============================================================
 
+   // SQL
+   public boolean getIdentityInsert()
+   {
+      return identityInsert;
+   }
+   
+   // CSV
    public String getDataDelimiter()
    {
       return dataDelimiter;
@@ -124,6 +146,14 @@ public class DataImportProperties
    // object components.
    //==============================================================
 
+   // SQL
+   public void setIdentityInsert(boolean value)
+   {
+      identityInsert = value;
+      savePreference(IDENTITYINSERT, value);
+   }
+   
+   // CSV
    public void setDataDelimiter(String content)
    {
       dataDelimiter = content;
@@ -140,6 +170,18 @@ public class DataImportProperties
    // Class methods to try and save the preferences state. 
    //==============================================================
 
+   private void savePreference(String key, boolean value)
+   {
+      try
+      {
+         if (dataImportPreferences != null)
+            dataImportPreferences.putBoolean(key, value);
+      }
+      catch (IllegalArgumentException iae){}
+      catch (IllegalStateException ise){}
+   }
+   
+   
    private void savePreference(String key, String content)
    {
       try
@@ -159,6 +201,7 @@ public class DataImportProperties
    public String toString()
    {
       StringBuffer parameters = new StringBuffer("[DataImportProperties: ");
+      parameters.append("[identityInsert = " + identityInsert + "]");
       parameters.append("[dataDelimiter = " + dataDelimiter + "]");
       parameters.append("[dataFormat = " + dateFormat + "]");
 
