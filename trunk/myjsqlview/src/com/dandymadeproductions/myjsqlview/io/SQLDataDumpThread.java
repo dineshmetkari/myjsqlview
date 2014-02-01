@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.11 01/31/2014
+// Version 7.12 02/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -324,6 +324,9 @@
 //             in insertReplace/explicitStatementData() Methods.
 //        7.11 Methods dumpData(), & insertReplace/explicitStatementData() Query Update for
 //             MSSQL. Latter Methods Proper Handling of Bit & Timestamp Also for MSSQL.
+//        7.12 Commented Out a System.out in insertReplaceStatementData(). Proper Handling
+//             of MSSQL Identity Fields When SQL Export Option AutoIncrement Set in Method
+//             insertReplaceStatementData().
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -365,7 +368,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.11 01/31/2014
+ * @version 7.12 02/01/2014
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -774,6 +777,9 @@ public class SQLDataDumpThread implements Runnable
             if (dataSourceType.equals(ConnectionManager.ORACLE))
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1),
                                              DBTablesPanel.getSelectedTableTabPanel().getAutoIncrementHashMap().get(field));
+            else if (dataSourceType.equals(ConnectionManager.MSSQL)
+                     && sqlDataExportOptions.getAutoIncrement())
+               continue;
             else
                autoIncrementFieldIndexes.put(Integer.valueOf(columnsCount + 1), tableColumnNames.get(field));
          }
@@ -955,7 +961,7 @@ public class SQLDataDumpThread implements Runnable
                                        + dbSchemaTableName + " LIMIT " + limitIncrement + " OFFSET "
                                        + currentTableIncrement;
             }
-            System.out.println(sqlStatementString);
+            // System.out.println(sqlStatementString);
             
             rs = sqlStatement.executeQuery(sqlStatementString);
             
@@ -1321,7 +1327,7 @@ public class SQLDataDumpThread implements Runnable
                                            + dbIdentifierQuoteString + ", ");
          // Unmodified Names.
          columnNamesString.append(dbIdentifierQuoteString + tableColumnNames.get(field)
-                                  + dbIdentifierQuoteString + ", ");  
+                                  + dbIdentifierQuoteString + ", ");
       }
       oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
                                       oracleColumnNamesString.length());
