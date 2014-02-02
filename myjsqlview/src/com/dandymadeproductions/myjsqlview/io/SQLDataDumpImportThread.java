@@ -10,8 +10,8 @@
 //              << SQLDataDumpImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.8 07/02/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.9 02/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -127,6 +127,7 @@
 //         5.7 In run() on validImport & reloadDatabase Update to Insure All the
 //             Schemas Pattern Menu is Updated.
 //         5.8 Change in importSQLFile() to Use DBTablePanel.getGeneralDBProperties().
+//         5.9 Introduced Instance identityInsertEnabled & Use in importSQLFile().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -160,7 +161,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.8 07/02/2013
+ * @version 5.9 02/01/2014
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -255,7 +256,7 @@ public class SQLDataDumpImportThread implements Runnable
       String failedQuery;
       int fileLineLength, line;
       int currentBatchRows, batchSize;
-      boolean batchSizeEnabled;
+      boolean batchSizeEnabled, identityInsertEnabled;
       
       MyJSQLView_ProgressBar sqlImportProgressBar;
 
@@ -276,6 +277,11 @@ public class SQLDataDumpImportThread implements Runnable
       batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
       batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
       
+      if (dataSourceType.equals(ConnectionManager.MSSQL))
+         identityInsertEnabled = DBTablesPanel.getDataImportProperties().getIdentityInsert();
+      else
+         identityInsertEnabled = false;
+      
       // Begin the processing of the input SQL file by reading
       // each line and checking before insert if it is valid
       // not a comment.
@@ -290,6 +296,12 @@ public class SQLDataDumpImportThread implements Runnable
          // of transactions.
          dbConnection.setAutoCommit(false);
          sqlStatement = dbConnection.createStatement();
+         
+         // MSSQL Overide Identity_Insert.
+         if (identityInsertEnabled)
+            sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                       + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                       + " ON");
 
          // Only MySQL & PostgreSQL supports.
          if (dataSourceType.equals(ConnectionManager.MYSQL)
@@ -389,6 +401,12 @@ public class SQLDataDumpImportThread implements Runnable
                dbConnection.commit();
             else
                dbConnection.rollback();
+            
+            // MSSQL Overide Identity_Insert.
+            if (identityInsertEnabled)
+               sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                          + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                          + " OFF");
 
             dbConnection.setAutoCommit(true);
             ConnectionManager.closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile()");
@@ -402,6 +420,12 @@ public class SQLDataDumpImportThread implements Runnable
             {
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
+            
+               // MSSQL Overide Identity_Insert.
+               if (identityInsertEnabled)
+                  sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                             + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                             + " OFF");
                ConnectionManager
                      .closeConnection(dbConnection, "SQLDataDumpImportThread importSQLFile() rollback");
             }
