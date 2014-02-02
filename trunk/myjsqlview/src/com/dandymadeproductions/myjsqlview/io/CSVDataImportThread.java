@@ -10,8 +10,8 @@
 //                 << CSVDataImportThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 7.6 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 7.7 02/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -171,6 +171,7 @@
 //             Really be Cleaned Up, But Do Not Wish to Fix Something THAT IS WORKING!
 //         7.6 Debug Output in importCSVFile() on IOExceptions on Failure to Close
 //             Operations.
+//         7.7 Introduced Instance identityInsertEnabled & Use in importCSVFile().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -206,7 +207,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.6 11/13/2013
+ * @version 7.7 02/01/2014
  */
 
 public class CSVDataImportThread implements Runnable
@@ -324,7 +325,7 @@ public class CSVDataImportThread implements Runnable
       int fileLineLength, fieldNumber, line;
       String[] lineContent;
       int currentBatchRows, batchSize;
-      boolean batchSizeEnabled;
+      boolean batchSizeEnabled, identityInsertEnabled;
       
       MyJSQLView_ProgressBar csvImportProgressBar;
       String dateFormat;
@@ -336,6 +337,11 @@ public class CSVDataImportThread implements Runnable
       dateFormat = DBTablesPanel.getDataImportProperties().getDateFormat();
       batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
       batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
+      
+      if (dataSourceType.equals(ConnectionManager.MSSQL))
+         identityInsertEnabled = DBTablesPanel.getDataImportProperties().getIdentityInsert();
+      else
+         identityInsertEnabled = false;
       
       fileReader = null;
       bufferedReader = null;
@@ -401,6 +407,12 @@ public class CSVDataImportThread implements Runnable
          // of transactions.
          dbConnection.setAutoCommit(false);
          sqlStatement = dbConnection.createStatement();
+         
+         // MSSQL Overide Identity_Insert.
+         if (identityInsertEnabled)
+            sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                       + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                       + " ON");
 
          // Begin the processing of the input CSV file by reading
          // each line and separating field data. Expectation
@@ -711,6 +723,12 @@ public class CSVDataImportThread implements Runnable
                dbConnection.commit();
             else
                dbConnection.rollback();
+            
+            // MSSQL Overide Identity_Insert.
+            if (identityInsertEnabled)
+               sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                          + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                          + " OFF");
 
             fileReader.close();
             bufferedReader.close();
@@ -732,6 +750,12 @@ public class CSVDataImportThread implements Runnable
                sqlStatement.close();
                dbConnection.rollback();
                dbConnection.setAutoCommit(true);
+               
+               // MSSQL Overide Identity_Insert.
+               if (identityInsertEnabled)
+                  sqlStatement.executeUpdate("SET IDENTITY_INSERT "
+                                             + DBTablesPanel.getSelectedTableTabPanel().getTableName()
+                                             + " OFF");
                
                if (!argConnection)
                   ConnectionManager.closeConnection(dbConnection,
