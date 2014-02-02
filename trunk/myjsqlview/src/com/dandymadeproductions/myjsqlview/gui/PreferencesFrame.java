@@ -7,8 +7,8 @@
 //             << PreferencesFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.5 10/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 9.6 02/02/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -192,6 +192,9 @@
 //             preferencesTopPanel Thread.
 //         9.4 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //         9.5 Constructor Set Frame's Icon.
+//         9.6 Added Class Instance sqlImportPanel & Its Use in the Tree Node for
+//             SQL Imports. Constructor Changes to Include Along With a fillerPanel.
+//             Changes in Methods createTreeNode() & actionPerformed() To Process. 
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -249,6 +252,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.PreferencesPanelSpring;
 import com.dandymadeproductions.myjsqlview.gui.panels.PreferencesPanelSummer;
 import com.dandymadeproductions.myjsqlview.gui.panels.PreferencesPanelWinter;
 import com.dandymadeproductions.myjsqlview.gui.panels.SQLExportPreferencesPanel;
+import com.dandymadeproductions.myjsqlview.gui.panels.SQLImportPreferencesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableFieldSelectionPreferencesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableRowSelectionPreferencesPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.TableTabPanel;
@@ -260,7 +264,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.5 10/05/2013
+ * @version 9.6 02/02/2014
  */
 
 //=================================================================
@@ -287,6 +291,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private CSVImportPreferencesPanel csvImportPanel;
    private CSVExportPreferencesPanel csvExportPanel;
    private PDFExportPreferencesPanel pdfExportPanel;
+   private SQLImportPreferencesPanel sqlImportPanel;
    private SQLExportPreferencesPanel sqlExportPanel;
    private MyJSQLView_ResourceBundle resourceBundle;
    private String resourcePreferences;
@@ -491,6 +496,14 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       csvImportPanelFillerThread.start();
       csvImportPanel.csvImportPanelFiller.setThreadAction(true);  
       optionsPanel.add("CSV " + resourceImport, csvImportPanel);
+      
+      // ***************************************
+      // Data SQL Import Options Panel
+      if (ConnectionManager.getDataSourceType().equals(ConnectionManager.MSSQL))
+      {
+         sqlImportPanel = new SQLImportPreferencesPanel(resourceBundle);
+         optionsPanel.add("SQL " + resourceImport, sqlImportPanel);
+      }
 
       // ***************************************
       // Data Export Decorative Panel
@@ -657,6 +670,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
 
             DBTablesPanel.setGeneralDBProperties(generalPreferencesPanel.getGeneralOptions());
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
+            if (sqlImportPanel != null)
+               DBTablesPanel.setDataImportProperties(sqlImportPanel.getSQLImportOptions());
             DBTablesPanel.setDataExportProperties(csvExportPanel.getCSVExportOptions());
             DBTablesPanel.setDataExportProperties(pdfExportPanel.getPDFExportOptions());
             DBTablesPanel.setDataExportProperties(sqlExportPanel.getSQLExportOptions());
@@ -900,7 +915,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Class Method Instances.
       DefaultMutableTreeNode generalNode, generalOptionsNode;
       DefaultMutableTreeNode summaryTableNode, tableFieldsNode, tableRowsNode;
-      DefaultMutableTreeNode dataImportNode, csvImportNode;
+      DefaultMutableTreeNode dataImportNode, csvImportNode, sqlImportNode;
       DefaultMutableTreeNode dataExportNode, csvExportNode, pdfExportNode, sqlExportNode;
 
       // General View Node
@@ -933,6 +948,12 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       // Data Import Option Nodes
       csvImportNode = new DefaultMutableTreeNode("CSV");
       dataImportNode.add(csvImportNode);
+      
+      if (ConnectionManager.getDataSourceType().equals(ConnectionManager.MSSQL))
+      {
+         sqlImportNode = new DefaultMutableTreeNode("SQL");
+         dataImportNode.add(sqlImportNode);
+      }
 
       // Data Export Node
       dataExportNode = null;
