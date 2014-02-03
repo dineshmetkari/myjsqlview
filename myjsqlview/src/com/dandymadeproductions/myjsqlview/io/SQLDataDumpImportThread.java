@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.9 02/01/2014
+// Version 6.0 02/03/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -128,6 +128,8 @@
 //             Schemas Pattern Menu is Updated.
 //         5.8 Change in importSQLFile() to Use DBTablePanel.getGeneralDBProperties().
 //         5.9 Introduced Instance identityInsertEnabled & Use in importSQLFile().
+//         6.0 Correction in Collecting identityInsertEnabled to Check for DBTablesPanel
+//             to See if selectedTable() Exists in importSQLFile().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -161,7 +163,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 5.9 02/01/2014
+ * @version 6.0 02/03/2014
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -277,7 +279,8 @@ public class SQLDataDumpImportThread implements Runnable
       batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
       batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
       
-      if (dataSourceType.equals(ConnectionManager.MSSQL))
+      if (dataSourceType.equals(ConnectionManager.MSSQL)
+          && DBTablesPanel.getSelectedTableTabPanel() != null)
          identityInsertEnabled = DBTablesPanel.getDataImportProperties().getIdentityInsert();
       else
          identityInsertEnabled = false;
