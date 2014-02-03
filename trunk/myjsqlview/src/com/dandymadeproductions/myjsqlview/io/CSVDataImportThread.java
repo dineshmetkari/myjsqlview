@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.7 02/01/2014
+// Version 7.8 02/03/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -172,6 +172,8 @@
 //         7.6 Debug Output in importCSVFile() on IOExceptions on Failure to Close
 //             Operations.
 //         7.7 Introduced Instance identityInsertEnabled & Use in importCSVFile().
+//         7.8 Correction in Collecting identityInsertEnabled to Check for DBTablesPanel
+//             to See if selectedTable() Exists in importSQLFile().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -207,7 +209,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.7 02/01/2014
+ * @version 7.8 02/03/2014
  */
 
 public class CSVDataImportThread implements Runnable
@@ -338,7 +340,8 @@ public class CSVDataImportThread implements Runnable
       batchSize = DBTablesPanel.getGeneralDBProperties().getBatchSize();
       batchSizeEnabled = DBTablesPanel.getGeneralDBProperties().getBatchSizeEnabled();
       
-      if (dataSourceType.equals(ConnectionManager.MSSQL))
+      if (dataSourceType.equals(ConnectionManager.MSSQL)
+          && DBTablesPanel.getSelectedTableTabPanel() != null)
          identityInsertEnabled = DBTablesPanel.getDataImportProperties().getIdentityInsert();
       else
          identityInsertEnabled = false;
