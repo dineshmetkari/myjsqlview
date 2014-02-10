@@ -8,8 +8,8 @@
 //                << SearchDatabaseThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.0 02/23/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 4.1 02/10/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -97,6 +97,9 @@
 //         4.0 Output in run() for SQLExceptions if Debug Mode. Method createColumnsSQLQuery()
 //             to Properly Format LIMIT, & WHERE SQL Statements for Derby. Added to
 //             Same columnClass & Excluded BIT DATA Types.
+//         4.1 Method createColumnsSQLQuery() Addition of Proper SQL for MSSQL, Removal
+//             of IMAGE, & XML From Search String. Timestamp Also Not Processed Normally,
+//             But as Given String for MSSQL. Though Latter Should Not Matter.
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -122,7 +125,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 4.0 02/23/2013
+ * @version 4.1 02/10/2014
  */
 
 public class SearchDatabaseThread implements Runnable
@@ -386,6 +389,9 @@ public class SearchDatabaseThread implements Runnable
          // MS Access
          else if (dataSourceType.equals(ConnectionManager.MSACCESS))
             sqlColumnSelectString = "SELECT * FROM " + tableName;
+         // MSSQL
+         else if (dataSourceType.equals(ConnectionManager.MSSQL))
+            sqlColumnSelectString = "SELECT TOP 1 * FROM " + tableName;
          // Derby
          else if (dataSourceType.equals(ConnectionManager.DERBY))
             sqlColumnSelectString = "SELECT * FROM " + tableName + " FETCH FIRST ROW ONLY";
@@ -415,7 +421,8 @@ public class SearchDatabaseThread implements Runnable
             if (columnType.indexOf("BLOB") == -1 && columnType.indexOf("BYTEA") == -1
                 && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
                 && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1
-                && columnType.indexOf("BIT DATA") == -1)
+                && columnType.indexOf("BIT DATA") == -1 && columnType.indexOf("IMAGE") == -1
+                && columnType.indexOf("XML") == -1)
             {
                // Convert date, datetime, timestamp search string
                // to proper format.
@@ -442,8 +449,9 @@ public class SearchDatabaseThread implements Runnable
                         searchString = searchQueryString;
                   }
                }
-               else if (columnType.equals("DATETIME") || columnType.equals("TIMESTAMP") ||
-                        columnType.equals("TIMESTAMPTZ"))
+               else if ((columnType.indexOf("DATETIME") != -1)
+                         || (columnType.equals("TIMESTAMP") && !dataSourceType.equals(ConnectionManager.MSSQL))
+                         || (columnType.equals("TIMESTAMPTZ")))
                {
                   if (searchString.indexOf(" ") != -1)
                      searchString = MyJSQLView_Utils.processDateFormatSearch(
