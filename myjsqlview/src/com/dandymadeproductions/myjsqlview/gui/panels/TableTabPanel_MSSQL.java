@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.1 01/27/2014
+// Version 1.2 02/10/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 // Version 1.0 Original TableTabPanel_MSSQL Class.
 //         1.1 Finalized TableTabPanel for MSSQL With Functionality Verified for
 //             mssqlTypes, Data Types, Table.
+//         1.2 Excluded Binary, Image, & XML Fields From Generic Not Field Specified
+//             Search With LIKE Construction in loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -69,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * also provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.1 01/27/2014
+ * @version 1.2 02/10/2014
  */
 
 public class TableTabPanel_MSSQL extends TableTabPanel
@@ -366,6 +368,10 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             {
                columnName = tableColumns[i].replaceAll(identifierQuoteString, "");
                columnType = columnTypeHashMap.get(parseColumnNameField(columnName.trim()));
+               
+               if (columnType.indexOf("BINARY") != -1 || columnType.indexOf("IMAGE") != -1
+                   || columnType.indexOf("XML") != -1)
+                  continue;
                
                String searchString = searchTextString;
                
