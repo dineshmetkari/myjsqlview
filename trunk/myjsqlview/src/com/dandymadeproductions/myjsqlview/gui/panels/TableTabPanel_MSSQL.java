@@ -778,7 +778,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
       Iterator<String> keyIterator, textFieldNamesIterator;
       Object currentColumnName, currentContentData;
       String currentDB_ColumnName, currentColumnClass, currentColumnType;
-      int columnSize = 0;
+      // int columnSize = 0;
       int keyColumn = 0;
 
       // Connecting to the data base, to obtain
@@ -880,7 +880,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                currentDB_ColumnName = (String) columnNamesHashMap.get(listTable.getColumnName(i));
                currentColumnClass = columnClassHashMap.get(listTable.getColumnName(i));
                currentColumnType = columnTypeHashMap.get(listTable.getColumnName(i));
-               columnSize = columnSizeHashMap.get(listTable.getColumnName(i)).intValue();
+               // columnSize = columnSizeHashMap.get(listTable.getColumnName(i)).intValue();
                
                // System.out.println("field:" + currentDB_ColumnName + " class:" + currentColumnClass
                //                    + " type:" + currentColumnType + " value:" + currentContentData);
