@@ -8,8 +8,8 @@
 //                        << TypeID.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.7 10/27/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.8 02/13/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@
 //         1.7 Changed Class Instance HSQL_CHAR to HSQL_CHARACTER. Added Class Instances
 //             ORACLE_FLOAT & ORACLE_DOUBLE. Correction in Method toString() Conditional
 //             Check to Replace of Underscore Character.
+//         1.8 Added Class Instance Type IDs for MSSQL.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -60,7 +61,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.7 10/27/2013
+ * @version 1.8 02/13/2014
  */
 
 public class TypeID
@@ -243,7 +244,7 @@ public class TypeID
    public static final int SQLITE_TEXT = 56;
    public static final int SQLITE_BLOB = 58;
    
-   // SQLite Data Type IDs
+   // MS Access Data Type IDs
    public static final int MSACCESS_COUNTER = 60;
    public static final int MSACCESS_BINARY = 62;
    public static final int MSACCESS_LONGBINARY = 64;
@@ -258,6 +259,36 @@ public class TypeID
    public static final int MSACCESS_CURRENCY = 82;
    public static final int MSACCESS_GUID = 84;
    public static final int MSACCESS_DATETIME = 86;
+   
+   // MSSQL Data Type IDs
+   public static final int MSSQL_CHAR = 88;
+   public static final int MSSQL_NCHAR = 90;
+   public static final int MSSQL_VARCHAR = 92;
+   public static final int MSSQL_NVARCHAR = 94;
+   public static final int MSSQL_BINARY = 96;
+   public static final int MSSQL_VARBINARY = 98;
+   public static final int MSSQL_IMAGE = 100;
+   public static final int MSSQL_TEXT = 102;
+   public static final int MSSQL_NTEXT = 104;
+   public static final int MSSQL_UNIQUEIDENTIFIER = 106;
+   public static final int MSSQL_XML = 108;
+   public static final int MSSQL_BIT = 110;
+   public static final int MSSQL_TINYINT = 112;
+   public static final int MSSQL_SMALLINT = 114;
+   public static final int MSSQL_INT = 116;
+   public static final int MSSQL_BIGINT = 118;
+   public static final int MSSQL_FLOAT = 120;
+   public static final int MSSQL_DECIMAL = 122;
+   public static final int MSSQL_NUMERIC = 124;
+   public static final int MSSQL_MONEY = 126;
+   public static final int MSSQL_SMALLMONEY = 128;
+   public static final int MSSQL_DATE = 130;
+   public static final int MSSQL_TIME = 132;
+   public static final int MSSQL_DATETIME = 134;
+   public static final int MSSQL_SMALLDATETIME = 136;
+   public static final int MSSQL_DATETIME2 = 138;
+   public static final int MSSQL_DATETIMEOFFSET = 140;
+   public static final int MSSQL_TIMESTAMP = 142;    
    
    //==============================================================
    // Class method to allow classes to try and obtain the field
