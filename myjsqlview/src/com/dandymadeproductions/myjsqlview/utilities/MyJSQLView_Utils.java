@@ -8,8 +8,8 @@
 //                 << MyJSQLView_Utils.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 9.5 10/29/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 9.6 02/13/2013
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -173,6 +173,9 @@
 //         9.3 Method setUIManagerFont() Check of uiObject NULL Before instanceof Font.
 //         9.4 Added Class Method getFrameIcon().
 //         9.5 Added Overloaded Class Method getSchemaTableName().
+//         9.6 Class Methods getConditionString() & getUnlimitedSQLStatementString()
+//             Detection of MSSQL for Processing. Sample Query Comment for MSSQL in Latter
+//             Method.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -242,7 +245,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.5 10/29/2013
+ * @version 9.6 02/13/2014
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -830,8 +833,8 @@ public class MyJSQLView_Utils extends MyJSQLView
       
       query = query.replaceAll("(?i)where", "WHERE");
      
-      // Oracle
-      if (dataSourceType.equals(ConnectionManager.ORACLE))
+      // Oracle & MSSQL
+      if (dataSourceType.equals(ConnectionManager.ORACLE) || dataSourceType.equals(ConnectionManager.MSSQL))
       {
          if (query.toUpperCase().indexOf("BETWEEN") != -1)
             query = getUnlimitedSQLStatementString(query);
@@ -1002,11 +1005,13 @@ public class MyJSQLView_Utils extends MyJSQLView
       // Check if process can be performed.
       
       if ((!dataSourceType.equals(ConnectionManager.ORACLE)
+            && !dataSourceType.equals(ConnectionManager.MSSQL)
             && !dataSourceType.equals(ConnectionManager.DERBY)
             && (sqlStatementString.indexOf("LIMIT") == -1))
           ||
-           ((dataSourceType.equals(ConnectionManager.ORACLE))
-             && (sqlStatementString.indexOf("BETWEEN") == -1))
+           (((dataSourceType.equals(ConnectionManager.ORACLE)
+             || dataSourceType.equals(ConnectionManager.MSSQL)))
+            && (sqlStatementString.indexOf("BETWEEN") == -1))
           ||
            ((dataSourceType.equals(ConnectionManager.DERBY))
              && (sqlStatementString.indexOf("OFFSET") == -1)))
@@ -1015,12 +1020,20 @@ public class MyJSQLView_Utils extends MyJSQLView
       // Parsing
       
       // Oracle
-      if (dataSourceType.equals(ConnectionManager.ORACLE))
+      if (dataSourceType.equals(ConnectionManager.ORACLE)
+          || dataSourceType.equals(ConnectionManager.MSSQL))
       {
-         // Sample
+         // Samples
+         
+         // Oracle
          // SELECT "PARENT_ID", "NAME" FROM (SELECT ROW_NUMBER() OVER (ORDER BY "PARENT_ID" ASC)
          // AS dmprownumber, "PARENT_ID", "NAME" FROM "DANAP"."CHILD" WHERE '1' LIKE '%') WHERE
          // dmprownumber BETWEEN 1 AND 50
+         
+         // MSSQL
+         // SELECT "parent_id", "name" FROM (SELECT "parent_id", "name", ROW_NUMBER() OVER 
+         // (ORDER BY t."parent_id" ASC) AS dmprownumber FROM "dbo"."child" AS t WHERE '1' LIKE '%')
+         // AS t1 WHERE t1.dmprownumber BETWEEN 1 AND 50
          
          index1 = sqlStatementString.indexOf("(");
          index2 = sqlStatementString.lastIndexOf("FROM");
