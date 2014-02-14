@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.03 01/27/2014
+// Version 9.04 02/14/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -376,6 +376,8 @@
 //        9.03 01/27/2014 DateTimeOffset Processing in Constructor for MSSQL. Changes in Method
 //                        addUpdateTableEntry() for Proper Handling of MSSQL XML, Keys, &
 //                        DateTime Types. Method setFormField() XML Detection.
+//        9.04 02/14/2014 Added Support for MSSQL Functions in Entry Form By Way of
+//                        Selecting Function File in Class Method selectFunctionOperator().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -447,7 +449,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.03 01/27/2014
+ * @version 9.04 02/14/2014
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -2398,6 +2400,8 @@ public class TableEntryForm extends JFrame implements ActionListener
          functionsFileName = "sqlite_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          functionsFileName = "msaccess_" + functionsFileName;
+      else if (dataSourceType.equals(ConnectionManager.MSSQL))
+         functionsFileName = "mssql_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.DERBY))
          functionsFileName = "derby_" + functionsFileName;
       else if (dataSourceType.equals(ConnectionManager.H2))
