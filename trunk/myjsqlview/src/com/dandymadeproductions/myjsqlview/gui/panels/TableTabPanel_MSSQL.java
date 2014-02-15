@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.2 02/10/2014
+// Version 1.3 02/14/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -39,6 +39,9 @@
 //             mssqlTypes, Data Types, Table.
 //         1.2 Excluded Binary, Image, & XML Fields From Generic Not Field Specified
 //             Search With LIKE Construction in loadTable().
+//         1.3 Modification of Query for Advanced Sort/Search to Use the Selected
+//             Summary Table Fields for Proper Aggregation Functionality in Method
+//             loadTable().
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -71,7 +74,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * also provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.2 02/10/2014
+ * @version 1.3 02/14/2014
  */
 
 public class TableTabPanel_MSSQL extends TableTabPanel
@@ -505,7 +508,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
             sqlTableStatement.append(sqlStatementString.substring(0, sqlStatementString.indexOf("FROM") + 5));
             lobLessSQLStatement.append(lobLessSQLStatementString.substring(0, lobLessSQLStatementString.indexOf("FROM") + 5));
 
-            sqlTableStatement.append("(SELECT *, ROW_NUMBER() "
+            sqlTableStatement.append("(SELECT " + sqlTableFieldsString + ", ROW_NUMBER() "
                                   + ((sqlOrderString.equals("")) ? ("OVER (ORDER BY "
                                   + (sqlTableFieldsString.indexOf(",") != -1 ?
                                                         sqlTableFieldsString.substring(0, sqlTableFieldsString.indexOf(','))
@@ -518,7 +521,7 @@ public class TableTabPanel_MSSQL extends TableTabPanel
                                   + "WHERE t1.dmprownumber BETWEEN " + (tableRowStart + 1) + " AND "
                                   + (tableRowStart + tableRowLimit));
             
-            lobLessSQLStatement.append("(SELECT *, ROW_NUMBER() "
+            lobLessSQLStatement.append("(SELECT " + lobLessFieldsString + ", ROW_NUMBER() "
                                          + ((lobLess_sqlOrderString.equals("")) ? ("OVER (ORDER BY "
                                          + (lobLessFieldsString.indexOf(",") != -1 ?
                                                         lobLessFieldsString.substring(0, lobLessFieldsString.indexOf(','))
