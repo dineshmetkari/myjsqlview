@@ -9,8 +9,8 @@
 //              << AdvancedSorSearchForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 4.99 10/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.00 02/14/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -202,6 +202,8 @@
 //        4.98 07/02/2013 Change in getAdvancedSortSearchSQL() to Use DBTablePanel.
 //                        getGeneralDBProperties().
 //        4.99 10/06/2013 Constructor Set Frame's Icon.
+//        5.00 02/14/2014 Added Instance mssqlWhereOperators in createSortSearchInterface() &
+//                        Selection Condition.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -249,7 +251,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 4.99 07/02/2013
+ * @version 5.00 02/14/2014
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -634,6 +636,8 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
                                        "=", "<", "<<", "<=", ">", ">>", ">=", "<>", "!=", "==", };
       Object[] derbyWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IN", "NOT IN", "BETWEEN",
                                       "NOT BETWEEN", "EXISTS", "OR", "AND", "=", "<", "<=", ">", ">=", "<>"};
+      Object[] mssqlWhereOperators = {"LIKE", "NOT LIKE", "IS NULL", "IS NOT NULL", "IN", "NOT IN", "BETWEEN",
+                                      "=", "<", "<=", ">", ">=", "<>", "!=", "!<", "!>"};
 
       // Assigning the appropriate string array WHERE operators.
       
@@ -647,6 +651,8 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          whereOperators = sqliteWhereOperators;
       else if (dataSourceType.equals(ConnectionManager.DERBY))
          whereOperators = derbyWhereOperators;
+      else if (dataSourceType.equals(ConnectionManager.MSSQL))
+         whereOperators = mssqlWhereOperators;
       // Make HSQL Default
       else
          whereOperators = hsqlWhereOperators;
