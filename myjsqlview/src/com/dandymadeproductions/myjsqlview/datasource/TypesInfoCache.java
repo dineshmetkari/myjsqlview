@@ -8,8 +8,8 @@
 //                     << TypesInfoCache.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.8 10/27/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.9 02/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,8 @@
 //         1.8 Syncronized TypeID.HSQL_CHARACTER. Added ORACLE_FLOAT & ORACLE_DOUBLE
 //             to ORACLE_TYPES. Changed in DERBY_TYPES & MSACCESS_TYPES Derby Sink
 //             Database IDENTITY Types to DERBY_BIGINT.
+//         1.9 Added Class Instance MSSQL_TYPES Along With Conditional Check in
+//             Constructor of Such.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.8 10/27/2013
+ * @version 1.9 02/18/2014
  */
 
 public class TypesInfoCache
@@ -280,6 +282,37 @@ public class TypesInfoCache
        {TypeID.MSACCESS_GUID, TypeID.H2_OTHER, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
        {TypeID.MSACCESS_DATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP}};
    
+   private static final int[][] MSSQL_TYPES = {
+       {TypeID.MSSQL_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
+       {TypeID.MSSQL_NCHAR, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
+       {TypeID.MSSQL_VARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.MSSQL_NVARCHAR, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.MSSQL_BINARY, TypeID.H2_BINARY, TypeID.HSQL_BINARY, TypeID.DERBY_BLOB},
+       {TypeID.MSSQL_VARBINARY, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_BLOB},
+       {TypeID.MSSQL_IMAGE, TypeID.H2_BLOB, TypeID.HSQL_BINARY, TypeID.DERBY_BLOB},
+       {TypeID.MSSQL_TEXT, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
+       {TypeID.MSSQL_NTEXT, TypeID.H2_CLOB, TypeID.HSQL_CLOB, TypeID.DERBY_CLOB},
+       {TypeID.MSSQL_UNIQUEIDENTIFIER, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
+       {TypeID.MSSQL_XML, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
+       {TypeID.MSSQL_BIT, TypeID.H2_BOOLEAN, TypeID.HSQL_BIT, TypeID.DERBY_BOOLEAN},
+       {TypeID.MSSQL_TINYINT, TypeID.H2_TINYINT, TypeID.HSQL_TINYINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MSSQL_SMALLINT, TypeID.H2_SMALLINT, TypeID.HSQL_SMALLINT, TypeID.DERBY_SMALLINT},
+       {TypeID.MSSQL_INT, TypeID.H2_INTEGER, TypeID.HSQL_INTEGER, TypeID.DERBY_INTEGER},
+       {TypeID.MSSQL_BIGINT, TypeID.H2_BIGINT, TypeID.HSQL_BIGINT, TypeID.DERBY_BIGINT},
+       {TypeID.MSSQL_FLOAT, TypeID.H2_DOUBLE, TypeID.HSQL_DOUBLE, TypeID.DERBY_DOUBLE},
+       {TypeID.MSSQL_REAL, TypeID.H2_REAL, TypeID.HSQL_REAL, TypeID.DERBY_REAL},
+       {TypeID.MSSQL_DECIMAL, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.MSSQL_NUMERIC, TypeID.H2_DECIMAL, TypeID.HSQL_NUMERIC, TypeID.DERBY_DECIMAL},
+       {TypeID.MSSQL_MONEY, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.MSSQL_SMALLMONEY, TypeID.H2_DECIMAL, TypeID.HSQL_DECIMAL, TypeID.DERBY_DECIMAL},
+       {TypeID.MSSQL_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
+       {TypeID.MSSQL_TIME, TypeID.H2_TIME, TypeID.HSQL_TIME, TypeID.DERBY_TIME},
+       {TypeID.MSSQL_DATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_DATETIME, TypeID.DERBY_TIMESTAMP},
+       {TypeID.MSSQL_SMALLDATETIME, TypeID.H2_TIMESTAMP, TypeID.HSQL_DATETIME, TypeID.DERBY_TIMESTAMP},
+       {TypeID.MSSQL_DATETIME2, TypeID.H2_TIMESTAMP, TypeID.HSQL_DATETIME, TypeID.DERBY_TIMESTAMP},
+       {TypeID.MSSQL_DATETIMEOFFSET, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
+       {TypeID.MSSQL_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP}};
+   
    //==============================================================
    // TypesInfoCache Constructors
    //==============================================================
@@ -317,6 +350,8 @@ public class TypesInfoCache
          addSourceSinkType(SQLITE_TYPES);
       else if (dataSourceType.equals(ConnectionManager.MSACCESS))
          addSourceSinkType(MSACCESS_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.MSSQL))
+         addSourceSinkType(MSSQL_TYPES);
       
       // Source not found, all will become UNSPECIFIED.
    }
