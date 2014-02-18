@@ -5,6 +5,7 @@
 -- Dana Proctor 
 -- Version 01/22/2014 Original Test Data Type Table for MS SQL.
 --         01/27/2014 Finalized Initial Test Data Types Table.
+--         02/18/2014 Added Field real_type.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -42,6 +43,7 @@ CREATE TABLE "mssqltypes" (
     "int_type" INT DEFAULT NULL,
     "bigInt_type" BIGINT DEFAULT NULL,
     "float_type" FLOAT DEFAULT NULL,
+    "real_type" REAL DEFAULT NULL,
     "decimal_type" DECIMAL(16,2) DEFAULT NULL,
     "numeric_type" NUMERIC(10,2) DEFAULT NULL,
     "money_type" MONEY DEFAULT NULL,
