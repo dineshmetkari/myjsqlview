@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.8 02/13/2014
+// Version 1.9 02/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //             ORACLE_FLOAT & ORACLE_DOUBLE. Correction in Method toString() Conditional
 //             Check to Replace of Underscore Character.
 //         1.8 Added Class Instance Type IDs for MSSQL.
+//         1.9 Added Class Instance MSSQL_REAL. Re-Sequenced MSSQL Type IDs integers.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -61,7 +62,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.8 02/13/2014
+ * @version 1.9 02/18/2014
  */
 
 public class TypeID
@@ -278,17 +279,18 @@ public class TypeID
    public static final int MSSQL_INT = 116;
    public static final int MSSQL_BIGINT = 118;
    public static final int MSSQL_FLOAT = 120;
-   public static final int MSSQL_DECIMAL = 122;
-   public static final int MSSQL_NUMERIC = 124;
-   public static final int MSSQL_MONEY = 126;
-   public static final int MSSQL_SMALLMONEY = 128;
-   public static final int MSSQL_DATE = 130;
-   public static final int MSSQL_TIME = 132;
-   public static final int MSSQL_DATETIME = 134;
-   public static final int MSSQL_SMALLDATETIME = 136;
-   public static final int MSSQL_DATETIME2 = 138;
-   public static final int MSSQL_DATETIMEOFFSET = 140;
-   public static final int MSSQL_TIMESTAMP = 142;    
+   public static final int MSSQL_REAL = 122;
+   public static final int MSSQL_DECIMAL = 124;
+   public static final int MSSQL_NUMERIC = 126;
+   public static final int MSSQL_MONEY = 128;
+   public static final int MSSQL_SMALLMONEY = 130;
+   public static final int MSSQL_DATE = 132;
+   public static final int MSSQL_TIME = 134;
+   public static final int MSSQL_DATETIME = 136;
+   public static final int MSSQL_SMALLDATETIME = 138;
+   public static final int MSSQL_DATETIME2 = 140;
+   public static final int MSSQL_DATETIMEOFFSET = 142;
+   public static final int MSSQL_TIMESTAMP = 144;    
    
    //==============================================================
    // Class method to allow classes to try and obtain the field
