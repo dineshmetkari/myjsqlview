@@ -1,0 +1,20 @@
+MyJSQLView Version 3.48 Released
+
+The MyJSQLView project is pleased to release v3.48 to the public. The
+release marks support for the Microsoft SQL database. The inclusion of
+the MS SQL database nearly completes the application's ability to access
+all the major relational database products. The Visual QueryBuilder plugin
+has also been updated in this release to bring it into alignment with
+the common core parser syntax code of its basis.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://dandymadeproductions.com/projects/MyJSQLView/
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to visually build queries, profile and
+plot data for analysis.
