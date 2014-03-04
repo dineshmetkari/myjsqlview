@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.9 02/16/2014
+// Version 6.0 03/04/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -153,6 +153,7 @@
 //         5.8 Constructor Check for Additional Parameters Passed in Database Login
 //             Field, & If so Trunk.
 //         5.9 Addition of Support of MSSQL Database. Added Method createMSSQLTableDefinition().
+//         6.0 Changed in Method createMSSQLTableDefinition() to Properly Close ResultSets.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -182,7 +183,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 5.9 02/16/2014
+ * @version 6.0 03/04/2014
  */
 
 public class TableDefinitionGenerator
@@ -1689,6 +1690,8 @@ public class TableDefinitionGenerator
          else
             tableType = "TABLE";
          
+         resultSet.close();
+         
          // Drop Table Statements As Needed.
          if (DBTablesPanel.getDataExportProperties().getTableStructure())
          {
@@ -1707,7 +1710,6 @@ public class TableDefinitionGenerator
                                  + "' AND TABLE_NAME='" + tableName + "'";
             // System.out.println(sqlStatementString);
             
-            resultSet.close();
             resultSet = sqlStatement.executeQuery(sqlStatementString);
 
             if (resultSet.next())
@@ -1719,7 +1721,6 @@ public class TableDefinitionGenerator
                else
                   tableDefinition.append(resultSet.getString(1) + ";\n");
             }
-            resultSet.close();
             return;
          }
          // TABLE
@@ -1733,6 +1734,7 @@ public class TableDefinitionGenerator
 
          sqlStatementString = "SELECT TOP 1 * FROM " + schemaTableName;
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
          
@@ -1977,11 +1979,21 @@ public class TableDefinitionGenerator
       {
          try
          {
-            if (resultSet != null)
-               resultSet.close();
-            
-            if (resultSet2 != null)
-               resultSet2.close();
+            try
+            {
+               if (resultSet != null)
+                  resultSet.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "TableDefinitionGenerator createMSSQLTableDefinition()");
+            }
+            finally
+            {
+               if (resultSet2 != null)
+                  resultSet2.close();  
+            }   
          }
          catch (SQLException sqle)
          {
@@ -2451,7 +2463,6 @@ public class TableDefinitionGenerator
                else
                   tableDefinition.append(resultSet.getString(1) + ";\n");
             }
-            resultSet.close();
             return;
          }
          // TABLE
@@ -2466,6 +2477,7 @@ public class TableDefinitionGenerator
          sqlStatementString = "SELECT * FROM " + schemaTableName + " LIMIT 1";
          // System.out.println(sqlStatementString);
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
          
