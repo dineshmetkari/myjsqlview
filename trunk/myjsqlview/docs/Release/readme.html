@@ -6,17 +6,17 @@
 		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
 		<meta name="Description" content="MyJSQLView ReadMe.">
 		<meta name="keywords" content="MyJSQLView, Readme, Dana Proctor">		
-		<meta name="Copyright" content="2005-2013">
+		<meta name="Copyright" content="2005-2014">
 		
 		<title>MyJSQLView README</title>
 	</head>
 
 	<body>
 		<p align="center">
-			<b><u>MyJSQLView Version 3.47<br></u></b>
+			<b><u>MyJSQLView Version 3.48<br></u></b>
 		</p>
 		<p align="center">
-			Copyright 2005-2013<br>
+			Copyright 2005-2014<br>
 			by <a href="mailto:danap@dandymadeproductions.com">Dana Proctor</a><br>
 			<a href="http://dandymadeproductions.com">http://dandymadeproductions.com</a>
 		</p>
@@ -24,9 +24,9 @@
 		<p><u><b>What is MyJSQLView?</b></u></p>
 		<p>
 			&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing,
-			adding, editing, or deleting entries in the Derby, H2, HSQL, MSAccess, MySQL, Oracle,
-			PostgreSQL, and SQLite databases. All tables and fields are available for access in
-			the selected database.<br><br>
+			adding, editing, or deleting entries in the Derby, H2, HSQL, Microsoft SQL,
+			MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases. All tables and
+			fields are available for access in the selected database.<br><br>
 
 			&nbsp;&nbsp;&nbsp;MyJSQLView is the result of a condensed version of a larger project
 			that was needed to access an inventory database. The project from its
@@ -43,14 +43,14 @@
 			Connectivity, driver. The JDBC provides the driver interface between the
 			Java SQL, structured query language, statements, and the database. As of
 			the release of this version of MyJSQLView the application has been tested
-			with the Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, and SQLite databases.
-			The application once installed can provide a much quicker access/update to
-			a database than a web based interface frontend and MyJSQLView supports
-			transaction locking. If your small business, scientific community, government
-			agency, or educational institute wants to quickly access either a Apache
-			Derby, H2, HSQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database for
-			viewing, adding, editing, searching, and analyzing data MyJSQLView provides
-			an alternative that is simple and easy to use.<br><br>
+			with the Derby, H2, HSQL, MS SQL, MSAccess, MySQL, Oracle, PostgreSQL, and
+			SQLite databases. The application once installed can provide a much quicker
+			access/update to a database than a web based interface frontend and MyJSQLView
+			supports transaction locking. If your small business, scientific community,
+			government agency, or educational institute wants to quickly access either a
+			Apache Derby, H2, HSQL, MS SQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite
+			database for viewing, adding, editing, searching, and analyzing data MyJSQLView
+			provides an alternative that is simple and easy to use.<br><br>
 
    			Dana M. Proctor<br>
    			Project Manager
@@ -95,6 +95,7 @@
 			<li>H2 <font color="#ff0000">1.3.173 - 1.3.174</font>.</li>
 			<li>HSQL <font color="#ff0000">2.2.5 - 2.3.1</font>. <b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 			<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge, Control Panel Data Sources.</li>
+			<li>Microsoft SQL Server <font color="#ff0000"> 8? - 11.00.2100, </font> JDBC <font color="#ff0000">4.0</font>.</li>
 			<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
 			<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
 			<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.0-801-9.1-903</font>.</li>
@@ -122,7 +123,7 @@
 			necessity, but will clean out some unused files, mainly in the images directory.
 			The only other major concern of a new release that might be of interest is
 			obtaining new connection parameters. Each new release that supports an
-			additional database, release <b>v3.47</b> does, will have an example configuration
+			additional database, release <b>v3.48</b> does, will have an example configuration
 			for the connection parameters in the advanced login parameters. Likely changes will be
 			included in the reference myjsqlview.xml file located in the installation
 			directory. Often the Driver, Protocol, SubProtocol, and Port parameters
@@ -142,10 +143,11 @@
 			&nbsp;&nbsp;&nbsp;&nbsp;The MyJSQLView application is a Java based program and does
 			require the JRE, to be installed. The minimum runtime environment needs to be
 			JRE-1.5. In addition to the JRE an extension, JDBC, needs to be installed that
-			allows Java to communicate to the Derby, MySQL, Oracle, PostgreSQL, or SQLite
-			database. The programs are available on the Internet free of charge. Check with
-			the sites
+			allows Java to communicate to the Derby, MS SQL, MySQL, Oracle, PostgreSQL, or
+			SQLite database. The programs are available on the Internet free of charge.
+			Check with the sites
 			<a href="http://db.apache.org/derby/" target="_blank">Apache Derby</a>,
+			<a href="http://www.microsoft.com/en-us/sqlserver/" target="_blank">MS SQL</a>,
 			<a href="http://dev.mysql.com" target="_blank">dev.mysql.com</a>,
 			<a href="http://oracle.com" target="_blank">oracle.com</a>,
 			<a href="http://jdbc.postgresql.org" target="_blank">jdbc.postgresql.org</a>, and
@@ -237,6 +239,10 @@
 
 		<table   border="1" summary="" width="100%">
   		<tbody>
+			<tr>
+      				<td width="20%">Version 3.48</td>
+      				<td width="80%">Microsoft SQL Database Support. Visual QueryBuilder Plugin Update.</td>
+    			</tr>
 			<tr>
       				<td width="20%">Version 3.47</td>
       				<td width="80%">H2 Database Support. Architectural revisions to support multiple
