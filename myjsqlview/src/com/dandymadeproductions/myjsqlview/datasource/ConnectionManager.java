@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 4.7 01/30/2014
+// Version 4.8 03/06/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -106,6 +106,7 @@
 //         4.6 Added static final Class Instance MSSQL. Class Method createConnectionURLString()
 //             Addition of Code to Create MS SQL Server Connection String.
 //         4.7 Minor Reference & Comment Changes.
+//         4.8 Added static final Class Instance MARIADB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -131,7 +132,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.7 01/30/2014
+ * @version 4.8 03/06/2014
  */
 
 public class ConnectionManager
@@ -144,6 +145,7 @@ public class ConnectionManager
    private static Clip errorSoundClip;
    
    public static final String MYSQL = "mysql";
+   public static final String MARIADB = "mariadb";
    public static final String POSTGRESQL = "postgresql";
    public static final String HSQL = "hsql";
    public static final String HSQL2 = "hsql2";
