@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.7 01/30/2014
+// Version 1.8 03/07/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -44,6 +44,7 @@
 //         1.6 11/05/2013 Commented Out Derby Shutdown Code in Method shutdownDatabase().
 //                        See Note.
 //         1.7 01/30/2014 Added static final Class Instance MSSQL.
+//         1.8 03/07/2014 Added static final Class Instance MARIADB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 1.7 01/30/2014
+ * @version 1.8 03/07/2014
  */
 
 public class ConnectionInstance
@@ -83,6 +84,7 @@ public class ConnectionInstance
    private boolean connectionInitialized, debug;
    
    public static final String MYSQL = ConnectionManager.MYSQL;
+   public static final String MARIADB = ConnectionManager.MARIADB;
    public static final String POSTGRESQL = ConnectionManager.POSTGRESQL;
    public static final String HSQL = ConnectionManager.HSQL;
    public static final String HSQL2 = ConnectionManager.HSQL2;
