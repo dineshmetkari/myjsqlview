@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 4.8 03/06/2014
+// Version 4.9 03/07/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -107,6 +107,7 @@
 //             Addition of Code to Create MS SQL Server Connection String.
 //         4.7 Minor Reference & Comment Changes.
 //         4.8 Added static final Class Instance MARIADB.
+//         4.9 Class Method displaySQLErrors() Added for Debug e.getClause() Output.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -132,7 +133,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 4.8 03/06/2014
+ * @version 4.9 03/07/2014
  */
 
 public class ConnectionManager
@@ -436,6 +437,14 @@ public class ConnectionManager
          System.out.println("SQLException: " + e.getMessage());
          System.out.println("SQLState: " + e.getSQLState());
          System.out.println("VendorError: " + e.getErrorCode());
+         
+         Throwable t = e.getCause();
+         
+         while (t != null)
+         {
+            System.out.println("Cause: " + t);
+            t = t.getCause();
+         }
       }
 
       // Alert Dialog Output.
