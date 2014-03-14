@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.0 03/07/2014
+// Version 2.1 03/13/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,8 @@
 //                        Output.
 //         2.0 03/07/2014 Class Method displaySQLErrors() Cycle Through Possible Exceptions
 //                        for Debug.
+//         2.1 03/13/2014 Class Method displaySQLErrors() Introduced Instance eDebug for
+//                        Cycle to Isolate arg e From Later e.getMessages() Dialog.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -75,7 +77,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 2.0 03/07/2014
+ * @version 2.1 03/13/2014
  */
 
 public class ConnectionInstance
@@ -559,15 +561,17 @@ public class ConnectionInstance
       // Standard Console Output.
       if (debug)
       {
+         SQLException eDebug = e;
+         
          System.out.println(classCaller);
          
-         while (e != null)
+         while (eDebug != null)
          {
-            System.out.println("SQLException: " + e.getMessage());
-            System.out.println("SQLState: " + e.getSQLState());
-            System.out.println("VendorError: " + e.getErrorCode());
+            System.out.println("SQLException: " + eDebug.getMessage());
+            System.out.println("SQLState: " + eDebug.getSQLState());
+            System.out.println("VendorError: " + eDebug.getErrorCode());
             
-            Throwable t = e.getCause();
+            Throwable t = eDebug.getCause();
             
             while (t != null)
             {
@@ -575,7 +579,7 @@ public class ConnectionInstance
                t = t.getCause();
             }
             
-            e = e.getNextException();
+            eDebug = eDebug.getNextException();
          }
       }
 

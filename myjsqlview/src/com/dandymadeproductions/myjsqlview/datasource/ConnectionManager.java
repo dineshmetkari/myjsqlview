@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.0 03/07/2014
+// Version 5.1 03/13/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -109,6 +109,8 @@
 //         4.8 Added static final Class Instance MARIADB.
 //         4.9 Class Method displaySQLErrors() Added for Debug e.getClause() Output.
 //         5.0 Class Method displaySQLErrors() Cycle Through Possible Exceptions for Debug.
+//         5.1 Class Method displaySQLErrors() Introduced Instance eDebug for Cycle to Isolate
+//             arg e From Later e.getMessages() Dialog.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +136,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 5.0 03/07/2014
+ * @version 5.1 03/13/2014
  */
 
 public class ConnectionManager
@@ -434,15 +436,17 @@ public class ConnectionManager
       // Standard Console Output.
       if (MyJSQLView.getDebug())
       {
+         SQLException eDebug = e;
+         
          System.out.println(classCaller);
          
-         while (e != null)
+         while (eDebug != null)
          {
-            System.out.println("SQLException: " + e.getMessage());
-            System.out.println("SQLState: " + e.getSQLState());
-            System.out.println("VendorError: " + e.getErrorCode());
+            System.out.println("SQLException: " + eDebug.getMessage());
+            System.out.println("SQLState: " + eDebug.getSQLState());
+            System.out.println("VendorError: " + eDebug.getErrorCode());
             
-            Throwable t = e.getCause();
+            Throwable t = eDebug.getCause();
             
             while (t != null)
             {
@@ -450,7 +454,7 @@ public class ConnectionManager
                t = t.getCause();
             }
             
-            e = e.getNextException();
+            eDebug = eDebug.getNextException();
          }
       }
 
