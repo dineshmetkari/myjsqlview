@@ -8,8 +8,8 @@
 //              << PluginModuleInterface.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.3 11/04/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.4 03/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         2.1 Added Class Interface getAuthor().
 //         2.2 Added Class Interfaces getCategory() & getSize().
 //         2.3 Added Class Interface shutdown().
+//         2.4 Changed the Return Types for Interfaces getToolBar() & getPanel()
+//             From JToolBar & JPanel to JComponent.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -58,9 +60,8 @@ package com.dandymadeproductions.myjsqlview.plugin;
 import java.util.ArrayList;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
 
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.3 11/03/2013
+ * @version 2.4 03/17/2014
  */
 
 public interface PluginModuleInterface
@@ -148,7 +149,7 @@ public interface PluginModuleInterface
    // used with the plugin module.
    //==============================================================
 
-   JToolBar getToolBar();
+   JComponent getToolBar();
    
    //==============================================================
    // Class method to return the panel associated with the module.
@@ -157,7 +158,7 @@ public interface PluginModuleInterface
    // BE ACCESSABLE!
    //==============================================================
    
-   JPanel getPanel();
+   JComponent getPanel();
    
    //==============================================================
    // Class method to allow the setting the database tables.
