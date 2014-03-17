@@ -9,8 +9,8 @@
 //             << MyJSQLView_PluginModule.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 11/04/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.5 03/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,10 @@
 //         3.2 Added Class Instances category, size, & Their Getter Methods.
 //         3.3 Comment Change.
 //         3.4 Added Interface Method shutdown().
+//         3.5 Changed the Return Types for Methods getToolBar(), getPanel(),
+//             getControlledToolBar(), & getControlledPanel() From JToolBar
+//             & JPanel to JComponent. Class Instance toolBar & panel Changed
+//             Accordingly.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -78,9 +82,8 @@ package com.dandymadeproductions.myjsqlview.plugin;
 
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
+import javax.swing.JComponent;
 import javax.swing.JMenuBar;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
 
 /**
  *    The MyJSQLView_PluginModule class provides the abstract framework
@@ -88,7 +91,7 @@ import javax.swing.JToolBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.4 11/04/2013
+ * @version 3.5 03/17/2014
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -101,8 +104,8 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    protected int size;
    protected ImageIcon tabIcon;
    protected JMenuBar menuBar;
-   protected JToolBar toolBar;
-   protected JPanel panel;
+   protected JComponent toolBar;
+   protected JComponent panel;
 
    //===========================================================
    // MyJSQLView_PluginModule Constructor
@@ -281,12 +284,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // Interface requirement.
    //==============================================================
 
-   public JToolBar getToolBar()
+   public JComponent getToolBar()
    {
       return toolBar;
    }
    
-   public JToolBar getControlledToolBar()
+   public JComponent getControlledToolBar()
    {
       return toolBar;
    }
@@ -296,12 +299,12 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    // MyJSQLView application's main tab. Interface requirement.
    //==============================================================
 
-   public JPanel getPanel()
+   public JComponent getPanel()
    {
       return panel;
    }
    
-   public JPanel getControlledPanel()
+   public JComponent getControlledPanel()
    {
       return panel;
    }
