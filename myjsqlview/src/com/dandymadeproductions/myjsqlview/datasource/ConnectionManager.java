@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.1 03/13/2014
+// Version 5.2 03/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -111,6 +111,7 @@
 //         5.0 Class Method displaySQLErrors() Cycle Through Possible Exceptions for Debug.
 //         5.1 Class Method displaySQLErrors() Introduced Instance eDebug for Cycle to Isolate
 //             arg e From Later e.getMessages() Dialog.
+//         5.2 Added Getter Methods for Various Rowsets.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,10 +126,17 @@ import java.util.ArrayList;
 import java.util.Properties;
 
 import javax.sound.sampled.Clip;
+import javax.sql.RowSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.FilteredRowSet;
+import javax.sql.rowset.WebRowSet;
 import javax.swing.JOptionPane;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.sun.rowset.CachedRowSetImpl;
+import com.sun.rowset.FilteredRowSetImpl;
+import com.sun.rowset.WebRowSetImpl;
 
 /**
  *    The ConnectionManager class provides a central class to manage all
@@ -136,7 +144,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 5.1 03/13/2014
+ * @version 5.2 03/29/2014
  */
 
 public class ConnectionManager
@@ -662,6 +670,39 @@ public class ConnectionManager
    public static ArrayList<String> getTableNames()
    {
       return databaseProperties.getTableNames();
+   }
+   
+   //==============================================================
+   // Class methods to return various rowsets of the current database
+   // connection.
+   //==============================================================
+
+   public static CachedRowSet getCachedRowSet() throws SQLException
+   {
+      CachedRowSet cachedRowSet = new CachedRowSetImpl();
+      setRowSet(cachedRowSet);
+      return cachedRowSet;
+   }
+   
+   public static FilteredRowSet getFilteredRowSet() throws SQLException
+   {
+      FilteredRowSet filteredRowSet = new FilteredRowSetImpl();
+      setRowSet(filteredRowSet);
+      return filteredRowSet;
+   }
+   
+   public static WebRowSet getWebRowSet() throws SQLException
+   {
+      WebRowSet webRowSet = new WebRowSetImpl();
+      setRowSet(webRowSet);
+      return webRowSet;
+   }
+   
+   private static void setRowSet(RowSet rowSet) throws SQLException
+   {
+      rowSet.setUrl(connectionProperties.getConnectionURLString());
+      rowSet.setUsername(connectionProperties.getProperty(ConnectionProperties.USER));
+      rowSet.setPassword(connectionProperties.getPassword());
    }
    
    //==============================================================

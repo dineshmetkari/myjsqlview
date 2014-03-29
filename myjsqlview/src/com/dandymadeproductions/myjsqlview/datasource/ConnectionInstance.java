@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.1 03/13/2014
+// Version 2.2 03/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -51,6 +51,7 @@
 //                        for Debug.
 //         2.1 03/13/2014 Class Method displaySQLErrors() Introduced Instance eDebug for
 //                        Cycle to Isolate arg e From Later e.getMessages() Dialog.
+//         2.2 03/29/2014 Added Getter Methods for Various Rowsets.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,6 +65,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Properties;
 
+import javax.sql.RowSet;
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.FilteredRowSet;
+import javax.sql.rowset.WebRowSet;
 import javax.swing.JOptionPane;
 
 import com.dandymadeproductions.myjsqlview.MyJSQLView;
@@ -71,13 +76,16 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
 import com.dandymadeproductions.myjsqlview.datasource.ConnectionProperties;
 import com.dandymadeproductions.myjsqlview.datasource.DatabaseProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.sun.rowset.CachedRowSetImpl;
+import com.sun.rowset.FilteredRowSetImpl;
+import com.sun.rowset.WebRowSetImpl;
 
 /**
  *    The ConnectionInstance class provides a generic instance to manage
  * connections to a distinct set of databases.
  * 
  * @author Dana M. Proctor
- * @version 2.1 03/13/2014
+ * @version 2.2 03/29/2014
  */
 
 public class ConnectionInstance
@@ -691,6 +699,39 @@ public class ConnectionInstance
    public ArrayList<String> getTableNames()
    {
       return databaseProperties.getTableNames();
+   }
+   
+   //==============================================================
+   // Class methods to return various rowsets of the current database
+   // connection.
+   //==============================================================
+
+   public CachedRowSet getCachedRowSet() throws SQLException
+   {
+      CachedRowSet cachedRowSet = new CachedRowSetImpl();
+      setRowSet(cachedRowSet);
+      return cachedRowSet;
+   }
+   
+   public FilteredRowSet getFilteredRowSet() throws SQLException
+   {
+      FilteredRowSet filteredRowSet = new FilteredRowSetImpl();
+      setRowSet(filteredRowSet);
+      return filteredRowSet;
+   }
+   
+   public WebRowSet getWebRowSet() throws SQLException
+   {
+      WebRowSet webRowSet = new WebRowSetImpl();
+      setRowSet(webRowSet);
+      return webRowSet;
+   }
+   
+   private void setRowSet(RowSet rowSet) throws SQLException
+   {
+      rowSet.setUrl(connectionProperties.getConnectionURLString());
+      rowSet.setUsername(connectionProperties.getProperty(ConnectionProperties.USER));
+      rowSet.setPassword(connectionProperties.getPassword());
    }
 
    // ==============================================================
