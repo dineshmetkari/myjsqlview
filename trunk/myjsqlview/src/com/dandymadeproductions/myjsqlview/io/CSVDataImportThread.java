@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.8 02/03/2014
+// Version 7.9 04/03/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -174,6 +174,8 @@
 //         7.7 Introduced Instance identityInsertEnabled & Use in importCSVFile().
 //         7.8 Correction in Collecting identityInsertEnabled to Check for DBTablesPanel
 //             to See if selectedTable() Exists in importSQLFile().
+//         7.9 Class Method importCSVFile() Changed the sqlStatement to Use Batch
+//             Processing Instead of executeUpdate().
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -209,7 +211,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 7.8 02/03/2014
+ * @version 7.9 04/03/2014
  */
 
 public class CSVDataImportThread implements Runnable
@@ -275,7 +277,7 @@ public class CSVDataImportThread implements Runnable
       {
          // Importing data from CSV file
          importCSVFile();
-
+         
          // Refreshing table panel to see new inserted data and
          // removing the  temporary file, clipboard pastes, if
          // needed.
@@ -701,13 +703,14 @@ public class CSVDataImportThread implements Runnable
                   // System.out.println(sqlStatementString);
 
                   // Insert/Update current line's data.
-                  sqlStatement.executeUpdate(sqlStatementString.toString());
+                  sqlStatement.addBatch(sqlStatementString.toString());
                   
                   // Commit on Batch Size if Desired.
                   if (batchSizeEnabled)
                   {
                      if (currentBatchRows > batchSize)
                      {
+                        sqlStatement.executeBatch();
                         dbConnection.commit();
                         currentBatchRows = 0;
                      }
@@ -723,7 +726,10 @@ public class CSVDataImportThread implements Runnable
             // and cleaning up.
 
             if (validImport)
+            {
+               sqlStatement.executeBatch();
                dbConnection.commit();
+            }
             else
                dbConnection.rollback();
             
