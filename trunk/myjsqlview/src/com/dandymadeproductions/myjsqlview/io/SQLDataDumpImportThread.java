@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.0 02/03/2014
+// Version 6.1 04/03/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,8 @@
 //         5.9 Introduced Instance identityInsertEnabled & Use in importSQLFile().
 //         6.0 Correction in Collecting identityInsertEnabled to Check for DBTablesPanel
 //             to See if selectedTable() Exists in importSQLFile().
+//         6.1 Class Method importSQLFile() Changed the sqlStatement to Use Batch
+//             Processing Instead of executeUpdate().
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -163,7 +165,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 6.0 02/03/2014
+ * @version 6.1 04/03/2014
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -374,7 +376,7 @@ public class SQLDataDumpImportThread implements Runnable
                      
                      // Process the query.
                      // System.out.println("query: " + queryStatement);
-                     sqlStatement.execute(queryStatement.toString());
+                     sqlStatement.addBatch(queryStatement.toString());
                      
                      queryStatement.delete(0, queryStatement.length());
                      
@@ -383,6 +385,7 @@ public class SQLDataDumpImportThread implements Runnable
                      {
                         if (currentBatchRows > batchSize)
                         {
+                           sqlStatement.executeBatch();
                            dbConnection.commit();
                            currentBatchRows = 0;
                         }
@@ -401,7 +404,10 @@ public class SQLDataDumpImportThread implements Runnable
             // and cleaning up.
 
             if (validImport)
+            {
+               sqlStatement.executeBatch();
                dbConnection.commit();
+            }
             else
                dbConnection.rollback();
             
