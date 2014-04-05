@@ -8,8 +8,8 @@
 //                     << SQLQuery.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.7 10/24/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.8 04/05/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             Constructors as a Result. Defaulted Method executeSQL() With No Argument
 //             to MyJSQLView Login Database. Removed in Same New ConnectionInstance
 //             Creation.
+//         1.8 Added Class Methods getRowCount() & getSQLQuery().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -76,7 +77,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.7 10/24/2013
+ * @version 1.8 04/05/2014
  */
 
 public class SQLQuery
@@ -407,5 +408,92 @@ public class SQLQuery
    public HashMap<String, Boolean> getColumnIsAutoIncrementHashMap()
    {
       return columnIsAutoIncrementHashMap;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the row count from
+   // the defined query.
+   //==============================================================
+
+   public int getRowCount(String dataSourceType)
+   {
+      // Method Instances
+      Connection dbConnection;
+      
+      String sqlStatementString;
+      Statement sqlStatement;
+      ResultSet rs;
+      
+      // Check if SELECT or valid query.
+      if (validQuery != 1)
+         return 0;
+      
+      // Setting up a connection.
+      dbConnection = ConnectionManager.getConnection("SQLQuery getRowCount()");
+      
+      // Setup
+      int rowCount = 0;
+      sqlStatement = null;
+      rs = null;
+      
+      try
+      {
+         sqlStatement = dbConnection.createStatement();
+         sqlStatementString = "SELECT COUNT(*) AS row_count FROM (" + sqlString;
+         
+         if (dataSourceType.equals(ConnectionManager.MYSQL)
+               || dataSourceType.equals(ConnectionManager.POSTGRESQL)
+               || dataSourceType.equals(ConnectionManager.DERBY)
+               || dataSourceType.equals(ConnectionManager.MSSQL))
+              sqlStatementString += ") AS AS1";
+           else
+              sqlStatementString += ")";
+         System.out.println(sqlStatementString);
+
+         rs = sqlStatement.executeQuery(sqlStatementString);
+         rs.next();
+         rowCount = rs.getInt("row_count");
+      }
+      catch (SQLException e)
+      {
+         ConnectionManager.displaySQLErrors(e, "SQLQuery getRowCount()");
+      }
+      finally
+      {
+         try
+         {
+            if (rs != null)
+               rs.close();
+         }
+         catch (SQLException sqle)
+         {
+            ConnectionManager.displaySQLErrors(sqle, "SQLQuery getRowCount()");
+         }
+         finally
+         {
+            try
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle, "SQLQuery getRowCount()");
+            }
+         }
+      }
+      ConnectionManager.closeConnection(dbConnection, "SQLQuery getRowCount()");
+      
+      return rowCount;
+   }
+   
+   //==============================================================
+   // Class method to allow classes to obtain the query used for
+   // the object.
+   //==============================================================
+
+   public String getSQLQuery()
+   {
+      return sqlString;
    }
 }
