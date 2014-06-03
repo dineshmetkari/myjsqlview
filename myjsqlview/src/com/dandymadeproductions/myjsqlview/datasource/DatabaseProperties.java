@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.4 01/22/2014
+// Version 1.5 06/02/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -41,6 +41,11 @@
 //             on subProtocol Match.
 //         1.4 Class Method loadDBTables() Additional Filtering of Table Loading
 //             Based On Schema for MSSQL.
+//         1.5 Class Method loadDBTables() Inclusion of Table Type: BASE TABLE.
+//             Some Where Between mysql-connectorJ 5.1.8 - 5.1.30 Table Types
+//             Definition Changed. Correlation to MariaDB for Same in subProtocol
+//             in init(), getAllSchemasPattern(), & getDataSourceType().
+//             
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +74,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.4 01/22/2014
+ * @version 1.5 06/02/2014
  */
 
 public class DatabaseProperties
@@ -158,6 +163,7 @@ public class DatabaseProperties
       }
       // MySQL & PostgreSQL
       else if (subProtocol.equals(ConnectionManager.MYSQL)
+               || subProtocol.equals(ConnectionManager.MARIADB)
                || subProtocol.equals(ConnectionManager.POSTGRESQL))
       {
          catalog = db;
@@ -235,6 +241,8 @@ public class DatabaseProperties
          {
             if (subProtocol.equals(ConnectionManager.MYSQL))
                dbProductNameVersion = "MySQL ";
+            if (subProtocol.equals(ConnectionManager.MARIADB))
+               dbProductNameVersion = "MarianDB ";
             else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                dbProductNameVersion = "PostgreSQL ";
             else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
@@ -437,7 +445,8 @@ public class DatabaseProperties
             
             if (tableType != null && !(tableType.indexOf("INDEX") != -1)
                 && !(tableType.indexOf("SEQUENCE") != -1) && !(tableType.indexOf("SYNONYM") != -1)
-                && (tableType.equals("TABLE") || tableType.equals("VIEW") || !filter))
+                && (tableType.equals("TABLE") || tableType.equals("BASE TABLE")
+                    || tableType.equals("VIEW") || !filter))
             {
                // Filter some more for Oracle & MSSQL.
                if ((subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && filter)
@@ -675,6 +684,7 @@ public class DatabaseProperties
           || dataSourceType.equals(ConnectionManager.ORACLE))
          return "%";
       else if (dataSourceType.equals(ConnectionManager.MYSQL)
+               || dataSourceType.equals(ConnectionManager.MARIADB)
                || dataSourceType.equals(ConnectionManager.POSTGRESQL))
          return "";
       else
@@ -699,6 +709,8 @@ public class DatabaseProperties
    {  
       if (subProtocol.equals(ConnectionManager.MYSQL))
          return ConnectionManager.MYSQL;
+      if (subProtocol.equals(ConnectionManager.MARIADB))
+         return ConnectionManager.MARIADB;
       else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          return ConnectionManager.POSTGRESQL;
       else if (subProtocol.indexOf(ConnectionManager.HSQL) != -1)
