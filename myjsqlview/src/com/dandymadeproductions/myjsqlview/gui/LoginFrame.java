@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.06 03/06/2014
+// Version 7.07 06/15/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -310,6 +310,8 @@
 //        7.05 Minor Changes/Additions to Debug Output in Method accessCheck().
 //        7.06 Class Method accessCheck() Conditional Check for Subprotocol Being
 //             Identified as MariaDB if so Assign to Standard MySQL Database.
+//        7.07 Class Method accessCheck() Removal of Change 7.06. In Same Method
+//             Inclusion of MariaDB % Character Processing for Password.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -367,7 +369,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.06 03/06/2014
+ * @version 7.07 06/15/2014
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1098,8 +1100,6 @@ public class LoginFrame extends JFrame implements ActionListener
          
          protocol = advancedParametersPanel.getProtocol();
          subProtocol = advancedParametersPanel.getSubProtocol().toLowerCase();
-         if (subProtocol.equals(ConnectionManager.MARIADB))
-            subProtocol = ConnectionManager.MYSQL;
          host = standardParametersPanel.getHost();
          port = advancedParametersPanel.getPort();
          db = standardParametersPanel.getDataBase();
@@ -1133,6 +1133,7 @@ public class LoginFrame extends JFrame implements ActionListener
          if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
              || subProtocol.equals(ConnectionManager.DERBY)
              || subProtocol.equals(ConnectionManager.POSTGRESQL)
+             || subProtocol.equals(ConnectionManager.MARIADB)
              || subProtocol.equals(ConnectionManager.MYSQL))
             passwordString = passwordString.replaceAll("%", "%" + Integer.toHexString(37));
          
