@@ -9,8 +9,8 @@
 //                      << UpdateForm.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.6 10/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.7 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -143,6 +143,9 @@
 //         5.5 07/02/2013 Change in updateTable() & getWhereSQLExpression() to Use DBTablePanel.
 //                        getGeneralDBProperties().
 //         5.6 10/06/2013 Constructor Set Frame's Icon.
+//         5.7 06/16/2014 Method createUpdateWhereInterface() Use of mysqlWhereOperators for
+//                        MariaDB. Method updateTable() Use of BEGIN & Proper Bit Processing for
+//                        MariaDB.
 //                        
 //=================================================================
 
@@ -198,7 +201,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.6 10/06/2013
+ * @version 5.7 06/16/2014
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -625,7 +628,8 @@ public class UpdateForm extends JFrame implements ActionListener
 
       // Assigning the appropriate string array WHERE operators.
 
-      if (dataSourceType.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL)
+          || dataSourceType.equals(ConnectionManager.MARIADB))
          whereOperators = mysqlWhereOperators;
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          whereOperators = postgreSQLWhereOperators;
@@ -886,7 +890,8 @@ public class UpdateForm extends JFrame implements ActionListener
 
                // Only MySQL & PostgreSQL support.
                if (dataSourceType.equals(ConnectionManager.MYSQL)
-                    || dataSourceType.equals(ConnectionManager.POSTGRESQL))
+                   || dataSourceType.equals(ConnectionManager.MARIADB)
+                   || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   sqlStatement.executeUpdate("BEGIN");
 
                // Setup some instances needed for processing.
@@ -1083,7 +1088,8 @@ public class UpdateForm extends JFrame implements ActionListener
                   // Bit Types
                   else if (columnType.equals("BIT"))
                   {
-                     if (dataSourceType.equals(ConnectionManager.MYSQL))
+                     if (dataSourceType.equals(ConnectionManager.MYSQL)
+                         || dataSourceType.equals(ConnectionManager.MARIADB))
                      {
                         updateString = "B'" + updateTextString + "'";
                         quoteCheckBox.setSelected(false);
