@@ -145,7 +145,7 @@
 //         5.6 10/06/2013 Constructor Set Frame's Icon.
 //         5.7 06/16/2014 Method createUpdateWhereInterface() Use of mysqlWhereOperators for
 //                        MariaDB. Method updateTable() Use of BEGIN & Proper Bit Processing for
-//                        MariaDB.
+//                        MariaDB. 
 //                        
 //=================================================================
 
