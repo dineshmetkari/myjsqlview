@@ -8,8 +8,8 @@
 //               << MyJSQLView_JMenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.1 05/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 8.2 06/15/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -133,6 +133,7 @@
 //         8.1 Made Class & Constructor Public. Created Class Instance schemasMenu,
 //             Removed from createSchemasMenu(). Made mainFrame static. Added
 //             Class Method reloadSchemasMenu().
+//         8.2 Constructor, Inclusion of MariaDb root User Flush Button.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -167,7 +168,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application frame.
  * 
  * @author Dana M. Proctor
- * @version 8.1 03/05/2013
+ * @version 8.2 06/15/2014
  */
 
 public class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActionCommands
@@ -218,7 +219,8 @@ public class MyJSQLView_JMenuBar extends JMenuBar implements MyJSQLView_MenuActi
       add(Box.createHorizontalGlue());
 
       // Root User Flush Privileges Button
-      if (ConnectionManager.getDataSourceType().equals(ConnectionManager.MYSQL)
+      if ((ConnectionManager.getDataSourceType().equals(ConnectionManager.MYSQL)
+           || ConnectionManager.getDataSourceType().equals(ConnectionManager.MARIADB))
            && ConnectionManager.getConnectionProperties().getProperty(
                          ConnectionProperties.USER).equals("root"))
       {
