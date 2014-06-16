@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.12 02/01/2014
+// Version 7.13 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -327,6 +327,7 @@
 //        7.12 Commented Out a System.out in insertReplaceStatementData(). Proper Handling
 //             of MSSQL Identity Fields When SQL Export Option AutoIncrement Set in Method
 //             insertReplaceStatementData().
+//        7.13 Method dumpData() Inclusion of LOCK & UNLOCK Statements for MariaDB.
 //             
 //-----------------------------------------------------------------
 //                poisonerbg@users.sourceforge.net
@@ -368,7 +369,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the dump.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana Proctor
- * @version 7.12 02/01/2014
+ * @version 7.13 06/16/2014
  */
 
 public class SQLDataDumpThread implements Runnable
@@ -582,7 +583,8 @@ public class SQLDataDumpThread implements Runnable
                // Lock.
                if (sqlDataExportOptions.getLock())
                {
-                  if (dataSourceType.equals(ConnectionManager.MYSQL))
+                  if (dataSourceType.equals(ConnectionManager.MYSQL)
+                      || dataSourceType.equals(ConnectionManager.MARIADB))
                   {
                      dumpData = dumpData + ("/*!40000 ALTER TABLE " 
                                 + schemaTableName + " DISABLE KEYS */;\n");
@@ -620,7 +622,8 @@ public class SQLDataDumpThread implements Runnable
                // Finishing up.
                if (sqlDataExportOptions.getLock())
                {
-                  if (dataSourceType.equals(ConnectionManager.MYSQL))
+                  if (dataSourceType.equals(ConnectionManager.MYSQL)
+                      || dataSourceType.equals(ConnectionManager.MARIADB))
                   {
                      dumpData = dumpData + "UNLOCK TABLES;\n";
                      dumpData = dumpData + "/*!40000 ALTER TABLE " + schemaTableName 
