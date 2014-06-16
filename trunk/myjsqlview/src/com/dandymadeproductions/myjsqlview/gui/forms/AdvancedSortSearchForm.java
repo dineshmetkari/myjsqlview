@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.00 02/14/2014
+// Version 5.01 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -204,6 +204,8 @@
 //        4.99 10/06/2013 Constructor Set Frame's Icon.
 //        5.00 02/14/2014 Added Instance mssqlWhereOperators in createSortSearchInterface() &
 //                        Selection Condition.
+//        5.01 06/16/2014 Method createSortSearchInterface() Inclusion of whereOperators to
+//                        be Defined as mysqlWhereOperators for MariaDB.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -251,7 +253,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 5.00 02/14/2014
+ * @version 5.01 06/16/2014
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -641,7 +643,8 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
 
       // Assigning the appropriate string array WHERE operators.
       
-      if (dataSourceType.equals(ConnectionManager.MYSQL))
+      if (dataSourceType.equals(ConnectionManager.MYSQL)
+          || dataSourceType.equals(ConnectionManager.MARIADB))
          whereOperators = mysqlWhereOperators;
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          whereOperators = postgreSQLWhereOperators;
