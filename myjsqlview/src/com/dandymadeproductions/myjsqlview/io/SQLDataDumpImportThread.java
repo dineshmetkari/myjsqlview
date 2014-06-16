@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.1 04/03/2014
+// Version 6.2 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,7 @@
 //             to See if selectedTable() Exists in importSQLFile().
 //         6.1 Class Method importSQLFile() Changed the sqlStatement to Use Batch
 //             Processing Instead of executeUpdate().
+//         6.2 Method importSQLFile() Use of BEGIN for MariaDB.
 //          
 //-----------------------------------------------------------------
 //             poisonerbg@users.sourceforge.net
@@ -165,7 +166,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ProgressBar;
  * ability to cancel the import.
  * 
  * @author Borislav Gizdov a.k.a. PoisoneR, Dana M. Proctor
- * @version 6.1 04/03/2014
+ * @version 6.2 06/16/2014
  */
 
 public class SQLDataDumpImportThread implements Runnable
@@ -308,9 +309,10 @@ public class SQLDataDumpImportThread implements Runnable
                                        + DBTablesPanel.getSelectedTableTabPanel().getTableName()
                                        + " ON");
 
-         // Only MySQL & PostgreSQL supports.
+         // Only MySQL, MariaDB, & PostgreSQL supports.
          if (dataSourceType.equals(ConnectionManager.MYSQL)
-               || dataSourceType.equals(ConnectionManager.POSTGRESQL))
+             || dataSourceType.equals(ConnectionManager.MARIADB)
+             || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
          try
