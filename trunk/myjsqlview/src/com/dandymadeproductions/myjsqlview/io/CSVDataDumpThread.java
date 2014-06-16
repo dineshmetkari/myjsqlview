@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.22 01/29/2014
+// Version 6.23 06/15/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -151,6 +151,7 @@
 //             in run().
 //        6.22 Method run() Additions to Handle MSSQL IMAGE, XML, & DATETIMEOFFSET
 //             Data Types. Modification in Same for MSSQL Non-Limit SQL Query.
+//        6.23 Inclusion of Processing for MariaDB Bit & Date/Year Fields in run().
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -185,7 +186,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.22 01/29/2014
+ * @version 6.23 06/15/2014
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -479,9 +480,10 @@ public class CSVDataDumpThread implements Runnable
                            dumpData = dumpData + "NULL" + dataDelimiter;
                      }
 
-                     // Convert MySQL Bit Fields to Such, Since they will
+                     // Convert MySQL/MariaDB Bit Fields to Such, Since they will
                      // be returned in base 10.
-                     else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                     else if ((dataSourceType.equals(ConnectionManager.MYSQL)
+                               || dataSourceType.equals(ConnectionManager.MARIADB))
                               && columnType.indexOf("BIT") != -1)
                      {
                         fieldContent = dbResultSet.getString(i);
@@ -502,8 +504,9 @@ public class CSVDataDumpThread implements Runnable
                            dumpData = dumpData + "NULL" + dataDelimiter;
                      }
 
-                     // Insure MySQL Date/Year fields are chopped to only 4 digits.
-                     else if (dataSourceType.equals(ConnectionManager.MYSQL)
+                     // Insure MySQL/MariaDB Date/Year fields are chopped to only 4 digits.
+                     else if ((dataSourceType.equals(ConnectionManager.MYSQL)
+                               || dataSourceType.equals(ConnectionManager.MARIADB))
                               && columnType.indexOf("YEAR") != -1)
                      {
                         fieldContent = dbResultSet.getString(i);
