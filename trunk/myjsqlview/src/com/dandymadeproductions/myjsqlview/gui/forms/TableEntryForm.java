@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.04 02/14/2014
+// Version 9.05 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -378,6 +378,8 @@
 //                        DateTime Types. Method setFormField() XML Detection.
 //        9.04 02/14/2014 Added Support for MSSQL Functions in Entry Form By Way of
 //                        Selecting Function File in Class Method selectFunctionOperator().
+//        9.05 06/16/2014 Method addUpdateTableEntry() Use of BEGIN Statement, Proper LIMIT Statement,
+//                        & TimeStamp Processing for MariaDB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -449,7 +451,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.04 02/14/2014
+ * @version 9.05 06/16/2014
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -1233,6 +1235,7 @@ public class TableEntryForm extends JFrame implements ActionListener
 
          // Only MySQL & PostgreSQL support.
          if (dataSourceType.equals(ConnectionManager.MYSQL)
+             || dataSourceType.equals(ConnectionManager.MARIADB)
              || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             sqlStatement.executeUpdate("BEGIN");
 
@@ -1796,7 +1799,8 @@ public class TableEntryForm extends JFrame implements ActionListener
             sqlStatementString.delete((sqlStatementString.length() - 5), sqlStatementString.length());
 
             // Adding LIMIT expression for supported databases.
-            if (dataSourceType.equals(ConnectionManager.MYSQL))
+            if (dataSourceType.equals(ConnectionManager.MYSQL)
+                || dataSourceType.equals(ConnectionManager.MARIADB))
             {
                if (limitCheckBox.isSelected())
                {
@@ -2077,7 +2081,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                            if (columnType.equals("TIMESTAMP"))
                            {
                               // Old MySQL Database Requirement, 4.x.
-                              if (dataSourceType.equals(ConnectionManager.MYSQL))
+                              if (dataSourceType.equals(ConnectionManager.MYSQL)
+                                  || dataSourceType.equals(ConnectionManager.MARIADB))
                               {
                                  if (columnSize == 2)
                                     timeStampFormat = new SimpleDateFormat("yy");
@@ -2091,7 +2096,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                                     timeStampFormat = new SimpleDateFormat("MM-dd-yy HH:mm");
                                  else if (columnSize == 12)
                                     timeStampFormat = new SimpleDateFormat("MM-dd-yyyy HH:mm");
-                                 // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                                 // All current coloumnSizes for MySQL > 5.0 & MariaDB Should be 19.
                                  else
                                     timeStampFormat = new SimpleDateFormat(
                                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
