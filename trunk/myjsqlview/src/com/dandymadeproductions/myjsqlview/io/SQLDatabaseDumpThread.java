@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.5 02/01/2014
+// Version 9.6 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -243,6 +243,8 @@
 //             Connection Argument.
 //         9.5 Proper Handling of MSSQL Identity Fields When SQL Export Option AutoIncrement
 //             Set in Method insertReplaceStatementData().
+//         9.6 Class Method dumpDatabaseData() Inclusion of LOCK & UNLOCK Statements for
+//             MariaDB. Use of Standard MySQL TableTabPanel for MariaDB.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -291,7 +293,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.5 02/01/2014
+ * @version 9.6 06/16/2014
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -423,8 +425,9 @@ public class SQLDatabaseDumpThread implements Runnable
                
                exportedTable = tablesIterator.next();
                
-               // MySQL
-               if (dataSourceType.equals(ConnectionManager.MYSQL))
+               // MySQL/MariaDB
+               if (dataSourceType.equals(ConnectionManager.MYSQL)
+                   || dataSourceType.equals(ConnectionManager.MARIADB))
                   currentTableTabPanel = new TableTabPanel_MySQL(exportedTable, dbConnection, true);
                // PostgreSQL
                else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
@@ -518,7 +521,8 @@ public class SQLDatabaseDumpThread implements Runnable
                   // Lock.
                   if (sqlDataExportOptions.getLock())
                   {
-                     if (dataSourceType.equals(ConnectionManager.MYSQL))
+                     if (dataSourceType.equals(ConnectionManager.MYSQL)
+                         || dataSourceType.equals(ConnectionManager.MARIADB))
                      {
                         dumpData = dumpData
                                    + ("/*!40000 ALTER TABLE " + schemaTableName + " DISABLE KEYS */;\n");
@@ -556,7 +560,8 @@ public class SQLDatabaseDumpThread implements Runnable
                   // Finishing up.
                   if (sqlDataExportOptions.getLock())
                   {
-                     if (dataSourceType.equals(ConnectionManager.MYSQL))
+                     if (dataSourceType.equals(ConnectionManager.MYSQL)
+                         || dataSourceType.equals(ConnectionManager.MARIADB))
                      {
                         dumpData = dumpData + "UNLOCK TABLES;\n";
                         dumpData = dumpData + "/*!40000 ALTER TABLE " + schemaTableName
