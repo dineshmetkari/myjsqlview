@@ -9,8 +9,8 @@
 //                 << QueryTabPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 10.1 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 10.2 06/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -235,6 +235,9 @@
 //             SearchFrame.getApplyButton().
 //        10.1 Change in loadTable() & viewSelectedItem() to Use DBTablePanel.
 //             getGeneralDBProperties().
+//        10.2 Class Method loadTable() Processing of Temporary Table, Bit, & Text,
+//             Fields for MariaDB. Same DB Processing in viewSelectedItem() for
+//             Timestamp & Bit Fields.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -306,7 +309,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 10.1 07/01/2013
+ * @version 10.2 06/17/2014
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1309,8 +1312,9 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                sqlStatement.executeUpdate(sqlStatementString);
             }
 
-            // MySQL SQL Statement.
-            if (dataSourceType.equals(ConnectionManager.MYSQL))
+            // MySQL/MariaDB SQL Statement.
+            if (dataSourceType.equals(ConnectionManager.MYSQL)
+                || dataSourceType.equals(ConnectionManager.MARIADB))
             {
                sqlStatementString = "CREATE TEMPORARY TABLE " + identifierQuoteString + tempTable
                                     + identifierQuoteString + " (" + primaryKey
@@ -1597,7 +1601,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                      // System.out.println(currentContentData);
 
                      // Old MySQL Database Requirement, 4.x.
-                     if (dataSourceType.equals(ConnectionManager.MYSQL))
+                     if (dataSourceType.equals(ConnectionManager.MYSQL)
+                         || dataSourceType.equals(ConnectionManager.MARIADB))
                      {
                         if (columnSize == 2)
                            tableData[i][j++] = (new SimpleDateFormat("yy").format(currentContentData));
@@ -1613,7 +1618,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                         else if (columnSize == 12)
                            tableData[i][j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                                  .format(currentContentData));
-                        // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                        // All current coloumnSizes for MariaDB & MySQL > 5.0 Should be 19.
                         else
                            tableData[i][j++] = (new SimpleDateFormat(
                               DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
@@ -1701,7 +1706,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   // =============================================
                   // Bit
                   else if (columnType.indexOf("BIT") != -1
-                           && dataSourceType.equals(ConnectionManager.MYSQL))
+                           && (dataSourceType.equals(ConnectionManager.MYSQL)
+                               || dataSourceType.equals(ConnectionManager.MARIADB)))
                   {
                      //int bitValue = rs.getInt(columnName);
                      //tableData[i][j++] = Integer.toBinaryString(bitValue);
@@ -1720,7 +1726,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                      else
                      // (columnSize > 16777215)
                      {
-                        if (dataSourceType.equals(ConnectionManager.MYSQL))
+                        if (dataSourceType.equals(ConnectionManager.MYSQL)
+                            || dataSourceType.equals(ConnectionManager.MARIADB))
                            tableData[i][j++] = ("Long Text");
                         else
                         {
@@ -2031,7 +2038,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   currentColumnSize = (columnSizeHashMap.get(currentColumnName)).intValue();
 
                   // Old MySQL Database Requirement, 4.x.
-                  if (dataSourceType.equals(ConnectionManager.MYSQL))
+                  if (dataSourceType.equals(ConnectionManager.MYSQL)
+                      || dataSourceType.equals(ConnectionManager.MARIADB))
                   {
                      if (currentColumnSize == 2)
                         tableViewForm.setFormField(currentColumnName,
@@ -2051,7 +2059,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                      else if (currentColumnSize == 12)
                         tableViewForm.setFormField(currentColumnName,
                                                    (new SimpleDateFormat("MM-dd-yyyy HH:mm").format(currentContentData)));
-                     // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                     // All current coloumnSizes for MariaDB, MySQL > 5.0 Should be 19.
                      else
                         tableViewForm.setFormField(currentColumnName,
                            (new SimpleDateFormat(
@@ -2128,7 +2136,9 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                }
 
                // Bit Type Field
-               else if (currentColumnType.equals("BIT") && dataSourceType.equals(ConnectionManager.MYSQL))
+               else if (currentColumnType.equals("BIT")
+                        && (dataSourceType.equals(ConnectionManager.MYSQL)
+                            || dataSourceType.equals(ConnectionManager.MARIADB)))
                {
                   int bitValue = db_resultSet.getInt(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName, Integer.toBinaryString(bitValue));
