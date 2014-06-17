@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.4 01/31/2014
+// Version 5.5 06/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -130,6 +130,8 @@
 //                        get/setSQLSummaryTableUseLimit() Instead of get/setSummaryTableUseLimit().
 //         5.4 01/31/2014 ComboBox insertReplaceUpdateComboBox Exclusion of TYPE_REPLACE for
 //                        MSSQL Database.
+//         5.5 06/17/2014 Class Method actionPerformed() Inclusion of MariaDB restoreDefaultsButton
+//                        Requirements.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -168,7 +170,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.4 01/31/2014
+ * @version 5.5 06/17/2014
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -471,8 +473,10 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
             updateLockTableCheckBox.setSelected(DEFAULT_UPDATE_LOCK);
             autoIncrementCheckBox.setSelected(DEFAULT_AUTO_INCREMENT);
             timeStampCheckBox.setSelected(DEFAULT_TIMESTAMP);
-            if (dataSourceType.equals(ConnectionManager.MYSQL) ||
-                dataSourceType.equals(ConnectionManager.POSTGRESQL))
+            
+            if (dataSourceType.equals(ConnectionManager.MYSQL)
+                || dataSourceType.equals(ConnectionManager.MARIADB)
+                || dataSourceType.equals(ConnectionManager.POSTGRESQL))
             {
                insertExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
                replaceExpressionComboBox.setSelectedItem(EXPRESSION_PLURAL);
@@ -486,6 +490,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
                insertPluralSpinner.setEnabled(false);
                replacePluralSpinner.setEnabled(false);
             }
+            
             insertPluralSpinner.setValue(Integer.valueOf(DEFAULT_PLURAL_SIZE));
             replacePluralSpinner.setValue(Integer.valueOf(DEFAULT_PLURAL_SIZE));
             insertTypeCheckBox.setSelected(DEFAULT_INSERT_TYPE);
