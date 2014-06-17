@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.0 03/04/2014
+// Version 6.1 06/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,8 @@
 //             Field, & If so Trunk.
 //         5.9 Addition of Support of MSSQL Database. Added Method createMSSQLTableDefinition().
 //         6.0 Changed in Method createMSSQLTableDefinition() to Properly Close ResultSets.
+//         6.1 Class Method createSQLTableDefinition() Assignment of MariaDB to Table
+//             Definition via createMySQLTableDefinition().
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -183,7 +185,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 6.0 03/04/2014
+ * @version 6.1 06/17/2014
  */
 
 public class TableDefinitionGenerator
@@ -233,7 +235,8 @@ public class TableDefinitionGenerator
    }
 
    //==============================================================
-   // Class method for creating a given MySQL TABLE definition.
+   // Class method for creating a given MySQL/MariaDB TABLE
+   // definition.
    //==============================================================
 
    private void createMySQLTableDefinition() throws SQLException
@@ -2725,8 +2728,9 @@ public class TableDefinitionGenerator
       
       try
       {
-         // MySQL
-         if (dataSourceType.equals(ConnectionManager.MYSQL))
+         // MySQL/MariaDB
+         if (dataSourceType.equals(ConnectionManager.MYSQL)
+             || dataSourceType.equals(ConnectionManager.MARIADB))
          {
             createMySQLTableDefinition();
          }
