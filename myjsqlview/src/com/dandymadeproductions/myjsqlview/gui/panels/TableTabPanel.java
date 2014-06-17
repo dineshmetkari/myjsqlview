@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.21 02/10/2014
+// Version 5.22 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -260,6 +260,8 @@
 //             Check.
 //        5.21 Added The Clearing, Setting to Index 0, searchComboBox in Method
 //             setSearchTextField().
+//        5.22 Class Methods deletSelectedItems() & deleteAllItems() Use of BEGIN
+//             Statement for MariaDB. In Former Date Formatting for Same DB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -338,7 +340,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.21 02/10/2014
+ * @version 5.22 06/16/2014
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -2034,6 +2036,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                dataSourceType = ConnectionManager.getDataSourceType();
                
                if (dataSourceType.equals(ConnectionManager.MYSQL)
+                   || dataSourceType.equals(ConnectionManager.MARIADB)
                    || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                   sqlStatement.executeUpdate("BEGIN");
 
@@ -2089,8 +2092,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
                            
                            if (currentColumnType.equals("DATE"))
                            {
-                              // MySQL & Oracle Require Special Handling.
-                              if (dataSourceType.equals(ConnectionManager.MYSQL))
+                              // MySQL, MariaDB, & Oracle Require Special Handling.
+                              if (dataSourceType.equals(ConnectionManager.MYSQL)
+                                  || dataSourceType.equals(ConnectionManager.MARIADB))
                               {
                                  sqlStatementString.append(identifierQuoteString + currentDB_ColumnName
                                                            + identifierQuoteString + "=STR_TO_DATE('"
@@ -2249,8 +2253,9 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
 
             dataSourceType = ConnectionManager.getDataSourceType();
          
-            // HSQL & Oracle does not support.
+            // HSQL, SQLite & Oracle does not support.
             if (dataSourceType.equals(ConnectionManager.MYSQL)
+                || dataSourceType.equals(ConnectionManager.MARIADB)
                 || dataSourceType.equals(ConnectionManager.POSTGRESQL))
                sqlStatement.executeUpdate("BEGIN");
 
