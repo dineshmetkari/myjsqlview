@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.8 04/05/2014
+// Version 1.9 06/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,7 @@
 //             to MyJSQLView Login Database. Removed in Same New ConnectionInstance
 //             Creation.
 //         1.8 Added Class Methods getRowCount() & getSQLQuery().
+//         1.9 Method getRowCount() Use of AS AS1 for MariaDB.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -77,7 +78,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * the characteristics of a SQL query.   
  * 
  * @author Dana M. Proctor
- * @version 1.8 04/05/2014
+ * @version 1.8 06/17/2014
  */
 
 public class SQLQuery
@@ -442,9 +443,10 @@ public class SQLQuery
          sqlStatementString = "SELECT COUNT(*) AS row_count FROM (" + sqlString;
          
          if (dataSourceType.equals(ConnectionManager.MYSQL)
-               || dataSourceType.equals(ConnectionManager.POSTGRESQL)
-               || dataSourceType.equals(ConnectionManager.DERBY)
-               || dataSourceType.equals(ConnectionManager.MSSQL))
+             || dataSourceType.equals(ConnectionManager.MARIADB)
+             || dataSourceType.equals(ConnectionManager.POSTGRESQL)
+             || dataSourceType.equals(ConnectionManager.DERBY)
+             || dataSourceType.equals(ConnectionManager.MSSQL))
               sqlStatementString += ") AS AS1";
            else
               sqlStatementString += ")";
