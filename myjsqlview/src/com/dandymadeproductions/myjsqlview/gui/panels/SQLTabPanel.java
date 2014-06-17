@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.6 01/29/2014
+// Version 2.7 06/17/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -69,6 +69,8 @@
 //         2.6 Excluded the TIMESTAMP Type of MSSQL From Being Processed in
 //             Method executeSQL(). In Same Method Processing for DATETIMEOFFSET
 //             & IMAGE Types & Catching All DATETIME Types With indexOf Conditional.
+//         2.7 Method executeSQL() Inclusion of Processing for MariaDB for Fields
+//             Timestamp, Bit, & Text.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -125,7 +127,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.6 01/29/2014
+ * @version 2.7 06/17/2014
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -524,7 +526,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      else
                      {
                         // Old MySQL Database Requirement, 4.x.
-                        if (dataSourceType.equals(ConnectionManager.MYSQL))
+                        if (dataSourceType.equals(ConnectionManager.MYSQL)
+                            || dataSourceType.equals(ConnectionManager.MARIADB))
                         {
                            if (columnSize == 2)
                               rowData[j++] = (new SimpleDateFormat("yy").format(currentContentData));
@@ -540,7 +543,7 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                            else if (columnSize == 12)
                               rowData[j++] = (new SimpleDateFormat("MM-dd-yyyy HH:mm")
                                     .format(currentContentData));
-                           // All current coloumnSizes for MySQL > 5.0 Should be 19.
+                           // All current coloumnSizes for MariaDB, MySQL > 5.0 Should be 19.
                            else
                               rowData[j++] = (new SimpleDateFormat(
                                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
@@ -648,7 +651,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                   // =============================================
                   // Bit
                   else if (columnType.indexOf("BIT") != -1
-                           && dataSourceType.equals(ConnectionManager.MYSQL))
+                           && (dataSourceType.equals(ConnectionManager.MYSQL)
+                               || dataSourceType.equals(ConnectionManager.MARIADB)))
                   {
                      currentContentData = db_resultSet.getString(colNameString);
                      if (currentContentData == null)
@@ -675,7 +679,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                         else
                         // (columnSize > 16777215)
                         {
-                           if (dataSourceType.equals(ConnectionManager.MYSQL))
+                           if (dataSourceType.equals(ConnectionManager.MYSQL)
+                               || dataSourceType.equals(ConnectionManager.MARIADB))
                               rowData[j++] = ("Long Text");
                            else
                            {
