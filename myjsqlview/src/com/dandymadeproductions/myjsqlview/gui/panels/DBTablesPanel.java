@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.0 01/23/2014
+// Version 6.1 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -135,6 +135,8 @@
 //         5.9 Reorganized Getter/Setter Methods.
 //         6.0 Class Method loadTable() Addition for Loading tableTabPanel,
 //             TableTabPanel_MSSQL.
+//         6.1 Class Method loadTable() Addition for Loading tableTabPanel,
+//             TableTabPanel_MySQL for MariaDB.
 //                           
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -179,7 +181,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * information about the database tables.
  * 
  * @author Dana M. Proctor
- * @version 6.0 01/23/2014
+ * @version 6.1 06/16/2014
  */
 
 public class DBTablesPanel extends JPanel implements ActionListener
@@ -418,6 +420,9 @@ public class DBTablesPanel extends JPanel implements ActionListener
 
       // MySQL
       if (dataSourceType.equals(ConnectionManager.MYSQL))
+         tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection, false);
+      // MariaDB
+      else if (dataSourceType.equals(ConnectionManager.MARIADB))
          tableTabPanel = new TableTabPanel_MySQL(tableName, dbConnection, false);
       // PostgreSQL
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
