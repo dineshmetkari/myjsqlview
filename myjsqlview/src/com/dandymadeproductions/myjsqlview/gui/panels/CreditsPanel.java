@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 4.3 02/14/2014
+// Version 4.4 06/16/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -76,6 +76,7 @@
 //         4.1 Apache Derby Database Background Image Addition.
 //         4.2 H2 Database Background Image Addition.
 //         4.3 MSSQL Database Background Image Addition.
+//         4.4 MariaDB Database Background Image Addition.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -108,7 +109,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * webSite, and credits.
  * 
  * @author Dana M. Proctor
- * @version 4.3 02/14/2014
+ * @version 4.4 06/16/2014
  */
 
 public class CreditsPanel extends JPanel implements Runnable
@@ -153,6 +154,9 @@ public class CreditsPanel extends JPanel implements Runnable
       if (dataSourceType.equals(ConnectionManager.MYSQL))
          backgroundImage = (resourceBundle.getResourceImage("images"
                                                             + fileSeparator + "dolphin.jpg")).getImage();
+      else if (dataSourceType.equals(ConnectionManager.MARIADB))
+         backgroundImage = (resourceBundle.getResourceImage("images"
+                                                            + fileSeparator + "seal.jpg")).getImage();
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          backgroundImage = (resourceBundle.getResourceImage("images"
                                                             + fileSeparator + "elephant.jpg")).getImage();
