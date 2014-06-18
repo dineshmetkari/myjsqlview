@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.2 03/29/2014
+// Version 5.3 06/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -112,6 +112,9 @@
 //         5.1 Class Method displaySQLErrors() Introduced Instance eDebug for Cycle to Isolate
 //             arg e From Later e.getMessages() Dialog.
 //         5.2 Added Getter Methods for Various Rowsets.
+//         5.3 Method getConnectionString() Setting of useSSL Property for MariaDB &
+//             Additional Commented System.Out for Connection Properties for Debugging.
+//             Additional Comment in createConnectionURLString() Noting MariaDB Use.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -144,7 +147,7 @@ import com.sun.rowset.WebRowSetImpl;
  * various databases support.   
  * 
  * @author Dana M. Proctor
- * @version 5.2 03/29/2014
+ * @version 5.3 06/18/2014
  */
 
 public class ConnectionManager
@@ -213,8 +216,8 @@ public class ConnectionManager
       if (subProtocol.indexOf(HSQL) != -1 || subProtocol.equals(MYSQL)
           || subProtocol.equals(POSTGRESQL))
       {
-           connectProperties.setProperty("useSSL",
-              connectionProperties.getProperty(ConnectionProperties.SSH));  
+         if (connectionProperties.getProperty(ConnectionProperties.SSH).equals("true"))
+            connectProperties.setProperty("useSSL", "1");
       }
             
       // Select and try to return an appropriate connection
@@ -223,7 +226,10 @@ public class ConnectionManager
       try
       {
          if (MyJSQLView.getDebug())
+         {
             System.out.println(description + " (CM) Connection Created");
+            // System.out.println(" (CM) Connection Properties: " + connectProperties.toString());
+         }
          
          // Create the appropriate connection as needed.
          
@@ -566,7 +572,7 @@ public class ConnectionManager
             connectionURLString += subProtocol + ":" + db;
             
       }
-      // MySQL, PostgreSQL, HSQL, & Derby
+      // MySQL, MariaDB, PostgreSQL, HSQL, & Derby
       else
       {
          // The % character is interpreted as the start of a special escaped sequence,
