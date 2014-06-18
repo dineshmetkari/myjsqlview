@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.07 06/15/2014
+// Version 7.08 06/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -312,6 +312,10 @@
 //             Identified as MariaDB if so Assign to Standard MySQL Database.
 //        7.07 Class Method accessCheck() Removal of Change 7.06. In Same Method
 //             Inclusion of MariaDB % Character Processing for Password.
+//        7.08 Class Method accessCheck() Inclusion of Not Only Setting the SSH
+//             Property for Select Databases, But Also Use in Connection Attempt.
+//             Commented Out System.Out for Debug Purposes of Connect Properties
+//             in Same Method.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -369,7 +373,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.07 06/15/2014
+ * @version 7.08 06/18/2014
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1108,7 +1112,14 @@ public class LoginFrame extends JFrame implements ActionListener
          connectProperties.setProperty("user", user);
       
          if (sshCheckBox.isSelected())
+         {
             ssh = "true";
+            
+            if (subProtocol.indexOf(ConnectionManager.HSQL) != -1
+                || subProtocol.equals(ConnectionManager.MYSQL)
+                || subProtocol.equals(ConnectionManager.POSTGRESQL))
+            connectProperties.setProperty("useSSL", "1");
+         }
          else
             ssh = "false";
          
@@ -1155,7 +1166,11 @@ public class LoginFrame extends JFrame implements ActionListener
          connectionURLString = ConnectionManager.createConnectionURLString(connectionProperties);
          
          if (MyJSQLView.getDebug())
+         {
             System.out.println("LoginFrame accessCheck() Connection URL: " + connectionURLString);
+            // System.out.println("LoginFrame accessCheck() Connection Properties: "
+            //                    + connectProperties.toString());
+         }
          
          connectionProperties.setConnectionURLString(connectionURLString);
 
