@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.9 02/18/2014
+// Version 2.0 06/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,7 @@
 //             Database IDENTITY Types to DERBY_BIGINT.
 //         1.9 Added Class Instance MSSQL_TYPES Along With Conditional Check in
 //             Constructor of Such.
+//         2.0 Constructor Setting of addSourceSinkType() to MYSQL_TYPES for MariaDB.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +69,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 1.9 02/18/2014
+ * @version 2.0 06/18/2014
  */
 
 public class TypesInfoCache
@@ -343,6 +344,8 @@ public class TypesInfoCache
       else if (dataSourceType.equals(ConnectionManager.POSTGRESQL))
          addSourceSinkType(POSTGRESQL_TYPES);
       else if (dataSourceType.equals(ConnectionManager.MYSQL))
+         addSourceSinkType(MYSQL_TYPES);
+      else if (dataSourceType.equals(ConnectionManager.MARIADB))
          addSourceSinkType(MYSQL_TYPES);
       else if (dataSourceType.equals(ConnectionManager.ORACLE))
          addSourceSinkType(ORACLE_TYPES);
