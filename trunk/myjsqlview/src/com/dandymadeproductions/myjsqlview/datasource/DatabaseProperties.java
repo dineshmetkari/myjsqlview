@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.5 06/02/2014
+// Version 1.6 06/18/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,9 @@
 //             Some Where Between mysql-connectorJ 5.1.8 - 5.1.30 Table Types
 //             Definition Changed. Correlation to MariaDB for Same in subProtocol
 //             in init(), getAllSchemasPattern(), & getDataSourceType().
+//         1.6 Class Method getDataSourceType() Correction for MariaDB to Use
+//             else if Conditional. Method init() Inclusion of Use of MariaDB
+//             Selector for Setting dbMetaData.getTables() Parameters.
 //             
 //
 //-----------------------------------------------------------------
@@ -74,7 +77,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.5 06/02/2014
+ * @version 1.6 06/18/2014
  */
 
 public class DatabaseProperties
@@ -161,7 +164,7 @@ public class DatabaseProperties
          dbType = ConnectionManager.ORACLE;
          //db_resultSet = dbMetaData.getTables(db, "%", "%", tableTypes);
       }
-      // MySQL & PostgreSQL
+      // MySQL, MariaDB, & PostgreSQL
       else if (subProtocol.equals(ConnectionManager.MYSQL)
                || subProtocol.equals(ConnectionManager.MARIADB)
                || subProtocol.equals(ConnectionManager.POSTGRESQL))
@@ -171,6 +174,8 @@ public class DatabaseProperties
          tableNamePattern = "%";
          if (subProtocol.equals(ConnectionManager.MYSQL))
             dbType = ConnectionManager.MYSQL;
+         else if (subProtocol.equals(ConnectionManager.MARIADB))
+            dbType = ConnectionManager.MARIADB;
          else
             dbType = ConnectionManager.POSTGRESQL;
          //db_resultSet = dbMetaData.getTables(db, "", "%", tableTypes);
@@ -709,7 +714,7 @@ public class DatabaseProperties
    {  
       if (subProtocol.equals(ConnectionManager.MYSQL))
          return ConnectionManager.MYSQL;
-      if (subProtocol.equals(ConnectionManager.MARIADB))
+      else if (subProtocol.equals(ConnectionManager.MARIADB))
          return ConnectionManager.MARIADB;
       else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
          return ConnectionManager.POSTGRESQL;
