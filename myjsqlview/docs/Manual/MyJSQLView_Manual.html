@@ -2,8 +2,8 @@
 <html>
 	<head>
 		<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-		<meta name="Author" content="Dana Proctor">		
-		<meta name="Generator" content="Mozilla/4.75 [en] (Win98; U) [Netscape]">
+		<meta name="author" content="Dana Proctor" >		
+		<meta name="generator" content="Bluefish 2.2.5" >
 		<meta name="Description" content="MyJSQLView Manual">
 		<meta name="keywords" content="MyJSQLView, Manual, Documentation, Dana Proctor, Java, Database, Apache Derby, HSQL, MSAccess, Micorsoft SQL, MySQL, Oracle, PostgreSQL, SQLite, GUI">
 		<meta name="Copyright" content="2005-2014">
@@ -19,7 +19,7 @@
 	<p align="center"><font size="+3">MyJSQLView Manual</font><br></p>
 	<p align="center">Copyright &copy; 2005-2014 <a href="mailto:danap@dandymadeproductions.com">Dana M. Proctor</a></p>
 	<p align="center"><font size="+1"><a href="http://dandymadeproductions.com">Dandy Made Productions</a></font></p>
-	<p align="center"><font size="+1">March 2014</font></p>
+	<p align="center"><font size="+1">June 2014</font></p>
 
 	<hr size="2" width="100%">
 	<strong><font size="+3">Table of Contents</font></strong>
@@ -92,7 +92,7 @@
 	<a name="Introduction"></a>
 	<p><font size="+3"><strong>1 Introduction</strong></font></p>
 
-	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a Apache Derby, H2, HSQL, Microsoft SQL, MSAccess, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MySQL is called Connector/J, MSAccess ODBC-JDBC bridge, Oracle, SQLite, and Derby just JDBC, and PostgreSQL JDBC3. <font style="border: 2px solid yellow;" size="+1">*</font>The H2, and HSQL databases are now fully integrated into the MyJSQLView application as a libraries so those JDBCs need not be installed. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of version <b>v3.17</b> of MyJSQLView the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
+	<p> &nbsp;&nbsp;&nbsp;&nbsp;MyJSQLView provides an easy to use Java based interface for viewing, adding, editing, or deleting entries in a Apache Derby, H2, HSQL, Microsoft SQL, MSAccess, MariaDB, MySQL, Oracle, PostgreSQL, or SQLite database. All user tables and basic data type fields are available for access in the selected database. MyJSQLView only needs two other pieces of code, the <b>JRE</b>, Java Runtime Environment, and a <b>JDBC</b>, Java Database Connectivity, driver. The JDBC provides the interface between the Java SQL statements, and the database. The JDBC driver for MariaDB is called mariadb-java-client, MySQL is Connector/J, MSAccess ODBC-JDBC bridge, Oracle, SQLite, and Derby just JDBC, and PostgreSQL JDBC3. <font style="border: 2px solid yellow;" size="+1">*</font>The H2, and HSQL databases are now fully integrated into the MyJSQLView application as a libraries so those JDBCs need not be installed. The Connection Manager for MyJSQLView has been given default entries to help the user select the proper configuration for the desired database access. As of the release of version <b>v3.17</b> of MyJSQLView the capability to connect to other databases has been fully build into the core architecture along with a plug-in architecture. The application has been purposely built to provide data access and is not primarily a database management tool, but a database administrator may find it helpful. All users including small to medium size businesses will find setup and using the tool to be simple and straight forward. The application once installed can provide a much quicker access/update to a database than a web based interface frontend and MyJSQLView supports transaction locking. If you want to quickly access a local or server based database for viewing, editing, searching, and analyzing data MyJSQLView provides an alternative that is simple and easy to use. </p>
 
 	<hr>
 	
@@ -178,7 +178,8 @@
 		<li>HSQL <font color="#ff0000">2.2.5 - 2.3.1</font>. <font style="border: 2px solid yellow;" size="+1">*</font><b>NOTE</b>, <font color="#ff0000">1.8.x</font> No Longer Supported.</li>
 		<li>MSAccess <font color="#ff0000">MS Access 97 - 2003</font>, ODBC-JDBC Bridge.</li>
 		<li>Microsoft SQL Server<font color="#ff0000"> 8? - 11.00.2100</font>, JDBC <font color="#ff0000">4.0</font></li>
-		<li>MySQL <font color="#ff0000">5.0.7 - 5.1.61</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5, 5.1.8</font>.</li>
+		<li>MySQL <font color="#ff0000">5.0.7 - 5.5.32</font>, JDBC <font color="#ff0000">5.0.7, 5.1.5 - 5.1.30</font>.</li>
+		<li>MariaDB <font color="#ff0000">5.5.32</font>, JDBC <font color="#ff0000">1.1.7</font>.</li>
 		<li>Oracle <font color="#ff0000">10g</font> JDBC <font color="#ff0000">14</font>.</li>
 		<li>PostgreSQL <font color="#ff0000">8.2.5 - 8.4.4, 9.0.1</font>, JDBC3 <font color="#ff0000">8.2-506 - 8.4-702, 9.3</font>.</li>
 		<li>Xerial SQLite JDBC <font color="#ff0000">3.6.20 - 3.7.2</font>. <font style="border: 2px solid yellow;" size="+1">*</font><b>NOTE</b>, SQLite need not be installed on the system.</li>	
@@ -455,52 +456,56 @@
 		<table  summary="" border="1" cellpadding="1"  cellspacing="1"  width="625" align="center">
   		<tbody>
     			<tr align="center">
-      				<td><b>Expression Type</b></td>
-				<td><b>Derby</b></td>
-				<td><b>H2</b></td>
-				<td><b>HSQL2</b></td>
-				<td><b>MSAccess</b></td>
-				<td><b>MS&nbsp;SQL</b></td>
-      				<td><b>MySQL</b></td>
-				<td><b>Oracle</b></td>
-      				<td><b>PostgreSQL</b></td>
-				<td><b>SQLite</b></td>
+      			<td><b>Expression Type</b></td>
+					<td><b>Derby</b></td>
+					<td><b>H2</b></td>
+					<td><b>HSQL2</b></td>
+					<td><b>MSAccess</b></td>
+					<td><b>MS&nbsp;SQL</b></td>
+					<td><b>MariaDB</b></td>
+      			<td><b>MySQL</b></td>
+					<td><b>Oracle</b></td>
+      			<td><b>PostgreSQL</b></td>
+					<td><b>SQLite</b></td>
     			</tr>
     			<tr>
-      				<td>Singular</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-      				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-      				<td align="center">Yes</td>
-				<td align="center">Yes</td>
+      			<td>Singular</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+      			<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+      			<td align="center">Yes</td>
+					<td align="center">Yes</td>
     			</tr>
     			<tr>
-      				<td>Plural</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-				<td align="center">Yes</td>
-				<td align="center">No</td>
-				<td align="center">Yes</td>
-      				<td align="center">Yes</td>
-				<td align="center">No</td>
-      				<td align="center">Yes</td>
-				<td align="center">No</td>
+      			<td>Plural</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">Yes</td>
+					<td align="center">No</td>
+					<td align="center">Yes</td>
+      			<td align="center">Yes</td>
+      			<td align="center">Yes</td>
+					<td align="center">No</td>
+      			<td align="center">Yes</td>
+					<td align="center">No</td>
     			</tr>
     			<tr>
-      				<td>Explicit</td>
-				<td align="center">No</td>
-				<td align="center">Yes</td>
-				<td align="center">No</td>
-				<td align="center">No</td>
-				<td align="center">No</td>
-      				<td align="center">Yes</td>
-				<td align="center">No</td>
-      				<td align="center">No</td>
-				<td align="center">No</td>
+      			<td>Explicit</td>
+					<td align="center">No</td>
+					<td align="center">Yes</td>
+					<td align="center">No</td>
+					<td align="center">No</td>
+					<td align="center">No</td>
+      			<td align="center">Yes</td>
+      			<td align="center">Yes</td>
+					<td align="center">No</td>
+      			<td align="center">No</td>
+					<td align="center">No</td>
     			</tr>
   			</tbody>
 		</table><br>
@@ -591,6 +596,15 @@
 				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
 				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>sqlserver<br></td>
 				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><br>1433<br></td>
+			</tr>
+			<tr>
+				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>MariaDB</span><br><br></td>
+				<td style="vertical-align: top;"><br>Server<br></td>
+				<td style="vertical-align: top;"><br>dbName<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>org.mariadb.jdbc.Driver<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>jdbc<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>mariadb<br></td>
+				<td style="text-align: center; vertical-align: top;"><br>3306<br></td>
 			</tr>
 			<tr>
 				<td colspan="1" rowspan="1" style="text-align: center; vertical-align: top;"><span style="font-weight: bold;"><br>MySQL</span><br><br></td>
