@@ -1,6 +1,7 @@
 <MyJSQLView>
 <Sites>
 <Site Name="LocalHost_MySQL" Driver="com.mysql.jdbc.Driver" Protocol="jdbc" SubProtocol="mysql" Host="127.0.0.1" Port="3306" Database="mysql" User="" Password="" SSH="0" />
+<Site Name="LocalHost_MariaDB" Driver="org.mariadb.jdbc.Driver" Protocol="jdbc" SubProtocol="mariadb" Host="127.0.0.1" Port="3306" Database="mariadb" User="" Password="" SSH="0" />
 <Site Name="LocalHost_PostgreSQL" Driver="org.postgresql.Driver" Protocol="jdbc" SubProtocol="postgresql" Host="127.0.0.1" Port="5432" Database="postgresql" User="" Password="" SSH="0" />
 <Site Name="LocalHost_HSQL" Driver="org.hsqldb.jdbcDriver" Protocol="jdbc" SubProtocol="hsqldb:hsql" Host="127.0.0.1" Port="9001" Database="hsql;" User="" Password="" SSH="0" />
 <Site Name="LocalHost_HSQL" Driver="org.hsqldb.jdbcDriver" Protocol="jdbc" SubProtocol="hsqldb:hsql" Host="127.0.0.1" Port="9001" Database="mem:dbname" User="" Password="" SSH="0" />
