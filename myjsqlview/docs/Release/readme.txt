@@ -1,4 +1,4 @@
-MyJSQLView Version 3.48
+MyJSQLView Version 3.49
 
 Copyright 2005-2014
 by Dana Proctor
@@ -8,8 +8,8 @@ What is MyJSQLView?
 
    MyJSQLView provides an easy to use Java based interface for viewing, adding,
 editing, or deleting entries in the Derby, H2, HSQL, Microsoft SQL, MSAccess,
-MySQL, Oracle, PostgreSQL, and SQLite databases. All tables and fields are available
-for access in the selected database.
+MariaDB, MySQL, Oracle, PostgreSQL, and SQLite databases. All tables and fields
+are available for access in the selected database.
 
    MyJSQLView is the result of a condensed version of a larger project that was
 needed to access an inventory database. The project from its inception was to be
@@ -71,14 +71,15 @@ Requirements:
 
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
    * Java Runtime Environment, JRE 1.5 or Newer.
-   * Apache Derby 10.9.1.0.
-   * H2 1.3.173 - 1.3.174.
-   * HSQL 2.2.5 - 2.2.9. *NOTE, 1.8.x No Longer Supported.
+   * Apache Derby 10.10.2.0.
+   * H2 1.3.173 - 1.3.175.
+   * HSQL 2.2.5 - 2.3.2. *NOTE, 1.8.x No Longer Supported.
    * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
    * Microsoft SQL Server 8? - 11.00.2100, JDBC 4.0.
-   * MySQL 5.0.7 - 5.1.61, JDBC 5.0.7, 5.1.5, 5.1.8.
+   * MySQL 5.0.7 - 5.5.32, JDBC 5.0.7, 5.1.5 - 5.1.30.
+   * MariaDB 5.5.32, JDBC 1.1.7.
    * Oracle 10g JDBC 14.
-   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.0-801-9.1-903.
+   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.3.
    * Xerial SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
 
 Installation Notes:
@@ -101,7 +102,7 @@ though the project is recommending to perform a clean install. This is not a
 necessity, but will clean out some unused files, mainly in the images directory.
 The only other major concern of a new release that might be of interest is
 obtaining new connection parameters. Each new release that supports an
-additional database, release v3.48 does, will have an example configuration
+additional database, release v3.49 does, will have an example configuration
 for the connection parameters in the advanced login parameters. Likely
 changes will be included in the reference myjsqlview.xml file located in the
 installation directory. Often the Driver, Protocol, SubProtocol, and Port
@@ -120,21 +121,22 @@ General Setup Instructions
     The MyJSQLView application is a Java based program and does require the JRE,
 to be installed. The minimum runtime environment needs to be JRE-1.5. In addition
 to the JRE an extension, JDBC, needs to be installed that allows Java to
-communicate to the Derby, MS SQL, MySQL, Oracle, PostgreSQL, or SQLite database.
-The programs are available on the Internet free of charge. Check with the sites
-http://db.apache.org/derby/, http://www.microsoft.com/en-us/sqlserver/, dev.mysql.com,
-oracle.com, jdbc.postgresql.org, and www.xerial.org. The jar file for these extensions
-needs to be installed to the JRE /lib/ext directory. On a Windows system this JRE
-directory in normally under C:/Windows/java. On a Linux/Unix system the directory
-is normally under the /usr/lib directory, and is most easily found by typing the
-command "which java" in a console. Please consult with each vendor for specific
-installation instructions for these JDBC pieces of code. Similarly if other databases
-are to be accessed via the application then again installed the recommended driver(s)
-to the Java Runtime /lib/ext directory. The exceptions to JDBC installations
-are for the Derby, H2, and HSQL databases. Derby requires the derby.jar, derbynet.jar,
-and derbyclient.jar files to placed in the Java Extension directory. H2, and HSQL
-uses an integrated JDBC built into the application. MyJSQLView as of v3.47 includes
-these databases so no additional installation need take place.
+communicate to the Derby, MS SQL, MariaDB, MySQL, Oracle, PostgreSQL, or SQLite
+database. The programs are available on the Internet free of charge. Check with
+the sites db.apache.org/derby/, microsoft.com/en-us/sqlserver/, mariadb.org,
+dev.mysql.com, oracle.com, jdbc.postgresql.org, and xerial.org. The jar file
+for these extensions needs to be installed to the JRE /lib/ext directory. On a
+Windows system this JRE directory in normally under C:/Windows/java. On a Linux/Unix
+system the directory is normally under the /usr/lib directory, and is most easily
+found by typing the command "which java" in a console. Please consult with each
+vendor for specific installation instructions for these JDBC pieces of code.
+Similarly if other databases are to be accessed via the application then again
+installed the recommended driver(s) to the Java Runtime /lib/ext directory. The
+exceptions to JDBC installations are for the Derby, H2, and HSQL databases. Derby
+requires the derby.jar, derbynet.jar, and derbyclient.jar files to placed in the
+Java Extension directory. H2, and HSQL uses an integrated JDBC built into the
+application. MyJSQLView as of v3.47 includes these databases so no additional
+installation need take place.
 
     The new login interface and Connection Manager use a XML configuration file
 for saving user preferences. Upon first running MyJSQLView a reference XML file,
@@ -214,6 +216,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 3.49 MariaDB Database Support. Maintenance Update to Address Issues With MySQL
+                  JDBC New Than 5.1.8.
    * Version 3.48 Microsoft SQL Database Support. Visual QueryBuilder Plugin Update.
    * Version 3.47 H2 Database Support. Architectural revisions to support multiple
                   database connections instances. HeatMapper plugin CSV Imports.
@@ -238,13 +242,13 @@ Production (2008-12-31):
                   read and write batching.
    * Version 3.33 Integration of HSQLDB2, HyperSQL, database for In-Memory data
                   Analysis. HyperSQL database File and Jar resource connection
-		  support. Advanced Sort/Search interface Aggregation and GROUP
-		  BY feature. SQL Query Bucket Fixes and interface changes to
-		  increase efficiency of use. HeatMapper Plugin.
+		  		  support. Advanced Sort/Search interface Aggregation and GROUP
+		  		  BY feature. SQL Query Bucket Fixes and interface changes to
+		  		  increase efficiency of use. HeatMapper Plugin.
    * Versoin 3.31 HSQLDB2 and MSAccess Database Support. Bug fix for large SQL
                   import files. Multi-language PDF support through the use of
-		  embedded fonts. Corrections to table definition generator unique
-		  key construction. 
+		  		  embedded fonts. Corrections to table definition generator unique
+		  		  key construction. 
    * Versoin 3.30 Preliminary Production Release to Address/Correct Reported Problems
                   With PDF Exports and Gnome Desktop Functionality.
    * Version 3.29 Summary Table sort/search history implementation and addition of
