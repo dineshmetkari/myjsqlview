@@ -1,7 +1,7 @@
 Manifest-Version: 1.5
 Created-By: Dana M. Proctor
 Specification-Title: MyJSQLView
-Specification-Version: 3.46
+Specification-Version: 3.49
 Specification-Vender: Dandy Made Productions
 Specification-URL: http://myjsqlview.org
 Main-Class: com.dandymadeproductions.myjsqlview.MyJSQLView
