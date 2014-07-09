@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.6 06/18/2014
+// Version 1.7 07/09/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         1.6 Class Method getDataSourceType() Correction for MariaDB to Use
 //             else if Conditional. Method init() Inclusion of Use of MariaDB
 //             Selector for Setting dbMetaData.getTables() Parameters.
+//         1.7 Correction in init() to Use else if Conditional for MariaDB
+//             Database Product & Version.
 //             
 //
 //-----------------------------------------------------------------
@@ -77,7 +79,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.6 06/18/2014
+ * @version 1.7 07/08/2014
  */
 
 public class DatabaseProperties
@@ -246,7 +248,7 @@ public class DatabaseProperties
          {
             if (subProtocol.equals(ConnectionManager.MYSQL))
                dbProductNameVersion = "MySQL ";
-            if (subProtocol.equals(ConnectionManager.MARIADB))
+            else if (subProtocol.equals(ConnectionManager.MARIADB))
                dbProductNameVersion = "MarianDB ";
             else if (subProtocol.equals(ConnectionManager.POSTGRESQL))
                dbProductNameVersion = "PostgreSQL ";
