@@ -10,8 +10,8 @@
 //                   << MyJSQLView_Frame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 8.6 11/06/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 8.7 08/02/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -204,6 +204,9 @@
 //                        Through the Loaded Plugins to Indicate Pending Application Close.
 //         8.6 11/06/2013 Moved Cache Clearing on myjsqlviewFrameListener Window Closing Event
 //                        to After the Cycling of Plugins Shutdown.
+//         8.7 08/02/2014 Method addTab() Invalidated the mainTabsPane Upon Entry and Re-Validate
+//                        Upon Exit. This is to address Painting Component Bug for Array Index
+//                        Out of Bounds.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -251,7 +254,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.6 11/06/2013
+ * @version 8.7 08/02/2014
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -515,6 +518,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    {
       if (plugin != null)
       {  
+         mainTabsPane.invalidate();
          mainTabsPane.removeChangeListener(parent);
          
          loadedPluginModules.add(plugin);
@@ -531,6 +535,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          pluginFrameListenButton.doClick();
          
          mainTabsPane.addChangeListener(parent);
+         mainTabsPane.validate();
       } 
    }
    
