@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.49 06/19/2014
+// Version 3.50 08/11/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -232,6 +232,7 @@
 //                         3.48
 //         3.49 06/19/2014 Class Instance myJSQLView_Version Update for Release
 //                         3.49
+//         3.50 08/11/2014 Class Method main.run() Conditional Check for localeString Length.
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -274,7 +275,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.49 06/19/2014
+ * @version 3.50 08/11/2014
  */
 
 public class MyJSQLView implements ActionListener
@@ -296,7 +297,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.49", "Build ID: 20140619"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "3.50", "Build ID: 20140811"};
    private String webSiteString = "http://myjsqlview.org";
    
    private static GeneralProperties generalProperties = new GeneralProperties();
@@ -454,7 +455,7 @@ public class MyJSQLView implements ActionListener
             // Try to setup/retrieve language support
             // if not provided as an argument.
             
-            if (localeString.equals(""))
+            if (localeString.equals("") || localeString.length() != 5)
                localeString = MyJSQLView_Utils.processLocaleLanguage();
             
             // Getter On!
