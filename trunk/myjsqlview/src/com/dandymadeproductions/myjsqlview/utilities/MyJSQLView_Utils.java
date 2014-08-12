@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.6 02/13/2013
+// Version 9.7 08/11/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -176,6 +176,9 @@
 //         9.6 Class Methods getConditionString() & getUnlimitedSQLStatementString()
 //             Detection of MSSQL for Processing. Sample Query Comment for MSSQL in Latter
 //             Method.
+//         9.7 Class Method processLocaleLanguage() Additional Check on localeFile for
+//             Length & Also Insuring the Configuration File Gets Written to Even if
+//             the User Cancels or Disposes the Dialog.
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -245,7 +248,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.6 02/13/2014
+ * @version 9.7 08/11/2014
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -1405,6 +1408,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       // Make the .myjsqlview director if does not exist.
       
       myjsqlviewDirectoryFile = new File(MyJSQLView_Utils.getMyJSQLViewDirectory());
+      
       if (!myjsqlviewDirectoryFile.isDirectory())
       {
          try
@@ -1425,9 +1429,9 @@ public class MyJSQLView_Utils extends MyJSQLView
       // then save that data in locale file and return.
 
       try
-      {
+      {  
          // Language not selected so allow the user to choose.
-         if (!fileError && localeFile.createNewFile())
+         if (!fileError && (localeFile.createNewFile() || localeFile.length() == 0))
          {
             // Collect the locale file names from the
             // locale directory.
@@ -1469,14 +1473,16 @@ public class MyJSQLView_Utils extends MyJSQLView
             localeSelectDialog.center();
             localeSelectDialog.setResizable(false);
             localeSelectDialog.setVisible(true);
+            
+            // System.out.println("MyJSQLView_Utils processLocaleLanguage() " +
+            //                    "File Does Not Exist, Creating.");  
 
             if (localeSelectDialog.isActionResult())
-            {
                localeString = (String) localeComboBox.getSelectedItem();
-               // System.out.println("MyJSQLView_Utils processLocaleLanguage() " +
-               //                    "File Does Not Exist, Creating.");
-               WriteDataFile.mainWriteDataString(localeFileString, (localeString).getBytes(), false);
-            }
+            else
+               localeString = "en_US";
+            
+            WriteDataFile.mainWriteDataString(localeFileString, (localeString).getBytes(), false);
             localeSelectDialog.dispose();
          }
 
