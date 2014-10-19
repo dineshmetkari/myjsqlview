@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.4 03/17/2014
+// Version 2.5 10/19/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,6 +50,7 @@
 //         2.3 Added Class Interface shutdown().
 //         2.4 Changed the Return Types for Interfaces getToolBar() & getPanel()
 //             From JToolBar & JPanel to JComponent.
+//         2.5 Added Class Interfaces start() & stop().
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -71,7 +72,7 @@ import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
  * the MyJSQLView application as a plugin.
  * 
  * @author Dana M. Proctor
- * @version 2.4 03/17/2014
+ * @version 2.5 10/19/2014
  */
 
 public interface PluginModuleInterface
@@ -165,6 +166,22 @@ public interface PluginModuleInterface
    //==============================================================
 
    void setDBTables(ArrayList<String> tables);
+   
+   //==============================================================
+   // Class method to allow the plugin to start activities back
+   // up after a stop() sequence.
+   // (USED FOR CONTROLLING THREADS)
+   //==============================================================
+
+   void start();
+   
+   //==============================================================
+   // Class method to allow the plugin to temporarily stop 
+   // activities that may then be started again.
+   // (USED FOR CONTROLLING THREADS)
+   //==============================================================
+
+   void stop();
    
    //==============================================================
    // Class method to allow the plugin to close activities pending
