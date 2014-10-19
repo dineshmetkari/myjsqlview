@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.5 03/17/2014
+// Version 3.6 10/19/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,7 @@
 //             getControlledToolBar(), & getControlledPanel() From JToolBar
 //             & JPanel to JComponent. Class Instance toolBar & panel Changed
 //             Accordingly.
+//         3.6 Added Interface Methods start() & stop().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -91,7 +92,7 @@ import javax.swing.JMenuBar;
  * the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.5 03/17/2014
+ * @version 3.6 10/19/2014
  */
 
 public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
@@ -318,6 +319,28 @@ public abstract class MyJSQLView_PluginModule implements PluginModuleInterface
    public void setDBTables(ArrayList<String> tableNames)
    {
       // Do what you will if you need database table names.
+   }
+   
+   //==============================================================
+   // Class method to allow the plugin to start activities back
+   // up after a stop() sequence.
+   // (USED FOR CONTROLLING THREADS)
+   //==============================================================
+
+   public void start()
+   {
+      // Do what you will to start again from stop.
+   }
+   
+   //==============================================================
+   // Class method to allow the plugin to temporarily stop 
+   // activities that may then be started again.
+   // (USED FOR CONTROLLING THREADS)
+   //==============================================================
+
+   public void stop()
+   {
+      // Do what you will to notify stop.
    }
    
    //==============================================================
