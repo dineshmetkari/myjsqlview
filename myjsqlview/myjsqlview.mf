@@ -1,8 +1,8 @@
-Manifest-Version: 1.5
+Manifest-Version: 1.6
 Created-By: Dana M. Proctor
 Specification-Title: MyJSQLView
-Specification-Version: 3.49
+Specification-Version: 7.0
 Specification-Vender: Dandy Made Productions
 Specification-URL: http://myjsqlview.org
 Main-Class: com.dandymadeproductions.myjsqlview.MyJSQLView
-Class-Path: lib/itextpdf-5.5.0.jar lib/hsqldb.jar lib/h2-1.3.175.jar
+Class-Path: lib/itextpdf-5.5.0.jar lib/hsqldb.jar lib/h2-1.3.175.jar jfxrt.jar
