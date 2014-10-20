@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.7 08/11/2014
+// Version 9.8 10/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -179,6 +179,9 @@
 //         9.7 Class Method processLocaleLanguage() Additional Check on localeFile for
 //             Length & Also Insuring the Configuration File Gets Written to Even if
 //             the User Cancels or Disposes the Dialog.
+//         9.8 Parameterized Class Instance localeComboBox in Method processLocaleLanguage()
+//             to Bring Into Compliance With JRE 7. Minor System.out Comment Changes in
+//             Method getAudioClip().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -248,7 +251,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.7 08/11/2014
+ * @version 9.8 10/20/2014
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -758,7 +761,7 @@ public class MyJSQLView_Utils extends MyJSQLView
                      Object eventSource = e.getSource();
                      if (eventSource instanceof Clip)
                      {
-                        System.out.println(e.getType());
+                        System.out.println("MyJSQLView_Utils getAudioClip() " + e.getType());
                          
                         if (e.getType() == LineEvent.Type.STOP)
                            ((Clip)e.getSource()).close();
@@ -767,8 +770,7 @@ public class MyJSQLView_Utils extends MyJSQLView
                }
                clip.addLineListener(new lineEvent());
                */
-                
-
+               
                clip.open(audioInputStream);
                audioInputStream.close();
                return clip;
@@ -1387,7 +1389,7 @@ public class MyJSQLView_Utils extends MyJSQLView
       BufferedReader bufferedReader;
 
       ArrayList<String> localesData;
-      JComboBox localeComboBox;
+      JComboBox<Object> localeComboBox;
       ImageIcon localeIcon;
       InputDialog localeSelectDialog;
       int lastIndexOfDot;
@@ -1458,7 +1460,7 @@ public class MyJSQLView_Utils extends MyJSQLView
             // Ok looks like we have the supported language files so
             // present them to the user for selection.
 
-            localeComboBox = new JComboBox(localesData.toArray());
+            localeComboBox = new JComboBox<Object>(localesData.toArray());
             localeComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
 
             Object[] content = {localeComboBox};
