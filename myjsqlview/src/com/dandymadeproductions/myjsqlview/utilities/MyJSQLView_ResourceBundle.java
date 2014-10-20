@@ -10,8 +10,8 @@
 //             << MyJSQLView_ResourceBundle.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 08/12/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.5 10/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -87,6 +87,8 @@
 //         3.4 08/12/2013 Class Method getResourceImage/Bytes() Change of IOException Catching
 //                        for JAR Resources to General Exception, Possible Null, When Improperly
 //                        Built Plugin With No Resource in JAR.
+//         3.5 10/20/2014 Created Class Method getResourceFXImage() To Handle Conforming
+//                        to Use JavaFX Plugins and Their Image Requirements.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -97,6 +99,7 @@ package com.dandymadeproductions.myjsqlview.utilities;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -114,6 +117,8 @@ import java.util.HashMap;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
+import javafx.scene.image.Image;
+
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
@@ -126,7 +131,7 @@ import com.dandymadeproductions.myjsqlview.MyJSQLView;
  * resource.
  * 
  * @author Dana M. Proctor
- * @version 3.4 08/12/2013
+ * @version 3.5 10/20/2014
  */
 
 public class MyJSQLView_ResourceBundle implements Serializable
@@ -368,6 +373,109 @@ public class MyJSQLView_ResourceBundle implements Serializable
             System.out.println("MyJSQLView_ResourceBundle getResourceImage()\n"
                                + "Either Undefined resourceURL or image file.");
 
+         return null;
+      }
+   }
+   
+   //==============================================================
+   // Class Method for allowing classes to obtain a specified
+   // image file to be used as an image icon.
+   //==============================================================
+
+   public Image getResourceFXImage(String imageFileName)
+   {
+      // Method Instances
+      URL imageResourceURL = null;
+      ByteArrayInputStream byteInputStream = null;
+
+      // Check some type of valid input.
+      if (resourceURL != null && imageFileName != null)
+      {
+         // System.out.println("Image Resource: " + resourceURL.toExternalForm());
+         
+         try
+         {
+            //====
+            // Handle resource from file & http locations.
+            if (resourceType.equals(FILE_RESOURCE) || resourceType.equals(HTTP_RESOURCE))
+            {  
+               imageResourceURL = new URL(resourceURL.toExternalForm() + imageFileName);
+               Image image = new Image(resourceURL.toExternalForm() + imageFileName);
+               
+               
+               if (debugMode && (image.getWidth() == -1 || image.getHeight() == -1))
+                  System.out.println("LindyFrame_ResourceBundle getResourceFXImage()\n"
+                                     + "Failed to find image file: " + imageResourceURL.getFile() + "\n");
+               
+               return image;
+            }
+            
+            //====
+            // Handle resource from a jar file.
+            else if (resourceType.equals(JAR_RESOUCE))
+            {
+               try
+               {
+                  if (cacheJar && (resourceURL.toExternalForm().indexOf("jar:file:") == -1))
+                  {
+                     byteInputStream = new ByteArrayInputStream(getJAR_Resource(
+                        imageFileName, new URL("jar:file:" + cachedJAR_FileName + "!/")));
+                     return new Image(byteInputStream);
+                  }
+                  else
+                  {
+                     byteInputStream = new ByteArrayInputStream(getJAR_Resource(
+                        imageFileName, resourceURL));
+                     return new Image(byteInputStream);
+                  }
+               }
+               catch (Exception io_null_exception)
+               {
+                  if (debugMode)
+                     System.out.println("LindyFrame_ResourceBundle getResourceImage()\n"
+                                        + "Failed to close resources or create cache URL.\n"
+                                        + io_null_exception.toString());
+                  return null;
+               }
+               finally
+               {
+                  try
+                  {
+                     if (byteInputStream != null)
+                        byteInputStream.close();
+                  }
+                  catch (IOException ioe)
+                  {
+                     if (debugMode)
+                        System.out.println("LindyFrame_ResourceBundle getResourceImage()\n"
+                                           + "Failed to close resource.\n" + ioe.toString());
+                  }
+               }
+            }
+
+            //====
+            // Unknown
+            else
+            {
+               displayErrors("LindyFrame_ResourceBundle getResourceFXImage() \n"
+                             + "Failed to identity URL protocol in order to process, , "
+                             + resourceURL.getProtocol());
+               return null;
+            }
+         }
+         catch (MalformedURLException mfe)
+         {
+            if (debugMode)
+               System.out.println("LindyFrame_ResourceBundle getResourceFXImage()\n"
+                                  + "Failed to Create Image URL.\n" + mfe.toString());
+            return null;
+         }
+      }
+      else
+      {
+         if (debugMode)
+            System.out.println("LindyFrame_ResourceBundle getResourceFXImage()\n"
+                               + "Either Undefined resourceURL or image file.");
          return null;
       }
    }
