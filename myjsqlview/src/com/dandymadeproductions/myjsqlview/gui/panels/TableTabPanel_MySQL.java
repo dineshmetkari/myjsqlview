@@ -12,8 +12,8 @@
 //            << TableTabPanel_MySQL.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 11.59 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 11.60 10/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -503,6 +503,8 @@
 //       11.58 Formatting Changes to Sync. TableTabPanels.
 //       11.59 Change in loadTable(), viewSelectedItem(), addItem(), &
 //             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
+//       11.60 Class Method viewSelectedItem() & editSelectedItem() Check
+//             for Year 2 Types displayYear Length Before Sub-Stringing.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -533,7 +535,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.59 07/01/2013
+ * @version 11.60 10/21/2014
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -1424,7 +1426,10 @@ public class TableTabPanel_MySQL extends TableTabPanel
                   displayYear = displayYear.trim();
 
                   if (columnSize == 2)
-                     displayYear = displayYear.substring(2, 4);
+                  {
+                     if (displayYear.length() == 4)
+                        displayYear = displayYear.substring(2, 4);
+                  }
                   else
                      displayYear = displayYear.substring(0, 4);
 
@@ -1904,7 +1909,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
                {
                   if (currentContentData != null)
                   {
-                     displayYear = displayYear.substring(2, 4);
+                     if (displayYear.length() == 4)
+                        displayYear = displayYear.substring(2, 4);
                      currentContentData = displayYear;
                      editForm.setFormField(currentColumnName, currentContentData);
                   }
