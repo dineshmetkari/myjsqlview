@@ -7,8 +7,8 @@
 //                   << SetListDialog.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.7 09/11/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.8 10/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -56,6 +56,7 @@
 //         2.6 Orgnized Imports.
 //         2.7 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made Class, Constructor, & center() Method Public.
+//         2.8 Parameterized Class Instance setList to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -90,7 +91,7 @@ import com.dandymadeproductions.myjsqlview.gui.forms.TableEntryForm;
  * JList to allow the selection of elements of a Set field.
  * 
  * @author Dana M. Proctor
- * @version 2.7 09/11/2012
+ * @version 2.8 10/21/2014
  */
 
 public class SetListDialog extends JFrame implements ActionListener
@@ -104,7 +105,7 @@ public class SetListDialog extends JFrame implements ActionListener
 
    private TableEntryForm callingForm;
    private Object columnName;
-   private JList setList;
+   private JList<Object> setList;
    private ArrayList<String> listElements;
 
    private JButton okButton, cancelButton;
@@ -143,7 +144,7 @@ public class SetListDialog extends JFrame implements ActionListener
       // by the list compoenent.
       centerPanel = new JPanel(new GridLayout(1, 1, 2, 2));
 
-      setList = new JList(listElements.toArray());
+      setList = new JList<Object>(listElements.toArray());
       JScrollPane scrollPane = new JScrollPane();
       scrollPane.getViewport().setView(setList);
 
