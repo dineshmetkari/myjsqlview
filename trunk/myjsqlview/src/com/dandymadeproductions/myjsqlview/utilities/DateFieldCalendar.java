@@ -7,8 +7,8 @@
 //                     << DateFieldCalendar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.4 07/02/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.5 10/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,7 @@
 //                        Made Class, Constructor, & center() Method Public.
 //         3.4 07/02/2013 Change in actionPerformed() & createInitialCalendarDate() to
 //                        Use DBTablePanel.getGeneralDBProperties().
+//         3.5 10/20/2014 Parameterized Class Instance monthComboBox to Conform to JRE 7.
 //
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -119,7 +120,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.DBTablesPanel;
  * TableEntryForm.
  * 
  * @author Dana M. Proctor
- * @version 3.4 07/02/2013
+ * @version 3.5 10/20/2014
  */
 
 public class DateFieldCalendar extends JFrame implements ActionListener, KeyListener, MouseListener
@@ -138,7 +139,7 @@ public class DateFieldCalendar extends JFrame implements ActionListener, KeyList
 
    private JButton previousYearButton, nextYearButton;
    private JButton previousMonthButton, nextMonthButton;
-   private JComboBox monthComboBox;
+   private JComboBox<String> monthComboBox;
    private JTextField yearTextField;
    private JLabel dateSelectionLabel;
    private JPanel centerPanel, daysPanel;
@@ -222,7 +223,7 @@ public class DateFieldCalendar extends JFrame implements ActionListener, KeyList
       previousMonthButton.addActionListener(this);
       northPanel.add(previousMonthButton);
 
-      monthComboBox = new JComboBox(months);
+      monthComboBox = new JComboBox<String>(months);
       northPanel.add(monthComboBox);
       monthComboBox.addActionListener(this);
 
