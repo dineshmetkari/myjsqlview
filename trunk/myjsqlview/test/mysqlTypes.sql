@@ -1,6 +1,6 @@
 -- =============================================================
 -- Test table to create the various data types that are
--- defined by the MySQL database.
+-- defined by the MySQL/MariaDB database.
 -- =============================================================
 -- Dana Proctor 
 -- Version 02/09/2006 Orignal Test Data Type Table.
@@ -13,6 +13,8 @@
 --                    Fails on MySQL 4.xx.
 --         07/21/2010 Updated Contact, Email, Address.
 --         04/22/2012 Added View Tables myView.
+--         10/21/2014 Commented Out All Timestamps Above (6) &
+--                    Added Just timeStamp_type Table. Removed TYPE = InnoDB.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -60,14 +62,14 @@ CREATE TABLE mysqltypes (
     timeStamp_2 TIMESTAMP(2), 
     timeStamp_4 TIMESTAMP(4),
     timeStamp_6 TIMESTAMP(6),
-    timeStamp_8 TIMESTAMP(8),
-    timeStamp_10 TIMESTAMP(10),
-    timeStamp_12 TIMESTAMP(12),
-    timeStamp_14 TIMESTAMP(14),
+    timeStamp_type TIMESTAMP,
+--    timeStamp_8 TIMESTAMP(8),
+--    timeStamp_10 TIMESTAMP(10),
+--    timeStamp_12 TIMESTAMP(12),
+--    timeStamp_14 TIMESTAMP(14),
     year_2 YEAR(2) DEFAULT NULL,
     year_4 YEAR(4) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
 
 --
 -- View for mysqltypes
