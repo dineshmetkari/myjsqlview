@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 6.1 06/17/2014
+// Version 6.2 10/21/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -156,6 +156,8 @@
 //         6.0 Changed in Method createMSSQLTableDefinition() to Properly Close ResultSets.
 //         6.1 Class Method createSQLTableDefinition() Assignment of MariaDB to Table
 //             Definition via createMySQLTableDefinition().
+//         6.2 Closed Various Instances of resultSet in Methods createPostgreSQL/Oracle/Derby/
+//             TableDefinition() Before Using Again.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -185,7 +187,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 6.1 06/17/2014
+ * @version 6.2 10/21/2014
  */
 
 public class TableDefinitionGenerator
@@ -397,6 +399,7 @@ public class TableDefinitionGenerator
                               + "' AND table_name='" + tableName + "' ORDER BY ordinal_position";
          // System.out.println(sqlStatementString);
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
 
          while (resultSet.next())
@@ -1236,6 +1239,7 @@ public class TableDefinitionGenerator
          sqlStatementString = "SELECT * FROM " + schemaTableName + " WHERE ROWNUM=1";
          // System.out.println(sqlStatementString);
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
 
@@ -2125,6 +2129,7 @@ public class TableDefinitionGenerator
          sqlStatementString = "SELECT * FROM " + schemaTableName + " FETCH FIRST ROW ONLY";
          // System.out.println(sqlStatementString);
 
+         resultSet.close();
          resultSet = sqlStatement.executeQuery(sqlStatementString);
          tableMetaData = resultSet.getMetaData();
          resultSet.close();
