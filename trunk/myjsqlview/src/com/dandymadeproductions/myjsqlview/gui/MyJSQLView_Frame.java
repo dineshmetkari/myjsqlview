@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 8.7 08/02/2014
+// Version 8.8 10/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -207,6 +207,8 @@
 //         8.7 08/02/2014 Method addTab() Invalidated the mainTabsPane Upon Entry and Re-Validate
 //                        Upon Exit. This is to address Painting Component Bug for Array Index
 //                        Out of Bounds.
+//         8.8 10/22/2014 Class Method stateChanged() Issueing of start() & stop() Routines on
+//                        Plugins on Main Tab Changes.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -254,7 +256,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.7 08/02/2014
+ * @version 8.8 10/22/2014
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
@@ -268,6 +270,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    
    private String[] myJSQLView_Version;
    private String webSiteString;
+   private int lastTabIndex;
    
    private static JTabbedPane mainTabsPane = new JTabbedPane();
    private static CardLayout toolBarCardLayout = new CardLayout();
@@ -436,6 +439,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
       mainTabsPane.addChangeListener(this);
       mainPanel.add(mainTabsPane, BorderLayout.CENTER);
       getContentPane().add(mainPanel);
+      lastTabIndex = 0;
    }
    
    //==============================================================
@@ -475,15 +479,30 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
             return;
          
          // The top mainTabPanel is a runnable thread so
-         // control the animation.
+         // control the animation and also other plugins'
+         // requirements of stoping/starting.
          
          if (selectedIndex == 0)
          {
             mainTabPanel.resetPanel();
-            mainTabPanel.setThreadAction(false); 
+            mainTabPanel.setThreadAction(false);
+         }
+         else if (selectedIndex == 1)
+         {
+            mainTabPanel.setThreadAction(true);
          }
          else
+         {
             mainTabPanel.setThreadAction(true);
+            
+            if ((selectedIndex - 2 ) <= loadedPluginModules.size())
+               loadedPluginModules.get(selectedIndex - 2).start();
+         }
+          
+         if (lastTabIndex != 0 && lastTabIndex != 1)
+            loadedPluginModules.get(lastTabIndex - 2).stop();
+         
+         lastTabIndex = selectedIndex;
          
          // Set the MenuBar required by the tab.
          
@@ -501,6 +520,7 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
          }
          
          // Set the ToolBar required by the tab.
+         
          if (selectedIndex == 0)
             toolBarCardLayout.show(toolBarPanel, "0");
          else if (selectedIndex == 1)
