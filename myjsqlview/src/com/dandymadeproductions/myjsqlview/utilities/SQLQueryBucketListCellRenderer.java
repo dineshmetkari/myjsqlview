@@ -7,8 +7,8 @@
 //            << SQLQueryBucketListCellRenderer.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 09/11/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.5 10/11/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@
 //         1.3 Copyright Update.
 //         1.4 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
 //             Made Class & Constructor Public.
+//         1.5 Method getListCellRendererComponent() Parameterized Argument list
+//             Along With implements ListCellRenderer to Conform With JRE 7.
 //                            
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,10 +59,10 @@ import javax.swing.ListCellRenderer;
  * list cell renderer component used in the SQLQueryBucketFrame JList.
  * 
  * @author Dana M. Proctor
- * @version 1.4 09/11/2012
+ * @version 1.5 10/21/2014
  */
 
-public class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements ListCellRenderer
+public class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject implements ListCellRenderer<Object>
 {
    // Class Instances
    private static final long serialVersionUID = 7335900455732034997L;
@@ -79,7 +81,7 @@ public class SQLQueryBucketListCellRenderer extends SQLQueryBucketListObject imp
    // for a SQLQueryBucketListObject.
    //==============================================================
 
-   public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+   public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected,
                                                  boolean cellHasFocus)
    {
       // Method Instances.
