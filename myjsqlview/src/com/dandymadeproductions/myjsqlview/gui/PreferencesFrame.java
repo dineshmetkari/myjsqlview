@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.6 02/02/2014
+// Version 9.7 10/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -194,7 +194,9 @@
 //         9.5 Constructor Set Frame's Icon.
 //         9.6 Added Class Instance sqlImportPanel & Its Use in the Tree Node for
 //             SQL Imports. Constructor Changes to Include Along With a fillerPanel.
-//             Changes in Methods createTreeNode() & actionPerformed() To Process. 
+//             Changes in Methods createTreeNode() & actionPerformed() To Process.
+//         9.7 Parameterized Class Instances tableSelectionFieldsComboBox &
+//             tableSelectionRowsComboBox to Conform With JRE 7.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -264,7 +266,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.6 02/02/2014
+ * @version 9.7 10/22/2014
  */
 
 //=================================================================
@@ -302,7 +304,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
    private boolean helpShowing;
 
    private JLabel currentPreferencesSelectionLabel;
-   private JComboBox tableSelectionFieldsComboBox, tableSelectionRowsComboBox;
+   private JComboBox<Object> tableSelectionFieldsComboBox, tableSelectionRowsComboBox;
    private ArrayList<String> tableFieldCards, tableRowCards;
    private HashMap<String, TableFieldSelectionPreferencesPanel> tableFieldPanelsHashMap;
    private HashMap<String, TableRowSelectionPreferencesPanel> tableRowPanelsHashMap;
@@ -991,7 +993,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
                                                   "Table Selection");
       tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
-      tableSelectionFieldsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());
+      tableSelectionFieldsComboBox = new JComboBox<Object>(ConnectionManager.getTableNames().toArray());
       selectionPanel.add(tableSelectionFieldsComboBox);
 
       tableFieldPanel.add(selectionPanel, BorderLayout.NORTH);
@@ -1052,7 +1054,7 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
       tableSelectionLabel = new JLabel(resource, JLabel.CENTER);
       selectionPanel.add(tableSelectionLabel);
 
-      tableSelectionRowsComboBox = new JComboBox(ConnectionManager.getTableNames().toArray());
+      tableSelectionRowsComboBox = new JComboBox<Object>(ConnectionManager.getTableNames().toArray());
       selectionPanel.add(tableSelectionRowsComboBox);
 
       tableRowPanel.add(selectionPanel, BorderLayout.NORTH);
