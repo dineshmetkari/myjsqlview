@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.9 01/29/2014
+// Version 10.0 10/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -239,6 +239,8 @@
 //                        for MyJSQLView_Frame.getSQLBucket().addSQLStatement().
 //         9.9 01/29/2014 Excluded the QUERY_STATEMENT_TYPE Selection in statementTypeComboBox
 //                        for MSSQL.
+//        10.0 10/22/2014 Class Instance statementTypeComboBox Parameterized to Conform With
+//                        JRE 7.
 //
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -325,7 +327,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableClearingThread;
  * connection established in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 9.9 01/29/2014
+ * @version 10.0 10/22/2014
  */
 
 public class QueryFrame extends JFrame implements ActionListener, ChangeListener
@@ -355,7 +357,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
    private String[] status = new String[maxTabs];
    private JTextField statusLabel;
    private JButton sqlQueryBucketButton;
-   private JComboBox statementTypeComboBox;
+   private JComboBox<Object> statementTypeComboBox;
    private int[] tabStatementType = new int[maxTabs];
    
    private JTextArea queryTextArea;
@@ -581,7 +583,7 @@ public class QueryFrame extends JFrame implements ActionListener, ChangeListener
       statusControlPanel.add(sqlQueryBucketButton);
       
       // SQL Query Type
-      statementTypeComboBox = new JComboBox();
+      statementTypeComboBox = new JComboBox<Object>();
       statementTypeComboBox.setBorder(BorderFactory.createRaisedBevelBorder());
       
       // SQL_STATEMENT_TYPE:0
