@@ -8,8 +8,8 @@
 //                << SQLQueryBucketFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.0 12/14/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.1 10/24/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -73,6 +73,12 @@
 //                        of StringBuffer for Changed Argument to addSQLStatement(). Method
 //                        createSQLObjectDialog() Setting dialog_sqlTextArea.setText() Change
 //                        to Convert toString() From SQLQueryBucketListObject.getSQLStatementString().
+//         3.1 10/24/2014 Parameterized Class Instance sqlQueryList to Conform With JRE 7.
+//                        Same for listModel in Constructor. Associated Instances Also Throughout.
+//                        Change in Inner Class TransferHandler Check for JList in Method
+//                        createTransferable & Handling Return Instance Appropriately.
+//                        Method actionPerformed() Delete Action Removal of Deprecated
+//                        sqlQueryList.getSelectedValues() for .getSelectedValuesList().
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -98,6 +104,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.Matcher;
+import java.util.Iterator;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -143,7 +150,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQueryBucketListObject;
  * storage of SQL Query statements derived from MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 3.0 12/14/2013
+ * @version 3.1 10/24/2014
  */
 
 public class SQLQueryBucketFrame extends JFrame implements ActionListener, MouseListener
@@ -151,7 +158,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    // Class Instances.
    private static final long serialVersionUID = -1903579213881382782L;
 
-   private JList sqlQueryList;
+   private JList<Object> sqlQueryList;
    private JPopupMenu sqlListPopupMenu;
 
    private JButton viewButton;
@@ -206,7 +213,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       JMenuBar sqlBucketFrameMenuBar;
 
       String resource;
-      DefaultListModel listModel;
+      DefaultListModel<Object> listModel;
       JPanel mainPanel, listPanel, actionButtonPanel;
 
       // Setting up the needed elements and title.
@@ -275,8 +282,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       listPanel = new ListHoldingPanel();
       listPanel.setLayout(new BorderLayout());
 
-      listModel = new DefaultListModel();
-      sqlQueryList = new JList(listModel);
+      listModel = new DefaultListModel<Object>();
+      sqlQueryList = new JList<Object>(listModel);
       
       sqlQueryList.setOpaque(false);
       sqlQueryList.setDragEnabled(true);
@@ -329,7 +336,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             // Method Instances.
             SQLQueryBucketListObject listObjectToBeDropped;
             JList.DropLocation dropLocation;
-            DefaultListModel listModel;
+            DefaultListModel<Object> listModel;
             int dropLocationIndex, listSize;
             boolean isInsert;
             
@@ -340,7 +347,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
             else
             {
                dropLocation = (JList.DropLocation) info.getDropLocation();
-               listModel = (DefaultListModel) sqlQueryList.getModel();
+               listModel = (DefaultListModel<Object>) sqlQueryList.getModel();
                dropLocationIndex = dropLocation.getIndex();
                isInsert = dropLocation.isInsert();
                
@@ -378,8 +385,8 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                // Implemented if want replace. Must set sqlQueryList.setDropMode().
                else
                {
-                  //listModel.set(dropLocationIndex,
-                                //((DefaultListModel) sqlQueryList.getModel()).getElementAt(selectedListIndex));
+                  // listModel.set(dropLocationIndex,
+                  //               ((DefaultListModel<Object>) sqlQueryList.getModel()).getElementAt(selectedListIndex));
                }
                selectedListIndex = -1;
                isThisDropping = false;
@@ -395,9 +402,15 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
          protected Transferable createTransferable(JComponent c)
          {
-            JList list = (JList) c;
-            return new StringSelection(((SQLQueryBucketListObject) list.getSelectedValue())
-                                     .getSQLStatementString().toString());
+            if (c instanceof JList)
+            {
+               @SuppressWarnings("unchecked")
+               JList<Object> list = (JList<Object>) c;
+               return new StringSelection(((SQLQueryBucketListObject) list.getSelectedValue())
+                                           .getSQLStatementString().toString()); 
+            }
+            else
+               return new StringSelection("");   
          }
       });
       sqlQueryList.setDropMode(DropMode.INSERT);
@@ -485,7 +498,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
 
          // Save & Save As...
          else if ((actionCommand.equals(FILE_SAVE) || actionCommand.equals(FILE_SAVE_AS))
-                  && ((DefaultListModel) sqlQueryList.getModel()).getSize() != 0)
+                  && ((DefaultListModel<Object>) sqlQueryList.getModel()).getSize() != 0)
             saveAction(this, actionCommand);
 
          // Exit
@@ -509,7 +522,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                
                if (processItem)
                {
-                  DefaultListModel listModel = (DefaultListModel) sqlQueryList.getModel();
+                  DefaultListModel<Object> listModel = (DefaultListModel<Object>) sqlQueryList.getModel();
                   listModel.set(sqlQueryList.getSelectedIndex(), processingBucketListObject);
                   processItem = false;
                }
@@ -524,11 +537,11 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          else if (actionCommand.equals(DELETE))
          {
             if (sqlQueryList.getSelectedIndex() != -1)
-            {
-               Object[] sqlObjects = sqlQueryList.getSelectedValues();
-
-               for (int i = 0; i < sqlObjects.length; i++)
-                  ((DefaultListModel) sqlQueryList.getModel()).removeElement(sqlObjects[i]);
+            {  
+               Iterator<Object> myListIterator = sqlQueryList.getSelectedValuesList().iterator();
+               
+               while (myListIterator.hasNext())
+                  ((DefaultListModel<Object>) sqlQueryList.getModel()).removeElement(myListIterator.next());
             }
          }
          
@@ -776,7 +789,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                         currentLoadingSQLObject.setBackground(new Color(Integer
                                                    .parseInt(sqlObjectParameters[3])));
 
-                        ((DefaultListModel) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
+                        ((DefaultListModel<Object>) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
                      }
                      catch (NumberFormatException e)
                      {
@@ -810,7 +823,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       // Method Instances.
       JFileChooser dataFileChooser;
       int resultsOfFileChooser, listSize;
-      DefaultListModel listModel;
+      DefaultListModel<Object> listModel;
       SQLQueryBucketListObject currentSQLBucketObject;
 
       // Setting up a file name based on whether there has
@@ -857,7 +870,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
          // Collect the list contents as needed.
          if (!fileName.equals(""))
          {
-            listModel = ((DefaultListModel) sqlQueryList.getModel());
+            listModel = ((DefaultListModel<Object>) sqlQueryList.getModel());
             listSize = listModel.getSize();
             stringBuffer = new StringBuffer();
 
@@ -1340,7 +1353,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
       createSQLObjectDialog(ADD);
       
       if (processItem == true)
-         ((DefaultListModel) sqlQueryList.getModel()).addElement(processingBucketListObject);
+         ((DefaultListModel<Object>) sqlQueryList.getModel()).addElement(processingBucketListObject);
       
       processItem = false;
    }
@@ -1399,7 +1412,7 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
                   currentLoadingSQLObject.setBackground(new Color(Integer
                                              .parseInt(sqlObjectParameters[3])));
 
-                  ((DefaultListModel) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
+                  ((DefaultListModel<Object>) sqlQueryList.getModel()).addElement(currentLoadingSQLObject);
                }
                catch (NumberFormatException e){}
             }
@@ -1420,12 +1433,12 @@ public class SQLQueryBucketFrame extends JFrame implements ActionListener, Mouse
    {
       // Method Instances.
       int listSize;
-      DefaultListModel listModel;
+      DefaultListModel<Object> listModel;
       SQLQueryBucketListObject currentSQLBucketObject;
       String sqlQueryBucketDirectory, fileSeparator, fileName;
 
       // Setup
-      listModel = ((DefaultListModel) sqlQueryList.getModel());
+      listModel = ((DefaultListModel<Object>) sqlQueryList.getModel());
       listSize = listModel.getSize();
       stringBuffer = new StringBuffer();
       
