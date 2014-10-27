@@ -13,7 +13,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 11.60 10/21/2014
+// Version 11.61 10/27/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -505,6 +505,10 @@
 //             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
 //       11.60 Class Method viewSelectedItem() & editSelectedItem() Check
 //             for Year 2 Types displayYear Length Before Sub-Stringing.
+//       11.61 Minor Comment Changes in System.out Statements. Method loadData()
+//             Conditional Check for YEAR 2 Sub-Stringing. Same Method Increment
+//             of j for BIT Types Only After Try/Catch Clause. editSelectedItem()
+//             Placement of YYYY Format for YEAR Columns of Size 2 & MariaDB.
 //        
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -535,7 +539,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 11.60 10/21/2014
+ * @version 11.61 10/27/2014
  */
 
 public class TableTabPanel_MySQL extends TableTabPanel
@@ -649,9 +653,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            // comboBoxNameString + " " +
-            // columnClass + " " + columnType + " " +
-            // columnSize);
+            //                    comboBoxNameString + " " +
+            //                    columnClass + " " + columnType + " " +
+            //                    columnSize);
 
             // This going to be a problem so skip this column.
 
@@ -894,7 +898,7 @@ public class TableTabPanel_MySQL extends TableTabPanel
                                         + tableRowLimit + " " + "OFFSET " + tableRowStart);
          }
          // System.out.println(sqlTableStatement);
-         // System.out.println(lobLessSQLStatementString);
+         // System.out.println(lobLessSQLStatement);
          rs = sqlStatement.executeQuery(lobLessSQLStatement.toString());
 
          // Placing the results columns desired into the table that
@@ -919,9 +923,9 @@ public class TableTabPanel_MySQL extends TableTabPanel
                preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
-               // columnName + " " + columnClass + " " +
-               // columnType + " " + columnSize + " " +
-               // preferredColumnSize + " " + keyLength);
+               //                    columnName + " " + columnClass + " " +
+               //                    columnType + " " + columnSize + " " +
+               //                    preferredColumnSize + " " + keyLength);
 
                // Storing data appropriately. If you have some date
                // or other formating, for a field here is where you
@@ -996,9 +1000,16 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      displayYear = displayYear.trim();
 
                      if (columnSize == 2)
-                        displayYear = displayYear.substring(2, 4);
+                     {
+                        if (columnSize == 2)
+                        {
+                           if (displayYear.length() == 4)
+                              displayYear = displayYear.substring(2, 4);
+                        }
+                     }
                      else
                         displayYear = displayYear.substring(0, 4);
+                     
                      tableData[i][j++] = displayYear;
                   }
 
@@ -1056,14 +1067,15 @@ public class TableTabPanel_MySQL extends TableTabPanel
                      try
                      {
                         // int bitValue = rs.getInt(columnName);
-                        // tableData[i][j++] = Integer.toBinaryString(bitValue);
-                        tableData[i][j++] = Integer
+                        // tableData[i][j] = Integer.toBinaryString(bitValue);
+                        tableData[i][j] = Integer
                               .toBinaryString(Integer.parseInt(rs.getString(columnName)));
                      }
                      catch (NumberFormatException e)
                      {
-                        tableData[i][j++] = "0";
+                        tableData[i][j] = "0";
                      }
+                     j++;
                   }
 
                   // =============================================
@@ -1630,7 +1642,8 @@ public class TableTabPanel_MySQL extends TableTabPanel
          // YEAR Type Field
          if (currentColumnType.equals("YEAR"))
          {
-            if (columnSizeHashMap.get(currentColumnName).intValue() == 2)
+            if (columnSizeHashMap.get(currentColumnName).intValue() == 2
+                && !ConnectionManager.getDataSourceType().equals(ConnectionManager.MARIADB))
                currentContentData = "YY";
             else
                currentContentData = "YYYY";
