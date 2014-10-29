@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.05 06/16/2014
+// Version 9.06 10/26/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -380,6 +380,9 @@
 //                        Selecting Function File in Class Method selectFunctionOperator().
 //        9.05 06/16/2014 Method addUpdateTableEntry() Use of BEGIN Statement, Proper LIMIT Statement,
 //                        & TimeStamp Processing for MariaDB.
+//        9.06 10/26/2014 Parameterized JComboBox Instances in Constructor & in Methods
+//                        selectFunctionOperator(), getFormField(), setFormField(), &
+//                        setComboBoxField() to Conform With JRE 7.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -451,7 +454,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.05 06/16/2014
+ * @version 9.06 10/26/2014
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -500,6 +503,7 @@ public class TableEntryForm extends JFrame implements ActionListener
    // TableEntryForm Constructor
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public TableEntryForm(String title, boolean addItem, String sqlTable, int selectedRow,
                             TableTabPanel selectedTableTabPanel, ArrayList<String> primaryKeys,
                             HashMap<String, String> autoIncrementHashMap, Object id,
@@ -648,10 +652,10 @@ public class TableEntryForm extends JFrame implements ActionListener
          // ENUM Type Fields
          else if (columnEnumHashMap.containsKey(columnName))
          {
-            currentField = new JComboBox();
-            ((JComboBox) currentField).setBounds(x + 145, y, 220, 20);
-            componentFocusSequence.add((JComboBox) currentField);
-            formPanel.add((JComboBox) currentField);
+            currentField = new JComboBox<Object>();
+            ((JComboBox<Object>) currentField).setBounds(x + 145, y, 220, 20);
+            componentFocusSequence.add((JComboBox<Object>) currentField);
+            formPanel.add((JComboBox<Object>) currentField);
          }
 
          // SET Type Fields
@@ -2387,7 +2391,7 @@ public class TableEntryForm extends JFrame implements ActionListener
       ArrayList<String> functions;
 
       InputDialog functionSelectDialog;
-      JComboBox functionsComboBox;
+      JComboBox<Object> functionsComboBox;
       ImageIcon functionsPaletteIcon;
 
       // Setting up to read the user's .myjsqlview home directory
@@ -2470,7 +2474,7 @@ public class TableEntryForm extends JFrame implements ActionListener
       // Create a dialog with a combobox for allowing
       // the user to select the function operator.
 
-      functionsComboBox = new JComboBox(functions.toArray());
+      functionsComboBox = new JComboBox<Object>(functions.toArray());
       functionsComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       Object[] content = {functionsComboBox};
       functionsPaletteIcon = resourceBundle.getResourceImage(iconsDirectory + "functionsPaletteIcon.gif");
@@ -2623,12 +2627,13 @@ public class TableEntryForm extends JFrame implements ActionListener
    // Class method to get the string content of a field
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public String getFormField(String columnName)
    {
       if (fieldHashMap.get(columnName) != null)
       {
          if (columnEnumHashMap.containsKey(columnName))
-            return (String) ((JComboBox) fieldHashMap.get(columnName)).getSelectedItem();
+            return (String) ((JComboBox<Object>) fieldHashMap.get(columnName)).getSelectedItem();
          else
             return ((JTextField) fieldHashMap.get(columnName)).getText();
       }
@@ -2712,10 +2717,11 @@ public class TableEntryForm extends JFrame implements ActionListener
    // JComboBox.
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public void setFormField(Object columnName, String data)
    {
-      ((JComboBox) fieldHashMap.get(columnName)).addItem(data);
-      ((JComboBox) fieldHashMap.get(columnName)).setSelectedItem(data);
+      ((JComboBox<Object>) fieldHashMap.get(columnName)).addItem(data);
+      ((JComboBox<Object>) fieldHashMap.get(columnName)).setSelectedItem(data);
    }
 
    //==============================================================
@@ -2743,17 +2749,18 @@ public class TableEntryForm extends JFrame implements ActionListener
    // JComboBox.
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public void setComboBoxField(Object columnName, ArrayList<String> content, Object data)
    {
       Iterator<String> contentsIterator = content.iterator();
       
       while (contentsIterator.hasNext())
-         ((JComboBox) fieldHashMap.get(columnName)).addItem(contentsIterator.next());
+         ((JComboBox<Object>) fieldHashMap.get(columnName)).addItem(contentsIterator.next());
 
       if (data == null)
-         ((JComboBox) fieldHashMap.get(columnName)).setSelectedIndex(0);
+         ((JComboBox<Object>) fieldHashMap.get(columnName)).setSelectedIndex(0);
       else
-         ((JComboBox) fieldHashMap.get(columnName)).setSelectedItem(data);
+         ((JComboBox<Object>) fieldHashMap.get(columnName)).setSelectedItem(data);
    }
 
    //==============================================================
