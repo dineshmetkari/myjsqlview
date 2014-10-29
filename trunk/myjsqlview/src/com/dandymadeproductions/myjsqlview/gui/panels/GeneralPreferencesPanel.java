@@ -8,8 +8,8 @@
 //             << GeneralPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.3 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.4 10/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -64,6 +64,7 @@
 //                        setLocalization().
 //         2.3 07/01/2013 Changed All References of GeneralProperties to GeneralDBProperties.
 //                        Removed Localization Selection Components.
+//         2.4 10/29/2014 Parameterized Class Instance dateFormatComboBox to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -100,7 +101,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 2.2 07/01/2013
+ * @version 2.4 10/29/2014
  */
 
 public class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -109,7 +110,7 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    private static final long serialVersionUID = 4715186260795158107L;
    
    public GeneralOptionsPreferencesFiller generalOptionsPanelFiller;
-   private JComboBox dateFormatComboBox;
+   private JComboBox<Object> dateFormatComboBox;
    private JSpinner limitIncrementSpinner;
    private JSpinner batchSizeSpinner;
    private JCheckBox batchEnabledCheckBox;
@@ -173,7 +174,7 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
+      dateFormatComboBox = new JComboBox<Object>(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 50, 100);
