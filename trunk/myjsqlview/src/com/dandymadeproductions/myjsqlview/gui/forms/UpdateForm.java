@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.7 06/16/2014
+// Version 5.8 10/28/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -145,7 +145,9 @@
 //         5.6 10/06/2013 Constructor Set Frame's Icon.
 //         5.7 06/16/2014 Method createUpdateWhereInterface() Use of mysqlWhereOperators for
 //                        MariaDB. Method updateTable() Use of BEGIN & Proper Bit Processing for
-//                        MariaDB. 
+//                        MariaDB.
+//         5.8 10/28/2014 Parameterized Class Instances updateColumn/where/operator/andOrComboxBox
+//                        to Conform With JRE 7.
 //                        
 //=================================================================
 
@@ -201,7 +203,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.7 06/16/2014
+ * @version 5.8 10/28/2014
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -230,12 +232,12 @@ public class UpdateForm extends JFrame implements ActionListener
    private JCheckBox refreshCheckBox;
    private JButton questionButton;
 
-   private JComboBox updateColumnComboBox;
+   private JComboBox<Object> updateColumnComboBox;
    private JTextField updateColumnToTextField;
    private JCheckBox quoteCheckBox;
 
    private static final int updateFormExpressionNumber = 5;
-   private JComboBox[] whereComboBox, operatorComboBox, andOrComboBox;
+   private JComboBox<Object>[] whereComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] whereTextField;
    private ArrayList<JComponent> stateComponents;
 
@@ -248,6 +250,7 @@ public class UpdateForm extends JFrame implements ActionListener
    // UpdateForm Constructor
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public UpdateForm(String table, MyJSQLView_ResourceBundle resourceBundle,
                         HashMap<String, String> columnNamesHashMap,
                         HashMap<String, String> columnClassHashMap,
@@ -660,7 +663,7 @@ public class UpdateForm extends JFrame implements ActionListener
       gridbag.setConstraints(setLabel, constraints);
       updatePanel.add(setLabel);
 
-      updateColumnComboBox = new JComboBox(updateComboBoxColumnNames.toArray());
+      updateColumnComboBox = new JComboBox<Object>(updateComboBoxColumnNames.toArray());
       updateColumnComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
 
       buildConstraints(constraints, 1, 0, 2, 1, 100, 100);
@@ -726,7 +729,7 @@ public class UpdateForm extends JFrame implements ActionListener
          gridbag.setConstraints(whereLabel[i], constraints);
          wherePanel.add(whereLabel[i]);
 
-         whereComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         whereComboBox[i] = new JComboBox<Object>(comboBoxColumnNames.toArray());
          whereComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(whereComboBox[i]);
 
@@ -736,7 +739,7 @@ public class UpdateForm extends JFrame implements ActionListener
          gridbag.setConstraints(whereComboBox[i], constraints);
          wherePanel.add(whereComboBox[i]);
 
-         operatorComboBox[i] = new JComboBox(whereOperators);
+         operatorComboBox[i] = new JComboBox<Object>(whereOperators);
          operatorComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(operatorComboBox[i]);
 
@@ -760,7 +763,7 @@ public class UpdateForm extends JFrame implements ActionListener
 
          if (i < andOrComboBox.length)
          {
-            andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i] = new JComboBox<Object>();
             andOrComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
@@ -1331,6 +1334,7 @@ public class UpdateForm extends JFrame implements ActionListener
    // returns and empty sort state and then the where state only.
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public String getKeyComponentsState()
    {
       // Method Instances
@@ -1362,7 +1366,7 @@ public class UpdateForm extends JFrame implements ActionListener
          currentComponent = keyComponentIterator.next();
 
          if (currentComponent instanceof JComboBox)
-            stateString.append(((JComboBox) currentComponent).getSelectedIndex() + delimiter);
+            stateString.append(((JComboBox<Object>) currentComponent).getSelectedIndex() + delimiter);
 
          if (currentComponent instanceof JTextField)
             stateString.append(((JTextField) currentComponent).getText() + delimiter);
