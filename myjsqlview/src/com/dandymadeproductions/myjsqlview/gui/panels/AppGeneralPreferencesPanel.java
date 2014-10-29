@@ -8,8 +8,8 @@
 //             << AppGeneralPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.3 10/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -35,6 +35,8 @@
 //                        of Font.
 //         1.2 11/13/2013 Class Method setLocalization() finally Clause
 //                        for Insuring Instance for fileWriter to Flush/Close.
+//         1.3 10/29/2014 Parameterized Class Instance localizationComboBox to
+//                        Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -71,14 +73,14 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * font paramerters.   
  * 
  * @author Dana M. Proctor
- * @version 1.2 11/13/2013
+ * @version 1.3 10/29/2014
  */
 
 public class AppGeneralPreferencesPanel extends JPanel
 {
    // Class Instances.
    private static final long serialVersionUID = 8755011292811065834L;
-   private JComboBox localizationComboBox;
+   private JComboBox<Object> localizationComboBox;
    
    private JSpinner fontSizeSpinner;
    
@@ -160,7 +162,7 @@ public class AppGeneralPreferencesPanel extends JPanel
       gridbag.setConstraints(localizationLabel, constraints);
       localizationPanel.add(localizationLabel);
 
-      localizationComboBox = new JComboBox(getLocaleList().toArray());
+      localizationComboBox = new JComboBox<Object>(getLocaleList().toArray());
       localizationComboBox.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 4));
       localizationComboBox.setSelectedItem(MyJSQLView.getLocaleString());
 
