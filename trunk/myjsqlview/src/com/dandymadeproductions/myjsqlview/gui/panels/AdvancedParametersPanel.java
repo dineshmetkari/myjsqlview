@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.7 01/21/2014
+// Version 2.8 10/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -63,6 +63,7 @@
 //         2.6 Constructor Dressed Up JComboBoxes.
 //         2.7 Class Methods getDriver(), getProtocol(), getSubProtocol(), &
 //             getPort() Return Empty String If No Selection in ComboBox.
+//         2.8 Parameterized JComboBox Class Instances to Conform With JRE 7.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -87,7 +88,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 2.7 01/21/2014
+ * @version 2.8 10/29/2014
  */
 
 public class AdvancedParametersPanel extends JPanel
@@ -95,10 +96,10 @@ public class AdvancedParametersPanel extends JPanel
    // Class Instances.
    private static final long serialVersionUID = 3822991816957600977L;
 
-   private JComboBox driverJComboBox;
-   private JComboBox protocolJComboBox;
-   private JComboBox subProtocolJComboBox;
-   private JComboBox portJComboBox;
+   private JComboBox<Object> driverJComboBox;
+   private JComboBox<Object> protocolJComboBox;
+   private JComboBox<Object> subProtocolJComboBox;
+   private JComboBox<Object> portJComboBox;
 
    //===========================================================
    // AdvancedParametersPanel Constructor
@@ -120,7 +121,7 @@ public class AdvancedParametersPanel extends JPanel
       driverLabel = new JLabel(resource);
       add(driverLabel);
 
-      driverJComboBox = new JComboBox(driverList.toArray());
+      driverJComboBox = new JComboBox<Object>(driverList.toArray());
       driverJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       driverJComboBox.setEditable(true);
       driverJComboBox.setBounds(0, 0, 40, 12);
@@ -132,7 +133,7 @@ public class AdvancedParametersPanel extends JPanel
       protocolLabel = new JLabel(resource);
       add(protocolLabel);
 
-      protocolJComboBox = new JComboBox(protocolList.toArray());
+      protocolJComboBox = new JComboBox<Object>(protocolList.toArray());
       protocolJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       protocolJComboBox.setEditable(true);
       protocolJComboBox.setBounds(0, 0, 40, 12);
@@ -145,7 +146,7 @@ public class AdvancedParametersPanel extends JPanel
       subProtocolLabel = new JLabel(resource);
       add(subProtocolLabel);
 
-      subProtocolJComboBox = new JComboBox(subProtocolList.toArray());
+      subProtocolJComboBox = new JComboBox<Object>(subProtocolList.toArray());
       subProtocolJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       subProtocolJComboBox.setEditable(true);
       subProtocolJComboBox.setBounds(0, 0, 40, 12);
@@ -157,7 +158,7 @@ public class AdvancedParametersPanel extends JPanel
       portLabel = new JLabel(resource);
       add(portLabel);
 
-      portJComboBox = new JComboBox(portList.toArray());
+      portJComboBox = new JComboBox<Object>(portList.toArray());
       portJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       portJComboBox.setEditable(true);
       portJComboBox.setBounds(0, 0, 40, 12);
