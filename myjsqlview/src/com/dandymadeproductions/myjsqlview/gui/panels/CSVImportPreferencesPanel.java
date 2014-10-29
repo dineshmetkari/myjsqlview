@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 4.0 02/01/2014
+// Version 4.1 10/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -86,6 +86,7 @@
 //         3.8 09/20/2012 Backed Out 3.7.
 //         3.9 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
 //         4.0 02/01/2014 Added Class Instances DEFAULT_DATA_DELIMITER & DEFAULT_DATE_FORMAT.
+//         4.1 10/29/2014 Parameterized Class Instance dateFormatComboBox to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -120,7 +121,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the appearance of a form for selecting the CSV data import options.
  * 
  * @author Dana M. Proctor
- * @version 4.0 02/01/2014
+ * @version 4.1 10/29/2014
  */
 
 public class CSVImportPreferencesPanel extends JPanel implements ActionListener, KeyListener
@@ -132,7 +133,7 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
    private JRadioButton tabRadioButton, semicolonRadioButton, commaRadioButton,
                         spaceRadioButton, otherRadioButton;
    private JTextField otherTextField;
-   private JComboBox dateFormatComboBox;
+   private JComboBox<Object> dateFormatComboBox;
    private JButton restoreDefaultsButton, applyButton;
    
    public static final String DEFAULT_DATA_DELIMITER = ","; 
@@ -209,7 +210,7 @@ public class CSVImportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
+      dateFormatComboBox = new JComboBox<Object>(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
