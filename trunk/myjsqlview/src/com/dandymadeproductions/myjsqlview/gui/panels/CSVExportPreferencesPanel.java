@@ -8,8 +8,8 @@
 //             << CSVExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 6.0 07/04/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 6.1 10/29/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -122,6 +122,7 @@
 //         6.0 07/04/2013 Implemented Summary Table Use LIMIT. Added Class Instance
 //                        summaryTableLimitCheckBox. Used in Setup Instances and Restoring
 //                        Defaults in actionPerformed().
+//         6.1 10/29/2014 Parameterized Class Instance dateFormatComboBox to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -162,7 +163,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 6.0 07/04/2013
+ * @version 6.1 10/29/2014
  */
 
 public class CSVExportPreferencesPanel extends JPanel implements ActionListener, KeyListener, ChangeListener
@@ -175,7 +176,7 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
    private JRadioButton tabRadioButton, semicolonRadioButton, commaRadioButton, spaceRadioButton,
            otherRadioButton;
    private JTextField otherTextField;
-   private JComboBox dateFormatComboBox;
+   private JComboBox<Object> dateFormatComboBox;
    private JCheckBox summaryTableLimitCheckBox;
    private JButton restoreDefaultsButton, applyButton;
    
@@ -247,7 +248,7 @@ public class CSVExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(dateFormatLabel, constraints);
       dateFormatPanel.add(dateFormatLabel);
       
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
+      dateFormatComboBox = new JComboBox<Object>(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
       
       buildConstraints(constraints, 1, 0, 1, 1, 76, 100);
