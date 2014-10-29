@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.01 06/16/2014
+// Version 5.02 10/28/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -206,6 +206,7 @@
 //                        Selection Condition.
 //        5.01 06/16/2014 Method createSortSearchInterface() Inclusion of whereOperators to
 //                        be Defined as mysqlWhereOperators for MariaDB.
+//        5.02 10/28/2015 Parameterized All JComboBox Class Instances to Conform With JRE 7.
 //                      
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -253,7 +254,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * table.
  * 
  * @author Dana M. Proctor
- * @version 5.01 06/16/2014
+ * @version 5.02 10/28/2014
  */
 
 public class AdvancedSortSearchForm extends JFrame implements ActionListener
@@ -274,17 +275,17 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
 
    private JPanel sortSearchPanel;
    private JButton questionButton;
-   private JComboBox selectTypeComboBox;
-   private JComboBox aggregateFunctionComboBox, aggregateComboBox;
+   private JComboBox<String> selectTypeComboBox;
+   private JComboBox<Object> aggregateFunctionComboBox, aggregateComboBox;
    
    private static final int sortFormExpressionNumber = 3;
-   private JComboBox[] sortComboBox, sort_AscendingDescendingComboBox;
+   private JComboBox<Object>[] sortComboBox, sort_AscendingDescendingComboBox;
    
    private static final int groupFormExpressionNumber = 5;
-   private JComboBox[] groupComboBox, group_AscendingDescendingComboBox;
+   private JComboBox<Object> groupComboBox[], group_AscendingDescendingComboBox[];
    
    private static final int searchFormExpressionNumber = 5;
-   private JComboBox[] searchComboBox, operatorComboBox, andOrComboBox;
+   private JComboBox<Object>[] searchComboBox, operatorComboBox, andOrComboBox;
    private JTextField[] searchTextField;
    private ArrayList<JComponent> stateComponents;
 
@@ -295,6 +296,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
    // AdvancedSortSearchForm Constructor
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public AdvancedSortSearchForm(String table, MyJSQLView_ResourceBundle resourceBundle,
                                     HashMap<String, String> columnNamesHashMap,
                                     HashMap<String, String> columnClassHashMap,
@@ -361,7 +363,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       selectTypeLabel = new JLabel(resource + " : ");
       selectTypePanel.add(selectTypeLabel);
 
-      selectTypeComboBox = new JComboBox();
+      selectTypeComboBox = new JComboBox<String>();
       selectTypeComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       selectTypeComboBox.addItem("All");
       selectTypeComboBox.addItem("Distinct");
@@ -382,12 +384,12 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       aggregateLabel = new JLabel(resource + " : ");
       aggregatePanel.add(aggregateLabel);
 
-      aggregateFunctionComboBox = new JComboBox(aggregateFunctions);
+      aggregateFunctionComboBox = new JComboBox<Object>(aggregateFunctions);
       aggregateFunctionComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       stateComponents.add(aggregateFunctionComboBox);
       aggregatePanel.add(aggregateFunctionComboBox);
       
-      aggregateComboBox = new JComboBox(comboBoxColumnNames.toArray());
+      aggregateComboBox = new JComboBox<Object>(comboBoxColumnNames.toArray());
       aggregateComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       stateComponents.add(aggregateComboBox);
       aggregatePanel.add(aggregateComboBox);
@@ -695,7 +697,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(sortByLabel[i], constraints);
          sortPanel.add(sortByLabel[i]);
 
-         sortComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         sortComboBox[i] = new JComboBox<Object>(comboBoxColumnNames.toArray());
          sortComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(sortComboBox[i]);
 
@@ -705,7 +707,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(sortComboBox[i], constraints);
          sortPanel.add(sortComboBox[i]);
 
-         sort_AscendingDescendingComboBox[i] = new JComboBox();
+         sort_AscendingDescendingComboBox[i] = new JComboBox<Object>();
          sort_AscendingDescendingComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
          sort_AscendingDescendingComboBox[i].addItem(resourceOrderDESC);
@@ -764,7 +766,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(groupByLabel[i], constraints);
          groupPanel.add(groupByLabel[i]);
 
-         groupComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         groupComboBox[i] = new JComboBox<Object>(comboBoxColumnNames.toArray());
          groupComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(groupComboBox[i]);
 
@@ -774,7 +776,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(groupComboBox[i], constraints);
          groupPanel.add(groupComboBox[i]);
 
-         group_AscendingDescendingComboBox[i] = new JComboBox();
+         group_AscendingDescendingComboBox[i] = new JComboBox<Object>();
          group_AscendingDescendingComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          group_AscendingDescendingComboBox[i].addItem("");
          group_AscendingDescendingComboBox[i].addItem(resourceOrderASC);
@@ -833,7 +835,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(searchLabel[i], constraints);
          searchPanel.add(searchLabel[i]);
 
-         searchComboBox[i] = new JComboBox(comboBoxColumnNames.toArray());
+         searchComboBox[i] = new JComboBox<Object>(comboBoxColumnNames.toArray());
          searchComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(searchComboBox[i]);
 
@@ -843,7 +845,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          gridbag.setConstraints(searchComboBox[i], constraints);
          searchPanel.add(searchComboBox[i]);
 
-         operatorComboBox[i] = new JComboBox(whereOperators);
+         operatorComboBox[i] = new JComboBox<Object>(whereOperators);
          operatorComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
          stateComponents.add(operatorComboBox[i]);
 
@@ -867,7 +869,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
 
          if (i < andOrComboBox.length)
          {
-            andOrComboBox[i] = new JComboBox();
+            andOrComboBox[i] = new JComboBox<Object>();
             andOrComboBox[i].setBorder(BorderFactory.createLoweredBevelBorder());
             andOrComboBox[i].addItem("And");
             andOrComboBox[i].addItem("Or");
@@ -921,7 +923,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
       // ========================================
       // Adding DISTINCT & Aggregate options as needed.
 
-      if (((String) selectTypeComboBox.getSelectedItem()).equals("All"))
+      if (selectTypeComboBox.getSelectedItem().equals("All"))
       {
          aggregateFunctionString = (String) aggregateFunctionComboBox.getSelectedItem();
          aggregateField = columnNamesHashMap.get((String) aggregateComboBox.getSelectedItem());
@@ -1156,7 +1158,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
    // GROUP BY & ORDER BY SQL statements using 'ASC' or 'DESC'.
    //==============================================================
 
-   private String orderString(int option, JComboBox[] orderComboBox)
+   private String orderString(int option, JComboBox<Object>[] orderComboBox)
    {
       // Method Instances.
       String ascendingDescendingString;
@@ -1202,6 +1204,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
    // of the form.
    //==============================================================
 
+   @SuppressWarnings("unchecked")
    public String getKeyComponentsState()
    {
       // Method Instances
@@ -1222,7 +1225,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
          currentComponent = keyComponentIterator.next();
 
          if (currentComponent instanceof JComboBox)
-            stateString.append(((JComboBox) currentComponent).getSelectedIndex() + delimiter);
+            stateString.append(((JComboBox<Object>) currentComponent).getSelectedIndex() + delimiter);
 
          if (currentComponent instanceof JTextField)
             stateString.append(((JTextField) currentComponent).getText() + delimiter);
@@ -1246,6 +1249,7 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
    // the form.
    //==============================================================
    
+   @SuppressWarnings("unchecked")
    public void setKeyComponentsState(String stateString)
    {
       // Method Instances
@@ -1281,11 +1285,11 @@ public class AdvancedSortSearchForm extends JFrame implements ActionListener
 
                if (currentComponent instanceof JComboBox)
                {
-                  comboBoxItemCount = ((JComboBox) currentComponent).getItemCount();
+                  comboBoxItemCount = ((JComboBox<Object>) currentComponent).getItemCount();
                   stateIndex = Integer.parseInt(keyComponentSettings[i]);
 
                   if (stateIndex > -1 && stateIndex < comboBoxItemCount)
-                     ((JComboBox) currentComponent).setSelectedIndex(stateIndex);
+                     ((JComboBox<Object>) currentComponent).setSelectedIndex(stateIndex);
                }
 
                if (currentComponent instanceof JTextField)
