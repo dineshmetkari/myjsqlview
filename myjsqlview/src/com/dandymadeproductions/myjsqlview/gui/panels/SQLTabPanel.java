@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.7 06/17/2014
+// Version 2.8 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -71,6 +71,9 @@
 //             & IMAGE Types & Catching All DATETIME Types With indexOf Conditional.
 //         2.7 Method executeSQL() Inclusion of Processing for MariaDB for Fields
 //             Timestamp, Bit, & Text.
+//         2.8 Class Method executeSQL() Increment of j Only After try/catch Clause
+//             for BIT Types of MySQL & MariaDB. Same Method Conditional Check for
+//             YEAR in Same Databases Size of 4 Before Sub-Stringing.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -127,7 +130,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.7 06/17/2014
+ * @version 2.8 10/30/2014
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -579,9 +582,16 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                         displayYear = displayYear.trim();
 
                         if (columnSize == 2)
-                           displayYear = displayYear.substring(2, 4);
+                        {
+                           if (columnSize == 2)
+                           {
+                              if (displayYear.length() == 4)
+                                 displayYear = displayYear.substring(2, 4);
+                           }
+                        }
                         else
                            displayYear = displayYear.substring(0, 4);
+                        
                         rowData[j++] = displayYear;
                      }
                   }
@@ -655,11 +665,24 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                                || dataSourceType.equals(ConnectionManager.MARIADB)))
                   {
                      currentContentData = db_resultSet.getString(colNameString);
+                     
                      if (currentContentData == null)
                         rowData[j++] = "NULL";
                      else
-                        rowData[j++] = Integer.toBinaryString(Integer.parseInt(
-                           currentContentData.toString()));
+                     {
+                        try
+                        {
+                           // int bitValue = rs.getInt(columnName);
+                           // tableData[i][j] = Integer.toBinaryString(bitValue);
+                           rowData[j] = Integer.toBinaryString(Integer.parseInt(
+                              currentContentData.toString()));
+                        }
+                        catch (NumberFormatException e)
+                        {
+                           rowData[j] = "0";
+                        }
+                        j++;   
+                     }
                   }
 
                   // =============================================
