@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.2 01/21/2014
+// Version 3.3 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -67,6 +67,7 @@
 //         3.1 Constructor Dressed Up JComboBoxes & JPasswordField.
 //         3.2 Class Methods getHost(), getDataBase(), & getUser() Return Empty
 //             String If No Selection in ComboBox.
+//         3.3 Parameterized JComboBox Class Instances to Conform With JRE 7.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -93,7 +94,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 3.2 01/21/2014
+ * @version 3.3 10/30/2014
  */
 
 public class StandardParametersPanel extends JPanel
@@ -101,9 +102,9 @@ public class StandardParametersPanel extends JPanel
    // Class Instances.
    private static final long serialVersionUID = -3737536982828473966L;
 
-   private JComboBox hostJComboBox;
-   private JComboBox dbJComboBox;
-   private JComboBox userJComboBox;
+   private JComboBox<Object> hostJComboBox;
+   private JComboBox<Object> dbJComboBox;
+   private JComboBox<Object> userJComboBox;
    private JPasswordField passwordTextField;
 
    //==============================================================
@@ -125,7 +126,7 @@ public class StandardParametersPanel extends JPanel
       hostLabel = new JLabel(resource, JLabel.LEFT); 
       add(hostLabel);
 
-      hostJComboBox = new JComboBox(hostList.toArray());
+      hostJComboBox = new JComboBox<Object>(hostList.toArray());
       hostJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       hostJComboBox.setEditable(true);
       hostJComboBox.setBounds(0, 0, 40, 12);
@@ -137,7 +138,7 @@ public class StandardParametersPanel extends JPanel
       dbLabel = new JLabel(resource);
       add(dbLabel);
 
-      dbJComboBox = new JComboBox(databaseList.toArray());
+      dbJComboBox = new JComboBox<Object>(databaseList.toArray());
       dbJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       dbJComboBox.setEditable(true);
       dbJComboBox.setBounds(0, 0, 40, 12);
@@ -149,7 +150,7 @@ public class StandardParametersPanel extends JPanel
       userLabel = new JLabel(resource, JLabel.LEFT);
       add(userLabel);
 
-      userJComboBox = new JComboBox(userList.toArray());
+      userJComboBox = new JComboBox<Object>(userList.toArray());
       userJComboBox.setBorder(BorderFactory.createLoweredBevelBorder());
       userJComboBox.setEditable(true);
       userJComboBox.setBounds(0, 0, 40, 12);
