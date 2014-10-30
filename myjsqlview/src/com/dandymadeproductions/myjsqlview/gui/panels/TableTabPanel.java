@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.22 06/16/2014
+// Version 5.23 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -262,6 +262,8 @@
 //             setSearchTextField().
 //        5.22 Class Methods deletSelectedItems() & deleteAllItems() Use of BEGIN
 //             Statement for MariaDB. In Former Date Formatting for Same DB.
+//        5.23 Parameterized JComboBox Class Instances sortComboBox & searchComboBox
+//             to Conform With JRE 7.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -340,7 +342,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * database access in MyJSQLView, while maintaining limited extensions.
  * 
  * @author Dana M. Proctor
- * @version 5.22 06/16/2014
+ * @version 5.23 10/30/2014
  */
 
 public abstract class TableTabPanel extends JPanel implements TableTabInterface, ActionListener, KeyListener,
@@ -387,7 +389,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
    private JButton searchButton, clearSearchTextFieldButton;
    protected String ascDescString;
    private  JRadioButton ascSortRadioButton, descSortRadioButton;
-   protected JComboBox sortComboBox, searchComboBox;
+   protected JComboBox<Object> sortComboBox, searchComboBox;
    protected JTextField searchTextField;
    protected MouseListener summaryTablePopupListener;
 
@@ -580,7 +582,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
          return;
       }
 
-      sortComboBox = new JComboBox(comboBoxFields.toArray());
+      sortComboBox = new JComboBox<Object>(comboBoxFields.toArray());
       sortComboBox.addActionListener(this);
       sortPanel.add(sortComboBox);
 
@@ -622,7 +624,7 @@ public abstract class TableTabPanel extends JPanel implements TableTabInterface,
       searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
-      searchComboBox = new JComboBox(comboBoxFields.toArray());
+      searchComboBox = new JComboBox<Object>(comboBoxFields.toArray());
       searchComboBox.insertItemAt("", 0);
       searchComboBox.setSelectedIndex(0);
       searchComboBox.addActionListener(this);
