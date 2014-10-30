@@ -8,8 +8,8 @@
 //             << PDFExportPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 2.5 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 2.6 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,7 @@
 //                        Made Class, Constructor, Getter/Setter Methods Along With static
 //                        final Class Instances Public.
 //         2.5 07/01/2013 Change in actionPerformed() to Use DBTablePanel.getGeneralDBProperties().
+//         2.6 10/30/2014 Parameterized All JComboBox Class Instances to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -105,7 +106,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * in the appearance of a form for selecting the PDF data export options.
  * 
  * @author Dana M. Proctor
- * @version 2.5 07/01/2013
+ * @version 2.6 10/30/2014
  */
 
 public class PDFExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -122,10 +123,10 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
    private JButton titleColorButton;
    private JSpinner headerFontSizeSpinner, headerBorderSizeSpinner;
    private JButton headerColorButton, headerBorderColorButton;
-   private JComboBox numberAlignmentComboBox;
-   private JComboBox dateAlignmentComboBox, dateFormatComboBox;
-   private JComboBox fontComboBox;
-   private JComboBox pageLayoutComboBox;
+   private JComboBox<Object> numberAlignmentComboBox;
+   private JComboBox<Object> dateAlignmentComboBox, dateFormatComboBox;
+   private JComboBox<Object> fontComboBox;
+   private JComboBox<Object> pageLayoutComboBox;
    private JButton restoreDefaultsButton, applyButton;
 
    private JColorChooser panelColorChooser;
@@ -660,7 +661,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(numberFieldsAlignmentLabel, constraints);
       numberPanel.add(numberFieldsAlignmentLabel);
 
-      numberAlignmentComboBox = new JComboBox();
+      numberAlignmentComboBox = new JComboBox<Object>();
       
       resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Left", "LEFT");
       numberAlignmentComboBox.addItem(resource);
@@ -717,7 +718,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(dateFormatLabel, constraints);
       datePanel.add(dateFormatLabel);
 
-      dateFormatComboBox = new JComboBox(MyJSQLView_Utils.getDateFormatOption());
+      dateFormatComboBox = new JComboBox<Object>(MyJSQLView_Utils.getDateFormatOption());
       dateFormatComboBox.addActionListener(this);
 
       buildConstraints(constraints, 1, 1, 1, 1, 38, 100);
@@ -737,7 +738,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(dateAlignmentLabel, constraints);
       datePanel.add(dateAlignmentLabel);
 
-      dateAlignmentComboBox = new JComboBox();
+      dateAlignmentComboBox = new JComboBox<Object>();
       
       resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Left", "Left");
       dateAlignmentComboBox.addItem(resource);
@@ -781,7 +782,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(fontLabel, constraints);
       fontLayoutPanel.add(fontLabel);
 
-      fontComboBox = new JComboBox(DBTablesPanel.getDataExportProperties().getFonts());
+      fontComboBox = new JComboBox<Object>(DBTablesPanel.getDataExportProperties().getFonts());
       fontComboBox.addActionListener(this);
 
       buildConstraints(constraints, 1, 0, 1, 1, 38, 100);
@@ -801,7 +802,7 @@ public class PDFExportPreferencesPanel extends JPanel implements ActionListener,
       gridbag.setConstraints(pageLayoutLabel, constraints);
       fontLayoutPanel.add(pageLayoutLabel);
       
-      pageLayoutComboBox = new JComboBox();
+      pageLayoutComboBox = new JComboBox<Object>();
       
       resource = resourceBundle.getResourceString("PDFExportPreferencesPanel.combobox.Portrait",
                                                   "Portrait");
