@@ -12,8 +12,8 @@
 //           << TableTabPanel_Derby.java >>
 //
 //================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 07/01/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.4 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,8 @@
 //         1.2 03/06/2013 Used a StringBuffer, whereClauseString, in createWhereClause().
 //         1.3 07/01/2013 Change in loadTable(), viewSelectedItem(), addItem(), &
 //                        editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
+//         1.4 10/30/2014 Class Method viewSelectedItem() Removal of columnSize Instance
+//                        From Commented System.out.
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -73,7 +75,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 1.3 07/01/2013
+ * @version 1.4 10/30/2014
  */
 
 public class TableTabPanel_Derby extends TableTabPanel
@@ -918,8 +920,8 @@ public class TableTabPanel_Derby extends TableTabPanel
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
-            // currentDB_ColumnName + " " +
-            // currentColumnType + " " + columnSize + " " + currentContentData);
+            //                    currentDB_ColumnName + " " +
+            //                    currentColumnType + " " + currentContentData);
 
             if (currentContentData != null)
             {
