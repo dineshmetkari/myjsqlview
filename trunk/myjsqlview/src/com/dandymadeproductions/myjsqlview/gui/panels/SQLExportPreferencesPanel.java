@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.5 06/17/2014
+// Version 5.6 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -132,6 +132,7 @@
 //                        MSSQL Database.
 //         5.5 06/17/2014 Class Method actionPerformed() Inclusion of MariaDB restoreDefaultsButton
 //                        Requirements.
+//         5.6 10/30/2014 Paramerterized JComboBox Class Instances to Conform With JRE 7.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -170,7 +171,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 5.5 06/17/2014
+ * @version 5.6 10/30/2014
  */
 
 public class SQLExportPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -182,14 +183,14 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
    private CardLayout dataOptionsCardLayout;
 
    private JCheckBox tableStructureCheckBox, tableDataCheckBox;
-   private JComboBox insertExpressionComboBox, replaceExpressionComboBox;
+   private JComboBox<Object> insertExpressionComboBox, replaceExpressionComboBox;
    private JSpinner insertPluralSpinner, replacePluralSpinner;
    private JCheckBox insertLockTableCheckBox, insertTypeCheckBox;
    private JCheckBox replaceLockTableCheckBox, replaceTypeCheckBox;
    private JCheckBox updateLockTableCheckBox, updateTypeCheckBox;
    private JCheckBox autoIncrementCheckBox, timeStampCheckBox;
-   private JComboBox insertReplaceUpdateComboBox;
-   private JComboBox insertTypeComboBox, replaceTypeComboBox, updateTypeComboBox;
+   private JComboBox<Object> insertReplaceUpdateComboBox;
+   private JComboBox<Object> insertTypeComboBox, replaceTypeComboBox, updateTypeComboBox;
    private JTextField identifierQuoteTextField;
    private JCheckBox summaryTableLimitCheckBox;
 
@@ -345,7 +346,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       dataContentPanel = new JPanel();
 
       // Insert/Replace ComboBox
-      insertReplaceUpdateComboBox = new JComboBox();
+      insertReplaceUpdateComboBox = new JComboBox<Object>();
       insertReplaceUpdateComboBox.addItem(TYPE_INSERT);
       if (!dataSourceType.equals(ConnectionManager.POSTGRESQL)
             && !dataSourceType.equals(ConnectionManager.MSACCESS)
@@ -659,7 +660,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       expressionTypePanel.setBorder(BorderFactory.createEmptyBorder());
 
       // Insert Singular, Plural, Explicit ComboBox
-      insertExpressionComboBox = new JComboBox();
+      insertExpressionComboBox = new JComboBox<Object>();
       insertExpressionComboBox.addItem(EXPRESSION_SINGULAR);
       insertExpressionComboBox.addItem(EXPRESSION_PLURAL);
       insertExpressionComboBox.addItem(EXPRESSION_EXPLICIT);
@@ -737,7 +738,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       insertTypePanel.setBorder(BorderFactory.createEmptyBorder());
 
       // Insert Type Options
-      insertTypeComboBox = new JComboBox();
+      insertTypeComboBox = new JComboBox<Object>();
       insertTypeComboBox.addItem(PRIORITY_LOW);
       insertTypeComboBox.addItem(PRIORITY_DELAYED);
       insertTypeComboBox.addItem(PRIORITY_IGNORE);
@@ -770,7 +771,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       expressionTypePanel.setBorder(BorderFactory.createEmptyBorder());
 
       // Replace Explicit ComboBox
-      replaceExpressionComboBox = new JComboBox();
+      replaceExpressionComboBox = new JComboBox<Object>();
       replaceExpressionComboBox.addItem(EXPRESSION_SINGULAR);
       replaceExpressionComboBox.addItem(EXPRESSION_PLURAL);
       replaceExpressionComboBox.addItem(EXPRESSION_EXPLICIT);
@@ -820,7 +821,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       replaceTypePanel.setBorder(BorderFactory.createEmptyBorder());
 
       // Replace Type Options
-      replaceTypeComboBox = new JComboBox();
+      replaceTypeComboBox = new JComboBox<Object>();
       replaceTypeComboBox.addItem(PRIORITY_LOW);
       replaceTypeComboBox.addItem(PRIORITY_DELAYED);
       replaceTypeComboBox.setEnabled(false);
@@ -878,7 +879,7 @@ public class SQLExportPreferencesPanel extends JPanel implements ActionListener,
       updateTypePanel = new JPanel();
 
       // Type Options
-      updateTypeComboBox = new JComboBox();
+      updateTypeComboBox = new JComboBox<Object>();
       updateTypeComboBox.addItem(PRIORITY_LOW);
       updateTypeComboBox.addItem(PRIORITY_IGNORE);
       updateTypeComboBox.setEnabled(false);
