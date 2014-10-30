@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 10.2 06/17/2014
+// Version 10.3 10/30/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -238,6 +238,10 @@
 //        10.2 Class Method loadTable() Processing of Temporary Table, Bit, & Text,
 //             Fields for MariaDB. Same DB Processing in viewSelectedItem() for
 //             Timestamp & Bit Fields.
+//        10.3 Parameterized JComboBox Class Instances sortComboBox & searchComboBox
+//             to Conform With JRE 7. Class Method loadTable() Increment of j Only
+//             After try/catch Clause for BIT Types of MySQL & MariaDB. Same Method
+//             Conditional Check for YEAR in Same Databases Size of 4 Before Sub-Stringing.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -309,7 +313,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 10.2 06/17/2014
+ * @version 10.3 10/30/2014
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -344,7 +348,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
    private JButton searchButton, clearSearchTextFieldButton;
    private String ascDescString;
    private JRadioButton ascSortRadioButton, descSortRadioButton;
-   private JComboBox sortComboBox, searchComboBox;
+   private JComboBox<Object> sortComboBox, searchComboBox;
    private JTextField searchTextField;
    private transient MouseListener summaryTablePopupListener;
 
@@ -461,7 +465,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
          QueryFrame.setQueryResultTextArea("SQLException: " + sqle.getMessage());
       }
 
-      sortComboBox = new JComboBox(comboBoxFields.toArray());
+      sortComboBox = new JComboBox<Object>(comboBoxFields.toArray());
       sortComboBox.addActionListener(this);
       sortPanel.add(sortComboBox);
 
@@ -504,7 +508,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
       searchLabel = new JLabel(resource + " : ");
       searchPanel.add(searchLabel);
 
-      searchComboBox = new JComboBox(comboBoxFields.toArray());
+      searchComboBox = new JComboBox<Object>(comboBoxFields.toArray());
       searchComboBox.insertItemAt("", 0);
       searchComboBox.setSelectedIndex(0);
       searchComboBox.addActionListener(this);
@@ -1646,7 +1650,10 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                      displayYear = displayYear.trim();
 
                      if (columnSize == 2)
-                        displayYear = displayYear.substring(2, 4);
+                     {
+                        if (displayYear.length() == 4)
+                           displayYear = displayYear.substring(2, 4);
+                     }
                      else
                         displayYear = displayYear.substring(0, 4);
                      tableData[i][j++] = displayYear;
@@ -1709,9 +1716,17 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                            && (dataSourceType.equals(ConnectionManager.MYSQL)
                                || dataSourceType.equals(ConnectionManager.MARIADB)))
                   {
-                     //int bitValue = rs.getInt(columnName);
-                     //tableData[i][j++] = Integer.toBinaryString(bitValue);
-                     tableData[i][j++] = Integer.toBinaryString(Integer.parseInt(rs.getString(columnName)));
+                     try
+                     {
+                        // int bitValue = rs.getInt(columnName);
+                        // tableData[i][j] = Integer.toBinaryString(bitValue);
+                        tableData[i][j] = Integer.toBinaryString(Integer.parseInt(rs.getString(columnName)));
+                     }
+                     catch (NumberFormatException e)
+                     {
+                        tableData[i][j] = "0";
+                     }
+                     j++;   
                   }
 
                   // =============================================
