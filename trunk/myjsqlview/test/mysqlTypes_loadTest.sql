@@ -15,6 +15,9 @@
 --         10/29/2007 Changed Description.
 --         10/31/2007 Added Tables boolean_types & bit_types.
 --         07/21/2010 Updated Contact, Email, Address.
+--         10/31/2014 Removed Timestamps Tables Above (4) & Replaced
+--                    With Just New timeStamp Table. Removed TYPE = InnoDB
+--                    Definition for Tables.
 --      
 -- danap@dandymadeproductions.com
 -- gashogtoo@users.sourceforge.net
@@ -76,10 +79,7 @@ DROP TABLE IF EXISTS time_types;
 DROP TABLE IF EXISTS dateTime_types;
 DROP TABLE IF EXISTS timeStamp_2_types;
 DROP TABLE IF EXISTS timeStamp_4_types;
-DROP TABLE IF EXISTS timeStamp_8_types;
-DROP TABLE IF EXISTS timeStamp_10_types;
-DROP TABLE IF EXISTS timeStamp_12_types;
-DROP TABLE IF EXISTS timeStamp_14_types;
+DROP TABLE IF EXISTS timeStamp_types;
 DROP TABLE IF EXISTS year_2_types;
 DROP TABLE IF EXISTS year_4_types;
 
@@ -95,265 +95,241 @@ CREATE TABLE char_types (
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     char_type CHAR(30) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE varchar_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     varchar_type VARCHAR(30) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE tinyBlob_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     tinyBlob_type TINYBLOB DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE blob_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     blob_type BLOB DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE mediumBlob_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mediumBlob_type MEDIUMBLOB DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE longBlob_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     longBlob_type LONGBLOB DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE tinyText_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     tinyText_type TINYTEXT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE text_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     text_type TEXT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE mediumText_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mediumText_type MEDIUMTEXT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE longText_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     longText_type LONGTEXT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE enum_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     enum_type ENUM('New', 'Used') NOT NULL DEFAULT 'New'
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE set_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     set_type SET('a', 'b', 'c') DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE boolean_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     boolean_type BOOLEAN DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE bit_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     bit5_type BIT(5) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE tinyInt_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     tinyInt_type TINYINT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE smallInt_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     smallInt_type SMALLINT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE mediumInt_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     mediumInt_type MEDIUMINT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE int_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     int_type INT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE bigInt_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     bigInt_type BIGINT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE float_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     float_type FLOAT DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE double_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     double_type DOUBLE DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE decimal_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     decimal_type DECIMAL(16,2) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE date_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     date_type DATE DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE time_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     time_type TIME DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE dateTime_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     dateTime_type DATETIME DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE timeStamp_2_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     timeStamp_2 TIMESTAMP(2) NULL DEFAULT 0
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE timeStamp_4_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     timeStamp_4 TIMESTAMP(4)
-)
-TYPE = InnoDB;
-
-CREATE TABLE timeStamp_8_types (
-
---  Table id and creation data entries.
-    data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    timeStamp_8 TIMESTAMP(8)
-)
-TYPE = InnoDB;
+);
 
 
-CREATE TABLE timeStamp_10_types (
+CREATE TABLE timeStamp_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    timeStamp_10 TIMESTAMP(10)
-)
-TYPE = InnoDB;
+    timeStamp TIMESTAMP
+);
 
-CREATE TABLE timeStamp_12_types (
 
---  Table id and creation data entries.
-    data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    timeStamp_12 TIMESTAMP(12)
-)
-TYPE = InnoDB;
-
-CREATE TABLE timeStamp_14_types (
-
---  Table id and creation data entries.
-    data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    timeStamp_14 TIMESTAMP(14)
-)
-TYPE = InnoDB;
 
 CREATE TABLE year_2_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     year_2 YEAR(2) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 CREATE TABLE year_4_types (
 
 --  Table id and creation data entries.
     data_type_id INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
     year_4 YEAR(4) DEFAULT NULL
-)
-TYPE = InnoDB;
+);
+
 
 
 -- #############################################################
@@ -515,26 +491,8 @@ VALUES
     ('19700101000000'),
     ('20050111094301');
 
-INSERT INTO timeStamp_8_types
-    (timeStamp_8)
-VALUES
-    ('19700101000000'),
-    ('20050111094301');
-
-INSERT INTO timeStamp_10_types
-    (timeStamp_10)
-VALUES
-    ('19700101000000'),
-    ('20050111094301');
-
-INSERT INTO timeStamp_12_types
-    (timeStamp_12)
-VALUES
-    ('19700101000000'),
-    ('20050111094301');
-
-INSERT INTO timeStamp_14_types
-    (timeStamp_14)
+INSERT INTO timeStamp_types
+    (timeStamp)
 VALUES
     ('19700101000000'),
     ('20050111094301');
