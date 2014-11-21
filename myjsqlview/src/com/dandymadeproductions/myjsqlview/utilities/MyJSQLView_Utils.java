@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.8 10/20/2014
+// Version 9.9 11/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -182,6 +182,7 @@
 //         9.8 Parameterized Class Instance localeComboBox in Method processLocaleLanguage()
 //             to Bring Into Compliance With JRE 7. Minor System.out Comment Changes in
 //             Method getAudioClip().
+//         9.9 Added Class Method getChartList().
 //       
 //-----------------------------------------------------------------
 //                danap@dandymadeproductions.com
@@ -207,6 +208,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 
 import javax.sound.sampled.AudioFormat;
@@ -251,7 +253,7 @@ import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
  * used in the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 9.8 10/20/2014
+ * @version 9.9 11/20/2014
  */
 
 public class MyJSQLView_Utils extends MyJSQLView
@@ -818,6 +820,38 @@ public class MyJSQLView_Utils extends MyJSQLView
          }
       }
       return cacheDirectory;
+   }
+   
+   //==============================================================
+   // Class method to return the chart's list.
+   //==============================================================
+
+   public static int[] getChartList(int n, int value)
+   {
+      // Method Instances
+      Random g;
+      HashMap<Integer, Integer> m;
+      int over, post;
+      int[] chList;
+      
+      g = new Random();
+      m = new HashMap<Integer, Integer>();
+      chList = new int[n];
+      post = 0;
+      
+      while (post < n - 1)
+      {
+         over = g.nextInt(value);
+         while (m.containsValue(Integer.valueOf(over)))
+            over = g.nextInt(value);
+         m.put(Integer.valueOf(post), Integer.valueOf(over));
+         chList[post] = over;
+         post++;  
+      }
+      m.put(Integer.valueOf(post), Integer.valueOf(n));
+      chList[post] = value;
+      
+      return chList;
    }
    
    //==============================================================
