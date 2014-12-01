@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 9.7 10/22/2014
+// Version 9.8 12/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -197,7 +197,9 @@
 //             Changes in Methods createTreeNode() & actionPerformed() To Process.
 //         9.7 Parameterized Class Instances tableSelectionFieldsComboBox &
 //             tableSelectionRowsComboBox to Conform With JRE 7.
-//             
+//         9.8 Method actionPerformed() Change to Include Update of GeneralProperties
+//             On Action OK Button. Distinquished From getGeneralDBOptions().
+//                       
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -266,7 +268,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application to create a preferences frame for setting properties.
  * 
  * @author Dana M. Proctor
- * @version 9.7 10/22/2014
+ * @version 9.8 12/01/2014
  */
 
 //=================================================================
@@ -670,7 +672,8 @@ class PreferencesFrame extends JFrame implements ActionListener, TreeSelectionLi
             while (cardsIterator.hasNext())
                (tableRowPanelsHashMap.get(cardsIterator.next())).updatePreferences();
 
-            DBTablesPanel.setGeneralDBProperties(generalPreferencesPanel.getGeneralOptions());
+            MyJSQLView.setGeneralProperties(generalPreferencesPanel.getGeneralOptions());
+            DBTablesPanel.setGeneralDBProperties(generalPreferencesPanel.getGeneralDBOptions());
             DBTablesPanel.setDataImportProperties(csvImportPanel.getCSVImportOptions());
             if (sqlImportPanel != null)
                DBTablesPanel.setDataImportProperties(sqlImportPanel.getSQLImportOptions());
