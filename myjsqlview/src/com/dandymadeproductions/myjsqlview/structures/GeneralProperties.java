@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.3 12/01/2014
+// Version 1.4 12/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,9 @@
 //         1.2 Constructor Check of uiObject NULL Before instanceof Font.
 //         1.3 Added Class Instance sequenceList and Corresponding get/setter
 //             Methods.
+//         1.4 Constructor Setting sequenceList Defaults According to
+//             GeneralPreferencesPanel Instances. Correction to Save in
+//             Method savePreferences(String, String).
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -46,6 +49,7 @@ import java.util.prefs.Preferences;
 
 import javax.swing.UIManager;
 
+import com.dandymadeproductions.myjsqlview.gui.panels.GeneralPreferencesPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
@@ -53,7 +57,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.3 12/01/2014
+ * @version 1.4 12/01/2014
  */
 
 public class GeneralProperties
@@ -98,10 +102,12 @@ public class GeneralProperties
       {
          fontSize = generalPreferences.getInt(APPFONTSIZE, fontSize);
          sequenceList = generalPreferences.get(APPSEQUENCELIST, sequenceList);
+         System.out.println("GeneralProperties sequenceList: '" + sequenceList + "'");
          
          if (sequenceList == null || sequenceList.isEmpty())
          {
-            setSequenceList(MyJSQLView_Utils.getChartList(15, 41));
+            setSequenceList(MyJSQLView_Utils.getChartList(GeneralPreferencesPanel.DEFAULT_SEQUENCE_SIZE,
+                                                          GeneralPreferencesPanel.DEFAULT_SEQUENCE_MAX));
             savePreference(APPSEQUENCELIST, sequenceList);
          }
       }
@@ -153,6 +159,7 @@ public class GeneralProperties
       for (int i=0; i<value.length; i++)
          sequenceBuffer.append(value[i] + ":");
       sequenceList = sequenceBuffer.substring(0, sequenceBuffer.length() - 1);
+      savePreference(APPSEQUENCELIST, sequenceList);
    }
    
    //==============================================================
