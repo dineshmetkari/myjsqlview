@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 2.4 10/29/2014
+// Version 2.5 12/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -65,6 +65,9 @@
 //         2.3 07/01/2013 Changed All References of GeneralProperties to GeneralDBProperties.
 //                        Removed Localization Selection Components.
 //         2.4 10/29/2014 Parameterized Class Instance dateFormatComboBox to Conform With JRE 7.
+//         2.5 12/01/2014 Implemented Reset Sequence. Panel Added in Constructor & Addition
+//                        of Method getGeneralOptions(). Logic to actionPerformed(). Renamed
+//                        Original getGeneralOptions() to getGeneralDBOptions().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -76,10 +79,12 @@ import java.awt.BorderLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -91,7 +96,9 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
 import com.dandymadeproductions.myjsqlview.structures.GeneralDBProperties;
+import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -101,7 +108,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * options.
  * 
  * @author Dana M. Proctor
- * @version 2.4 10/29/2014
+ * @version 2.5 12/01/2014
  */
 
 public class GeneralPreferencesPanel extends JPanel implements ActionListener, ChangeListener
@@ -113,12 +120,17 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    private JComboBox<Object> dateFormatComboBox;
    private JSpinner limitIncrementSpinner;
    private JSpinner batchSizeSpinner;
-   private JCheckBox batchEnabledCheckBox;
+   private JCheckBox batchEnabledCheckBox, sequencerEnablerCheckBox;
+   private JButton sequencerResetButton;
    private JButton restoreDefaultsButton, applyButton;
+   
+   private boolean generateSequence;
    
    public static final int DEFAULT_LIMIT_INCREMENT = 50000;
    public static final boolean DEFAULT_BATCH_SIZE_ENABLED = false;
    public static final int DEFAULT_BATCH_SIZE = 50000;
+   public static final int DEFAULT_SEQUENCE_SIZE = 15;
+   public static final int DEFAULT_SEQUENCE_MAX = 41;
 
    //===========================================================
    // GeneralPreferencesPanel Constructor
@@ -128,7 +140,7 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    {
       // Class Instances
       JPanel mainPanel;
-      JPanel dateFormatPanel, limitIncrementPanel, batchPanel;
+      JPanel dateFormatPanel, limitIncrementPanel, batchPanel, sequencerPanel;
       JPanel fillerPanel;
       JPanel buttonPanel;
       JLabel dateFormatLabel, limitIncrementLabel;
@@ -144,15 +156,20 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       final int maxBatchSize = 500000;
       final int spinnerBatchSizeStep = 10000;
       
-      String resource;
+      ImageIcon resetOnIcon;
+      String iconsDirectory, resource;
 
       // Setting up
       setLayout(new BorderLayout());
 
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
+      
+      iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + MyJSQLView_Utils.getFileSeparator();
+      
+      generateSequence = false;
 
-      mainPanel = new JPanel(new GridLayout(3, 1, 2, 2));
+      mainPanel = new JPanel(new GridLayout(4, 1, 2, 2));
       mainPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 0, 0, 0),
                           BorderFactory.createLoweredBevelBorder()));
       
@@ -258,6 +275,42 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       
       mainPanel.add(batchPanel);
       
+      // =====================================================
+      // Sequencer Generator Panel & Components
+      
+      sequencerPanel = new JPanel(gridbag);
+      sequencerPanel.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEmptyBorder(3, 3, 3, 3), BorderFactory.createEtchedBorder()));
+      
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.ResetPasswordSequencer",
+                                                  "Reset Password Sequencer");
+      sequencerEnablerCheckBox = new JCheckBox(resource, false);
+      sequencerEnablerCheckBox.setFocusPainted(false);
+      sequencerEnablerCheckBox.addActionListener(this);
+
+      buildConstraints(constraints, 0, 0, 1, 1, 60, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(sequencerEnablerCheckBox, constraints);
+      sequencerPanel.add(sequencerEnablerCheckBox);
+      
+      resource = resourceBundle.getResourceString("GeneralPreferencesPanel.label.Reset",
+                                                  "Reset");
+      resetOnIcon = resourceBundle.getResourceImage(iconsDirectory + "resetIcon_16x16.png");
+      sequencerResetButton = new JButton(resource, resetOnIcon);
+      sequencerResetButton.setEnabled(false);
+      sequencerResetButton.setFocusable(false);
+      sequencerResetButton.setMargin(new Insets(0, 0, 0, 0));
+      sequencerResetButton.addActionListener(this);
+
+      buildConstraints(constraints, 1, 0, 1, 1, 40, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(sequencerResetButton, constraints);
+      sequencerPanel.add(sequencerResetButton);
+      
+      mainPanel.add(sequencerPanel);
+      
       add(mainPanel, BorderLayout.NORTH);
       
       // Filler Center Panel.
@@ -305,20 +358,31 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
 
       if (formSource instanceof JButton)
       {
+         // Reset Sequencer
+         if (formSource == sequencerResetButton)
+         {
+            generateSequence = true;
+            applyButton.setEnabled(true);
+         }
+         
          // Restore Defaults Button Action
-         if (formSource == restoreDefaultsButton)
+         else if (formSource == restoreDefaultsButton)
          {
             dateFormatComboBox.setSelectedIndex(0);
             limitIncrementSpinner.setValue(Integer.valueOf(DEFAULT_LIMIT_INCREMENT));
             batchEnabledCheckBox.setSelected(DEFAULT_BATCH_SIZE_ENABLED);
             batchSizeSpinner.setValue(Integer.valueOf(DEFAULT_BATCH_SIZE));
+            sequencerEnablerCheckBox.setSelected(false);
+            generateSequence = false;
             applyButton.setEnabled(true);
          }
 
          // Apply Button Action
          else if (formSource == applyButton)
          {
-            DBTablesPanel.setGeneralDBProperties(getGeneralOptions());
+            DBTablesPanel.setGeneralDBProperties(getGeneralDBOptions());
+            if (generateSequence)
+               MyJSQLView.setGeneralProperties(getGeneralOptions());
             applyButton.setEnabled(false);
          }
       }
@@ -329,7 +393,14 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
       if (formSource instanceof JRadioButton || formSource instanceof JComboBox
             || formSource instanceof JCheckBox)
       {
-         applyButton.setEnabled(true);
+         if (formSource == sequencerEnablerCheckBox)
+         {
+            sequencerResetButton.setEnabled(sequencerEnablerCheckBox.isSelected());
+            if (generateSequence)
+               generateSequence = sequencerEnablerCheckBox.isSelected();
+         }
+         else
+            applyButton.setEnabled(true);
       }
    }
 
@@ -366,7 +437,22 @@ public class GeneralPreferencesPanel extends JPanel implements ActionListener, C
    // Class method to get the panels options.
    //===============================================================
 
-   public GeneralDBProperties getGeneralOptions()
+   public GeneralProperties getGeneralOptions()
+   {
+      GeneralProperties newGeneralProperties = MyJSQLView.getGeneralProperties();
+      
+      // Sequencer
+      if (generateSequence)
+         newGeneralProperties.setSequenceList(MyJSQLView_Utils.getChartList(DEFAULT_SEQUENCE_SIZE,
+                                                                            DEFAULT_SEQUENCE_MAX));
+      return newGeneralProperties;
+   }
+   
+   //===============================================================
+   // Class method to get the panels options.
+   //===============================================================
+
+   public GeneralDBProperties getGeneralDBOptions()
    {
       GeneralDBProperties newGeneralDBProperties = DBTablesPanel.getGeneralDBProperties();
       
