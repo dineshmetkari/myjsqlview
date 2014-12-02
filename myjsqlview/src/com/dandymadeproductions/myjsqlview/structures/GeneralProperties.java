@@ -7,8 +7,8 @@
 //              << GeneralProperties.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.2 09/29/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.3 12/01/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 // Version 1.0 Initial GeneralProperties Class for Overall Application.
 //         1.1 Changed the Default fontSize Generation.
 //         1.2 Constructor Check of uiObject NULL Before instanceof Font.
+//         1.3 Added Class Instance sequenceList and Corresponding get/setter
+//             Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -44,22 +46,26 @@ import java.util.prefs.Preferences;
 
 import javax.swing.UIManager;
 
+import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+
 /**
  *    The GeneralProperties class provides the structure for the
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.2 09/29/2013
+ * @version 1.3 12/01/2014
  */
 
 public class GeneralProperties
 {
    // Class Instances.
    private int fontSize;
+   private String sequenceList;
    
    private Preferences generalPreferences;
-
+   
    public static final String APPFONTSIZE = "AppFontSize";
+   public static final String APPSEQUENCELIST = "AppSequenceList";
    
    //==============================================================
    // GeneralProperties Constructor
@@ -91,6 +97,13 @@ public class GeneralProperties
       try
       {
          fontSize = generalPreferences.getInt(APPFONTSIZE, fontSize);
+         sequenceList = generalPreferences.get(APPSEQUENCELIST, sequenceList);
+         
+         if (sequenceList == null || sequenceList.isEmpty())
+         {
+            setSequenceList(MyJSQLView_Utils.getChartList(15, 41));
+            savePreference(APPSEQUENCELIST, sequenceList);
+         }
       }
       catch (NullPointerException npe){}
       catch (IllegalStateException ise){}
@@ -106,9 +119,25 @@ public class GeneralProperties
       return fontSize;
    }
    
+   public int[] getSequenceList()
+   {
+      String[] sequence = sequenceList.split(":");
+      int[] sequenceListArray = new int[sequence.length];
+      try
+      {
+         for (int i=0; i<sequence.length; i++)
+            sequenceListArray[i] = Integer.parseInt(sequence[i]);
+         return sequenceListArray;
+      }
+      catch (NumberFormatException nfe)
+      {
+         return null;
+      }
+   }
+   
    //==============================================================
-   // Class methods to allow classes to set the data export
-   // object components.
+   // Class methods to allow classes to set the general object
+   // components.
    //==============================================================
    
    public void setFontSize(int value)
@@ -117,10 +146,30 @@ public class GeneralProperties
       savePreference(APPFONTSIZE, value);
    }
    
+   public void setSequenceList(int[] value)
+   {
+      StringBuffer sequenceBuffer = new StringBuffer();
+      
+      for (int i=0; i<value.length; i++)
+         sequenceBuffer.append(value[i] + ":");
+      sequenceList = sequenceBuffer.substring(0, sequenceBuffer.length() - 1);
+   }
+   
    //==============================================================
    // Class methods to try and save the preferences state. 
    //==============================================================
 
+   private void savePreference(String key, String content)
+   {
+      try
+      {
+         if (generalPreferences != null)
+            generalPreferences.put(key, content);
+      }
+      catch (IllegalArgumentException iae){}
+      catch (IllegalStateException ise){}
+   }
+   
    private void savePreference(String key, int value)
    {
       try
@@ -141,7 +190,7 @@ public class GeneralProperties
    {
       StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
       
-      parameters.append("[limitIncrement = " + fontSize + "]");
+      parameters.append("[fontSize = " + fontSize + "]");
 
       return parameters.toString();
    }
