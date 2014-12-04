@@ -8,8 +8,8 @@
 //                  << XMLTranslator.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.3 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 5.4 12/03/2014
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -120,6 +120,8 @@
 //                        Moved to this Classes' Package.
 //         5.3 11/13/2013 Class Method saveXML() Inclusion of a finally Clause for Insuring
 //                        Instance fileStream Gets Closed on IOException.
+//         5.4 12/03/2014 Increased Performance by Eliminating Conversions in Methods
+//                        get/setSites(). 
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -165,7 +167,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 5.3 11/13/2013
+ * @version 5.4 12/03/2014
  */
 
 public class XMLTranslator
@@ -458,8 +460,7 @@ public class XMLTranslator
             currentSiteParameter.setDatabase(currentSiteAttributes.getNamedItem("Database").getNodeValue());
             currentSiteParameter.setUser(currentSiteAttributes.getNamedItem("User").getNodeValue());
             currentSiteParameter.setPassword(
-               textConversion(currentSiteAttributes.getNamedItem("Password").getNodeValue().toCharArray(),
-                              true).toCharArray());
+               currentSiteAttributes.getNamedItem("Password").getNodeValue().toCharArray());
             currentSiteParameter.setSsh(currentSiteAttributes.getNamedItem("SSH").getNodeValue());
 
             // Placing the SiteParameter object in the sites hashtable.
@@ -626,7 +627,7 @@ public class XMLTranslator
                      else
                         password = passwordBuffer.toString();
                      
-                     currentSiteElement.setAttribute("Password", textConversion(password.toCharArray(), false));
+                     currentSiteElement.setAttribute("Password", password);
                   }
                   else
                      currentSiteElement.setAttribute("Password", "");
@@ -712,7 +713,7 @@ public class XMLTranslator
    // Changes text to a standard format.
    //==============================================================
 
-   private String textConversion(char[] theseCharacters, boolean which)
+   protected static String textConversion(char[] theseCharacters, boolean which)
    {
       // Class Method Instances.
       char[] myCharacters;
