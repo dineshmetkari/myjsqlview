@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 5.4 12/03/2014
+// Version 5.5 12/06/2014
 // 
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -122,6 +122,7 @@
 //                        Instance fileStream Gets Closed on IOException.
 //         5.4 12/03/2014 Increased Performance by Eliminating Conversions in Methods
 //                        get/setSites(). 
+//         5.5 12/06/2014 Changed Return Type for protected Method.
 //
 //-----------------------------------------------------------------
 //                 nil_lin@users.sourceforge.net
@@ -167,7 +168,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from/to the myjsqlview.xml file.
  * 
  * @author Nil, Dana M. Proctor
- * @version 5.4 12/03/2014
+ * @version 5.5 12/06/2014
  */
 
 public class XMLTranslator
@@ -713,7 +714,7 @@ public class XMLTranslator
    // Changes text to a standard format.
    //==============================================================
 
-   protected static String textConversion(char[] theseCharacters, boolean which)
+   protected static char[] textConversion(char[] theseCharacters, boolean which)
    {
       // Class Method Instances.
       char[] myCharacters;
@@ -748,7 +749,6 @@ public class XMLTranslator
       char[] ch1 = new char[theseCharacters.length];
       int stop = myCharacters.length;
       int index, currentPosition, ch;
-      StringBuffer returnString;
 
       // Begin
       index = 0;
@@ -777,15 +777,6 @@ public class XMLTranslator
             currentPosition++;
          }
       }
-
-      returnString = new StringBuffer();
-      
-      for (int i = 0; i < ch1.length; i++)
-         returnString.append(ch1[i]);
-      
-      if (returnString.length() == 0)
-         return "";
-      else
-         return returnString.toString();
+      return ch1;
    }
 }
