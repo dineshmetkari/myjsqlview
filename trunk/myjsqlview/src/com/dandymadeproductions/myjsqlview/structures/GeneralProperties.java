@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.4 12/01/2014
+// Version 1.5 12/06/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,7 @@
 //         1.4 Constructor Setting sequenceList Defaults According to
 //             GeneralPreferencesPanel Instances. Correction to Save in
 //             Method savePreferences(String, String).
+//         1.5 Removed System.out in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -57,7 +58,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.4 12/01/2014
+ * @version 1.5 12/06/2014
  */
 
 public class GeneralProperties
@@ -102,7 +103,6 @@ public class GeneralProperties
       {
          fontSize = generalPreferences.getInt(APPFONTSIZE, fontSize);
          sequenceList = generalPreferences.get(APPSEQUENCELIST, sequenceList);
-         System.out.println("GeneralProperties sequenceList: '" + sequenceList + "'");
          
          if (sequenceList == null || sequenceList.isEmpty())
          {
