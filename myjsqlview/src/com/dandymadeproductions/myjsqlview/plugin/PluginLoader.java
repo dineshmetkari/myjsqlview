@@ -10,8 +10,8 @@
 //                     << PluginLoader.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.6 10/21/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.7 12/06/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -98,6 +98,9 @@
 //                        in loadPluginModules().
 //         3.6 10/21/2012 Change in Derivation in loadDefaultPluginEntries() to Proper
 //                        Format pathKey for WinOS.
+//         3.7 12/06/2014 Class Method loadPluginModules() Internal ClassLoader Additional
+//                        Debug Output & Checks for Bad Actors With Exceptions ClassNotFound
+//                        & NoClassDefFound.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -139,7 +142,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.6 10/21/2012
+ * @version 3.7 12/06/2014
  */
 
 public class PluginLoader implements Runnable
@@ -601,11 +604,31 @@ public class PluginLoader implements Runnable
             // Create the instance and add to MyJSQLView.
             try
             {
-               Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
-               MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
-               pluginModule.pathFileName = pluginEntry.getKey() + pathClassSeparator + pluginEntry.getValue();
+               if (MyJSQLView.getDebug())
+                  System.out.println("PluginLoader loadPluginModules() " + pluginEntry.getValue().toString());
+               
+               try
+               {
+                  Class<?> module = Class.forName(pluginEntry.getValue(), true, classLoader);
+                  
+                  if (module.newInstance() instanceof MyJSQLView_PluginModule)
+                  {
+                     MyJSQLView_PluginModule pluginModule = (MyJSQLView_PluginModule) module.newInstance();
+                     pluginModule.pathFileName = pluginEntry.getKey() + pathClassSeparator + pluginEntry.getValue();
 
-               new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
+                     new PluginThread(parentFrame, pluginModule, defaultModuleIcon);
+                  }
+                  else
+                     throw new Exception();
+               }
+               catch (ClassNotFoundException cnfe)
+               {
+                  throw new Exception(cnfe);
+               }
+               catch (NoClassDefFoundError ncdfe)
+               {
+                  throw new Exception(ncdfe);
+               }
             }
             catch (Exception e)
             {
