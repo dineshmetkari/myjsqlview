@@ -9,8 +9,8 @@
 //                 << LoginManagerFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 5.9 10/05/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 6.0 12/06/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -114,6 +114,9 @@
 //         5.7 Made Inner Class SitesTreePanel static.
 //         5.8 Class Methods addSite() & renameSite() Dressed Up JTextField.
 //         5.9 Constructor Set Frame's Icon.
+//         6.0 Added Class Instance normString, & Same as Argument in Constructor.
+//             Use of New Instance in Method setSelectedSite(), & SitesTreePanel
+//             Class Methods addSite() & updateSiteNode().
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -164,6 +167,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.StandardParametersPanel;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.utilities.NormalizeString;
 
 /**
  *    The LoginManagerFrame class provides a frame that is accessed
@@ -172,7 +176,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * sites' data to the myjsqlview.xml file.
  * 
  * @author Dana M. Proctor
- * @version 5.9 10/05/2013
+ * @version 6.0 12/06/2014
  */
 
 public class LoginManagerFrame extends JFrame implements ActionListener
@@ -185,6 +189,7 @@ public class LoginManagerFrame extends JFrame implements ActionListener
 
    private SitesTreePanel treePanel;
    private HashMap<String, SiteParameters> sitesClone;
+   private NormalizeString normString;
 
    private StandardParametersPanel standardParametersPanel;
    private AdvancedParametersPanel advancedParametersPanel;
@@ -206,12 +211,14 @@ public class LoginManagerFrame extends JFrame implements ActionListener
 
    public LoginManagerFrame(MyJSQLView_ResourceBundle resourceBundle,
                                HashMap<String, SiteParameters> sites,
+                               NormalizeString normString,
                                StandardParametersPanel standardParametersPanel,
                                AdvancedParametersPanel advancedParametersPanel,
                                JButton saveExitButton, JButton cancelButton)
    {
       super("MyJSQLView Login Manager");
 
+      this.normString = normString;
       this.standardParametersPanel = standardParametersPanel;
       this.advancedParametersPanel = advancedParametersPanel;
       setIconImage(MyJSQLView_Utils.getFrameIcon());
@@ -455,7 +462,8 @@ public class LoginManagerFrame extends JFrame implements ActionListener
          advancedParametersPanel.setPort(selectedSite.getPort());
          standardParametersPanel.setDatabaseItem(selectedSite.getDatabase());
          standardParametersPanel.setUserItem(selectedSite.getUser());
-         standardParametersPanel.setPassword(selectedSite.getPassword());
+         standardParametersPanel.setPassword(XMLTranslator.textConversion(normString.execute(
+            String.valueOf(selectedSite.getPassword()), false), true));
          if (selectedSite.getSsh().equals("0"))
             sshCheckBox.setSelected(false);
          else
@@ -805,9 +813,10 @@ public class LoginManagerFrame extends JFrame implements ActionListener
          }
          newSiteParameters.setDatabase(standardParametersPanel.getDataBase());
          newSiteParameters.setUser(standardParametersPanel.getUser());
-         newSiteParameters.setPassword(standardParametersPanel.getPassword());
+         newSiteParameters.setPassword(loginManagerFrame.normString.execute(String.valueOf(
+            XMLTranslator.textConversion(standardParametersPanel.getPassword(), false)), true));
          newSiteParameters.setSsh(loginManagerFrame.getSSH());
-
+         
          child = standardParametersPanel.getDataBase();
          sites.put((parentNode + "#" + child), newSiteParameters);
          addSite(parentNode, child, true);
@@ -871,7 +880,8 @@ public class LoginManagerFrame extends JFrame implements ActionListener
                newSiteParameters.setHost((sites.get(siteName)).getHost());
                newSiteParameters.setDatabase(standardParametersPanel.getDataBase());
                newSiteParameters.setUser(standardParametersPanel.getUser());
-               newSiteParameters.setPassword(standardParametersPanel.getPassword());
+               newSiteParameters.setPassword(loginManagerFrame.normString.execute(String.valueOf(
+                  XMLTranslator.textConversion(standardParametersPanel.getPassword(), false)), true));
                newSiteParameters.setSsh(loginManagerFrame.getSSH());
                newSiteParameters.setDriver(advancedParametersPanel.getDriver());
                newSiteParameters.setProtocol(advancedParametersPanel.getProtocol());
