@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.08 06/18/2014
+// Version 7.09 12/05/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -316,6 +316,7 @@
 //             Property for Select Databases, But Also Use in Connection Attempt.
 //             Commented Out System.Out for Debug Purposes of Connect Properties
 //             in Same Method.
+//        7.09 Added Class Instance normString & Its Use in setSelectedSite().
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -364,6 +365,7 @@ import com.dandymadeproductions.myjsqlview.gui.panels.SplashPanel;
 import com.dandymadeproductions.myjsqlview.gui.panels.StandardParametersPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
+import com.dandymadeproductions.myjsqlview.utilities.NormalizeString;
 
 /**
  *    This LoginFrame class provides the framework for a login access
@@ -373,7 +375,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.08 06/18/2014
+ * @version 7.09 12/05/2014
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -405,6 +407,7 @@ public class LoginFrame extends JFrame implements ActionListener
    private HashMap<String, SiteParameters> sites;
    private transient SiteParameters lastSite;
    private transient XMLTranslator xmlTranslator;
+   private NormalizeString normString;
    
    private JButton loginManagerFrame_SaveExitButton, loginManagerFrame_CancelButton;
 
@@ -440,6 +443,7 @@ public class LoginFrame extends JFrame implements ActionListener
       // Setting up Various Instances.
       
       xmlTranslator = new XMLTranslator();
+      normString = new NormalizeString();
       sites = new HashMap <String, SiteParameters>();
       sitesNameList = new ArrayList <String>();
       driverList = new ArrayList <String>();
@@ -640,7 +644,7 @@ public class LoginFrame extends JFrame implements ActionListener
                                                                                         subProtocolList,
                                                                                         portList);
 
-               loginManagerFrame = new LoginManagerFrame(resourceBundle, sites,
+               loginManagerFrame = new LoginManagerFrame(resourceBundle, sites, normString,
                                                          standardPanelClone, advancedPanelClone,
                                                          loginManagerFrame_SaveExitButton,
                                                          loginManagerFrame_CancelButton);
@@ -1013,7 +1017,9 @@ public class LoginFrame extends JFrame implements ActionListener
       advancedParametersPanel.setPort(selectedSite.getPort());
       standardParametersPanel.setDatabaseItem(selectedSite.getDatabase());
       standardParametersPanel.setUserItem(selectedSite.getUser());
-      standardParametersPanel.setPassword(selectedSite.getPassword());
+      standardParametersPanel.setPassword(
+         XMLTranslator.textConversion(
+            normString.execute(String.valueOf(selectedSite.getPassword()), false), true));
       if (selectedSite.getSsh().equals("0"))
          sshCheckBox.setSelected(false);
       else
@@ -1168,8 +1174,8 @@ public class LoginFrame extends JFrame implements ActionListener
          if (MyJSQLView.getDebug())
          {
             System.out.println("LoginFrame accessCheck() Connection URL: " + connectionURLString);
-            // System.out.println("LoginFrame accessCheck() Connection Properties: "
-            //                    + connectProperties.toString());
+            System.out.println("LoginFrame accessCheck() Connection Properties: "
+                                + connectProperties.toString());
          }
          
          connectionProperties.setConnectionURLString(connectionURLString);
