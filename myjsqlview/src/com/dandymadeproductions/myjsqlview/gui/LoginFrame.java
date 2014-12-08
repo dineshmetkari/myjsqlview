@@ -12,7 +12,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 7.09 12/05/2014
+// Version 7.10 12/08/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -317,6 +317,8 @@
 //             Commented Out System.Out for Debug Purposes of Connect Properties
 //             in Same Method.
 //        7.09 Added Class Instance normString & Its Use in setSelectedSite().
+//        7.10 Commented Out System.out in accessCheck() for Properties in Debug
+//             Mode.
 //
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -375,7 +377,7 @@ import com.dandymadeproductions.myjsqlview.utilities.NormalizeString;
  * to a database. 
  * 
  * @author Dana M. Proctor
- * @version 7.09 12/05/2014
+ * @version 7.10 12/08/2014
  */
 
 public class LoginFrame extends JFrame implements ActionListener
@@ -1174,8 +1176,8 @@ public class LoginFrame extends JFrame implements ActionListener
          if (MyJSQLView.getDebug())
          {
             System.out.println("LoginFrame accessCheck() Connection URL: " + connectionURLString);
-            System.out.println("LoginFrame accessCheck() Connection Properties: "
-                                + connectProperties.toString());
+            // System.out.println("LoginFrame accessCheck() Connection Properties: "
+            //                    + connectProperties.toString());
          }
          
          connectionProperties.setConnectionURLString(connectionURLString);
