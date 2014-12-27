@@ -3,6 +3,7 @@
      normally desribed as a URL based resource. 
 
      Version 1.0 10/07/2012 Original myjsqlview_plugins.dtd.
+             1.1 12/19/2014 Removed PATH Element.
      
      danap@dandymadeproductions.com
 -->
@@ -18,7 +19,6 @@
 
 <!ELEMENT AUTHOR ( #PCDATA ) >
 <!ELEMENT VERSION ( #PCDATA ) >
-<!ELEMENT PATH ( #PCDATA ) >
 <!ELEMENT DESCRIPTION ( #PCDATA ) >
 <!ELEMENT CATEGORY ( #PCDATA ) >
 <!ELEMENT SIZE ( #PCDATA ) >
