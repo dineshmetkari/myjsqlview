@@ -10,8 +10,8 @@
 //                   << PluginListHandler.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 10/15/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.4 12/19/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //         1.3 Changed Class Instance size From int to StringBuilder. Removed
 //             SIZE from attribute() Method & Added to characters(). Modifications
 //             to startElements() & endElements() to Same for size.
+//         1.4 Removed Class Instance path.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +66,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * Conjuction With myjsqlview_plugins.dtd.
  * 
  * @author Slava Pestov, Dana M. Proctor
- * @version 1.3 10/15/2012
+ * @version 1.4 12/19/2014
  */
 
 class PluginListHandler extends DefaultHandler
@@ -78,7 +79,6 @@ class PluginListHandler extends DefaultHandler
    private String jar;
    private StringBuilder author;
    private StringBuilder version;
-   private StringBuilder path;
    private StringBuilder description;
    private StringBuilder category;
    private StringBuilder size;
@@ -98,12 +98,11 @@ class PluginListHandler extends DefaultHandler
 
       author = new StringBuilder();
       version = new StringBuilder();
-      path = new StringBuilder();
       description = new StringBuilder();
       category = new StringBuilder();
       size = new StringBuilder();
       
-      debug = MyJSQLView.getDebug();  
+      debug = MyJSQLView.getDebug();
    }
    
    // Normally always returns null, so that the parser will use the system
@@ -158,10 +157,6 @@ class PluginListHandler extends DefaultHandler
       {
          version.append(c, off, len);
       }
-      else if (tag.equals("PATH"))
-      {
-         path.append(c, off, len);
-      }
       else if (tag.equals("DESCRIPTION"))
       {
          description.append(c, off, len);
@@ -191,7 +186,6 @@ class PluginListHandler extends DefaultHandler
       {
          author.setLength(0);
          version.setLength(0);
-         path.setLength(0);
          description.setLength(0);
          category.setLength(0);
          size.setLength(0);
@@ -213,7 +207,6 @@ class PluginListHandler extends DefaultHandler
          plugin.setJAR(jar);
          plugin.setAuthor(author.toString());
          plugin.setVersion(version.toString());
-         plugin.setPath_FileName(path.toString());
          plugin.setDescription(description.toString());
          plugin.setCategory(category.toString());
          
@@ -233,7 +226,6 @@ class PluginListHandler extends DefaultHandler
          jar = null;
          author.setLength(0);
          version.setLength(0);
-         path.setLength(0);
          description.setLength(0);
          category.setLength(0);
          size.setLength(0);
