@@ -10,8 +10,8 @@
 //                 << HTTP_PluginRepository.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.4 10/18/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.5 12/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -49,6 +49,10 @@
 //         1.4 Moved a System.out, Commented, from setRepostiory() to downloadPluginList().
 //             Class Method readPluginList() in Catch Check for a SAXException on File
 //             Cache Parsing to Try to Re-Download Plugin List to Correct.
+//         1.5 Moved Class Instances GZIP_MAGIC_1/2, & REMOTE_REPOSITORY_FILENAME to
+//             Parent, PluginRepository Class. Renamed the Latter to REPOSITORY_FILENAME.
+//             Class Method setRepository() On validRepository Set Each Plugin in List
+//             to the remoteRepositoryURL Path.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,6 +69,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
 
 import org.xml.sax.InputSource;
@@ -81,7 +86,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from a XML file at the resource.
  * 
  * @author Dana M. Proctor
- * @version 1.4 10/18/2012
+ * @version 1.5 12/20/2014
  */
 
 public class HTTP_PluginRepository extends PluginRepository
@@ -89,10 +94,6 @@ public class HTTP_PluginRepository extends PluginRepository
    // Class Instances
    private String remoteRepositoryURL, cachedRepositoryURL;
    private boolean downloadRepository;
-   
-   private static final int GZIP_MAGIC_1 = 0x1f;
-   private static final int GZIP_MAGIC_2 = 0x8b;
-   private static final String REMOTE_REPOSITORY_FILENAME = "myjsqlview_plugin_list.xml.gz";
    
    //==============================================================
    // HTTP_PluginRepository Constructor
@@ -127,9 +128,9 @@ public class HTTP_PluginRepository extends PluginRepository
       // Setup
       
       if (path.endsWith("/"))
-         remoteRepositoryURL = path + REMOTE_REPOSITORY_FILENAME;
+         remoteRepositoryURL = path + PluginRepository.REPOSITORY_FILENAME;
       else
-         remoteRepositoryURL = path + "/" + REMOTE_REPOSITORY_FILENAME;
+         remoteRepositoryURL = path + "/" + PluginRepository.REPOSITORY_FILENAME;
       
       cachedRepositoryDirectoryString = MyJSQLView_Utils.getCacheDirectory() + getName();
       localSystemFileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -182,7 +183,23 @@ public class HTTP_PluginRepository extends PluginRepository
          validRepository = readPluginList(true);
       
       if (validRepository)
+      {
          setPath(path);
+         
+         Iterator<Plugin> pluginIterator = getPluginItems().iterator();
+         
+         while (pluginIterator.hasNext())
+         {
+            Plugin currentPlugin = pluginIterator.next();
+            
+            currentPlugin.setPath_FileName(remoteRepositoryURL.substring(0,
+               remoteRepositoryURL.length() - PluginRepository.REPOSITORY_FILENAME.length())
+               + currentPlugin.getJAR());
+            
+            // System.out.println("HTTP_PluginRepository setRepository() plugin path: "
+            //                    + currentPlugin.getPath_FileName());
+         }
+      }
       
       return validRepository;
    }
@@ -240,7 +257,7 @@ public class HTTP_PluginRepository extends PluginRepository
                           + "Repository URL Requires Authorization.");
          }
          // Looks Good.
-         else if(httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
+         else if (httpConnection.getResponseCode() == HttpURLConnection.HTTP_OK)
          {
             cacheFileName = cachedRepositoryURL.replaceFirst("file:", "");
             
