@@ -10,8 +10,8 @@
 //                 << PluginRepository.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.8 10/15/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.9 12/20/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@
 //             Instances cachedRepositoryDirectoryString, debugMode, isRepositoryCached,
 //             & REPOSITORY_PATH_FILE.
 //         1.8 Class Instance REPOSITORY_CACHED_FILE Changed to Compressed File Name.
+//         1.9 Added Class Instances SFTP, HTTPS, GZIP_MAGIC_1/2, & REPOSITORY_FILENAME.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,11 +85,17 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    protected boolean debugMode, isRepositoryCached;
    
    public static final String FILE = "file";
-   public static final String HTTP = "http";
    public static final String FTP = "ftp";
+   public static final String FTPS = "sftp";
+   public static final String HTTP = "http";
+   public static final String HTTPS = "https";
    public static final String UNKNOWN = "unknown";
    public static final String REPOSITORY_PATH_FILE = ".path";
-   public static final String REPOSITORY_CACHED_FILE = "repository-cache.xml.gz";
+   
+   protected static final int GZIP_MAGIC_1 = 0x1f;
+   protected static final int GZIP_MAGIC_2 = 0x8b;
+   protected static final String REPOSITORY_FILENAME = "myjsqlview_plugin_list.xml.gz";
+   protected static final String REPOSITORY_CACHED_FILE = "repository-cache.xml.gz";
    
    //===========================================================
    // PluginRepository Constructor
@@ -152,7 +159,7 @@ public abstract class PluginRepository implements PluginRepositoryInterface
    {
       repositoryType = type; 
    }
-  
+   
    //==============================================================
    // Class method to add an plugin item to the repository.
    //==============================================================
