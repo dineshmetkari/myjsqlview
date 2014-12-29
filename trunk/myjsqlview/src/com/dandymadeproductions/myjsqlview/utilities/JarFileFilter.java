@@ -8,8 +8,8 @@
 //                  << JarFileFilter.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 1.3 09/11/2012
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 1.4 12/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -34,6 +34,7 @@
 //         1.1 Copyright Update.
 //         1.2 Copyright Update.
 //         1.3 Changed Package Name to com.dandymadeproductions.myjsqlview.utilities.
+//         1.4 Minor Comment Changes.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -45,11 +46,11 @@ import java.io.File;
 import javax.swing.filechooser.FileFilter;
 
 /**
- *    The MyJFileFilter class provides a customer FileFilter instance to
+ *    The JarJFileFilter class provides a customer FileFilter instance to
  * be used in selecting MyJSQLView plugin module files, JAR.
  * 
  * @author Dana M. Proctor
- * @version 1.3 09/11/2012
+ * @version 1.4 12/22/2014
  */
 
 public class JarFileFilter extends FileFilter
