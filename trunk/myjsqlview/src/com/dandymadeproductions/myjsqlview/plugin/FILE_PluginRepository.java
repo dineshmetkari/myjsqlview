@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.3 12/20/2014
+// Version 1.4 12/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@
 //             refresh();
 //         1.3 Added Class Instances. Implemented setRepository(), & refresh().
 //             Added Class Method loadPluginList() & readPluginList().
+//         1.4 Commented Out a System.out in Method setRepository().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -70,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * networked file system.
  * 
  * @author Dana M. Proctor
- * @version 1.3 12/20/2014
+ * @version 1.4 12/22/2014
  */
 
 public class FILE_PluginRepository extends PluginRepository
@@ -183,8 +184,8 @@ public class FILE_PluginRepository extends PluginRepository
                remoteRepositoryURL.length() - PluginRepository.REPOSITORY_FILENAME.length())
                + currentPlugin.getJAR());
             
-            System.out.println("FILE_PluginRepository setRepository() plugin path: "
-                               + currentPlugin.getPath_FileName()); 
+            // System.out.println("FILE_PluginRepository setRepository() plugin path: "
+            //                    + currentPlugin.getPath_FileName()); 
          }
       }
       
