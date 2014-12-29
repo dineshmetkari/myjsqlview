@@ -7,8 +7,8 @@
 //                   << PluginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
-// Version 3.6 11/13/2013
+// Copyright (C) 2005-2014 Dana M. Proctor
+// Version 3.7 12/22/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -104,6 +104,15 @@
 //         3.6 Class Method removePluginConfigurationModule() Inclusion of a
 //             finally Clause for Insuring Instances fileReader & bufferedReader
 //             Gets Closed on IOException.
+//         3.7 Added Class Instances repositoryURLTextField, & openRepositoryButton. Changed
+//             Class Instance lastPluginDirectory to a StringBuffer. Method actionPerformed()
+//             Provided OptionPane Error Output for Empty Path Selection, Implemented FILE
+//             Repository Code, & openRepositoryButton Action. Changed Method installFilePlugin()
+//             to obtainFile(). Changed Return Type and Added Argument isJar. Implemented
+//             in Method Ability to Return Directory Selections for addRepository() Action.
+//             Modified GUI Dialog Call in addRepository() to Handle openRepositoryButton.
+//             Minor Comment Changes in createRepository(), Code Outline to Handle FTP
+//             Repositories, & Additional Check for File Repository.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -172,6 +181,7 @@ import com.dandymadeproductions.myjsqlview.plugin.HTTP_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.plugin.PluginLoader;
 import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
+import com.dandymadeproductions.myjsqlview.utilities.GzFileFilter;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
 import com.dandymadeproductions.myjsqlview.utilities.JarFileFilter;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
@@ -183,7 +193,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.6 11/13/2013
+ * @version 3.7 12/22/2014
  */
 
 //=================================================================
@@ -210,10 +220,13 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private ArrayList<String> loadingPluginsList;
    private Hashtable<String, String> repositoryHashtable;
    private JTextPane pluginInformationTextPane;
+   private JTextField repositoryURLTextField;
+   private JButton openRepositoryButton;
    private JButton installButton, closeButton, refreshButton;
 
    private MyJSQLView_ResourceBundle resourceBundle;
-   private String fileSeparator, iconsDirectory, lastPluginDirectory;
+   private String fileSeparator, iconsDirectory;
+   
    private String resourceAlert;
 
    private ImageIcon statusWorkingIcon;
@@ -222,6 +235,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
    private String tabType;
    private int currentTabIndex, removeTabIndex, addTabIndex;
+   private StringBuffer lastPluginDirectory;
 
    private static final String MANAGE = "manage";
    private static final String REPOSITORY = "repository";
@@ -251,8 +265,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       setIconImage(MyJSQLView_Utils.getFrameIcon());
 
       // Constructor Instances.
-      JPanel southButtonPanel, buttonPanel;
       JPanel pluginViewPanel, loadingViewPanel;
+      JPanel southButtonPanel, buttonPanel;
       JScrollPane infoScrollPane;
 
       ImageIcon plusIcon, minusIcon, refreshIcon;
@@ -264,7 +278,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
       fileSeparator = MyJSQLView_Utils.getFileSeparator();
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
-      lastPluginDirectory = "";
 
       resourceAlert = resourceBundle.getResourceString("PluginFrame.dialogtitle.Alert", "Alert");
 
@@ -276,6 +289,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
       repositoryHashtable = new Hashtable <String, String>();
       loadingPluginsList = new ArrayList <String>();
+      lastPluginDirectory = new StringBuffer();
 
       // Setting the frame's title, main panel, & window listener.
 
@@ -288,7 +302,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       GridBagLayout gridbag = new GridBagLayout();
       GridBagConstraints constraints = new GridBagConstraints();
 
-      this.addWindowListener(pluginFrameListener);
+      addWindowListener(pluginFrameListener);
 
       // ======================================================
       // Animated Filler Panel.
@@ -454,7 +468,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       Object frameSource;
       Object selectedTabComponent;
       PluginRepositoryPanel selectedRepositoryPanel;
-      String repositoryType;
+      String repositoryType, selectedPluginPath;
       
       frameSource = evt.getSource();
 
@@ -466,9 +480,14 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          {
             infoViewCardLayout.show(infoViewPanel, INFO_VIEW_LOADING_STATUS);
 
-            // Local file.
+            // Local individual file plugin.
             if (tabType.equals(MANAGE))
-               installFilePlugin(this);
+            {
+               String fileLocation = optainFile(this, true).toString();
+               
+               if (!fileLocation.isEmpty())
+                  loadPlugin(fileLocation);
+            }
             // Repository
             else
             {
@@ -478,10 +497,28 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
                {
                   selectedRepositoryPanel = (PluginRepositoryPanel) selectedTabComponent;
                   repositoryType = selectedRepositoryPanel.getRepositoryType();
+                  selectedPluginPath = selectedRepositoryPanel.getSelectedPluginPath();
+                  
+                  if (MyJSQLView.getDebug())
+                     System.out.println("PluginFrame actionPerformed() repositoryType: " + repositoryType
+                        + " selectedPluginPath: " + selectedPluginPath);
+                      
+                  if (selectedPluginPath.isEmpty())
+                  {
+                     String optionPaneStringErrors;
+
+                     optionPaneStringErrors = resourceBundle.getResourceString(
+                        "PluginFrame.dialogmessage.SelectedPathEmpty", "Selected Path Empty");
+
+                     JOptionPane.showMessageDialog(null, optionPaneStringErrors, resourceAlert,
+                        JOptionPane.ERROR_MESSAGE);
+                     
+                     return;
+                  }
                   
                   if (repositoryType.equals(PluginRepository.FILE))
                   {
-                     System.out.println("File Repository Install");
+                     loadPlugin(selectedPluginPath);
                   }
                   else if (repositoryType.equals(PluginRepository.FTP))
                   {
@@ -489,10 +526,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
                   }
                   else if (repositoryType.equals(PluginRepository.HTTP))
                   {
-                     String selectedPluginPath = selectedRepositoryPanel.getSelectedPluginPath();
-                     
-                     if (!selectedPluginPath.isEmpty())
-                        loadPlugin(selectedPluginPath);
+                     loadPlugin(selectedPluginPath);
                   }
                   else
                   {
@@ -528,6 +562,14 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
                   pluginInformationTextPane.setText("");
                }
             }
+         }
+         // Add repository dialog browse file system.
+         else if (frameSource == openRepositoryButton)
+         {
+            String directoryLocation = optainFile(this, false).toString();
+            
+            if (!directoryLocation.isEmpty())
+               repositoryURLTextField.setText(directoryLocation);
          }
          // Must be action of Close buttton.
          else
@@ -741,42 +783,60 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    }
 
    //==============================================================
-   // Classs Method to aquire a local file system plugin file to
-   // be installed.
+   // Classs Method to aquire a local file for a plugin or directory
+   // location for a repository
    //==============================================================
 
-   private void installFilePlugin(JFrame parent)
+   private StringBuffer optainFile(JFrame parent, boolean isJar)
    {
       // Method Instances.
-      JFileChooser pluginFileChooser;
-      String fileName;
+      JFileChooser fileChooser;
+      StringBuffer fileName;
+      String lastDirectory;
 
       // Collect/Set the default directory to be used.
-      if (lastPluginDirectory.equals(""))
-         pluginFileChooser = new JFileChooser();
+      if (isJar)
+         lastDirectory = lastPluginDirectory.toString();
       else
-         pluginFileChooser = new JFileChooser(new File(lastPluginDirectory));
+         lastDirectory = "";
+      
+      if (lastDirectory.toString().isEmpty())
+         fileChooser = new JFileChooser();
+      else
+         fileChooser = new JFileChooser(new File(lastDirectory.toString()));
 
       // Add a FileFilter for *.jar and open dialog.
-      pluginFileChooser.setFileFilter(new JarFileFilter());
+      if (isJar)
+         fileChooser.setFileFilter(new JarFileFilter());
+      else
+         fileChooser.setFileFilter(new GzFileFilter());
 
-      int result = pluginFileChooser.showOpenDialog(parent);
+      int result = fileChooser.showOpenDialog(parent);
+      fileName = new StringBuffer();
 
       // Looks like might be good so lets check and read data.
       if (result == JFileChooser.APPROVE_OPTION)
       {
+         // Collect the directory selected.
+         fileName.append(fileChooser.getSelectedFile().getName());
+         
          // Save the selected directory so can be used again.
-         lastPluginDirectory = pluginFileChooser.getCurrentDirectory().toString();
-
-         // Collect file name.
-         fileName = pluginFileChooser.getSelectedFile().getName();
-         fileName = "file:" + pluginFileChooser.getCurrentDirectory() + fileSeparator + fileName;
-
-         // Try Loading the module and if appears ok add
-         // the module to the loading list.
-         if (!fileName.equals(""))
+         if (isJar)
          {
-            loadPlugin(fileName);
+            lastPluginDirectory.delete(0, lastPluginDirectory.length());
+            lastPluginDirectory.append(fileChooser.getCurrentDirectory());
+         }
+         
+         // Collect the appropriate selection.
+         if (!fileName.toString().isEmpty())
+         {
+            if (isJar)
+               fileName.insert(0, "file:" + lastPluginDirectory + fileSeparator);
+            else
+            {
+               fileName.delete(0, fileName.length());
+               fileName.append("file:" + fileChooser.getCurrentDirectory() + fileSeparator);
+            }
          }
          else
          {
@@ -787,8 +847,11 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
             JOptionPane.showMessageDialog(null, optionPaneStringErrors, resourceAlert,
                JOptionPane.ERROR_MESSAGE);
+            
+            fileName.delete(0, fileName.length());
          }
       }
+      return fileName;
    }
    
    //==============================================================
@@ -819,7 +882,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
                                        JOptionPane.ERROR_MESSAGE);
       }
    }
-
+   
    //==============================================================
    // Class Method for loading the plugin modules data, tab icon,
    // name, etc. in the manage tab view table.
@@ -1050,36 +1113,85 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private void addRepository()
    {
       // Method Instances
+      JPanel repositoryEntryPanel;
       JLabel repositoryNameLabel, repositoryURLLabel;
-      JTextField repositoryNameTextField, repositoryURLTextField;
-
-      String resource, resourceOK, resourceCancel;
+      JTextField repositoryNameTextField;
+      
       String resourceTitle, repositoryName;
+      String resource, resourceOK, resourceCancel;
+      
+      ImageIcon openIcon;
+      
+      GridBagLayout gridbag = new GridBagLayout();
+      GridBagConstraints constraints = new GridBagConstraints();
 
       // Setup and display a option pane to collect the
       // repository name and location, url. Give it some
       // default input for help.
+      
+      repositoryEntryPanel = new JPanel(gridbag);
+      
       resourceTitle = resourceBundle.getResourceString("PluginFrame.message.AddRepository", "Add Repository");
       
+      // Name Label.
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryName", "Repository Name");
-      repositoryNameLabel = new JLabel(resource, JLabel.CENTER);
+      repositoryNameLabel = new JLabel(resource);
+      
+      buildConstraints(constraints, 0, 0, 2, 1, 0, 25);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(repositoryNameLabel, constraints);
+      repositoryEntryPanel.add(repositoryNameLabel);
 
-      repositoryNameTextField = new JTextField();
+      // Name Entry Textfield.
+      repositoryNameTextField = new JTextField(MYJSQLVIEW_REPOSITORY_NAME);
       repositoryNameTextField.setBorder(BorderFactory.createCompoundBorder(
-         BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
-         BorderFactory.createLoweredBevelBorder()));
-      repositoryNameTextField.setText(MYJSQLVIEW_REPOSITORY_NAME);
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED), BorderFactory.createLoweredBevelBorder()));
+      repositoryNameTextField.addMouseListener(MyJSQLView.getPopupMenuListener());
+      
+      buildConstraints(constraints, 0, 1, 2, 1, 0, 25);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(repositoryNameTextField, constraints);
+      repositoryEntryPanel.add(repositoryNameTextField);
 
+      // URL Label.
       resource = resourceBundle.getResourceString("PluginFrame.label.RepositoryURL", "Repository URL");
-      repositoryURLLabel = new JLabel(resource, JLabel.CENTER);
+      repositoryURLLabel = new JLabel(resource);
+      
+      buildConstraints(constraints, 0, 3, 2, 1, 0, 25);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(repositoryURLLabel, constraints);
+      repositoryEntryPanel.add(repositoryURLLabel);
 
-      repositoryURLTextField = new JTextField();
+      // URL Entry Textfield.
+      repositoryURLTextField = new JTextField(MYJSQLVIEW_REPOSITORY);
       repositoryURLTextField.setBorder(BorderFactory.createCompoundBorder(
          BorderFactory.createEtchedBorder(EtchedBorder.RAISED), BorderFactory.createLoweredBevelBorder()));
-      repositoryURLTextField.setText(MYJSQLVIEW_REPOSITORY);
+      repositoryURLTextField.addMouseListener(MyJSQLView.getPopupMenuListener());
+      
+      buildConstraints(constraints, 0, 4, 1, 1, 95, 25);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.LINE_START;
+      gridbag.setConstraints(repositoryURLTextField, constraints);
+      repositoryEntryPanel.add(repositoryURLTextField);
+      
+      resource = resourceBundle.getResourceString("PluginFrame.button.Browse", "Browse");
+      openIcon = resourceBundle.getResourceImage(iconsDirectory + "openIcon_20x20.png");
+      openRepositoryButton = new JButton(openIcon);
+      openRepositoryButton.setFocusable(false);
+      openRepositoryButton.setMargin(new Insets(0, 0, 0, 0));
+      openRepositoryButton.setToolTipText(resource);
+      openRepositoryButton.addActionListener(this);
+      
+      buildConstraints(constraints, 1, 4, 1, 1, 5, 0);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.EAST;
+      gridbag.setConstraints(openRepositoryButton, constraints);
+      repositoryEntryPanel.add(openRepositoryButton);
 
-      Object content[] = {repositoryNameLabel, repositoryNameTextField, repositoryURLLabel,
-                          repositoryURLTextField};
+      Object content[] = {repositoryEntryPanel};
 
       resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
       resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
@@ -1087,7 +1199,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       InputDialog repositoryDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel, content,
                                                      addRepositoryIcon);
       repositoryDialog.pack();
-      repositoryDialog.setResizable(false);
+      repositoryDialog.setSize(new Dimension(400, 200));
+      repositoryDialog.setResizable(true);
       repositoryDialog.center();
       repositoryDialog.setVisible(true);
 
@@ -1100,7 +1213,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          
          // Cleanup
          if (repositoryName.indexOf(" ") != -1)
-            repositoryName = repositoryName.replaceAll("", " ");
+            repositoryName = repositoryName.replaceAll(" ", "_");
          
          if (repositoryName.indexOf("//") != -1)
             repositoryName = repositoryName.replaceAll("//", "");
@@ -1152,12 +1265,21 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
          // Create an appropriate repository.
 
+         // http, https.
          if (repositoryURLString.toLowerCase().startsWith(PluginRepository.HTTP))
          {
             pluginRepository = new HTTP_PluginRepository();
          }
-         else
+         // ftp, ftps
+         //else if (repositoryURLString.toLowerCase().startsWith(PluginRepository.FTP))
+         //{
+         //   System.out.println("PluginFrame createRepository() ftp,ftps");
+         //}
+         // file.
+         else 
          {
+            if (!repositoryURLString.toLowerCase().startsWith(PluginRepository.FILE))
+               repositoryURLString = "file:" + repositoryURLString;
             pluginRepository = new FILE_PluginRepository();
          }
 
