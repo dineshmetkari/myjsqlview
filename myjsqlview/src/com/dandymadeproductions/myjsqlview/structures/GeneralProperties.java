@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.5 12/06/2014
+// Version 1.6 12/31/2014
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -38,6 +38,8 @@
 //             GeneralPreferencesPanel Instances. Correction to Save in
 //             Method savePreferences(String, String).
 //         1.5 Removed System.out in Constructor.
+//         1.6 Added Class Instances proxyAddress & proxyPort Along With
+//             Corresponding get/setter Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -58,7 +60,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.5 12/06/2014
+ * @version 1.6 12/31/2014
  */
 
 public class GeneralProperties
@@ -66,11 +68,15 @@ public class GeneralProperties
    // Class Instances.
    private int fontSize;
    private String sequenceList;
+   private String proxyAddress;
+   private int proxyPort;
    
    private Preferences generalPreferences;
    
    public static final String APPFONTSIZE = "AppFontSize";
    public static final String APPSEQUENCELIST = "AppSequenceList";
+   public static final String PROXYADDRESS = "AppProxyAddress";
+   public static final String PROXYPORT = "AppProxyPort";
    
    //==============================================================
    // GeneralProperties Constructor
@@ -103,6 +109,8 @@ public class GeneralProperties
       {
          fontSize = generalPreferences.getInt(APPFONTSIZE, fontSize);
          sequenceList = generalPreferences.get(APPSEQUENCELIST, sequenceList);
+         proxyAddress = generalPreferences.get(PROXYADDRESS, proxyAddress);
+         proxyPort = generalPreferences.getInt(PROXYPORT, proxyPort);
          
          if (sequenceList == null || sequenceList.isEmpty())
          {
@@ -141,6 +149,16 @@ public class GeneralProperties
       }
    }
    
+   public String getProxyAddress()
+   {
+      return proxyAddress;
+   }
+   
+   public int getProxyPort()
+   {
+      return proxyPort;
+   }
+   
    //==============================================================
    // Class methods to allow classes to set the general object
    // components.
@@ -160,6 +178,18 @@ public class GeneralProperties
          sequenceBuffer.append(value[i] + ":");
       sequenceList = sequenceBuffer.substring(0, sequenceBuffer.length() - 1);
       savePreference(APPSEQUENCELIST, sequenceList);
+   }
+   
+   public void setProxyAddress(String value)
+   {
+      proxyAddress = value;
+      savePreference(PROXYADDRESS, value);
+   }
+   
+   public void setProxyPort(int value)
+   {
+      proxyPort = value;
+      savePreference(PROXYPORT, value);
    }
    
    //==============================================================
@@ -198,6 +228,8 @@ public class GeneralProperties
       StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
       
       parameters.append("[fontSize = " + fontSize + "]");
+      parameters.append("[proxyAddress = " + proxyAddress + "]");
+      parameters.append("proxyPort = " + proxyPort + "]");
 
       return parameters.toString();
    }
