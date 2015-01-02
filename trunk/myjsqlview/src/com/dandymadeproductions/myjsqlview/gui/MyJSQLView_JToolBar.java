@@ -8,7 +8,7 @@
 //               << MyJSQLView_JToolBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 3.0 09/19/2012
 //
 // This program is free software; you can redistribute it and/or

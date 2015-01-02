@@ -11,7 +11,7 @@
 //                   << LoginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 7.10 12/08/2014
 //
 // This program is free software; you can redistribute it and/or

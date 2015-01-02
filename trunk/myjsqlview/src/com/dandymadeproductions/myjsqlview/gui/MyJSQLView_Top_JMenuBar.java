@@ -8,7 +8,7 @@
 //            << MyJSQLView_Top_JMenuBar.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 1.8 07/01/2013
 //
 // This program is free software; you can redistribute it and/or
