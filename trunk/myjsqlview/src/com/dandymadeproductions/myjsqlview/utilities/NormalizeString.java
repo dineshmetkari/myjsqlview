@@ -7,7 +7,7 @@
 //                   << NormalizeString.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 1.00 11/24/2013
 //
 // This program is free software; you can redistribute it and/or

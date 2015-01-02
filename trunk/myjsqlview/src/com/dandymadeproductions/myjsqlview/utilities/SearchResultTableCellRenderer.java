@@ -7,7 +7,7 @@
 //             << SearchResultTableCellRenderer.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 1.8 09/11/2012
 //
 // This program is free software; you can redistribute it and/or
