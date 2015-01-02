@@ -8,8 +8,8 @@
 //             << AppGeneralPreferencesPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.3 10/29/2014
+// Copyright (C) 2005-2015 Dana M. Proctor
+// Version 1.4 01/02/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@
 //                        for Insuring Instance for fileWriter to Flush/Close.
 //         1.3 10/29/2014 Parameterized Class Instance localizationComboBox to
 //                        Conform With JRE 7.
+//         1.4 01/02/2015 Updated Copyright & Removed flush() in Method setLocalization()
+//                        in finally Clause for bufferWriter & fileWriter.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -73,7 +75,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * font paramerters.   
  * 
  * @author Dana M. Proctor
- * @version 1.3 10/29/2014
+ * @version 1.4 01/02/2015
  */
 
 public class AppGeneralPreferencesPanel extends JPanel
@@ -321,10 +323,7 @@ public class AppGeneralPreferencesPanel extends JPanel
          try
          {
             if (bufferedWriter != null)
-            {
-               bufferedWriter.flush();
                bufferedWriter.close();
-            }
          }
          catch (IOException ioe)
          {
@@ -337,10 +336,7 @@ public class AppGeneralPreferencesPanel extends JPanel
             try
             {
                if (fileWriter != null)
-               {
-                  fileWriter.flush();
                   fileWriter.close();
-               }
             }
             catch (IOException ioe)
             {
