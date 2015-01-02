@@ -10,7 +10,7 @@
 //                << CSVDataTableDumpThread.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 3.6 01/29/2014
 //
 // This program is free software; you can redistribute it and/or
