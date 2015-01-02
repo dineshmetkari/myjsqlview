@@ -14,8 +14,8 @@
 //                  << MyJSQLView.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.50 08/11/2014
+// Copyright (C) 2005-2015 Dana M. Proctor
+// Version 7.00 01/02/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -233,6 +233,10 @@
 //         3.49 06/19/2014 Class Instance myJSQLView_Version Update for Release
 //                         3.49
 //         3.50 08/11/2014 Class Method main.run() Conditional Check for localeString Length.
+//         7.00 01/02/2015 Updated Copyright & Pulled Version Forward to Mark Applications
+//                         Compliance With JRE 7. *NOTE THE APPLICATION IS NO LONGER
+//                         COMPATIBLE WITH PRIOR JRE VERSIONS.
+//                         
 //         
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -275,7 +279,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 3.50 08/11/2014
+ * @version 7.00 01/02/2015
  */
 
 public class MyJSQLView implements ActionListener
@@ -297,7 +301,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "3.50", "Build ID: 20140811"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "7.00", "Build ID: 20150102"};
    private String webSiteString = "http://myjsqlview.org";
    
    private static GeneralProperties generalProperties = new GeneralProperties();
