@@ -9,7 +9,7 @@
 //                   << AboutFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 2.8 10/05/2013
 //
 // This program is free software; you can redistribute it and/or
