@@ -9,7 +9,7 @@
 //                      << Plugin.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2013 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 1.1 10/04/2012
 //
 // This program is free software; you can redistribute it and/or
