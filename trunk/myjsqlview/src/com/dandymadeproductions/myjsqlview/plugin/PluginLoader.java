@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 3.7 12/06/2014
+// Version 3.8 01/05/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -101,6 +101,7 @@
 //         3.7 12/06/2014 Class Method loadPluginModules() Internal ClassLoader Additional
 //                        Debug Output & Checks for Bad Actors With Exceptions ClassNotFound
 //                        & NoClassDefFound.
+//         3.8 01/05/2015 Minor Comment Changes to System.outs to Identify Class & Method.
 //                        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -142,7 +143,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * PluginModule will be loaded.
  * 
  * @author Dana M. Proctor
- * @version 3.7 12/06/2014
+ * @version 3.8 01/05/2015
  */
 
 public class PluginLoader implements Runnable
@@ -207,7 +208,7 @@ public class PluginLoader implements Runnable
          return;
       
       pluginFileName = pluginURL.getFile();
-      // System.out.println("Plugin Name: '" + pluginFileName + "'");
+      // System.out.println("PluginLoader init() Plugin Name: '" + pluginFileName + "'");
       
       // Setup.
       localSystemFileSeparator = MyJSQLView_Utils.getFileSeparator();
@@ -339,7 +340,8 @@ public class PluginLoader implements Runnable
                   continue;
                
                pluginEntriesHashMap.put(pluginURL.toExternalForm(), className);
-               // System.out.println("Located:" + pathKey + " " + className);
+               // System.out.println("PluginLoader loadPluginEntry() Located:"
+               //                   + pluginURL.toExternalForm() + " " + className);
             }
          }
          
@@ -435,7 +437,7 @@ public class PluginLoader implements Runnable
                    && currentFileName.indexOf(VALID_PLUGIN_MODULENAME) != -1)
                {
                   pathKey =  (new URL("file:" + pluginDirectoryString + jarFileNames[i])).toExternalForm();
-                  // System.out.println("Located:" + pathKey);
+                  // System.out.println("PluginLoader loadDefaultPluginEntries() Located:" + pathKey);
                   
                   currentFileName = currentFileName.replaceAll("/", ".");
                   currentFileName = currentFileName.substring(0, currentFileName.indexOf(".class"));
@@ -512,7 +514,7 @@ public class PluginLoader implements Runnable
                   continue;
               
                pluginEntriesHashMap.put(pathKey, className);
-               // System.out.println("Located:" + pathKey);  
+               // System.out.println("PluginLoader loadConfigurationFilePluginEntry() Located:" + pathKey); 
             }
             else
                continue;
@@ -570,7 +572,7 @@ public class PluginLoader implements Runnable
          Map.Entry<String, String> pluginEntry = pluginIterator.next();
          
          final String pluginURLString = pluginEntry.getKey();
-         // System.out.println(pluginURLString);
+         // System.out.println("PluginLoader loadPluginModules() pluginURLString: " + pluginURLString);
             
          ClassLoader classLoader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>()
          {
@@ -605,7 +607,8 @@ public class PluginLoader implements Runnable
             try
             {
                if (MyJSQLView.getDebug())
-                  System.out.println("PluginLoader loadPluginModules() " + pluginEntry.getValue().toString());
+                  System.out.println("PluginLoader loadPluginModules() "
+                                     + pluginEntry.getValue().toString());
                
                try
                {
