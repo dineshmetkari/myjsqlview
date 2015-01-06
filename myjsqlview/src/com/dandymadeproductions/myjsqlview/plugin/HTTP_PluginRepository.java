@@ -10,8 +10,8 @@
 //                 << HTTP_PluginRepository.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
-// Version 1.5 12/20/2014
+// Copyright (C) 2005-2015 Dana M. Proctor
+// Version 1.6 01/02/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -53,6 +53,10 @@
 //             Parent, PluginRepository Class. Renamed the Latter to REPOSITORY_FILENAME.
 //             Class Method setRepository() On validRepository Set Each Plugin in List
 //             to the remoteRepositoryURL Path.
+//         1.6 Added Class Instance generalProperties & Use for Implementation of Setting
+//             Proxy in Method downloadPluginList(). *Note Not Implemented in GUI for
+//             PluginFrame Because Individual Plugin Jar Files Throw UnsupportedOperation
+//             Exception: Method not Implemented When Used. Can be Used for Repository.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,6 +72,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.zip.GZIPInputStream;
@@ -77,6 +83,8 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import com.dandymadeproductions.myjsqlview.MyJSQLView;
+import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
 /**
@@ -86,12 +94,13 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * from a XML file at the resource.
  * 
  * @author Dana M. Proctor
- * @version 1.5 12/20/2014
+ * @version 1.6 01/02/2015
  */
 
 public class HTTP_PluginRepository extends PluginRepository
 {
    // Class Instances
+   private GeneralProperties generalProperties;
    private String remoteRepositoryURL, cachedRepositoryURL;
    private boolean downloadRepository;
    
@@ -108,6 +117,7 @@ public class HTTP_PluginRepository extends PluginRepository
       // this type of repository will always try to
       // download the plugin list if not cached.
       
+      generalProperties = MyJSQLView.getGeneralProperties();
       downloadRepository = true;
       
       setType(PluginRepository.HTTP);
@@ -223,6 +233,7 @@ public class HTTP_PluginRepository extends PluginRepository
    private boolean downloadPluginList()
    {
       // Method Instances
+      Proxy httpProxy;
       URL downloadURL;
       HttpURLConnection httpConnection;
       
@@ -248,7 +259,15 @@ public class HTTP_PluginRepository extends PluginRepository
          // System.out.println("HTTP_PluginRepository downloadPluginList() Downloading Repository List");
          
          downloadURL = new URL(remoteRepositoryURL);
-         httpConnection = (HttpURLConnection) downloadURL.openConnection();
+         
+         if (!generalProperties.getProxyAddress().isEmpty())
+         {
+            httpProxy = new Proxy(Proxy.Type.HTTP, new InetSocketAddress(generalProperties.getProxyAddress(),
+               generalProperties.getProxyPort()));
+            httpConnection = (HttpURLConnection) downloadURL.openConnection(httpProxy);
+         }
+         else
+            httpConnection = (HttpURLConnection) downloadURL.openConnection();
          
          // Authorization Needed.
          if(httpConnection.getResponseCode() == HttpURLConnection.HTTP_PROXY_AUTH)
