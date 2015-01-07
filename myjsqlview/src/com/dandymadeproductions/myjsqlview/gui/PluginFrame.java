@@ -7,8 +7,8 @@
 //                   << PluginFrame.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.7 12/22/2014
+// Copyright (C) 2005-2015 Dana M. Proctor
+// Version 3.8 01/06/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -113,7 +113,10 @@
 //             Modified GUI Dialog Call in addRepository() to Handle openRepositoryButton.
 //             Minor Comment Changes in createRepository(), Code Outline to Handle FTP
 //             Repositories, & Additional Check for File Repository.
-//             
+//         3.8 Promoted Common Method Instances resourceOK, resourceCancel, gridbag, &
+//             constraints to Class Instances. Added Class Instances generalProperties &
+//             proxyButton. Added GUI Components for Proxy Setting, via Method setHttpProxy().
+//             Added Code in createRepository() for FTP Repositories.
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -151,6 +154,7 @@ import java.util.Hashtable;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -177,10 +181,12 @@ import com.dandymadeproductions.myjsqlview.gui.panels.PluginRepositoryPanel;
 import com.dandymadeproductions.myjsqlview.io.ReadDataFile;
 import com.dandymadeproductions.myjsqlview.io.WriteDataFile;
 import com.dandymadeproductions.myjsqlview.plugin.FILE_PluginRepository;
+import com.dandymadeproductions.myjsqlview.plugin.FTP_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.HTTP_PluginRepository;
 import com.dandymadeproductions.myjsqlview.plugin.MyJSQLView_PluginModule;
 import com.dandymadeproductions.myjsqlview.plugin.PluginLoader;
 import com.dandymadeproductions.myjsqlview.plugin.PluginRepository;
+import com.dandymadeproductions.myjsqlview.structures.GeneralProperties;
 import com.dandymadeproductions.myjsqlview.utilities.GzFileFilter;
 import com.dandymadeproductions.myjsqlview.utilities.InputDialog;
 import com.dandymadeproductions.myjsqlview.utilities.JarFileFilter;
@@ -193,7 +199,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * remove, and install new plugins to the MyJSQLView application.
  * 
  * @author Dana M. Proctor
- * @version 3.7 12/22/2014
+ * @version 3.8 01/06/2015
  */
 
 //=================================================================
@@ -207,6 +213,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private static final long serialVersionUID = 6203223580678904034L;
 
    private MyJSQLView_Frame parentFrame;
+   private GeneralProperties generalProperties;
    private JPanel mainPanel;
    private PluginFrameFillerPanel northFillerPanel;
    private JSplitPane splitPane;
@@ -222,12 +229,12 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private JTextPane pluginInformationTextPane;
    private JTextField repositoryURLTextField;
    private JButton openRepositoryButton;
-   private JButton installButton, closeButton, refreshButton;
+   private JButton installButton, closeButton, proxyButton, refreshButton;
 
    private MyJSQLView_ResourceBundle resourceBundle;
    private String fileSeparator, iconsDirectory;
    
-   private String resourceAlert;
+   private String resourceAlert, resourceOK, resourceCancel;
 
    private ImageIcon statusWorkingIcon;
    private ImageIcon addRepositoryIcon, deleteRepositoryIcon;
@@ -236,6 +243,9 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
    private String tabType;
    private int currentTabIndex, removeTabIndex, addTabIndex;
    private StringBuffer lastPluginDirectory;
+   
+   private GridBagLayout gridbag;
+   private GridBagConstraints constraints;
 
    private static final String MANAGE = "manage";
    private static final String REPOSITORY = "repository";
@@ -269,7 +279,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       JPanel southButtonPanel, buttonPanel;
       JScrollPane infoScrollPane;
 
-      ImageIcon plusIcon, minusIcon, refreshIcon;
+      ImageIcon plusIcon, minusIcon, proxyIcon, refreshIcon;
       String resource;
 
       // Setting up resources & instances.
@@ -280,6 +290,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       iconsDirectory = MyJSQLView_Utils.getIconsDirectory() + fileSeparator;
 
       resourceAlert = resourceBundle.getResourceString("PluginFrame.dialogtitle.Alert", "Alert");
+      resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
+      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
       statusWorkingIcon = resourceBundle.getResourceImage(iconsDirectory + "statusWorkingIcon.png");
       removeIcon = resourceBundle.getResourceImage(iconsDirectory + "removeIcon.png");
@@ -287,6 +299,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       deleteRepositoryIcon = resourceBundle.getResourceImage(iconsDirectory + "deleteDataIcon.gif");
       defaultModuleIcon = resourceBundle.getResourceImage(iconsDirectory + "newsiteLeafIcon.png");
 
+      generalProperties = MyJSQLView.getGeneralProperties();
+      
       repositoryHashtable = new Hashtable <String, String>();
       loadingPluginsList = new ArrayList <String>();
       lastPluginDirectory = new StringBuffer();
@@ -299,8 +313,8 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       mainPanel = new JPanel(new BorderLayout());
       mainPanel.setBorder(BorderFactory.createRaisedBevelBorder());
 
-      GridBagLayout gridbag = new GridBagLayout();
-      GridBagConstraints constraints = new GridBagConstraints();
+      gridbag = new GridBagLayout();
+      constraints = new GridBagConstraints();
 
       addWindowListener(pluginFrameListener);
 
@@ -412,26 +426,41 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       closeButton.addActionListener(this);
       buttonPanel.add(closeButton);
 
-      buildConstraints(constraints, 0, 0, 1, 1, 95, 100);
+      buildConstraints(constraints, 0, 0, 1, 1, 90, 100);
       constraints.fill = GridBagConstraints.BOTH;
       constraints.anchor = GridBagConstraints.CENTER;
       gridbag.setConstraints(buttonPanel, constraints);
       southButtonPanel.add(buttonPanel);
-
+      
       resource = resourceBundle.getResourceString("PluginFrame.button.RefreshRepository",
                                                   "Refresh Repository");
       refreshIcon = resourceBundle.getResourceImage(iconsDirectory + "refreshIcon.png");
       refreshButton = new JButton(refreshIcon);
       refreshButton.setToolTipText(resource);
-      refreshButton.setHorizontalAlignment(JButton.RIGHT);
       refreshButton.setMargin(new Insets(0, 0, 0, 0));
       refreshButton.addActionListener(this);
 
       buildConstraints(constraints, 1, 0, 1, 1, 5, 100);
       constraints.fill = GridBagConstraints.NONE;
-      constraints.anchor = GridBagConstraints.CENTER;
+      constraints.anchor = GridBagConstraints.EAST;
       gridbag.setConstraints(refreshButton, constraints);
       southButtonPanel.add(refreshButton);
+      
+      resource = resourceBundle.getResourceString("PluginFrame.button.Proxy",
+            "Proxy");
+      
+      proxyIcon = resourceBundle.getResourceImage(iconsDirectory + "connectionProxyIcon.png");
+      proxyButton = new JButton(proxyIcon);
+      proxyButton.setEnabled(false);
+      proxyButton.setToolTipText(resource);
+      proxyButton.setMargin(new Insets(0, 0, 0, 0));
+      proxyButton.addActionListener(this);
+
+      buildConstraints(constraints, 2, 0, 1, 1, 5, 100);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(proxyButton, constraints);
+      southButtonPanel.add(proxyButton);
 
       mainPanel.add(southButtonPanel, BorderLayout.SOUTH);
 
@@ -547,6 +576,11 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
 
             // Update loading plugins list.
             displayLoadingPluginsData();
+         }
+         // Refresh repository plugin list.
+         else if (frameSource == proxyButton)
+         {
+            setHttpProxy();
          }
          // Refresh repository plugin list.
          else if (frameSource == refreshButton)
@@ -781,6 +815,160 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          }
       }
    }
+   
+   //==============================================================
+   // Classs Method to allow a proxy setting for http connections.
+   //==============================================================
+
+   private void setHttpProxy()
+   {
+      // Method Instances
+      JPanel proxyEntryPanel;
+      JLabel proxyAddressLabel, proxyPortLabel;
+      JTextField proxyAddressTextField, proxyPortTextField;
+      JCheckBox enableProxyCheckBox;
+      
+      String resourceTitle, resource;
+
+      // Setup and display a option pane to collect the
+      // repository address and port. Give it some
+      // default input for help.
+      
+      proxyEntryPanel = new JPanel(gridbag);
+      
+      resourceTitle = resourceBundle.getResourceString("PluginFrame.message.CreateProxy", "Create Proxy");
+      
+      // Proxy Address Label.
+      resource = resourceBundle.getResourceString("PluginFrame.label.Address", "Address");
+      proxyAddressLabel = new JLabel(resource);
+      
+      buildConstraints(constraints, 0, 0, 1, 1, 100, 20);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(proxyAddressLabel, constraints);
+      proxyEntryPanel.add(proxyAddressLabel);
+      
+      // Address Textfield.
+      if (generalProperties.getProxyAddress() != null && !generalProperties.getProxyAddress().isEmpty())
+         proxyAddressTextField = new JTextField(generalProperties.getProxyAddress());
+      else
+         proxyAddressTextField = new JTextField("127.0.0.0");
+      proxyAddressTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED), BorderFactory.createLoweredBevelBorder()));
+      proxyAddressTextField.addMouseListener(MyJSQLView.getPopupMenuListener());
+      
+      buildConstraints(constraints, 0, 1, 1, 1, 100, 20);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(proxyAddressTextField, constraints);
+      proxyEntryPanel.add(proxyAddressTextField);
+
+      // Proxy Port Label.
+      resource = resourceBundle.getResourceString("PluginFrame.label.Port", "Port");
+      proxyPortLabel = new JLabel(resource);
+      
+      buildConstraints(constraints, 0, 2, 2, 1, 100, 20);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(proxyPortLabel, constraints);
+      proxyEntryPanel.add(proxyPortLabel);
+
+      // Port Textfield.
+      if (generalProperties.getProxyPort() != 0)
+         proxyPortTextField = new JTextField(generalProperties.getProxyPort() + "");
+      else
+         proxyPortTextField = new JTextField("80");
+      proxyPortTextField.setBorder(BorderFactory.createCompoundBorder(
+         BorderFactory.createEtchedBorder(EtchedBorder.RAISED), BorderFactory.createLoweredBevelBorder()));
+      proxyPortTextField.addMouseListener(MyJSQLView.getPopupMenuListener());
+      
+      buildConstraints(constraints, 0, 3, 1, 1, 100, 20);
+      constraints.fill = GridBagConstraints.HORIZONTAL;
+      constraints.anchor = GridBagConstraints.LINE_START;
+      gridbag.setConstraints(proxyPortTextField, constraints);
+      proxyEntryPanel.add(proxyPortTextField);
+      
+      // Enable Proxy CheckBox
+      resource = resourceBundle.getResourceString("PluginFrame.label.EnableProxy", "Enable Proxy");
+      
+      enableProxyCheckBox = new JCheckBox(resource, true);
+      
+      buildConstraints(constraints, 0, 4, 1, 1, 100, 20);
+      constraints.fill = GridBagConstraints.NONE;
+      constraints.anchor = GridBagConstraints.CENTER;
+      gridbag.setConstraints(enableProxyCheckBox, constraints);
+      proxyEntryPanel.add(enableProxyCheckBox);
+
+      Object content[] = {proxyEntryPanel};
+
+      InputDialog repositoryDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel, content,
+                                                     null);
+      repositoryDialog.pack();
+      repositoryDialog.setSize(new Dimension(400, 200));
+      repositoryDialog.setResizable(true);
+      repositoryDialog.center();
+      repositoryDialog.setVisible(true);
+
+      // Collect the new repository information and try
+      // adding to the plugin manager.
+
+      if (repositoryDialog.isActionResult())
+      {
+         if (enableProxyCheckBox.isSelected())
+         {
+            StringBuffer errorMessage = new StringBuffer();
+            
+            String proxyAddress = proxyAddressTextField.getText().trim();
+            String proxyPort = proxyPortTextField.getText().trim();
+            
+            // Check
+            try
+            {  
+               if (proxyAddress.isEmpty())
+                  throw new IllegalArgumentException("Empty String");
+                  
+               /*
+               if (proxyAddress.split("\\.").length != 4)
+                  if (proxyAddress.split(".").length != 6)
+               {
+                     // could spit and check for numeric ip
+                     // address, but host names are allowed.
+               }
+               */
+            }
+            catch (IllegalArgumentException iae)
+            {
+               errorMessage.append(iae);
+            }
+            
+            try
+            {
+               Integer.valueOf(proxyPort);
+            }
+            catch (NumberFormatException nfe)
+            {
+               if (errorMessage.toString().isEmpty())
+                  errorMessage.append(nfe);
+               else
+                  errorMessage.append("/n" + nfe);     
+            }
+            
+            // Proceed with processing as required.
+            if (errorMessage.toString().isEmpty())
+            {
+               generalProperties.setProxyAddress(proxyAddress);
+               generalProperties.setProxyPort(Integer.valueOf(proxyPort));
+            }
+            else
+            {
+               JOptionPane.showMessageDialog(null, errorMessage, resourceAlert, JOptionPane.ERROR_MESSAGE);
+            }
+         }
+         // Disable.
+         else
+            generalProperties.setProxyAddress("");
+      }
+   }
 
    //==============================================================
    // Classs Method to aquire a local file for a plugin or directory
@@ -996,7 +1184,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       // Method Instances
       JLabel message;
       InputDialog deleteDialog;
-      String resourceMessage, resourceCancel, resourceOK;
+      String resourceMessage;
 
       // Confirming really want to delete dialog.
 
@@ -1006,9 +1194,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       message.setFont(new Font("DIALOG", Font.BOLD, 14));
       message.setForeground(Color.RED);
       Object[] content = {message};
-
-      resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
-      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
       deleteDialog = new InputDialog(null, resourceAlert, resourceOK, resourceCancel, content,
                                      deleteRepositoryIcon);
@@ -1118,12 +1303,9 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       JTextField repositoryNameTextField;
       
       String resourceTitle, repositoryName;
-      String resource, resourceOK, resourceCancel;
+      String resource;
       
       ImageIcon openIcon;
-      
-      GridBagLayout gridbag = new GridBagLayout();
-      GridBagConstraints constraints = new GridBagConstraints();
 
       // Setup and display a option pane to collect the
       // repository name and location, url. Give it some
@@ -1192,9 +1374,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
       repositoryEntryPanel.add(openRepositoryButton);
 
       Object content[] = {repositoryEntryPanel};
-
-      resourceOK = resourceBundle.getResourceString("PluginFrame.dialogbutton.OK", "OK");
-      resourceCancel = resourceBundle.getResourceString("PluginFrame.dialogbutton.Cancel", "Cancel");
 
       InputDialog repositoryDialog = new InputDialog(null, resourceTitle, resourceOK, resourceCancel, content,
                                                      addRepositoryIcon);
@@ -1271,10 +1450,10 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             pluginRepository = new HTTP_PluginRepository();
          }
          // ftp, ftps
-         //else if (repositoryURLString.toLowerCase().startsWith(PluginRepository.FTP))
-         //{
-         //   System.out.println("PluginFrame createRepository() ftp,ftps");
-         //}
+         else if (repositoryURLString.toLowerCase().startsWith(PluginRepository.FTP))
+         {
+            pluginRepository = new FTP_PluginRepository();
+         }
          // file.
          else 
          {
@@ -1286,7 +1465,7 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          // Setup the repository.
          pluginRepository.setName(repositoryNameString);
 
-         if (pluginRepository.setRepository(repositoryURLString) == true)
+         if (pluginRepository.setRepository(repositoryURLString))
          {  
             // Load up the tab with a predefined repository panel.
 
@@ -1307,6 +1486,9 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
             removeTabIndex++;
             addTabIndex++;
          }
+         else
+            centralTabsPane.setSelectedIndex(0);
+            
       }
    }
    
