@@ -12,7 +12,7 @@
 //           << TableTabPanel_MSSQL.java >>
 //
 //================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
+// Copyright (C) 2005-2015 Dana M. Proctor
 // Version 1.3 02/14/2014
 //
 // This program is free software; you can redistribute it and/or
