@@ -9,8 +9,8 @@
 //            << StandardParametersPanel.java >>
 //
 //=================================================================
-// Copyright (C) 2005-2014 Dana M. Proctor
-// Version 3.3 10/30/2014
+// Copyright (C) 2005-2015 Dana M. Proctor
+// Version 3.4 01/03/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -68,6 +68,8 @@
 //         3.2 Class Methods getHost(), getDataBase(), & getUser() Return Empty
 //             String If No Selection in ComboBox.
 //         3.3 Parameterized JComboBox Class Instances to Conform With JRE 7.
+//         3.4 Class Method setPassword() Clearing contentString Only if Not
+//             Empty.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -94,7 +96,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_ResourceBundle;
  * in the MyJSQLView_Access and ConnectionManager classes.
  * 
  * @author Dana M. Proctor
- * @version 3.3 10/30/2014
+ * @version 3.4 01/03/2015
  */
 
 public class StandardParametersPanel extends JPanel
@@ -288,12 +290,14 @@ public class StandardParametersPanel extends JPanel
       for (int i = 0; i < content.length; i++)
          contentString.append(content[i]);
 
-      if ((contentString.toString()).trim().equals(""))
+      if ((contentString.toString()).trim().isEmpty())
          passwordTextField.setText("");
       else
+      {
          passwordTextField.setText(contentString.toString());
-      
-      // Clear contentString.
-      contentString.delete(0, (contentString.length() - 1));
+         
+         // Clear contentString.
+         contentString.delete(0, (contentString.length() - 1));
+      }
    }
 }
