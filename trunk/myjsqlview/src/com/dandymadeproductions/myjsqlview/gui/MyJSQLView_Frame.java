@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 8.8 10/22/2014
+// Version 8.9 02/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -209,6 +209,8 @@
 //                        Out of Bounds.
 //         8.8 10/22/2014 Class Method stateChanged() Issueing of start() & stop() Routines on
 //                        Plugins on Main Tab Changes.
+//         8.9 02/08/2015 Added Class Instance thisFrame. Use of New Instance in WindowAdapter to
+//                        Save Position & Size. Minor Comment Changes.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -218,6 +220,7 @@ package com.dandymadeproductions.myjsqlview.gui;
 
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -256,13 +259,14 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * creation and inclusion.
  * 
  * @author Dana M. Proctor
- * @version 8.8 10/22/2014
+ * @version 8.9 02/08/2015
  */
 
 public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeListener
 {
    // Class Instances.
    private static final long serialVersionUID = -5105256432038108191L;
+   private static JFrame thisFrame;
 
    private TopTabPanel mainTabPanel;
    private MyJSQLView_JMenuBar myJSQLViewMenuBar;
@@ -280,7 +284,10 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
    private static ArrayList<MyJSQLView_PluginModule> loadedPluginModules = 
                                                   new ArrayList <MyJSQLView_PluginModule>();
    private static SQLQueryBucketFrame sqlQueryBucketFrame = new SQLQueryBucketFrame();
+   
    protected static final JButton pluginFrameListenButton = new JButton();
+   public static final int FRAME_DEFAULT_WIDTH = 800;
+   public static final int FRAME_DEFAULT_HEIGHT = 600;
    
    //==============================================================
    // MyJSQLView_Frame Constructor
@@ -296,18 +303,22 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
 
       this.myJSQLView_Version = myJSQLView_Version.clone();
       this.webSiteString = webSiteString;
+      thisFrame = this;
       
       //==================================================
       // Frame Window closing listener to detect the frame
       // window closing event so the SQL Query Bucket can
-      // be saved.
+      // be saved, along with some other clean up activity.
       //==================================================
 
       WindowListener myjsqlviewFrameListener = new WindowAdapter()
       {
          public void windowClosing(WindowEvent e)
          {
+            // Save Query Bucket Data.
             sqlQueryBucketFrame.saveLastUsedList();
+            
+            // Shutdown Connection as Needed.
             ConnectionManager.shutdown("MyJSQLView_Frame WINDOW_CLOSING");
             
             // Notify plugins to pending close.
@@ -318,8 +329,12 @@ public class MyJSQLView_Frame extends JFrame implements ActionListener, ChangeLi
                currentPlugin.shutdown();
             }
             
+            // Clear Cash
             MyJSQLView_Utils.clearCache();
             
+            // Save Frame Size & Position
+            MyJSQLView.getGeneralProperties().setPosition(new Point(thisFrame.getX(), thisFrame.getY()));
+            MyJSQLView.getGeneralProperties().setDimension(thisFrame.getSize());
             System.exit(0);
          }
 
