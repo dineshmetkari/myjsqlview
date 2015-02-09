@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.8 09/21/2012
+// Version 1.9 02/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.7 09/11/2012 Changed Package Name to com.dandymadeproductions.myjsqlview.gui.panels.
 //                        Made Class, & Constructor Public.
 //         1.8 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
+//         1.9 02/09/2015 Modification in drawPanel() To Scale Image on Frame Resized
+//                        to Insure Panel Graphics Are Full Size.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -64,6 +66,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.Calendar;
@@ -81,7 +84,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.8 09/21/2012
+ * @version 1.9 02/09/2015
  */
 
 public class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -160,6 +163,7 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
 
          // Sub-divide the background image to be used in into
          // smaller images to be animated.
+         
          imageIcons = new ImageIcon[backgroundImageWidth / imageIconSize][backgroundImageHeight
                                                                           / imageIconSize];
 
@@ -173,7 +177,7 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
          // Load the sub-images into the working animation copy.
          currentImageIcons = new ImageIcon[backgroundImageWidth / imageIconSize][backgroundImageHeight
                                                                                  / imageIconSize];
-
+         
          // Clean up.
          g2D.dispose();
          
@@ -194,7 +198,7 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
       delayAnimation = true;
       addMouseListener(this);
    }
-
+   
    //==============================================================
    // Class method to initialize the animation by randomly selecting
    // a blank position, hole, in the sub-image array. Also then
@@ -429,12 +433,13 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
    {
       // Class Methods
       Graphics2D g2D;
+      AffineTransform scaleAffineTransform;
       int panelWidth, panelHeight;
-      int xPosition, yPosition;
       int currentXPosition, currentYPosition;
 
       // Panel parameters.
       g2D = (Graphics2D) g1;
+      g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       panelWidth = this.getWidth();
       panelHeight = this.getHeight();
 
@@ -454,9 +459,6 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
          
          // Just draw Dandy Made Productions with changing gradient
          // colors.
-         
-         g2D = (Graphics2D) g1;
-         g2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
          
          randomNumber = new Random(System.currentTimeMillis());
          randomColor1 = new Color(Math.abs(randomNumber.nextInt() % 254),
@@ -481,19 +483,23 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
       // Normal animate sequence.
       else
       {
-         // Select the center of panel to start drawing.
-         xPosition = (panelWidth - backgroundImageWidth) / 2;
-         if (xPosition < 0)
-            xPosition = 0;
-
-         yPosition = (panelHeight - backgroundImageHeight) / 2;
-         if (yPosition < 0)
-            yPosition = 0;
-
+         // Check to see if panel size has been changed
+         // so that the animation can be scaled appropriately.
+         
+         if (panelWidth != backgroundImageWidth || panelHeight != backgroundImageHeight)
+         {
+            scaleAffineTransform = AffineTransform.getScaleInstance(
+               panelWidth / ((double) backgroundImageWidth),
+               panelHeight / ((double) backgroundImageHeight));
+            
+            g2D.setTransform(scaleAffineTransform);
+            
+         }
+         
          // Setup to begin drawing.
-         currentXPosition = xPosition;
-         currentYPosition = yPosition;
-
+         currentXPosition = 0;
+         currentYPosition = 0;
+         
          // Draw the sub-images.
          for (int i = 0; i < imageIcons.length; i++)
          {
@@ -601,7 +607,7 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
             // Increment to next horizontal position
             // and reset to intial vertical position.
             currentXPosition += imageIconSize;
-            currentYPosition = yPosition;
+            currentYPosition = 0;
          }
       }
    }
