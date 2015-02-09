@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 7.00 01/02/2015
+// Version 7.01 02/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -236,6 +236,8 @@
 //         7.00 01/02/2015 Updated Copyright & Pulled Version Forward to Mark Applications
 //                         Compliance With JRE 7. *NOTE THE APPLICATION IS NO LONGER
 //                         COMPATIBLE WITH PRIOR JRE VERSIONS.
+//         7.01 02/08/2015 Method actionPerformed() MyJSQLView_Frame Set Location &
+//                         Size From GeneralProperties Parameters.
 //                         
 //         
 //-----------------------------------------------------------------
@@ -279,7 +281,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 7.00 01/02/2015
+ * @version 7.01 02/08/2015
  */
 
 public class MyJSQLView implements ActionListener
@@ -418,7 +420,8 @@ public class MyJSQLView implements ActionListener
             myJSQLViewFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             myJSQLViewFrame.createGUI();
             myJSQLViewFrame.addMouseListener(myJSQLViewPopupListener);
-            myJSQLViewFrame.setSize(800, 600);
+            myJSQLViewFrame.setLocation(generalProperties.getPosition());
+            myJSQLViewFrame.setSize(generalProperties.getDimension());
             myJSQLViewFrame.setVisible(true);
          }
       }
