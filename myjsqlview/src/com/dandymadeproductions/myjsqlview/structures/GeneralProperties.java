@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.6 01/02/2015
+// Version 1.7 02/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -40,6 +40,8 @@
 //         1.5 Removed System.out in Constructor.
 //         1.6 Added Class Instances proxyAddress & proxyPort Along With
 //             Corresponding get/setter Methods.
+//         1.7 Added Class Instances framePosition_X, framePosition_Y, frameWidth,
+//             & frameHeight Along With Corresponding get/setter Methods.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -47,11 +49,14 @@
 
 package com.dandymadeproductions.myjsqlview.structures;
 
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.util.prefs.Preferences;
 
 import javax.swing.UIManager;
 
+import com.dandymadeproductions.myjsqlview.gui.MyJSQLView_Frame;
 import com.dandymadeproductions.myjsqlview.gui.panels.GeneralPreferencesPanel;
 import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
 
@@ -60,13 +65,15 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.6 01/02/2015
+ * @version 1.7 02/08/2015
  */
 
 public class GeneralProperties
 {
    // Class Instances.
    private int fontSize;
+   private int framePosition_X, framePosition_Y;
+   private int frameWidth, frameHeight;
    private String sequenceList;
    private String proxyAddress;
    private int proxyPort;
@@ -74,6 +81,10 @@ public class GeneralProperties
    private Preferences generalPreferences;
    
    public static final String APPFONTSIZE = "AppFontSize";
+   public static final String APPFRAMEPOSITIONX = "AppFramePositionX";
+   public static final String APPFRAMEPOSITIONY = "AppFramePositionY";
+   public static final String APPFRAMEWIDTH = "AppFrameWidth";
+   public static final String APPFRAMEHEIGHT = "AppFrameHeight";
    public static final String APPSEQUENCELIST = "AppSequenceList";
    public static final String PROXYADDRESS = "AppProxyAddress";
    public static final String PROXYPORT = "AppProxyPort";
@@ -108,9 +119,25 @@ public class GeneralProperties
       try
       {
          fontSize = generalPreferences.getInt(APPFONTSIZE, fontSize);
+         framePosition_X = generalPreferences.getInt(APPFRAMEPOSITIONX, framePosition_X);
+         framePosition_Y = generalPreferences.getInt(APPFRAMEPOSITIONY, framePosition_Y);
+         frameWidth = generalPreferences.getInt(APPFRAMEWIDTH, frameWidth);
+         frameHeight = generalPreferences.getInt(APPFRAMEHEIGHT, frameHeight);
          sequenceList = generalPreferences.get(APPSEQUENCELIST, sequenceList);
          proxyAddress = generalPreferences.get(PROXYADDRESS, proxyAddress);
          proxyPort = generalPreferences.getInt(PROXYPORT, proxyPort);
+         
+         if (framePosition_X < 0 || framePosition_Y < 0)
+         {
+            framePosition_X = 0;
+            framePosition_Y = 0;
+         }
+         
+         if (frameWidth <= 0 || frameHeight <= 0)
+         {
+            frameWidth = MyJSQLView_Frame.FRAME_DEFAULT_WIDTH;
+            frameHeight = MyJSQLView_Frame.FRAME_DEFAULT_HEIGHT;
+         }
          
          if (sequenceList == null || sequenceList.isEmpty())
          {
@@ -131,6 +158,16 @@ public class GeneralProperties
    public int getFontSize()
    {
       return fontSize;
+   }
+   
+   public Point getPosition()
+   {
+      return new Point(framePosition_X, framePosition_Y);
+   }
+   
+   public Dimension getDimension()
+   {
+      return new Dimension(frameWidth, frameHeight);
    }
    
    public int[] getSequenceList()
@@ -168,6 +205,38 @@ public class GeneralProperties
    {
       fontSize = value;
       savePreference(APPFONTSIZE, value);
+   }
+   
+   public void setPosition(Point value)
+   {
+      if (value.x < 0 || value.y <= 0)
+      {
+         framePosition_X = 0;
+         framePosition_Y = 0;
+      }
+      else
+      {
+         framePosition_X = value.x;
+         framePosition_Y = value.y; 
+      }
+      savePreference(APPFRAMEPOSITIONX, value.x);
+      savePreference(APPFRAMEPOSITIONY, value.y);
+   }
+   
+   public void setDimension(Dimension value)
+   {
+      if (value.width <= 0 || value.height <= 0)
+      {
+         frameWidth = MyJSQLView_Frame.FRAME_DEFAULT_WIDTH;
+         frameHeight = MyJSQLView_Frame.FRAME_DEFAULT_HEIGHT;
+      }
+      else
+      {
+         frameWidth = value.width;
+         frameHeight = value.height; 
+      }
+      savePreference(APPFRAMEWIDTH, value.width);
+      savePreference(APPFRAMEHEIGHT, value.height);
    }
    
    public void setSequenceList(int[] value)
@@ -228,6 +297,10 @@ public class GeneralProperties
       StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
       
       parameters.append("[fontSize = " + fontSize + "]");
+      parameters.append("[framePosition_X = " + framePosition_X + "]");
+      parameters.append("[framePosition_Y = " + framePosition_Y + "]");
+      parameters.append("[framewidth = " + frameWidth + "]");
+      parameters.append("[frameheight = " + frameHeight + "]");
       parameters.append("[proxyAddress = " + proxyAddress + "]");
       parameters.append("proxyPort = " + proxyPort + "]");
 
