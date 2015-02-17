@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.9 02/09/2015
+// Version 2.0 02/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@
 //         1.8 09/21/2012 Removal of Starting the Panel's Runnable Thread in the Constructor.
 //         1.9 02/09/2015 Modification in drawPanel() To Scale Image on Frame Resized
 //                        to Insure Panel Graphics Are Full Size.
+//         2.0 02/17/2015 Class Method drawPanel() Slight Modification to Scaling of Graphics
+//                        to Insure Image is Draw in Entire Panel.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -84,7 +86,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * application that is used to highlight the creator, Dandy Made Productions.
  * 
  * @author Dana M. Proctor
- * @version 1.9 02/09/2015
+ * @version 2.0 02/17/2015
  */
 
 public class TopTabPanel extends JPanel implements MouseListener, Runnable
@@ -483,18 +485,13 @@ public class TopTabPanel extends JPanel implements MouseListener, Runnable
       // Normal animate sequence.
       else
       {
-         // Check to see if panel size has been changed
-         // so that the animation can be scaled appropriately.
+         // Scale appropriately.
          
-         if (panelWidth != backgroundImageWidth || panelHeight != backgroundImageHeight)
-         {
-            scaleAffineTransform = AffineTransform.getScaleInstance(
-               panelWidth / ((double) backgroundImageWidth),
-               panelHeight / ((double) backgroundImageHeight));
-            
-            g2D.setTransform(scaleAffineTransform);
-            
-         }
+         scaleAffineTransform = AffineTransform.getScaleInstance(
+            (panelWidth / ((double) backgroundImageWidth)) + 0.1,
+            (panelHeight / ((double) backgroundImageHeight) + 0.1));
+         
+         g2D.setTransform(scaleAffineTransform);
          
          // Setup to begin drawing.
          currentXPosition = 0;
