@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 7.62 01/21/2014
+// Version 7.63 02/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -310,6 +310,7 @@
 //             Shutdown.
 //        7.62 Method dataExportAction() Truncated Additional Parameters Passed in Database
 //             Login Field for File Naming.
+//        7.63 Method actionsSelection() Action Exit Saving Frame Parameters.
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -317,6 +318,7 @@
 
 package com.dandymadeproductions.myjsqlview.gui;
 
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.print.PageFormat;
@@ -377,7 +379,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.62 01/21/2014
+ * @version 7.63 02/17/2015
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -508,7 +510,12 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
             currentPlugin.shutdown();
          }
          
+         // Clear Cash
          MyJSQLView_Utils.clearCache();
+         
+         // Save Frame Size & Position
+         MyJSQLView.getGeneralProperties().setPosition(new Point(parent.getX(), parent.getY()));
+         MyJSQLView.getGeneralProperties().setDimension(parent.getSize());
          
          System.exit(0);
       }
