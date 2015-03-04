@@ -6,6 +6,8 @@
 --                    tables.
 --         11/28/2008 Added key_table8.
 --         07/21/2010 Updated Contact, Email, Address.
+--         03/04/2015 Updated to Correct Issues With Sequences on One
+--                    Line, & Other Comments Problems With 11g.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -22,17 +24,13 @@
 --
 
 DROP SEQUENCE key_table1_key_id1_seq;
-CREATE SEQUENCE key_table1_key_id1_seq
- 	START WITH 1
-	INCREMENT BY 1
-	NOMAXVALUE;
+CREATE SEQUENCE key_table1_key_id1_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
 DROP TABLE key_table1;
 CREATE TABLE key_table1 (
   key_id1 integer NOT NULL,
   key_id2 integer default 0 NOT NULL,
   text varchar2(255)
-  -- PRIMARY KEY  (key_id1, key_id2)
 );
 ALTER TABLE key_table1 ADD CONSTRAINT key_table1_key_id1_seq PRIMARY KEY (key_id1, key_id2);
 
@@ -89,10 +87,7 @@ CREATE TABLE key_table5 (
 --
 
 DROP SEQUENCE key_table6_image_id_seq;
-CREATE SEQUENCE key_table6_image_id_seq
- 	START WITH 1
-	INCREMENT BY 1
-	NOMAXVALUE;
+CREATE SEQUENCE key_table6_image_id_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
 DROP TABLE key_table6;
 CREATE TABLE key_table6 (
@@ -100,7 +95,6 @@ CREATE TABLE key_table6 (
   name varchar(30) default NULL,
   blob_field1 blob,
   blob_field2 blob
-  -- PRIMARY KEY (image_id)
 );
 ALTER TABLE key_table6 ADD CONSTRAINT key_table6_image_id_seq PRIMARY KEY (image_id);
 
@@ -135,16 +129,11 @@ DROP TABLE child;
 DROP TABLE parent;
 
 DROP SEQUENCE parent_id_seq;
-CREATE SEQUENCE parent_id_seq
- 	START WITH 1
-	INCREMENT BY 1
-	NOMAXVALUE;
-
+CREATE SEQUENCE parent_id_seq START WITH 1 INCREMENT BY 1 NOMAXVALUE;
 
 CREATE TABLE parent (
   id number,
   name varchar(60) default ''
-  -- PRIMARY KEY (id)
 );
 ALTER TABLE parent ADD CONSTRAINT parent_id_seq PRIMARY KEY (id);
 
