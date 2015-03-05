@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 2.0 06/18/2014
+// Version 2.1 03/05/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -54,6 +54,8 @@
 //         1.9 Added Class Instance MSSQL_TYPES Along With Conditional Check in
 //             Constructor of Such.
 //         2.0 Constructor Setting of addSourceSinkType() to MYSQL_TYPES for MariaDB.
+//         2.1 Addition to ORACLE_TYPES for NCHAR, NVARCHAR2, TIMESTAMP WITH TIME
+//             ZONE, TIMESTAMP WITH LOCAL TIME ZONE, & TIMESTAMPLTZ.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -69,7 +71,7 @@ import java.util.Map;
  * data types information for the various support databases.
  * 
  * @author Dana M. Proctor
- * @version 2.0 06/18/2014
+ * @version 2.1 03/05/2015
  */
 
 public class TypesInfoCache
@@ -242,7 +244,9 @@ public class TypesInfoCache
    
    private static final int[][] ORACLE_TYPES = {
        {TypeID.ORACLE_CHAR, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
+       {TypeID.ORACLE_NCHAR, TypeID.H2_CHAR, TypeID.HSQL_CHARACTER, TypeID.DERBY_CHAR},
        {TypeID.ORACLE_VARCHAR2, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
+       {TypeID.ORACLE_NVARCHAR2, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR},
        {TypeID.ORACLE_LONG, TypeID.H2_LONGVARCHAR, TypeID.HSQL_LONGVARCHAR, TypeID.DERBY_LONG_VARCHAR},
        {TypeID.ORACLE_RAW, TypeID.H2_BLOB, TypeID.HSQL_VARBINARY, TypeID.DERBY_VARCHAR_FOR_BIT_DATA},
        {TypeID.ORACLE_LONG_RAW, TypeID.H2_BLOB, TypeID.HSQL_BLOB, TypeID.DERBY_BLOB},
@@ -258,6 +262,9 @@ public class TypesInfoCache
        {TypeID.ORACLE_DATE, TypeID.H2_DATE, TypeID.HSQL_DATE, TypeID.DERBY_DATE},
        {TypeID.ORACLE_TIMESTAMP, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP, TypeID.DERBY_TIMESTAMP},
        {TypeID.ORACLE_TIMESTAMPTZ, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
+       {TypeID.ORACLE_TIMESTAMP_WITH_TIME_ZONE, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
+       {TypeID.ORACLE_TIMESTAMPLTZ, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
+       {TypeID.ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE, TypeID.H2_TIMESTAMP, TypeID.HSQL_TIMESTAMP_WITH_TIME_ZONE, TypeID.DERBY_TIMESTAMP},
        {TypeID.ORACLE_INTERVALYM, TypeID.H2_VARCHAR, TypeID.HSQL_INTERVAL_YEAR_TO_MONTH, TypeID.DERBY_VARCHAR},
        {TypeID.ORACLE_INTERVALDS, TypeID.H2_VARCHAR, TypeID.HSQL_VARCHAR, TypeID.DERBY_VARCHAR}};
    
