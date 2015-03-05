@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.9 02/18/2014
+// Version 2.0 03/05/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -48,6 +48,10 @@
 //             Check to Replace of Underscore Character.
 //         1.8 Added Class Instance Type IDs for MSSQL.
 //         1.9 Added Class Instance MSSQL_REAL. Re-Sequenced MSSQL Type IDs integers.
+//         2.0 Added Class Instances ORACLE_NCHAR, ORACLE_NVARCHAR2, ORACLE_TIMESTAMPLTZ,
+//             ORACLE_TIMESTAMP_WITH_TIME_ZONE, & ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE.
+//             Method toString() Changes to Insure Oracle Timestamp With/Local Time Zone
+//             is Properly Formatted.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -62,7 +66,7 @@ import java.lang.reflect.Field;
  * types that follows a prescribe naming scheme.
  * 
  * @author Dana M. Proctor
- * @version 1.9 02/18/2014
+ * @version 2.0 03/05/2015
  */
 
 public class TypeID
@@ -220,7 +224,9 @@ public class TypeID
    
    // Oracle Data Type IDs
    public static final int ORACLE_CHAR = 22;
+   public static final int ORACLE_NCHAR = 23;
    public static final int ORACLE_VARCHAR2 = 24;
+   public static final int ORACLE_NVARCHAR2 = 25;
    public static final int ORACLE_LONG = 26;
    public static final int ORACLE_RAW = 28;
    public static final int ORACLE_LONG_RAW = 29;
@@ -236,8 +242,11 @@ public class TypeID
    public static final int ORACLE_DATE = 42;
    public static final int ORACLE_TIMESTAMP = 44;
    public static final int ORACLE_TIMESTAMPTZ = 46;
-   public static final int ORACLE_INTERVALYM = 48;
-   public static final int ORACLE_INTERVALDS = 50;
+   public static final int ORACLE_TIMESTAMP_WITH_TIME_ZONE = 47;
+   public static final int ORACLE_TIMESTAMPLTZ = 48;
+   public static final int ORACLE_TIMESTAMP_WITH_LOCAL_TIME_ZONE = 49;
+   public static final int ORACLE_INTERVALYM = 50;
+   public static final int ORACLE_INTERVALDS = 51;
    
    // SQLite Data Type IDs
    public static final int SQLITE_INTEGER = 52;
@@ -323,8 +332,18 @@ public class TypeID
                   prefix = fields[i].getName().substring(0, fields[i].getName().indexOf("_"));
                   name = fields[i].getName().substring(fields[i].getName().indexOf("_") + 1);
                   
-                  if (name.indexOf("_") != -1 && (!prefix.equals("H2") && !prefix.equals("ORACLE")))
-                     return name.replaceAll("_", " ");
+                  if (name.indexOf("_") != -1 && (!prefix.equals("H2")))
+                  {
+                     if (prefix.equals("ORACLE"))
+                     {
+                        if (name.indexOf("TIME_ZONE") != -1 || name.indexOf("LONG_RAW") != -1)
+                           return name.replaceAll("_", " ");
+                        else
+                           return name;
+                     }
+                     else
+                        return name.replaceAll("_", " ");
+                  }
                   else
                      return name;
                }
