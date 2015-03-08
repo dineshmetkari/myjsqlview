@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.06 10/26/2014
+// Version 9.07 03/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -383,6 +383,10 @@
 //        9.06 10/26/2014 Parameterized JComboBox Instances in Constructor & in Methods
 //                        selectFunctionOperator(), getFormField(), setFormField(), &
 //                        setComboBoxField() to Conform With JRE 7.
+//        9.07 03/08/2015 Constructor Inclusion of JTextFields for TIMESTAMP WITH (LOCAL) TIME
+//                        ZONE. Changes in addUpdateTableEntry() for Same Column Type Changes
+//                        in Oracle 11. Method createFunctionOperator() Addition of No Use
+//                        of Parentheses for Oracle SYSTIMESTAMP Function.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -454,7 +458,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.06 10/26/2014
+ * @version 9.07 03/08/2015
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -784,7 +788,8 @@ public class TableEntryForm extends JFrame implements ActionListener
 
          // TIMESTAMP Type Fields.
          else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
-                  || columnType.equals("TIMESTAMPLTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                  || columnType.equals("TIMESTAMPLTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                  || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
          {
             currentField = new JTextField();
             if (addItem)
@@ -2063,9 +2068,11 @@ public class TableEntryForm extends JFrame implements ActionListener
                   }
                   // Timestamp
                   else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMP WITH TIME ZONE")
-                           || columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMPLTZ"))
+                           || columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMPLTZ")
+                           || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                   {
-                     if (columnType.equals("TIMESTAMPLTZ"))
+                     if (columnType.equals("TIMESTAMPLTZ")
+                         || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                         MyJSQLView_Utils.setLocalTimeZone(sqlStatement);
 
                      if (addItem)
@@ -2113,7 +2120,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                            }
                            else
                            {
-                              if (columnType.equals("TIMESTAMPLTZ"))
+                              if (columnType.equals("TIMESTAMPLTZ")
+                                  || columnType.equals("TIMESTAMP WITH LOCAL TIMEZONE"))
                                  timeStampFormat = new SimpleDateFormat(
                                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                     + " HH:mm:ss Z");
@@ -2578,7 +2586,14 @@ public class TableEntryForm extends JFrame implements ActionListener
       else
       {
          if (getFormField(columnName) == null || getFormField(columnName).length() == 0)
-            sqlStatementString.append("(), ");
+         {
+            // What other functions do not use ()?
+            if (dataSourceType.equals(ConnectionManager.ORACLE)
+                  && functionsHashMap.get(columnName).equals("SYSTIMESTAMP"))
+               sqlStatementString.append(", ");
+            else
+               sqlStatementString.append("(), ");
+         }
          else
          {
             // Take into count multiple arguments
