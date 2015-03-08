@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 12.4 07/01/2013
+// Version 12.5 03/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -292,6 +292,10 @@
 //             Collected via getDisposeButton().
 //        12.4 Change in loadTable(), viewSelectedItem(), addItem(), &
 //             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
+//        12.5 Update to Method loadTable(), viewSelectedItem(), addItem() &
+//             editSelectedItem() To Accomodate Oracle 11 Database For Column
+//             Type Changes. Namely TIMESTAMP WITH (LOCAL) TIME ZONE, NCHAR,
+//             & NVARCHAR2.
 //
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -333,7 +337,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 12.4 07/01/2013
+ * @version 12.5 03/08/2015
  */
 
 public class TableTabPanel_Oracle extends TableTabPanel
@@ -518,7 +522,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
             // Create a second table field string that allows the collection
             // ot Timestamp Fields with Local Time Zone. Oracle JDBC doozie.
             // SESSION TIMEZONE NOT SET. Were not going to do this at the
-            // connection or ALTER SESSION.
+            // connection or ALTER SESSION. Only 10, not 11.
 
             if (columnType.toUpperCase().equals("TIMESTAMPLTZ"))
             {
@@ -945,10 +949,8 @@ public class TableTabPanel_Oracle extends TableTabPanel
                         + " HH:mm:ss").format(currentContentData));
                   }
 
-                  // =============================================
-                  // Timestamps With Time Zone
-                  
-                  else if (columnType.equals("TIMESTAMPTZ"))
+                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                           || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      
@@ -1015,9 +1017,10 @@ public class TableTabPanel_Oracle extends TableTabPanel
                   }
 
                   // =============================================
-                  // VARCHAR2
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
-                            && columnSize > 255)
+                  // VARCHAR2/NVARCHAR2/LONG
+                  else if (columnClass.indexOf("String") != -1
+                           && (!columnType.equals("CHAR") || !columnType.equals("NCHAR"))
+                           && columnSize > 255)
                   {
                      String stringName;
                      stringName = (String) currentContentData;
@@ -1329,7 +1332,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
                }
 
                // Timestamps With Time Zone Type Field
-               else if (currentColumnType.equals("TIMESTAMPTZ"))
+               else if (currentColumnType.equals("TIMESTAMPTZ")
+                        || currentColumnType.equals("TIMESTAMP WITH TIME ZONE")
+                        || currentColumnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
@@ -1397,7 +1402,7 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
                // VARCHAR2 & LONG
                else if ((currentColumnClass.indexOf("String") != -1 &&
-                         !currentColumnType.equals("CHAR") &&
+                         (!currentColumnType.equals("CHAR") || !currentColumnType.equals("NCHAR")) &&
                         (columnSizeHashMap.get(currentColumnName)).intValue() > 255) ||
                         (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
                {
@@ -1516,7 +1521,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
          // TIMESTAMP Type Field
          if (currentColumnType.equals("TIMESTAMP") || currentColumnType.equals("TIMESTAMPTZ")
-             || currentColumnType.equals("TIMESTAMPLTZ"))
+             || currentColumnType.equals("TIMESTAMP WITH TIME ZONE")
+             || currentColumnType.equals("TIMESTAMPLTZ")
+             || currentColumnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
          {
             currentContentData = "NOW()";
             addForm.setFormField(currentColumnName, currentContentData);
@@ -1732,12 +1739,16 @@ public class TableTabPanel_Oracle extends TableTabPanel
             }
 
             // Timestamps With Time Zone Type Fields
-            else if (currentColumnType.equals("TIMESTAMPTZ") ||
-                     currentColumnType.equals("TIMESTAMPLTZ"))
+            else if (currentColumnType.equals("TIMESTAMPTZ")
+                     || currentColumnType.equals("TIMESTAMP WITH TIME ZONE")
+                     || currentColumnType.equals("TIMESTAMPLTZ")
+                     || currentColumnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
             {
                if (currentContentData != null)
                {
-                  if (currentColumnType.equals("TIMESTAMPTZ"))
+                  if (currentColumnType.equals("TIMESTAMPTZ")
+                      || currentColumnType.equals("TIMESTAMP WITH TIME ZONE")
+                      || currentColumnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                   {
                      currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                      // System.out.println(currentContentData);
@@ -1811,8 +1822,9 @@ public class TableTabPanel_Oracle extends TableTabPanel
 
             // VARCHAR & LONG
             else if ((currentColumnClass.indexOf("String") != -1 &&
-                      !currentColumnType.equals("CHAR") && currentColumnSize > 255) ||
-                     (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
+                     (!currentColumnType.equals("CHAR") || !currentColumnType.equals("NCHAR"))
+                      && currentColumnSize > 255)
+                     || (currentColumnClass.indexOf("String") != -1 && currentColumnType.equals("LONG")))
             {
                if (currentContentData != null)
                {
