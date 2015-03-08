@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 10.3 10/30/2014
+// Version 10.4 03/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -242,6 +242,10 @@
 //             to Conform With JRE 7. Class Method loadTable() Increment of j Only
 //             After try/catch Clause for BIT Types of MySQL & MariaDB. Same Method
 //             Conditional Check for YEAR in Same Databases Size of 4 Before Sub-Stringing.
+//        10.4 Method getColumnNames() Excluded primaryKey From All Field Attributes for
+//             the Databases Oracle, HSQL2, & SQLite, for Proper Selecting of a Key in
+//             viewSelectedItem(). Method loadTable() & viewSelectedItem() Update for
+//             Oracle 11 TIMESTAMP WITH (LOCAL) TIME ZONE, & NCHAR Column Types.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -313,7 +317,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 10.3 10/30/2014
+ * @version 10.4 03/08/2015
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1084,16 +1088,18 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
 
          // Key Field Characteristics.
 
-         fields.add(primaryKey);
-         columnNamesHashMap.put(primaryKey, primaryKey);
          if (!dataSourceType.equals(ConnectionManager.ORACLE)
               && !dataSourceType.equals(ConnectionManager.SQLITE)
               && !dataSourceType.equals(ConnectionManager.HSQL2))
+         {
+            fields.add(primaryKey);
+            columnNamesHashMap.put(primaryKey, primaryKey);
             tableHeadings.add(primaryKey);
-         columnClassHashMap.put(primaryKey, "java.lang.Integer");
-         columnTypeHashMap.put(primaryKey, "INTEGER");
-         columnSizeHashMap.put(primaryKey, Integer.valueOf(10));
-         preferredColumnSizeHashMap.put(primaryKey, Integer.valueOf(primaryKey.length() * 9));
+            columnClassHashMap.put(primaryKey, "java.lang.Integer");
+            columnTypeHashMap.put(primaryKey, "INTEGER");
+            columnSizeHashMap.put(primaryKey, Integer.valueOf(10));
+            preferredColumnSizeHashMap.put(primaryKey, Integer.valueOf(primaryKey.length() * 9));
+         }
          
          // Column Names, Form Fields, ComboBox Text and HashMaps
 
@@ -1634,7 +1640,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                               .format(currentContentData));  
                   }
 
-                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                           || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                   {
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
@@ -1731,7 +1738,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
 
                   // =============================================
                   // Text
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                  else if (columnClass.indexOf("String") != -1
+                           && (!columnType.equals("CHAR") || !columnType.equals("NCHAR"))
                            & columnSize > 255)
                   {
                      if (columnSize <= 65535)
@@ -1988,9 +1996,11 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
       {
          // Begin the SQL statement creation.
          sqlStatement = dbConnection.createStatement();
+         
          sqlStatementString = "SELECT * FROM " 
-                              + identifierQuoteString + sqlTable + identifierQuoteString
-                              + " WHERE " + primaryKey + "='" + key + "'";
+               + identifierQuoteString + sqlTable + identifierQuoteString
+               + " WHERE " + columnNamesHashMap.get(fields.get(0)) + "='" + key + "'";
+         
          // System.out.println(sqlStatementString);
          db_resultSet = sqlStatement.executeQuery(sqlStatementString);
          db_resultSet.next();
@@ -2000,7 +2010,7 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
 
          textFieldNamesIterator = fields.iterator();
          int i = 0;
-
+         
          while (textFieldNamesIterator.hasNext())
          {
             currentColumnName = textFieldNamesIterator.next();
@@ -2088,7 +2098,8 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                            + " HH:mm:ss").format(currentContentData)));        
                }
 
-               else if (currentColumnType.equals("TIMESTAMPTZ"))
+               else if (currentColumnType.equals("TIMESTAMPTZ") || currentColumnType.equals("TIMESTAMP WITH TIME ZONE")
+                        || currentColumnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                {
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat(
