@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.7 07/09/2014
+// Version 1.8 03/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -50,7 +50,9 @@
 //             Selector for Setting dbMetaData.getTables() Parameters.
 //         1.7 Correction in init() to Use else if Conditional for MariaDB
 //             Database Product & Version.
-//             
+//         1.8 Class Method loadDBTables() Additional Output for Table Column
+//             Names for Debugging & Exclusion of Oracle Table Schem Names 
+//             Containing APEX for Oracle 11.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -79,7 +81,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * for the storage of database connection properties.
  * 
  * @author Dana M. Proctor
- * @version 1.7 07/08/2014
+ * @version 1.8 03/09/2015
  */
 
 public class DatabaseProperties
@@ -417,10 +419,14 @@ public class DatabaseProperties
          schemas.clear();
          tables.clear();
          
-         // ResultSetMetaData rsmd = db_resultSet.getMetaData();
-         // for (int i = 1; i <= rsmd.getColumnCount(); i++)
-         //    System.out.println(rsmd.getColumnName(i));
-
+         /*
+         System.out.print("Valid Table Columns: ");
+         ResultSetMetaData rsmd = db_resultSet.getMetaData();
+         
+         for (int i = 1; i <= rsmd.getColumnCount(); i++)
+            System.out.print(rsmd.getColumnName(i) + " ");
+         System.out.println();
+         */
          
          while (db_resultSet.next())
          {
@@ -457,8 +463,8 @@ public class DatabaseProperties
             {
                // Filter some more for Oracle & MSSQL.
                if ((subProtocol.indexOf(ConnectionManager.ORACLE) != -1 && filter)
-                     && (oracleSystemSchemaHash.contains(tableSchem) || tableSchem.indexOf("FLOWS") != -1 ||
-                         tableName.indexOf("BIN$") != -1))
+                     && (oracleSystemSchemaHash.contains(tableSchem) || tableSchem.indexOf("FLOWS") != -1
+                         || tableSchem.indexOf("APEX") != -1 || tableName.indexOf("BIN$") != -1))
                   continue;
                
                if ((subProtocol.indexOf(ConnectionManager.MSSQL) != -1 && filter)
