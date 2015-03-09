@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 2.8 10/30/2014
+// Version 2.9 03/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -74,6 +74,8 @@
 //         2.8 Class Method executeSQL() Increment of j Only After try/catch Clause
 //             for BIT Types of MySQL & MariaDB. Same Method Conditional Check for
 //             YEAR in Same Databases Size of 4 Before Sub-Stringing.
+//         2.9 Class Method executeSQL() Update to Properly Process Column Type
+//             TIMESTAMP WITH LOCAL TIME, & NCHAR for Oracle 11.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -130,7 +132,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 2.8 10/30/2014
+ * @version 2.9 03/08/2015
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -559,7 +561,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      }
                   }
 
-                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE"))
+                  else if (columnType.equals("TIMESTAMPTZ") || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                           || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                   {
                      currentContentData = db_resultSet.getTimestamp(colNameString);
                      if (currentContentData == null)
@@ -687,7 +690,8 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
 
                   // =============================================
                   // Text
-                  else if (columnClass.indexOf("String") != -1 && !columnType.equals("CHAR")
+                  else if (columnClass.indexOf("String") != -1
+                           && (!columnType.equals("CHAR") || !columnType.equals("NCHAR"))
                            && columnSize > 255)
                   {
                      currentContentData = db_resultSet.getObject(colNameString);
