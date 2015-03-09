@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 5.8 10/28/2014
+// Version 5.9 03/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -148,6 +148,8 @@
 //                        MariaDB.
 //         5.8 10/28/2014 Parameterized Class Instances updateColumn/where/operator/andOrComboxBox
 //                        to Conform With JRE 7.
+//         5.9 03/09/2015 Update to Class Method updateTable() for Oracle 11 TIMESTAMP WITH
+//                        (LOCAL) TIME ZONE Column Types.
 //                        
 //=================================================================
 
@@ -203,7 +205,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * execute a SQL update statement on the current table.
  * 
  * @author Dana M. Proctor
- * @version 5.8 10/28/2014
+ * @version 5.9 03/09/2015
  */
 
 public class UpdateForm extends JFrame implements ActionListener
@@ -994,9 +996,12 @@ public class UpdateForm extends JFrame implements ActionListener
                         }
                         // Timestamp
                         else if (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
-                                 || columnType.equals("TIMESTAMPLTZ"))
+                                 || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                                 || columnType.equals("TIMESTAMPLTZ")
+                                 || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                         {
-                           if (columnType.equals("TIMESTAMPLTZ"))
+                           if (columnType.equals("TIMESTAMPLTZ")
+                               || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                               MyJSQLView_Utils.setLocalTimeZone(sqlStatement);
 
                            SimpleDateFormat timeStampFormat;
@@ -1027,7 +1032,8 @@ public class UpdateForm extends JFrame implements ActionListener
                               }
                               else
                               {
-                                 if (columnType.equals("TIMESTAMPLTZ"))
+                                 if (columnType.equals("TIMESTAMPLTZ")
+                                     || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                                     timeStampFormat = new SimpleDateFormat(
                                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss Z");
                                  else
