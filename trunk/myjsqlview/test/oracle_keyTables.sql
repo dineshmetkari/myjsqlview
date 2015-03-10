@@ -8,6 +8,8 @@
 --         07/21/2010 Updated Contact, Email, Address.
 --         03/04/2015 Updated to Correct Issues With Sequences on One
 --                    Line, & Other Comments Problems With 11g.
+--         03/09/2015 keY_tAble2 Changed Field Username to User to Conform
+--                    With Other Database Test Key Tables.
 --      
 -- danap@dandymadeproductions.com
 -- =============================================================
@@ -42,9 +44,9 @@ DROP TABLE "keY_tAble2";
 CREATE TABLE "keY_tAble2" (
   "Host" char(60) default '' NOT NULL,
   "Db" char(64) default '' NOT NULL,
-  "Username" char(16) default '' NOT NULL,
+  "User" char(16) default '' NOT NULL,
   Select_priv number default 1 NOT NULL,
-  PRIMARY KEY ("Host","Db","Username")
+  PRIMARY KEY ("Host","Db","User")
 );
 
 --
