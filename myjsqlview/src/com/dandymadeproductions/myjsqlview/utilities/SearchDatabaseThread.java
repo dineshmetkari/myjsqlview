@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 4.1 02/10/2014
+// Version 4.2 03/12/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -100,6 +100,9 @@
 //         4.1 Method createColumnsSQLQuery() Addition of Proper SQL for MSSQL, Removal
 //             of IMAGE, & XML From Search String. Timestamp Also Not Processed Normally,
 //             But as Given String for MSSQL. Though Latter Should Not Matter.
+//         4.2 Class Method createColumnSQLQuery() Changes to Insure Null Pointer Not
+//             Thrown for columnType & classClass Collection. If So Handle Situation
+//             Appropriately. Exclusion of RAW Types in Processing for Same Method. 
 //         
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -125,7 +128,7 @@ import com.dandymadeproductions.myjsqlview.datasource.ConnectionManager;
  * all the database tables for a given input string.
  * 
  * @author Dana Proctor
- * @version 4.1 02/10/2014
+ * @version 4.2 03/12/2015
  */
 
 public class SearchDatabaseThread implements Runnable
@@ -410,16 +413,42 @@ public class SearchDatabaseThread implements Runnable
          for (int k = 1; k < tableMetaData.getColumnCount() + 1; k++)
          {
             // Collect Information on Column.
-            String columnClass = tableMetaData.getColumnClassName(k).toUpperCase();
-            String columnType = tableMetaData.getColumnTypeName(k).toUpperCase();
+            String columnClass = tableMetaData.getColumnClassName(k);
+            String columnType = tableMetaData.getColumnTypeName(k);
             String columnName = tableMetaData.getColumnName(k);
             // System.out.println(columnName + " " + columnType);
+            
+            // This going to be a problem so skip this column.
+
+            if (columnClass == null && columnType == null)
+               continue;
+
+            if (columnClass == null)
+            {
+               if (dataSourceType.equals(ConnectionManager.ORACLE)
+                   && columnType.toUpperCase().equals("BINARY_FLOAT"))
+               {
+                  columnClass = "java.lang.Float";
+                  columnType = "FLOAT";
+               }
+               else if (dataSourceType.equals(ConnectionManager.ORACLE)
+                        && columnType.toUpperCase().equals("BINARY_DOUBLE"))
+               {
+                  columnClass = "java.lang.Double";
+                  columnType = "DOUBLE";
+               }
+               else
+                  columnClass = columnType;
+            }
+            
+            columnClass = columnClass.toUpperCase();
+            columnType = columnType.toUpperCase();
             
             String searchString = searchQueryString;
 
             // Exclude binary & file column types.
             if (columnType.indexOf("BLOB") == -1 && columnType.indexOf("BYTEA") == -1
-                && columnType.indexOf("BYTEA") == -1 && columnType.indexOf("BINARY") == -1
+                && columnType.indexOf("RAW") == -1 && columnType.indexOf("BINARY") == -1
                 && columnType.indexOf("LONG") == -1 && columnType.indexOf("FILE") == -1
                 && columnType.indexOf("BIT DATA") == -1 && columnType.indexOf("IMAGE") == -1
                 && columnType.indexOf("XML") == -1)
