@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 6.2 10/21/2014
+// Version 6.3 03/15/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -158,6 +158,8 @@
 //             Definition via createMySQLTableDefinition().
 //         6.2 Closed Various Instances of resultSet in Methods createPostgreSQL/Oracle/Derby/
 //             TableDefinition() Before Using Again.
+//         6.3 Update to Method createOracleTableDefinition() for 11 Database. Addition
+//             in Same to Add Additional Parameters for Creating Sequence.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -187,7 +189,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 6.2 10/21/2014
+ * @version 6.3 02/15/2015
  */
 
 public class TableDefinitionGenerator
@@ -1163,8 +1165,13 @@ public class TableDefinitionGenerator
       String columnName, columnClass, columnType;
       int columnSize, columnDecimalDigits;
       String columnDefault, columnIsNullable;
+      
       HashMap<String, String> autoIncrementColumnNameHashMap;
+      HashMap<String, String> autoIncrementColumnSeqHashMap;
+      
       String sequenceKeyPresent;
+      double minValue, maxValue, incrementBy, cacheSize;
+      boolean cycleFlag, orderFlag;
 
       StringBuffer primaryKeys, uniqueKeys;
       String foreignKeys;
@@ -1177,17 +1184,20 @@ public class TableDefinitionGenerator
       ResultSetMetaData tableMetaData;
 
       String sqlStatementString;
-      Statement sqlStatement;
-      ResultSet resultSet;
+      Statement sqlStatement, sqlStatement2;
+      ResultSet resultSet, resultSet2;
 
       // Begin creating the table structure scheme.
       
       sqlStatement = null;
+      sqlStatement2 = null;
       resultSet = null;
+      resultSet2 = null;
 
       try
       {
          sqlStatement = dbConnection.createStatement();
+         sqlStatement2 = dbConnection.createStatement();
          dbMetaData = dbConnection.getMetaData();
          
          // Collect table type for the table.
@@ -1245,31 +1255,47 @@ public class TableDefinitionGenerator
 
          sequenceKeyPresent = "";
          autoIncrementColumnNameHashMap = new HashMap <String, String>();
-
+         autoIncrementColumnSeqHashMap = new HashMap <String, String>();
+         
          for (int i = 1; i < tableMetaData.getColumnCount() + 1; i++)
          {
             columnName = tableMetaData.getColumnName(i);
+            // System.out.println("Sequence Checking: " + columnName);
 
-            sqlStatementString = "SELECT USER_IND_COLUMNS.INDEX_NAME FROM USER_IND_COLUMNS, "
-                                 + "ALL_SEQUENCES WHERE USER_IND_COLUMNS.INDEX_NAME="
-                                 + "ALL_SEQUENCES.SEQUENCE_NAME AND USER_IND_COLUMNS.TABLE_NAME='"
-                                 + tableName + "' AND USER_IND_COLUMNS.COLUMN_NAME='" + columnName + "'";
-            // System.out.println(sqlStatementString);
+            sqlStatementString = "SELECT USER_IND_COLUMNS.INDEX_NAME, ALL_SEQUENCES.MIN_VALUE,"
+                  + " ALL_SEQUENCES.MAX_VALUE, ALL_SEQUENCES.INCREMENT_BY, ALL_SEQUENCES.CYCLE_FLAG,"
+                  + " ALL_SEQUENCES.ORDER_FLAG, ALL_SEQUENCES.CACHE_SIZE FROM USER_IND_COLUMNS, "
+                  + "ALL_SEQUENCES WHERE USER_IND_COLUMNS.INDEX_NAME="
+                  + "ALL_SEQUENCES.SEQUENCE_NAME AND USER_IND_COLUMNS.TABLE_NAME='"
+                  + tableName + "' AND USER_IND_COLUMNS.COLUMN_NAME='" + columnName + "'";
+           // System.out.println(sqlStatementString);
+           
+            resultSet2 = sqlStatement2.executeQuery(sqlStatementString);
 
-            resultSet = sqlStatement.executeQuery(sqlStatementString);
-
-            if (resultSet.next())
+            if (resultSet2.next())
             {
-               // System.out.println(columnName + ": " +
-               // resultSet.getString("INDEX_NAME"));
-               autoIncrementColumnNameHashMap.put(columnName, resultSet.getString("INDEX_NAME"));
+               String sequenceName = resultSet2.getString("INDEX_NAME");
+               // System.out.println("SEQUENCE FOUND: " + columnName + ": " + sequenceName);
+               
+               autoIncrementColumnNameHashMap.put(columnName, sequenceName);
+               autoIncrementColumnSeqHashMap.put(columnName, resultSet2.getString("MIN_VALUE").trim()
+                                                 + "," + resultSet2.getString("MAX_VALUE").trim()
+                                                 + "," + resultSet2.getString("INCREMENT_BY").trim()
+                                                 + "," + resultSet2.getString("CYCLE_FLAG").trim()
+                                                 + "," + resultSet2.getString("ORDER_FLAG").trim()
+                                                 + "," + resultSet2.getString("CACHE_SIZE").trim());
             }
+            resultSet2.close();
          }
-
+         sqlStatement2.close();
+         
          // Create the individual column field definitions.
          // Column name, data type, default, and isNullable.
 
+         resultSet.close();
          resultSet = dbMetaData.getColumns(databaseName, schemaName, tableName, "%");
+         
+         // System.out.println("Collecting Column Field Definitions");
 
          while (resultSet.next())
          {
@@ -1283,10 +1309,8 @@ public class TableDefinitionGenerator
             columnDecimalDigits = resultSet.getInt("DECIMAL_DIGITS");
             columnDefault = resultSet.getString("COLUMN_DEF");
             columnIsNullable = resultSet.getString("IS_NULLABLE");
-            // System.out.println(columnName + " " + columnClass + " " +
-            // columnType +
-            // " " + columnSize + " " + columnDecimalDigits + " " +
-            // columnDefault + " " + columnIsNullable);
+            // System.out.println(columnName + " " + columnClass + " " + columnType + " " + columnSize
+            //                    + " " + columnDecimalDigits + " " + columnDefault + " " + columnIsNullable);
 
             // =============
             // Column name.
@@ -1302,11 +1326,11 @@ public class TableDefinitionGenerator
                if (columnType.equals("CHAR"))
                   tableDefinition.append("CHAR(" + columnSize + ")");
                else if (columnType.equals("NCHAR"))
-                  tableDefinition.append("NCHAR(" + columnSize / 2 + ")");
+                  tableDefinition.append("NCHAR(" + columnSize + ")");
                else if (columnType.equals("VARCHAR2"))
                   tableDefinition.append("VARCHAR2(" + columnSize + ")");
                else if (columnType.equals("NVARCHAR2"))
-                  tableDefinition.append("NVARCHAR2(" + columnSize / 2 + ")");
+                  tableDefinition.append("NVARCHAR2(" + columnSize + ")");
                else
                   tableDefinition.append(columnType);
             }
@@ -1317,7 +1341,10 @@ public class TableDefinitionGenerator
                   tableDefinition.append("FLOAT");
                else
                {
-                  tableDefinition.append("NUMBER(" + columnSize + "," + columnDecimalDigits + ")");
+                  if (columnDecimalDigits < 0)
+                     tableDefinition.append("NUMBER");
+                  else
+                     tableDefinition.append("NUMBER(" + columnSize + "," + columnDecimalDigits + ")");
                }
             }
             // Binary_Float Types
@@ -1341,12 +1368,14 @@ public class TableDefinitionGenerator
                tableDefinition.append(columnType);
             }
             // TimestampTZ
-            else if (columnType.equals("TIMESTAMPTZ"))
+            else if (columnType.equals("TIMESTAMPTZ")
+                     || columnType.equals("TIMESTAMP WITH TIME ZONE"))
             {
                tableDefinition.append("TIMESTAMP WITH TIME ZONE");
             }
             // TimestampLTZ
-            else if (columnType.equals("TIMESTAMPLTZ"))
+            else if (columnType.equals("TIMESTAMPLTZ")
+                     || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
             {
                tableDefinition.append("TIMESTAMP WITH LOCAL TIME ZONE");
             }
@@ -1413,7 +1442,10 @@ public class TableDefinitionGenerator
          onDeleteRule = "";
 
          // Primary Keys
+         resultSet.close();
          resultSet = dbMetaData.getPrimaryKeys(databaseName, schemaName, tableName);
+         
+         // System.out.println("Collecting Primary Keys Definitions");
 
          while (resultSet.next())
          {
@@ -1426,10 +1458,13 @@ public class TableDefinitionGenerator
 
          // Unique Keys
          // Clueless why needs quotes?
+         resultSet.close();
          resultSet = dbMetaData.getIndexInfo(databaseName, dbIdentifierQuoteString
                                              + schemaName + dbIdentifierQuoteString,
                                              dbIdentifierQuoteString + tableName
                                              + dbIdentifierQuoteString, false, false);
+         
+         // System.out.println("Collecting Unique Keys Definitions");
 
          while (resultSet.next())
          {
@@ -1459,7 +1494,10 @@ public class TableDefinitionGenerator
          // Foreign Keys
          // The Oracle database is having considerable delay right here
          // with collecting the imported keys.
+         resultSet.close();
          resultSet = dbMetaData.getImportedKeys(databaseName, schemaName, tableName);
+         
+         // System.out.println("Collecting Unique Keys Definitions");
          
          // Collect number of keys.
          
@@ -1501,12 +1539,86 @@ public class TableDefinitionGenerator
          tableDefinition.append("\n);\n");
 
          // Add Sequence as needed.
+         // System.out.println("Adding Sequences");
+         
          if (!sequenceKeyPresent.equals(""))
          {
             columnName = sequenceKeyPresent.substring(sequenceKeyPresent.indexOf("_") + 1);
-            tableDefinition.append("CREATE SEQUENCE " + identifierQuoteString
-                                   + autoIncrementColumnNameHashMap.get(columnName)
-                                   + identifierQuoteString + ";\n");
+            
+            try
+            {
+               String[] parameters = (autoIncrementColumnSeqHashMap.get(columnName)).split(",");
+               
+               minValue = 0; maxValue = 0; incrementBy = 1; cacheSize = 0;
+               cycleFlag = false; orderFlag = false; 
+               
+               for (int k=0; k<parameters.length; k++)
+               {
+                  switch (k)
+                  {
+                     case 0:
+                        minValue = Double.parseDouble(parameters[k]);
+                        break;
+                     case 1:
+                        maxValue = Double.parseDouble(parameters[k]);
+                        break;
+                     case 2:
+                        incrementBy = Double.parseDouble(parameters[k]);
+                        break;
+                     case 3:
+                        cycleFlag = parameters[k].equals("N")?false:true;
+                        break;
+                     case 4:
+                        orderFlag = parameters[k].equals("N")?false:true;
+                        break;
+                     case 5:
+                        cacheSize = Double.parseDouble(parameters[k]);
+                        break;
+                  } 
+               }
+               tableDefinition.append("CREATE SEQUENCE " + identifierQuoteString
+                                      + autoIncrementColumnNameHashMap.get(columnName)
+                                      + identifierQuoteString + "\n");
+               
+               tableDefinition.append("   INCREMENT BY " + incrementBy + "\n");
+               
+               if (incrementBy > 0)
+                  tableDefinition.append("   START WITH " + minValue + "\n");
+               else
+                  tableDefinition.append("   START WITH " + maxValue + "\n");
+               
+               if (maxValue < 1.0E28)
+                  tableDefinition.append("   MAXVALUE " + maxValue + "\n");
+               else
+                  tableDefinition.append("   NOMAXVALUE\n");
+               
+               if (minValue > -1.0E27)
+                  tableDefinition.append("   MINVALUE " + minValue + "\n");
+               else
+                  tableDefinition.append("   NOMINVALUE\n");
+               
+               if (cycleFlag)
+                  tableDefinition.append("   CYCLE\n");
+               else
+                  tableDefinition.append("   NOCYCLE\n");
+               
+               tableDefinition.append("   CACHE " + cacheSize + "\n");
+               
+               if (orderFlag)
+                  tableDefinition.append("   ORDER\n");
+               else
+                  tableDefinition.append("   NOORDER;\n");
+            }
+            catch (NumberFormatException nfe)
+            {
+               // System.out.println(nfe);
+               tableDefinition.append("CREATE SEQUENCE " + identifierQuoteString
+                                      + autoIncrementColumnNameHashMap.get(columnName)
+                                      + identifierQuoteString + ";\n");
+            }
+            
+            // Add Constraints.
+            
             tableDefinition.append("ALTER TABLE " + identifierQuoteString + tableName
                                    + identifierQuoteString + " ADD CONSTRAINT " 
                                    + identifierQuoteString
@@ -1541,11 +1653,25 @@ public class TableDefinitionGenerator
          }
          finally
          {
-            if (sqlStatement != null)
-               sqlStatement.close();
-         }
-         if (sqlStatement != null)
-            sqlStatement.close();
+            try
+            {
+               if (resultSet2 != null)
+                  resultSet2.close();
+            }
+            catch (SQLException sqle)
+            {
+               ConnectionManager.displaySQLErrors(sqle,
+                  "TableDefinitionGenerator createOracleTableDefinition()");
+            }
+            finally
+            {
+               if (sqlStatement != null)
+                  sqlStatement.close();
+               
+               if (sqlStatement2 != null)
+                  sqlStatement2.close();
+            }
+         }   
       }
    }
    
