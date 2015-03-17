@@ -11,7 +11,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 8.0 06/15/2014
+// Version 8.1 02/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -177,6 +177,8 @@
 //         7.9 Class Method importCSVFile() Changed the sqlStatement to Use Batch
 //             Processing Instead of executeUpdate().
 //         8.0 Use of BEGIN & Proper Processing of BIT for MariaDB in importCSVFile()
+//         8.1 Update in Method importCSVFile() Processing of Oracle 11 Database Changes
+//             of Type TIMESTARMP WITH TIME ZONE.
 //                    
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -212,7 +214,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SQLQuery;
  * address the ability to cancel the import.
  * 
  * @author Dana M. Proctor
- * @version 8.0 06/15/2014
+ * @version 8.1 02/17/2015
  */
 
 public class CSVDataImportThread implements Runnable
@@ -618,7 +620,8 @@ public class CSVDataImportThread implements Runnable
                                                      lineContent[i], dateFormat) + time
                                                   + "', 'YYYY-MM-DD HH24:MI:SS:FF')";
 
-                              else if (columnType.equals("TIMESTAMPTZ"))
+                              else if (columnType.equals("TIMESTAMPTZ")
+                                       || columnType.equals("TIMESTAMP WITH TIME ZONE"))
                                  lineContent[i] = "TO_TIMESTAMP_TZ('"
                                                   + MyJSQLView_Utils.convertViewDateString_To_DBDateString(
                                                      lineContent[i], dateFormat) + time
