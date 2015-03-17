@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 6.23 06/15/2014
+// Version 6.24 03/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -152,6 +152,8 @@
 //        6.22 Method run() Additions to Handle MSSQL IMAGE, XML, & DATETIMEOFFSET
 //             Data Types. Modification in Same for MSSQL Non-Limit SQL Query.
 //        6.23 Inclusion of Processing for MariaDB Bit & Date/Year Fields in run().
+//        6.24 Update in Method run() Processing of Oracle 11 Database Changes of Types
+//             TIMESTARMP WITH TIME ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -186,7 +188,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.23 06/15/2014
+ * @version 6.24 03/17/2015
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -570,7 +572,9 @@ public class CSVDataDumpThread implements Runnable
                               else
                                  fieldContent = "NULL";
                            }
-                           else if (columnType.equals("TIMESTAMPTZ"))
+                           else if (columnType.equals("TIMESTAMPTZ")
+                                    || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                                    || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                            {
                               Object dateTime = dbResultSet.getTimestamp(i);
                               
