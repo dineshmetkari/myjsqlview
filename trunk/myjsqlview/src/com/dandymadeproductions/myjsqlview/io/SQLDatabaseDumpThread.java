@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.6 06/16/2014
+// Version 9.7 03/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -245,6 +245,8 @@
 //             Set in Method insertReplaceStatementData().
 //         9.6 Class Method dumpDatabaseData() Inclusion of LOCK & UNLOCK Statements for
 //             MariaDB. Use of Standard MySQL TableTabPanel for MariaDB.
+//         9.7 Methods insertReplace/explicitStatementData() Update for Oracle 11 in Processing
+//             Types TIMESTAMP WITH TIME ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -293,7 +295,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.6 06/16/2014
+ * @version 9.7 03/17/2015
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -738,7 +740,9 @@ public class SQLDatabaseDumpThread implements Runnable
 
          // Save the index of Oracle TimeStamp(TZ) Fields.
          if (dataSourceType.equals(ConnectionManager.ORACLE) &&
-             (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")))
+             (columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
+              || columnType.equals("TIMESTAMP WITH TIME ZONE")
+              || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE")))
          {
             oracleTimeStamp_TZIndexes.add(Integer.valueOf(columnsCount + 1));
          }
@@ -1460,7 +1464,9 @@ public class SQLDatabaseDumpThread implements Runnable
                         }
 
                         // Setting Oracle TimeStamp(TZ)
-                        else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")) &&
+                        else if ((columnType.equals("TIMESTAMP") || columnType.equals("TIMESTAMPTZ")
+                                  || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                                  || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE")) &&
                                  dataSourceType.equals(ConnectionManager.ORACLE) &&
                                  !sqlDataExportOptions.getTimeStamp())
                         {
