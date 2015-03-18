@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.8 06/15/2014
+// Version 1.9 03/17/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@
 //         1.7 Method run() Additions to Handle MSSQL IMAGE, XML, & DATETIMEOFFSET
 //             Data Types. Modification in Same for MSSQL Non-Limit SQL Query.
 //         1.8 Inclusion of Processing for MariaDB Bit & Date/Year Fields in run().
+//         1.9 Update in run() for Processing Oracle 11 Types TIMESTAMP WITH TIME
+//             ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -82,7 +84,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 1.8 06/15/2014
+ * @version 1.9 03/17/2015
  */
 
 public class CSVQueryDataDumpThread implements Runnable
@@ -464,6 +466,7 @@ public class CSVQueryDataDumpThread implements Runnable
                            else if (columnType.indexOf("DATETIME") != -1 || columnType.equals("TIMESTAMP"))
                            {
                               Object dateTime = dbResultSet.getTimestamp(i);
+                              
                               if (dateTime != null)
                                  fieldContent = (new SimpleDateFormat(
                                     DBTablesPanel.getDataExportProperties().getCSVDateFormat()
@@ -471,9 +474,12 @@ public class CSVQueryDataDumpThread implements Runnable
                               else
                                  fieldContent = "NULL";
                            }
-                           else if (columnType.equals("TIMESTAMPTZ"))
+                           else if (columnType.equals("TIMESTAMPTZ")
+                                    || columnType.equals("TIMESTAMP WITH TIME ZONE")
+                                    || columnType.equals("TIMESTAMP WITH LOCAL TIME ZONE"))
                            {
                               Object dateTime = dbResultSet.getTimestamp(i);
+                              
                               if (dateTime != null)
                                  fieldContent = (new SimpleDateFormat(
                                     DBTablesPanel.getDataExportProperties().getCSVDateFormat()
@@ -562,8 +568,6 @@ public class CSVQueryDataDumpThread implements Runnable
                }
             }
          }
-         
-         
       }
       catch (IOException e)
       {
