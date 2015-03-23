@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 10.4 03/08/2015
+// Version 10.5 03/23/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -246,6 +246,8 @@
 //             the Databases Oracle, HSQL2, & SQLite, for Proper Selecting of a Key in
 //             viewSelectedItem(). Method loadTable() & viewSelectedItem() Update for
 //             Oracle 11 TIMESTAMP WITH (LOCAL) TIME ZONE, & NCHAR Column Types.
+//        10.5 Class Method loadTable() & viewSelectedItem() Added TIME Processing to
+//             Handle SQLite Inconsistencies in getString() Default.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -317,7 +319,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * of the data.
  * 
  * @author Dana M. Proctor
- * @version 10.4 03/08/2015
+ * @version 10.5 03/23/2015
  */
 
 public class QueryTabPanel extends JPanel implements ActionListener, KeyListener, Printable
@@ -1116,9 +1118,9 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            //                   comboBoxNameString + " " +
-            //                   columnClass + " " + columnType + " " +
-            //                   columnSize);
+            //                    comboBoxNameString + " " +
+            //                    columnClass + " " + columnType + " " +
+            //                    columnSize);
 
             // This going to be a problem so skip this column.
             // NOT TESTED. This is still problably not going to
@@ -1596,6 +1598,14 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                            .format(currentContentData);
 
                   // =============================================
+                  // Time
+                  else if (columnType.equals("TIME"))
+                  {
+                     currentContentData = rs.getTime(columnName);
+                     tableData[i][j++] = (new SimpleDateFormat("HH:mm:ss").format(currentContentData));
+                  }
+                  
+                  // =============================================
                   // Time With Time Zone
                   else if (columnType.equals("TIMETZ"))
                   {
@@ -2046,6 +2056,14 @@ public class QueryTabPanel extends JPanel implements ActionListener, KeyListener
                   timeString = timeString.substring(timeString.indexOf(" "));
                   currentContentData = dateString + timeString;
                   tableViewForm.setFormField(currentColumnName, currentContentData);
+               }
+               
+               // Time
+               else if (currentColumnType.equals("TIME"))
+               {
+                  currentContentData = db_resultSet.getTime(currentDB_ColumnName);
+                  tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat("HH:mm:ss")
+                        .format(currentContentData)));
                }
 
                // Time With Time Zone
