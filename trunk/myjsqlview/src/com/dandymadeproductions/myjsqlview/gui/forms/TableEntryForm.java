@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.07 03/08/2015
+// Version 9.08 03/23/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -387,6 +387,9 @@
 //                        ZONE. Changes in addUpdateTableEntry() for Same Column Type Changes
 //                        in Oracle 11. Method createFunctionOperator() Addition of No Use
 //                        of Parentheses for Oracle SYSTIMESTAMP Function.
+//        9.08 03/23/2015 Class Method addUpdateTableEntry() Update of NOW() Processing for
+//                        Timestamp Types for SQLite Through Use of DateTime() Function.
+//                        Correction to 8.63 dateTimeFormString Short Substring(0-7) to (0-8). 
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -458,7 +461,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.07 03/08/2015
+ * @version 9.08 03/23/2015
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -1365,6 +1368,8 @@ public class TableEntryForm extends JFrame implements ActionListener
                         sqlValuesString += "SYSTIMESTAMP, ";
                      else if (dataSourceType.equals(ConnectionManager.DERBY))
                         sqlValuesString += "CURRENT_TIMESTAMP, ";
+                     else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                        sqlValuesString += "DATETIME('now', 'localtime'), ";
                      else
                         sqlValuesString += "NOW(), ";
                   }
@@ -2038,7 +2043,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                         prepared_sqlStatement.setString(i++, dateTimeFormString);
                      else
                      {
-                        timeValue = java.sql.Time.valueOf(dateTimeFormString.substring(0, 7));
+                        timeValue = java.sql.Time.valueOf(dateTimeFormString.substring(0, 8));
                         prepared_sqlStatement.setTime(i++, timeValue);
                      }
                   }
