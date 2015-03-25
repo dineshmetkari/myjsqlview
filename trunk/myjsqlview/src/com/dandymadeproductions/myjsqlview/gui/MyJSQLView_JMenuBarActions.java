@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 7.64 03/12/2015
+// Version 7.65 03/25/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -312,6 +312,8 @@
 //             Login Field for File Naming.
 //        7.63 Method actionsSelection() Action Exit Saving Frame Parameters.
 //        7.64 Changed searchFrame Display Size in Method actionSelection().
+//        7.65 Method actionSelection() Use of the Correctly Ordered Summary Table
+//             Headings From the JTable Rather Then currentTableHeadings().
 //             
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -380,7 +382,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * the JMenuBar and JToolBar in MyJSQLView.
  * 
  * @author Dana M. Proctor
- * @version 7.64 03/12/2015
+ * @version 7.65 03/25/2015
  */
 
 class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuActionCommands, ActionListener
@@ -1299,7 +1301,12 @@ class MyJSQLView_JMenuBarActions extends MyJSQLView implements MyJSQLView_MenuAc
                if (actionCommand.equals(ACTION_EXPORT_CSV_TABLE))
                   tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getAllTableHeadings();
                else
-                  tableHeadings = (DBTablesPanel.getSelectedTableTabPanel()).getCurrentTableHeadings();
+               {  
+                  for (int i = 0; i < DBTablesPanel.getSelectedTableTabPanel()
+                        .getListTable().getColumnCount(); i++)
+                     tableHeadings.add(DBTablesPanel.getSelectedTableTabPanel()
+                        .getListTable().getColumnName(i));
+               }
                   
                Thread csvDataDumpThread = new Thread(new CSVDataDumpThread(tableHeadings,
                                                                            tableColumnNamesHashMap,
