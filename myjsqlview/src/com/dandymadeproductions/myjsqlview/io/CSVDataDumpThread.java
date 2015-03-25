@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 6.24 03/17/2015
+// Version 6.25 03/25/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -154,6 +154,7 @@
 //        6.23 Inclusion of Processing for MariaDB Bit & Date/Year Fields in run().
 //        6.24 Update in Method run() Processing of Oracle 11 Database Changes of Types
 //             TIMESTARMP WITH TIME ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
+//        6.25 Method run() Check for Assignment of firstName if Only One Field Present.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -188,7 +189,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.24 03/17/2015
+ * @version 6.25 03/25/2015
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -318,7 +319,11 @@ public class CSVDataDumpThread implements Runnable
          oracleColumnNamesString.delete((oracleColumnNamesString.length() - 2),
             oracleColumnNamesString.length());
          columnNamesString.delete((columnNamesString.length() - 2), columnNamesString.length());
-         firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
+         
+         if (columnNamesString.indexOf(",") != -1)
+            firstField = columnNamesString.substring(0, columnNamesString.indexOf(","));
+         else
+            firstField = columnNamesString.toString();
          
          // Have a connection, file to write to and columns so begin
          // dumping data.
