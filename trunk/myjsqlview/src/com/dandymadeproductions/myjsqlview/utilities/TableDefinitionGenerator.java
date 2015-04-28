@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 6.3 03/15/2015
+// Version 6.4 04/28/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -160,6 +160,7 @@
 //             TableDefinition() Before Using Again.
 //         6.3 Update to Method createOracleTableDefinition() for 11 Database. Addition
 //             in Same to Add Additional Parameters for Creating Sequence.
+//         6.4 Class Method createOracleTableDefinition() Added default for Switch.
 //             
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -189,7 +190,7 @@ import com.dandymadeproductions.myjsqlview.structures.DataExportProperties;
  * structures that output via the SQL data export feature in MyJSQLView.
  * 
  * @author Dana Proctor
- * @version 6.3 02/15/2015
+ * @version 6.4 04/28/2015
  */
 
 public class TableDefinitionGenerator
@@ -1574,6 +1575,8 @@ public class TableDefinitionGenerator
                      case 5:
                         cacheSize = Double.parseDouble(parameters[k]);
                         break;
+                     default:
+                        continue;
                   } 
                }
                tableDefinition.append("CREATE SEQUENCE " + identifierQuoteString
