@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.7 02/08/2015
+// Version 1.8 04/28/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -42,6 +42,7 @@
 //             Corresponding get/setter Methods.
 //         1.7 Added Class Instances framePosition_X, framePosition_Y, frameWidth,
 //             & frameHeight Along With Corresponding get/setter Methods.
+//         1.8 Initialized Default Values for Property Instances in Constructor.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -65,7 +66,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.7 02/08/2015
+ * @version 1.8 04/28/2015
  */
 
 public class GeneralProperties
@@ -108,6 +109,14 @@ public class GeneralProperties
       }
       else
          fontSize = 12;
+      
+      framePosition_X = 0;
+      framePosition_Y = 0;
+      frameWidth = 800;
+      frameHeight = 600;
+      sequenceList = null;
+      proxyAddress = "127.0.0.1";
+      proxyPort = 0;
       
       // Try to retrieve state from Preferences.
       try
