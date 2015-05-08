@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.08 03/23/2015
+// Version 9.09 05/07/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -389,7 +389,10 @@
 //                        of Parentheses for Oracle SYSTIMESTAMP Function.
 //        9.08 03/23/2015 Class Method addUpdateTableEntry() Update of NOW() Processing for
 //                        Timestamp Types for SQLite Through Use of DateTime() Function.
-//                        Correction to 8.63 dateTimeFormString Short Substring(0-7) to (0-8). 
+//                        Correction to 8.63 dateTimeFormString Short Substring(0-7) to (0-8).
+//        9.09 05/07/2015 Method addUpdateTableEntry() Implementation of SQLite Timestamp
+//                        Type now(). Also in Same Proper Detection & Settting SQLite Temporal
+//                        Fields. Change of SQLite Timestamp Formatting to (ViewDate, HH:mm:ss.SSS).
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -461,7 +464,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.08 03/23/2015
+ * @version 9.09 05/07/2015
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -1369,7 +1372,7 @@ public class TableEntryForm extends JFrame implements ActionListener
                      else if (dataSourceType.equals(ConnectionManager.DERBY))
                         sqlValuesString += "CURRENT_TIMESTAMP, ";
                      else if (dataSourceType.equals(ConnectionManager.SQLITE))
-                        sqlValuesString += "DATETIME('now', 'localtime'), ";
+                        sqlValuesString += "STRFTIME('%Y-%m-%d %H:%M:%S.%f', 'now', 'localtime'), ";
                      else
                         sqlValuesString += "NOW(), ";
                   }
@@ -2008,7 +2011,9 @@ public class TableEntryForm extends JFrame implements ActionListener
             }
 
             // Date, Time, DateTime, Timestamp, & Year Type Fields
-            else if (columnClass.indexOf("Date") != -1 || (columnClass.toUpperCase()).indexOf("TIME") != -1)
+            else if (columnClass.indexOf("Date") != -1 || (columnClass.toUpperCase()).indexOf("TIME") != -1
+                     || (dataSourceType.equals(ConnectionManager.SQLITE)
+                         && columnType.toUpperCase().indexOf("TIME") != -1))
             {
                String dateTimeFormString = getFormField(columnName).trim();
 
@@ -2118,6 +2123,10 @@ public class TableEntryForm extends JFrame implements ActionListener
                                        DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
                                        + " HH:mm:ss");
                               }
+                              else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                                 timeStampFormat = new SimpleDateFormat(
+                                    DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
+                                    + " HH:mm:ss.SSS");
                               else
                                  timeStampFormat = new SimpleDateFormat(
                                     DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
