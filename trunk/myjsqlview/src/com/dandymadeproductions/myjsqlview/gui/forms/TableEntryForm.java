@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.09 05/07/2015
+// Version 9.10 05/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -393,6 +393,8 @@
 //        9.09 05/07/2015 Method addUpdateTableEntry() Implementation of SQLite Timestamp
 //                        Type now(). Also in Same Proper Detection & Settting SQLite Temporal
 //                        Fields. Change of SQLite Timestamp Formatting to (ViewDate, HH:mm:ss.SSS).
+//        9.10 05/08/2015 Correction in addUpdateTableEntry() to Not Need 9.09 Detection of Time
+//                        & Timestamp Types by Storage in Core TableTablePanel Class.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -464,7 +466,7 @@ import com.dandymadeproductions.myjsqlview.utilities.SetListDialog;
  * edit a table entry in a SQL database table.
  * 
  * @author Dana M. Proctor
- * @version 9.09 05/07/2015
+ * @version 9.10 05/08/2015
  */
 
 public class TableEntryForm extends JFrame implements ActionListener
@@ -2011,9 +2013,7 @@ public class TableEntryForm extends JFrame implements ActionListener
             }
 
             // Date, Time, DateTime, Timestamp, & Year Type Fields
-            else if (columnClass.indexOf("Date") != -1 || (columnClass.toUpperCase()).indexOf("TIME") != -1
-                     || (dataSourceType.equals(ConnectionManager.SQLITE)
-                         && columnType.toUpperCase().indexOf("TIME") != -1))
+            else if (columnClass.indexOf("Date") != -1 || (columnClass.toUpperCase()).indexOf("TIME") != -1)
             {
                String dateTimeFormString = getFormField(columnName).trim();
 
