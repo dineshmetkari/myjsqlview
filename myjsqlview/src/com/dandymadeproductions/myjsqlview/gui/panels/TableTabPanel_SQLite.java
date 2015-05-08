@@ -13,7 +13,7 @@
 //
 //================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 3.6 07/01/2013
+// Version 3.7 05/08/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -88,6 +88,10 @@
 //             Collected via getDisposeButton().
 //         3.6 Change in loadTable(), viewSelectedItem(), addItem(), &
 //             editSelectedItem() to Use DBTablePanel.getGeneralDBProperties().
+//         3.7 Change in Column Class Storage for SQLite Temporal Types as Declared
+//             by DB Column Type in getColumnNames(). Methods loadTables(), vew/edit
+//             SelectedItem() Change in Time Setting & Timestamp Formatting Too
+//             (ViewDate, HH:mm:ss.SSS).
 //             
 //-----------------------------------------------------------------
 //                  danap@dandymadeproductions.com
@@ -119,7 +123,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * provides the mechanism to page through the database table's data.
  * 
  * @author Dana M. Proctor
- * @version 3.6 07/01/2013
+ * @version 3.7 05/08/2015
  */
 
 public class TableTabPanel_SQLite extends TableTabPanel
@@ -233,9 +237,9 @@ public class TableTabPanel_SQLite extends TableTabPanel
             columnSize = Integer.valueOf(tableMetaData.getColumnDisplaySize(i));
 
             // System.out.println(i + " " + colNameString + " " +
-            // comboBoxNameString + " " +
-            // columnClass + " " + columnType + " " +
-            // columnSize);
+            //                     comboBoxNameString + " " +
+            //                     columnClass + " " + columnType + " " +
+            //                     columnSize);
 
             // This going to be a problem so skip this column.
 
@@ -248,7 +252,16 @@ public class TableTabPanel_SQLite extends TableTabPanel
             // Process & Store.
 
             columnNamesHashMap.put(comboBoxNameString, colNameString);
-            columnClassHashMap.put(comboBoxNameString, columnClass);
+            
+            if (columnType.toUpperCase().equals("DATE"))
+               columnClassHashMap.put(comboBoxNameString, "java.sql.Date");
+            else if (columnType.toUpperCase().equals("TIME"))
+               columnClassHashMap.put(comboBoxNameString, "java.sql.Time");
+            else if (columnType.toUpperCase().indexOf("TIMESTAMP") != -1)
+               columnClassHashMap.put(comboBoxNameString, "java.sql.Timestamp");
+            else
+               columnClassHashMap.put(comboBoxNameString, columnClass);
+            
             columnTypeHashMap.put(comboBoxNameString, columnType.toUpperCase());
             columnSizeHashMap.put(comboBoxNameString, columnSize);
             preferredColumnSizeHashMap.put(comboBoxNameString,
@@ -551,9 +564,9 @@ public class TableTabPanel_SQLite extends TableTabPanel
                preferredColumnSize = (preferredColumnSizeHashMap.get(currentHeading)).intValue();
 
                // System.out.println(i + " " + j + " " + currentHeading + " " +
-               // columnName + " " + columnClass + " " +
-               // columnType + " " + columnSize + " " +
-               // preferredColumnSize + " " + keyLength);
+               //                    columnName + " " + columnClass + " " +
+               //                    columnType + " " + columnSize + " " +
+               //                    preferredColumnSize + " " + keyLength);
 
                // Storing data appropriately. If you have some date
                // or other formating, for a field here is where you
@@ -580,6 +593,14 @@ public class TableTabPanel_SQLite extends TableTabPanel
                      String displayDate = displayMyDateString(currentContentData + "");
                      tableData[i][j++] = displayDate;
                   }
+                  
+                  // =============================================
+                  // Time
+                  else if (columnType.equals("TIME"))
+                  {
+                     currentContentData = rs.getTime(columnName);
+                     tableData[i][j++] = (new SimpleDateFormat("HH:mm:ss").format(currentContentData));
+                  }
 
                   // =============================================
                   // Time With Time Zone
@@ -596,7 +617,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                      currentContentData = rs.getTimestamp(columnName);
                      tableData[i][j++] = (new SimpleDateFormat(
                         DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
-                        + " HH:mm:ss").format(currentContentData));
+                        + " HH:mm:ss.SSS").format(currentContentData));
                   }
 
                   else if (columnType.equals("TIMESTAMPTZ"))
@@ -926,15 +947,15 @@ public class TableTabPanel_SQLite extends TableTabPanel
 
             currentContentData = db_resultSet.getString(currentDB_ColumnName);
             // System.out.println(i + " " + currentColumnName + " " +
-            // currentDB_ColumnName + " " +
-            // currentColumnType + " " + columnSize + " " + currentContentData);
+            //                    currentDB_ColumnName + " " +
+            //                    currentColumnType + " " + /*columnSize +*/ " " + currentContentData);
 
             if (currentContentData != null)
             {
                // DATE Type Field
                if (currentColumnType.equals("DATE"))
                {
-                  db_resultSet.getDate(currentDB_ColumnName);
+                  currentContentData = db_resultSet.getDate(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName,
                      (Object) displayMyDateString(currentContentData + ""));
                }
@@ -951,6 +972,14 @@ public class TableTabPanel_SQLite extends TableTabPanel
                   currentContentData = dateString + timeString;
                   tableViewForm.setFormField(currentColumnName, currentContentData);
                }
+               
+               // Time
+               else if (currentColumnType.equals("TIME"))
+               {
+                  currentContentData = db_resultSet.getTime(currentDB_ColumnName);
+                  tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat("HH:mm:ss")
+                        .format(currentContentData)));
+               }
 
                // Time With Time Zone
                else if (currentColumnType.equals("TIMETZ"))
@@ -966,7 +995,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                   currentContentData = db_resultSet.getTimestamp(currentDB_ColumnName);
                   tableViewForm.setFormField(currentColumnName, (new SimpleDateFormat(
                      DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
-                     + " HH:mm:ss").format(currentContentData)));
+                     + " HH:mm:ss.SSS").format(currentContentData)));
                }
 
                else if (currentColumnType.equals("TIMESTAMPTZ"))
@@ -1308,13 +1337,27 @@ public class TableTabPanel_SQLite extends TableTabPanel
             {
                if (currentContentData != null)
                {
-                  db_resultSet.getDate(currentDB_ColumnName);
+                  currentContentData = db_resultSet.getDate(currentDB_ColumnName);
                   editForm.setFormField(currentColumnName,
                                         (Object) displayMyDateString(currentContentData + ""));
                }
                else
                   editForm.setFormField(currentColumnName,
                                         (Object) DBTablesPanel.getGeneralDBProperties().getViewDateFormat());
+            }
+            
+            // TIME
+            else if (currentColumnType.equals("TIME"))
+            {
+               if (currentContentData != null)
+               {
+                  currentContentData = db_resultSet.getTime(currentDB_ColumnName);
+                  editForm.setFormField(currentColumnName, ((Object) new SimpleDateFormat("HH:mm:ss")
+                        .format(currentContentData)));
+               }
+               else
+                  editForm.setFormField(currentColumnName, (Object) "HH:MM:SS");
+
             }
 
             // TIME With Time Zone
@@ -1340,7 +1383,7 @@ public class TableTabPanel_SQLite extends TableTabPanel
                   // System.out.println(currentContentData);
                   editForm.setFormField(currentColumnName,
                      (Object) (new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties().getViewDateFormat()
-                        + " HH:mm:ss").format(currentContentData)));
+                        + " HH:mm:ss.SSS").format(currentContentData)));
                }
                else
                   editForm.setFormField(currentColumnName,
