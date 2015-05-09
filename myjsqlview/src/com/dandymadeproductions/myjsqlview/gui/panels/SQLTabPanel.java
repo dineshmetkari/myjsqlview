@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 3.0 03/23/2015
+// Version 3.1 05/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -78,6 +78,8 @@
 //             TIMESTAMP WITH LOCAL TIME, & NCHAR for Oracle 11.
 //         3.0 Class Method executeSQL() Added TIME Processing to Handle SQLite
 //             Inconsistencies in getString() Default.
+//         3.1 Modifications in executeSQL() To Properly Process SQLite TIMESTAMP
+//             & DATE Types.
 //        
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -134,7 +136,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableSorter;
  * from the direct input of SQL commands executed on the database.  
  * 
  * @author Dana M. Proctor
- * @version 3.0 03/23/2015
+ * @version 3.1 05/09/2015
  */
 
 public class SQLTabPanel extends JPanel implements ActionListener, Printable
@@ -470,8 +472,13 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                      if (currentContentData == null)
                         rowData[j++] = "NULL";
                      else
+                     {
+                        if (dataSourceType.equals(ConnectionManager.SQLITE))
+                           currentContentData = db_resultSet.getDate(colNameString);
+                        
                         rowData[j++] = new SimpleDateFormat(DBTablesPanel.getGeneralDBProperties()
                            .getViewDateFormat()).format(currentContentData);
+                     }
                   }
                   
                   // =============================================
@@ -566,6 +573,12 @@ public class SQLTabPanel extends JPanel implements ActionListener, Printable
                               rowData[j++] = (new SimpleDateFormat(
                                  DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss")
                                     .format(currentContentData));
+                        }
+                        else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                        {
+                           rowData[j++] = (new SimpleDateFormat(
+                              DBTablesPanel.getGeneralDBProperties().getViewDateFormat() + " HH:mm:ss.SSS")
+                                 .format(currentContentData));
                         }
                         else
                            rowData[j++] = (new SimpleDateFormat(
