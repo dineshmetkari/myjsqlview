@@ -10,7 +10,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 9.7 03/17/2015
+// Version 9.8 05/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -247,6 +247,8 @@
 //             MariaDB. Use of Standard MySQL TableTabPanel for MariaDB.
 //         9.7 Methods insertReplace/explicitStatementData() Update for Oracle 11 in Processing
 //             Types TIMESTAMP WITH TIME ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
+//         9.8 Methods insertReplace/explicitStatementData() Update for SQLite in Processing
+//             TIMESTAMP Fields As Defined by Column Type.
 //                         
 //-----------------------------------------------------------------
 //                    danap@dandymadeproductions.com
@@ -295,7 +297,7 @@ import com.dandymadeproductions.myjsqlview.utilities.TableDefinitionGenerator;
  * the ability to prematurely terminate the dump.
  * 
  * @author Dana Proctor
- * @version 9.7 03/17/2015
+ * @version 9.8 05/09/2015
  */
 
 public class SQLDatabaseDumpThread implements Runnable
@@ -978,9 +980,23 @@ public class SQLDatabaseDumpThread implements Runnable
                                  dumpData = dumpData + "SYSTIMESTAMP, ";
                               else if (dataSourceType.equals(ConnectionManager.DERBY))
                                  dumpData = dumpData + "CURRENT_TIMESTAMP, ";
+                              else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                                 dumpData = dumpData + "STRFTIME('%Y-%m-%d %H:%M:%S.%f', 'now', 'localtime'), ";
                               else
                                  dumpData = dumpData + "NOW(), ";
                            }
+                        }
+                        
+                        // SQLite Timestamp
+                        else if (timeStampIndexes.contains(Integer.valueOf(i))
+                                 && dataSourceType.equals(ConnectionManager.SQLITE))
+                        {
+                           java.sql.Timestamp timestampValue = rs.getTimestamp(i);
+                           
+                           if (timestampValue != null)
+                              dumpData = dumpData + ("'" + timestampValue + "', ");
+                           else
+                              dumpData = dumpData + "NULL, ";
                         }
 
                         // Check for Oracle TimeStamp(TZ)
@@ -1458,9 +1474,24 @@ public class SQLDatabaseDumpThread implements Runnable
                                  dumpData = dumpData + "SYSTIMESTAMP, ";
                               else if (dataSourceType.equals(ConnectionManager.DERBY))
                                  dumpData = dumpData + "CURRENT_TIMESTAMP, ";
+                              else if (dataSourceType.equals(ConnectionManager.SQLITE))
+                                 dumpData = dumpData + "STRFTIME(" +
+                                       "'%Y-%m-%d %H:%M:%S.%f', 'now', 'localtime'), ";
                               else
                                  dumpData = dumpData + "NOW(), ";
                            }
+                        }
+                        
+                        // Setting SQLite Timestamp
+                        else if (columnType.equals("TIMESTAMP")
+                                 && dataSourceType.equals(ConnectionManager.SQLITE))
+                        {
+                           java.sql.Timestamp timestampValue = rs.getTimestamp(tableColumnNames.get(field));
+                           
+                           if (timestampValue != null)
+                              dumpData = dumpData + ("'" + timestampValue + "', ");
+                           else
+                              dumpData = dumpData + "NULL, ";
                         }
 
                         // Setting Oracle TimeStamp(TZ)
