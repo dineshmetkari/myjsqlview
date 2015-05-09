@@ -9,7 +9,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 6.25 03/25/2015
+// Version 6.26 05/09/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -155,6 +155,7 @@
 //        6.24 Update in Method run() Processing of Oracle 11 Database Changes of Types
 //             TIMESTARMP WITH TIME ZONE, & TIMESTAMP WITH LOCAL TIME ZONE.
 //        6.25 Method run() Check for Assignment of firstName if Only One Field Present.
+//        6.26 Change in run() for Formatting SQLite TIMESTAMP Fields.
 //             
 //-----------------------------------------------------------------
 //                   danap@dandymadeproductions.com
@@ -189,7 +190,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * is provided to allow the ability to prematurely terminate the dump.
  * 
  * @author Dana M. Proctor
- * @version 6.25 03/25/2015
+ * @version 6.26 05/09/2015
  */
 
 public class CSVDataDumpThread implements Runnable
@@ -571,9 +572,16 @@ public class CSVDataDumpThread implements Runnable
                               Object dateTime = dbResultSet.getTimestamp(i);
                               
                               if (dateTime != null)
-                                 fieldContent = (new SimpleDateFormat(
-                                    DBTablesPanel.getDataExportProperties().getCSVDateFormat()
-                                    + " HH:mm:ss")).format(dateTime) + "";
+                              {
+                                 if (dataSourceType.equals(ConnectionManager.SQLITE))
+                                    fieldContent = (new SimpleDateFormat(
+                                       DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                       + " HH:mm:ss.SSS")).format(dateTime) + "";
+                                 else
+                                    fieldContent = (new SimpleDateFormat(
+                                       DBTablesPanel.getDataExportProperties().getCSVDateFormat()
+                                       + " HH:mm:ss")).format(dateTime) + "";
+                              }
                               else
                                  fieldContent = "NULL";
                            }
