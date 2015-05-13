@@ -1,6 +1,6 @@
-MyJSQLView Version 3.49
+MyJSQLView Version 7.02
 
-Copyright 2005-2014
+Copyright 2005-2015
 by Dana Proctor
 http://dandymadeproductions.com 
 
@@ -70,17 +70,17 @@ Features:
 Requirements:
 
    * Microsoft® Windows 7, Vista ?, XP, 2000, 98, NT, ME, MAC?, Linux, & X-Window Environment.
-   * Java Runtime Environment, JRE 1.5 or Newer.
-   * Apache Derby 10.10.2.0.
-   * H2 1.3.173 - 1.3.175.
+   * Java Runtime Environment, JRE 1.7 or Newer.
+   * Apache Derby 10.10.2.0 - 10.11.1.1.
+   * H2 1.3.173 - 1.3.187.
    * HSQL 2.2.5 - 2.3.2. *NOTE, 1.8.x No Longer Supported.
    * MSAccess 97 - 2003, ODBC-JDBC Bridge, Control Panel Data Sources.
    * Microsoft SQL Server 8? - 11.00.2100, JDBC 4.0.
    * MySQL 5.0.7 - 5.5.32, JDBC 5.0.7, 5.1.5 - 5.1.30.
    * MariaDB 5.5.32, JDBC 1.1.7.
-   * Oracle 10g JDBC 14.
-   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1, JDBC3 8.2-506 - 8.4-702, 9.3.
-   * Xerial SQLite JDBC 3.6.20 - 3.7.2. Note, SQLite need not be installed on the system.
+   * Oracle 10g - 11g JDBC 14 - SQLJDBC4.
+   * PostgreSQL 8.2.5 - 8.4.4, 9.0.1 - 9.4.1, JDBC3 8.2-506 - 8.4-702, 9.3, 9.4.
+   * Xerial SQLite JDBC 3.6.20 - 3.8.10.1. Note, SQLite need not be installed on the system.
 
 Installation Notes:
 
@@ -119,24 +119,27 @@ your sites by typing in the password again.
 General Setup Instructions
 
     The MyJSQLView application is a Java based program and does require the JRE,
-to be installed. The minimum runtime environment needs to be JRE-1.5. In addition
-to the JRE an extension, JDBC, needs to be installed that allows Java to
-communicate to the Derby, MS SQL, MariaDB, MySQL, Oracle, PostgreSQL, or SQLite
-database. The programs are available on the Internet free of charge. Check with
-the sites db.apache.org/derby/, microsoft.com/en-us/sqlserver/, mariadb.org,
-dev.mysql.com, oracle.com, jdbc.postgresql.org, and xerial.org. The jar file
-for these extensions needs to be installed to the JRE /lib/ext directory. On a
-Windows system this JRE directory in normally under C:/Windows/java. On a Linux/Unix
-system the directory is normally under the /usr/lib directory, and is most easily
-found by typing the command "which java" in a console. Please consult with each
-vendor for specific installation instructions for these JDBC pieces of code.
-Similarly if other databases are to be accessed via the application then again
-installed the recommended driver(s) to the Java Runtime /lib/ext directory. The
-exceptions to JDBC installations are for the Derby, H2, and HSQL databases. Derby
-requires the derby.jar, derbynet.jar, and derbyclient.jar files to placed in the
-Java Extension directory. H2, and HSQL uses an integrated JDBC built into the
-application. MyJSQLView as of v3.47 includes these databases so no additional
-installation need take place.
+to be installed. The minimum runtime environment needs to be JRE-1.7. In
+addition to the JRE an extension, JDBC, needs to be installed that allows
+Java to communicate to the Derby, MS SQL, MariaDB, MySQL, Oracle, or
+PostgreSQL database. The programs are available on the Internet free of
+charge. Check with the sites db.apache.org/derby/, microsoft.com/en-us/sqlserver/,
+mariadb.org, dev.mysql.com, oracle.com, jdbc.postgresql.org, and xerial.org.
+The jar file for these extensions needs to be installed to the JRE /lib/ext
+directory. On a Windows system this JRE directory in normally under
+C:/Windows/java. On a Linux/Unix system the directory is normally under the
+/usr/lib directory, and is most easily found by typing the command "which
+java" in a console. Please consult with each vendor for specific installation
+instructions for these JDBC pieces of code. Similarly if other databases are
+to be accessed via the application then again installed the recommended driver(s)
+to the Java Runtime /lib/ext directory. The exceptions to JDBC installations
+are for the Derby, H2, and HSQL databases. Derby requires the derby.jar,
+derbynet.jar, and derbyclient.jar files to placed in the Java Extension
+directory. H2, and HSQL use an integrated JDBC built into the application.
+MyJSQLView as of v3.47 includes these databases so no additional installation
+need take place. Likewise as of v7.02 the SQLite JDBC need also not be
+installed as it is a included library along with native libaries for the
+SQLite database.
 
     The new login interface and Connection Manager use a XML configuration file
 for saving user preferences. Upon first running MyJSQLView a reference XML file,
@@ -216,6 +219,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 7.02 JRE 7.0 Requirement. Oracle 11g Support. Local File Directory Plugin
+                  Repositories. Inclusion of Xerial SQLite-JDBC Library.
    * Version 3.49 MariaDB Database Support. Maintenance Update to Address Issues With MySQL
                   JDBC New Than 5.1.8.
    * Version 3.48 Microsoft SQL Database Support. Visual QueryBuilder Plugin Update.
