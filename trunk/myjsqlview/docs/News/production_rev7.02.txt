@@ -1,0 +1,22 @@
+MyJSQLView Version 7.02 Released
+
+The MyJSQLView project is pleased to release v7.02 to the public. The
+release is mainly oriented around bringing the application into compliance
+with Java 1.7. In that vein considerable enthusiasm has been generated
+in enabling the JavaFX framework for plugins. The graphic and media
+enhancements in that framework has already brought work on some future
+plugins to be released later this year. The v7.02 release also includes
+an update for the support of the Oracle 11g database and the bundling
+of a library for incorporating SQLite directly into the app.
+
+Dana M. Proctor
+MyJSQLView Project Manager
+http://myjsqlview.org
+
+MyJSQLView provides an easy to use Java based user interface frontend for
+viewing, adding, editing, or deleting entries in several mainstream
+databases. A query frame allows the building of complex SQL statements
+and a SQL Query Bucket for saving such. The application allows easy
+sorting, searching, and import/export of table data. A plug-in framework
+has allowed the inclusion of tools to visually build queries, profile and
+plot data for analysis.
