@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 7.01 02/08/2015
+// Version 7.02 05/14/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -227,17 +227,19 @@
 //         3.46 08/12/2013 Class Instance myJSQLView_Version Update for Release
 //                         3.46.
 //         3.47 11/13/2013 Class Instance myJSQLView_Version Update for Release
-//                         3.47
+//                         3.47.
 //         3.48 03/04/2014 Class Instance myJSQLView_Version Update for Release
-//                         3.48
+//                         3.48.
 //         3.49 06/19/2014 Class Instance myJSQLView_Version Update for Release
-//                         3.49
+//                         3.49.
 //         3.50 08/11/2014 Class Method main.run() Conditional Check for localeString Length.
 //         7.00 01/02/2015 Updated Copyright & Pulled Version Forward to Mark Applications
 //                         Compliance With JRE 7. *NOTE THE APPLICATION IS NO LONGER
 //                         COMPATIBLE WITH PRIOR JRE VERSIONS.
 //         7.01 02/08/2015 Method actionPerformed() MyJSQLView_Frame Set Location &
 //                         Size From GeneralProperties Parameters.
+//         7.02 05/14/2015 Class Instance myJSQLView_Version Update for Release
+//                         7.02.
 //                         
 //         
 //-----------------------------------------------------------------
@@ -281,7 +283,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 7.01 02/08/2015
+ * @version 7.02 05/14/2015
  */
 
 public class MyJSQLView implements ActionListener
@@ -303,7 +305,7 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "7.00", "Build ID: 20150102"};
+   private static String[] myJSQLView_Version = {"MyJSQLView", "7.02", "Build ID: 20150514"};
    private String webSiteString = "http://myjsqlview.org";
    
    private static GeneralProperties generalProperties = new GeneralProperties();
