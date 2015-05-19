@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.8 04/28/2015
+// Version 1.9 05/18/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -43,6 +43,8 @@
 //         1.7 Added Class Instances framePosition_X, framePosition_Y, frameWidth,
 //             & frameHeight Along With Corresponding get/setter Methods.
 //         1.8 Initialized Default Values for Property Instances in Constructor.
+//         1.9 Setting of frameWidth/Height to MyJSQLView_Frame.FRAME_DEFAULT_WIDTH/
+//             HEIGHT. Comment Corrections in toString().
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -66,7 +68,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.8 04/28/2015
+ * @version 1.9 05/18/2015
  */
 
 public class GeneralProperties
@@ -112,8 +114,8 @@ public class GeneralProperties
       
       framePosition_X = 0;
       framePosition_Y = 0;
-      frameWidth = 800;
-      frameHeight = 600;
+      frameWidth = MyJSQLView_Frame.FRAME_DEFAULT_WIDTH;
+      frameHeight = MyJSQLView_Frame.FRAME_DEFAULT_HEIGHT;
       sequenceList = null;
       proxyAddress = "127.0.0.1";
       proxyPort = 0;
@@ -303,7 +305,7 @@ public class GeneralProperties
 
    public String toString()
    {
-      StringBuffer parameters = new StringBuffer("[DataExportProperties: ");
+      StringBuffer parameters = new StringBuffer("[GeneralProperties: ");
       
       parameters.append("[fontSize = " + fontSize + "]");
       parameters.append("[framePosition_X = " + framePosition_X + "]");
