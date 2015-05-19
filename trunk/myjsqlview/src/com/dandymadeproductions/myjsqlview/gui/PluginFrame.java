@@ -1488,7 +1488,6 @@ public class PluginFrame extends JFrame implements ActionListener, ChangeListene
          }
          else
             centralTabsPane.setSelectedIndex(0);
-            
       }
    }
    
