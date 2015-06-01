@@ -8,7 +8,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 1.9 05/18/2015
+// Version 2.0 06/01/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -45,6 +45,9 @@
 //         1.8 Initialized Default Values for Property Instances in Constructor.
 //         1.9 Setting of frameWidth/Height to MyJSQLView_Frame.FRAME_DEFAULT_WIDTH/
 //             HEIGHT. Comment Corrections in toString().
+//         2.0 Default Setting for proxyAddress in Constructor to Empty
+//             String to Insure if System Property Never Set That It Is
+//             Not Pickup as Valid in HTTP_PluginRepository.
 //
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
@@ -68,7 +71,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * MyJSQLView application general properties storage.
  * 
  * @author Dana M. Proctor
- * @version 1.9 05/18/2015
+ * @version 2.0 06/01/2015
  */
 
 public class GeneralProperties
@@ -117,7 +120,7 @@ public class GeneralProperties
       frameWidth = MyJSQLView_Frame.FRAME_DEFAULT_WIDTH;
       frameHeight = MyJSQLView_Frame.FRAME_DEFAULT_HEIGHT;
       sequenceList = null;
-      proxyAddress = "127.0.0.1";
+      proxyAddress = "";
       proxyPort = 0;
       
       // Try to retrieve state from Preferences.
