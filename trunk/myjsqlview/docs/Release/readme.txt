@@ -1,4 +1,4 @@
-MyJSQLView Version 7.02
+MyJSQLView Version 7.03
 
 Copyright 2005-2015
 by Dana Proctor
@@ -219,6 +219,8 @@ Version History:
 
 Production (2008-12-31):
 
+   * Version 7.03 Bug Fix for Plugin Management Proxy Setting. Last Release of Project
+                  and Archiving Packages for Version Control Through Google Code.
    * Version 7.02 JRE 7.0 Requirement. Oracle 11g Support. Local File Directory Plugin
                   Repositories. Inclusion of Xerial SQLite-JDBC Library.
    * Version 3.49 MariaDB Database Support. Maintenance Update to Address Issues With MySQL
