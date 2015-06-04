@@ -15,7 +15,7 @@
 //
 //=================================================================
 // Copyright (C) 2005-2015 Dana M. Proctor
-// Version 7.02 05/14/2015
+// Version 7.03 06/04/2015
 //
 // This program is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
@@ -240,8 +240,9 @@
 //                         Size From GeneralProperties Parameters.
 //         7.02 05/14/2015 Class Instance myJSQLView_Version Update for Release
 //                         7.02.
-//                         
-//         
+//         7.03 06/04/2015 Class Instance myJSLView_Version Update for Release
+//                         7.03.
+//                              
 //-----------------------------------------------------------------
 //                 danap@dandymadeproductions.com
 //=================================================================
@@ -283,7 +284,7 @@ import com.dandymadeproductions.myjsqlview.utilities.MyJSQLView_Utils;
  * Arguments -debug, -lang='locale'
  * 
  * @author Dana M. Proctor
- * @version 7.02 05/14/2015
+ * @version 7.03 06/04/2015
  */
 
 public class MyJSQLView implements ActionListener
@@ -305,8 +306,8 @@ public class MyJSQLView implements ActionListener
    private static MyJSQLView_ResourceBundle resourceBundle;
 
    // String for Information About the MyJSQLView.
-   private static String[] myJSQLView_Version = {"MyJSQLView", "7.02", "Build ID: 20150514"};
-   private String webSiteString = "http://myjsqlview.org";
+   private static String[] myJSQLView_Version = {"MyJSQLView", "7.03", "Build ID: 20150604"};
+   private String webSiteString = "http://myjsqlview.com";
    
    private static GeneralProperties generalProperties = new GeneralProperties();
 
